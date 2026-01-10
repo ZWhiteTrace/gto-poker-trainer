@@ -16,6 +16,7 @@ from core.evaluator import Evaluator
 from trainer.drill import PreflopDrill, Spot
 from trainer.session import TrainingSession, ProgressTracker
 from ui.components.range_grid import display_range_grid
+from ui.components.table_visual import display_table
 
 # Page config
 st.set_page_config(
@@ -177,6 +178,22 @@ def drill_page():
         st.session_state.show_result = False
 
     spot = st.session_state.current_spot
+
+    # Display table visualization
+    villain_action = None
+    if spot.scenario.action_type == ActionType.VS_RFI:
+        villain_action = "Raises 2.5bb"
+    elif spot.scenario.action_type == ActionType.VS_3BET:
+        villain_action = "3-Bets"
+    elif spot.scenario.action_type == ActionType.VS_4BET:
+        villain_action = "4-Bets"
+
+    display_table(
+        hero_position=spot.scenario.hero_position,
+        villain_position=spot.scenario.villain_position,
+        show_action=villain_action,
+        format="6max",
+    )
 
     # Display scenario
     st.markdown(f"""
