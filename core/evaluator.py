@@ -145,6 +145,15 @@ class Evaluator:
             else:
                 return f"{hand_str} doesn't have enough equity to continue vs the 3-bet."
 
+        elif scenario.action_type == ActionType.VS_4BET:
+            villain = scenario.villain_position.value
+            if correct_action == "5bet":
+                return f"{hand_str} is strong enough to 5-bet all-in vs {villain}'s 4-bet."
+            elif correct_action == "call":
+                return f"{hand_str} has sufficient equity to call {villain}'s 4-bet."
+            else:
+                return f"{hand_str} doesn't have enough equity to continue vs {villain}'s 4-bet range."
+
         return f"The correct action is {correct_action}."
 
     def _generate_explanation_zh(self, hand: Hand, scenario: Scenario, correct_action: str, is_correct: bool) -> str:
@@ -181,6 +190,15 @@ class Evaluator:
             else:
                 return f"{hand_str} 沒有足夠的權益來對抗 3-bet。"
 
+        elif scenario.action_type == ActionType.VS_4BET:
+            villain = scenario.villain_position.value
+            if correct_action == "5bet":
+                return f"{hand_str} 足夠強，可以對 {villain} 的 4-bet 全押 5-bet。"
+            elif correct_action == "call":
+                return f"{hand_str} 有足夠的權益跟注 {villain} 的 4-bet。"
+            else:
+                return f"{hand_str} 沒有足夠的權益對抗 {villain} 的 4-bet 範圍。"
+
         return f"正確動作是{action_zh}。"
 
     def get_range_for_scenario(self, scenario: Scenario, format: str = "6max") -> Dict[str, List[str]]:
@@ -200,5 +218,10 @@ class Evaluator:
             vs_3bet_data = ranges.get("vs_3bet", {})
             key = f"{scenario.hero_position.value}_vs_{scenario.villain_position.value}"
             return vs_3bet_data.get(key, {})
+
+        elif scenario.action_type == ActionType.VS_4BET:
+            vs_4bet_data = ranges.get("vs_4bet", {})
+            key = f"{scenario.hero_position.value}_vs_{scenario.villain_position.value}"
+            return vs_4bet_data.get(key, {})
 
         return {}

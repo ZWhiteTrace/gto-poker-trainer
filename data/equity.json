@@ -1,0 +1,204 @@
+{
+  "description": "Preflop all-in equity matchups for quiz mode",
+  "source": "Standard preflop equity calculations",
+  "note": "Equity percentages are approximate (±1-2%) depending on suits",
+
+  "matchups": {
+    "overpair_vs_underpair": {
+      "description": "高對子 vs 低對子",
+      "difficulty": "easy",
+      "examples": [
+        {"hand1": "AA", "hand2": "KK", "equity1": 82, "equity2": 18},
+        {"hand1": "AA", "hand2": "QQ", "equity1": 82, "equity2": 18},
+        {"hand1": "AA", "hand2": "JJ", "equity1": 81, "equity2": 19},
+        {"hand1": "KK", "hand2": "QQ", "equity1": 82, "equity2": 18},
+        {"hand1": "KK", "hand2": "JJ", "equity1": 82, "equity2": 18},
+        {"hand1": "KK", "hand2": "TT", "equity1": 82, "equity2": 18},
+        {"hand1": "QQ", "hand2": "JJ", "equity1": 82, "equity2": 18},
+        {"hand1": "QQ", "hand2": "99", "equity1": 81, "equity2": 19},
+        {"hand1": "JJ", "hand2": "TT", "equity1": 82, "equity2": 18},
+        {"hand1": "JJ", "hand2": "88", "equity1": 81, "equity2": 19},
+        {"hand1": "TT", "hand2": "99", "equity1": 82, "equity2": 18},
+        {"hand1": "TT", "hand2": "77", "equity1": 81, "equity2": 19},
+        {"hand1": "99", "hand2": "88", "equity1": 82, "equity2": 18},
+        {"hand1": "99", "hand2": "66", "equity1": 81, "equity2": 19},
+        {"hand1": "88", "hand2": "77", "equity1": 82, "equity2": 18},
+        {"hand1": "77", "hand2": "66", "equity1": 82, "equity2": 18},
+        {"hand1": "66", "hand2": "55", "equity1": 82, "equity2": 18},
+        {"hand1": "55", "hand2": "44", "equity1": 82, "equity2": 18},
+        {"hand1": "44", "hand2": "33", "equity1": 82, "equity2": 18},
+        {"hand1": "33", "hand2": "22", "equity1": 82, "equity2": 18}
+      ]
+    },
+
+    "pair_vs_overcards": {
+      "description": "對子 vs 兩高張 (經典翻硬幣)",
+      "difficulty": "medium",
+      "examples": [
+        {"hand1": "QQ", "hand2": "AKs", "equity1": 54, "equity2": 46},
+        {"hand1": "QQ", "hand2": "AKo", "equity1": 57, "equity2": 43},
+        {"hand1": "JJ", "hand2": "AKs", "equity1": 54, "equity2": 46},
+        {"hand1": "JJ", "hand2": "AKo", "equity1": 57, "equity2": 43},
+        {"hand1": "JJ", "hand2": "AQs", "equity1": 54, "equity2": 46},
+        {"hand1": "JJ", "hand2": "AQo", "equity1": 57, "equity2": 43},
+        {"hand1": "TT", "hand2": "AKs", "equity1": 54, "equity2": 46},
+        {"hand1": "TT", "hand2": "AKo", "equity1": 57, "equity2": 43},
+        {"hand1": "TT", "hand2": "AQs", "equity1": 54, "equity2": 46},
+        {"hand1": "TT", "hand2": "KQs", "equity1": 54, "equity2": 46},
+        {"hand1": "99", "hand2": "AKs", "equity1": 54, "equity2": 46},
+        {"hand1": "99", "hand2": "AKo", "equity1": 56, "equity2": 44},
+        {"hand1": "88", "hand2": "AKs", "equity1": 54, "equity2": 46},
+        {"hand1": "88", "hand2": "AQs", "equity1": 54, "equity2": 46},
+        {"hand1": "77", "hand2": "AKs", "equity1": 53, "equity2": 47},
+        {"hand1": "77", "hand2": "AQs", "equity1": 53, "equity2": 47},
+        {"hand1": "66", "hand2": "AKs", "equity1": 52, "equity2": 48},
+        {"hand1": "55", "hand2": "AKs", "equity1": 52, "equity2": 48},
+        {"hand1": "44", "hand2": "AKs", "equity1": 51, "equity2": 49},
+        {"hand1": "22", "hand2": "AKs", "equity1": 50, "equity2": 50}
+      ]
+    },
+
+    "pair_vs_one_overcard": {
+      "description": "對子 vs 一高張一低張",
+      "difficulty": "medium",
+      "examples": [
+        {"hand1": "QQ", "hand2": "AJs", "equity1": 67, "equity2": 33},
+        {"hand1": "QQ", "hand2": "AJo", "equity1": 70, "equity2": 30},
+        {"hand1": "QQ", "hand2": "ATs", "equity1": 67, "equity2": 33},
+        {"hand1": "JJ", "hand2": "ATs", "equity1": 68, "equity2": 32},
+        {"hand1": "JJ", "hand2": "A9s", "equity1": 68, "equity2": 32},
+        {"hand1": "TT", "hand2": "AJs", "equity1": 67, "equity2": 33},
+        {"hand1": "TT", "hand2": "A9s", "equity1": 68, "equity2": 32},
+        {"hand1": "99", "hand2": "ATs", "equity1": 67, "equity2": 33},
+        {"hand1": "99", "hand2": "A8s", "equity1": 68, "equity2": 32},
+        {"hand1": "88", "hand2": "A9s", "equity1": 68, "equity2": 32},
+        {"hand1": "77", "hand2": "A8s", "equity1": 67, "equity2": 33},
+        {"hand1": "66", "hand2": "A7s", "equity1": 67, "equity2": 33},
+        {"hand1": "55", "hand2": "A6s", "equity1": 66, "equity2": 34}
+      ]
+    },
+
+    "pair_vs_undercards": {
+      "description": "對子 vs 兩低張",
+      "difficulty": "easy",
+      "examples": [
+        {"hand1": "AA", "hand2": "KQs", "equity1": 82, "equity2": 18},
+        {"hand1": "AA", "hand2": "KQo", "equity1": 85, "equity2": 15},
+        {"hand1": "KK", "hand2": "QJs", "equity1": 82, "equity2": 18},
+        {"hand1": "KK", "hand2": "QJo", "equity1": 84, "equity2": 16},
+        {"hand1": "QQ", "hand2": "JTs", "equity1": 82, "equity2": 18},
+        {"hand1": "QQ", "hand2": "T9s", "equity1": 80, "equity2": 20},
+        {"hand1": "JJ", "hand2": "T9s", "equity1": 81, "equity2": 19},
+        {"hand1": "JJ", "hand2": "98s", "equity1": 79, "equity2": 21},
+        {"hand1": "TT", "hand2": "98s", "equity1": 80, "equity2": 20},
+        {"hand1": "TT", "hand2": "87s", "equity1": 78, "equity2": 22},
+        {"hand1": "99", "hand2": "87s", "equity1": 79, "equity2": 21},
+        {"hand1": "88", "hand2": "76s", "equity1": 79, "equity2": 21},
+        {"hand1": "77", "hand2": "65s", "equity1": 79, "equity2": 21}
+      ]
+    },
+
+    "domination": {
+      "description": "壓制牌型 (同高張不同踢腳)",
+      "difficulty": "easy",
+      "examples": [
+        {"hand1": "AKs", "hand2": "AQs", "equity1": 71, "equity2": 29},
+        {"hand1": "AKo", "hand2": "AQo", "equity1": 74, "equity2": 26},
+        {"hand1": "AKs", "hand2": "AJs", "equity1": 72, "equity2": 28},
+        {"hand1": "AKs", "hand2": "ATs", "equity1": 72, "equity2": 28},
+        {"hand1": "AQs", "hand2": "AJs", "equity1": 70, "equity2": 30},
+        {"hand1": "AQs", "hand2": "ATs", "equity1": 71, "equity2": 29},
+        {"hand1": "AJs", "hand2": "ATs", "equity1": 69, "equity2": 31},
+        {"hand1": "KQs", "hand2": "KJs", "equity1": 70, "equity2": 30},
+        {"hand1": "KQs", "hand2": "KTs", "equity1": 71, "equity2": 29},
+        {"hand1": "KJs", "hand2": "KTs", "equity1": 68, "equity2": 32},
+        {"hand1": "QJs", "hand2": "QTs", "equity1": 68, "equity2": 32},
+        {"hand1": "AKs", "hand2": "A5s", "equity1": 72, "equity2": 28},
+        {"hand1": "AQs", "hand2": "A5s", "equity1": 71, "equity2": 29}
+      ]
+    },
+
+    "high_vs_low": {
+      "description": "高張 vs 低張 (無配對)",
+      "difficulty": "medium",
+      "examples": [
+        {"hand1": "AKs", "hand2": "QJs", "equity1": 63, "equity2": 37},
+        {"hand1": "AKo", "hand2": "QJo", "equity1": 66, "equity2": 34},
+        {"hand1": "AKs", "hand2": "JTs", "equity1": 63, "equity2": 37},
+        {"hand1": "AKs", "hand2": "T9s", "equity1": 62, "equity2": 38},
+        {"hand1": "AQs", "hand2": "KJs", "equity1": 60, "equity2": 40},
+        {"hand1": "AQs", "hand2": "JTs", "equity1": 62, "equity2": 38},
+        {"hand1": "AJs", "hand2": "KTs", "equity1": 59, "equity2": 41},
+        {"hand1": "ATs", "hand2": "KJs", "equity1": 58, "equity2": 42},
+        {"hand1": "KQs", "hand2": "JTs", "equity1": 60, "equity2": 40},
+        {"hand1": "KQs", "hand2": "T9s", "equity1": 59, "equity2": 41},
+        {"hand1": "KJs", "hand2": "T9s", "equity1": 58, "equity2": 42},
+        {"hand1": "QJs", "hand2": "98s", "equity1": 59, "equity2": 41},
+        {"hand1": "JTs", "hand2": "87s", "equity1": 59, "equity2": 41}
+      ]
+    },
+
+    "suited_connectors_vs_pairs": {
+      "description": "連接花色牌 vs 對子",
+      "difficulty": "hard",
+      "examples": [
+        {"hand1": "JTs", "hand2": "AA", "equity1": 20, "equity2": 80},
+        {"hand1": "JTs", "hand2": "KK", "equity1": 22, "equity2": 78},
+        {"hand1": "JTs", "hand2": "QQ", "equity1": 20, "equity2": 80},
+        {"hand1": "T9s", "hand2": "AA", "equity1": 21, "equity2": 79},
+        {"hand1": "T9s", "hand2": "KK", "equity1": 22, "equity2": 78},
+        {"hand1": "T9s", "hand2": "QQ", "equity1": 21, "equity2": 79},
+        {"hand1": "T9s", "hand2": "JJ", "equity1": 19, "equity2": 81},
+        {"hand1": "98s", "hand2": "AA", "equity1": 21, "equity2": 79},
+        {"hand1": "98s", "hand2": "KK", "equity1": 22, "equity2": 78},
+        {"hand1": "98s", "hand2": "QQ", "equity1": 22, "equity2": 78},
+        {"hand1": "87s", "hand2": "AA", "equity1": 22, "equity2": 78},
+        {"hand1": "87s", "hand2": "KK", "equity1": 23, "equity2": 77},
+        {"hand1": "76s", "hand2": "AA", "equity1": 22, "equity2": 78},
+        {"hand1": "76s", "hand2": "KK", "equity1": 23, "equity2": 77},
+        {"hand1": "65s", "hand2": "AA", "equity1": 22, "equity2": 78},
+        {"hand1": "54s", "hand2": "AA", "equity1": 22, "equity2": 78}
+      ]
+    },
+
+    "premium_battles": {
+      "description": "頂級牌對決",
+      "difficulty": "medium",
+      "examples": [
+        {"hand1": "AA", "hand2": "AKs", "equity1": 87, "equity2": 13},
+        {"hand1": "AA", "hand2": "AKo", "equity1": 93, "equity2": 7},
+        {"hand1": "KK", "hand2": "AKs", "equity1": 66, "equity2": 34},
+        {"hand1": "KK", "hand2": "AKo", "equity1": 70, "equity2": 30},
+        {"hand1": "KK", "hand2": "AQs", "equity1": 68, "equity2": 32},
+        {"hand1": "AA", "hand2": "QQ", "equity1": 82, "equity2": 18},
+        {"hand1": "AA", "hand2": "JJ", "equity1": 81, "equity2": 19},
+        {"hand1": "KK", "hand2": "QQ", "equity1": 82, "equity2": 18},
+        {"hand1": "AKs", "hand2": "JJ", "equity1": 46, "equity2": 54},
+        {"hand1": "AKo", "hand2": "JJ", "equity1": 43, "equity2": 57}
+      ]
+    },
+
+    "special_cases": {
+      "description": "特殊案例",
+      "difficulty": "hard",
+      "examples": [
+        {"hand1": "AA", "hand2": "72o", "equity1": 88, "equity2": 12, "note": "最佳 vs 最差"},
+        {"hand1": "KK", "hand2": "72o", "equity1": 86, "equity2": 14},
+        {"hand1": "AA", "hand2": "32s", "equity1": 85, "equity2": 15},
+        {"hand1": "22", "hand2": "AKs", "equity1": 50, "equity2": 50, "note": "經典 coin flip"},
+        {"hand1": "33", "hand2": "AKs", "equity1": 51, "equity2": 49},
+        {"hand1": "AKs", "hand2": "AKo", "equity1": 52, "equity2": 48, "note": "同牌花色優勢"},
+        {"hand1": "QQ", "hand2": "AKs", "equity1": 54, "equity2": 46, "note": "Race 場景"},
+        {"hand1": "TT", "hand2": "AKs", "equity1": 54, "equity2": 46}
+      ]
+    }
+  },
+
+  "quiz_settings": {
+    "tolerance": 5,
+    "easy_tolerance": 10,
+    "hint_range": 15,
+    "multiple_choice_options": 4,
+    "answer_variance": [5, 10, 15, 20]
+  }
+}

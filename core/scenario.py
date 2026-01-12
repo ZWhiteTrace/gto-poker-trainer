@@ -36,10 +36,13 @@ class Scenario:
         if self.action_type == ActionType.RFI:
             return ["raise", "fold"]
         elif self.action_type == ActionType.VS_RFI:
-            if self.hero_position == Position.BB:
-                return ["3bet", "call", "fold"]
-            else:
+            # All positions can potentially call (except SB in some cases, but data handles this)
+            # BB, BTN, CO, HJ all have call ranges in GTO data
+            if self.hero_position in [Position.SB]:
+                # SB typically 3bets or folds, very rarely calls
                 return ["3bet", "fold"]
+            else:
+                return ["3bet", "call", "fold"]
         elif self.action_type == ActionType.VS_3BET:
             return ["4bet", "call", "fold"]
         elif self.action_type == ActionType.VS_4BET:

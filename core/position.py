@@ -16,9 +16,9 @@ class Position(Enum):
     BB = "BB"        # Big Blind
 
     # Additional 9-max positions
-    UTG1 = "UTG+1"   # UTG+1
-    UTG2 = "UTG+2"   # UTG+2 (sometimes called MP)
-    MP = "MP"        # Middle Position
+    UTG1 = "UTG+1"   # UTG+1 (also: EP2)
+    UTG2 = "UTG+2"   # UTG+2 (also: EP3)
+    MP = "MP"        # Middle Position (also: LJ - Lojack)
 
     @property
     def display_name(self) -> str:
@@ -32,7 +32,7 @@ class Position(Enum):
             Position.BB: "Big Blind",
             Position.UTG1: "UTG+1",
             Position.UTG2: "UTG+2",
-            Position.MP: "Middle Position",
+            Position.MP: "MP (LJ)",  # Show both common names
         }
         return names.get(self, self.value)
 
@@ -40,6 +40,17 @@ class Position(Enum):
     def short_name(self) -> str:
         """Short position name for display."""
         return self.value
+
+    @property
+    def aliases(self) -> list:
+        """Alternative names for this position."""
+        alias_map = {
+            Position.MP: ["LJ", "Lojack"],
+            Position.UTG1: ["EP2"],
+            Position.UTG2: ["EP3", "MP1"],
+            Position.HJ: ["MP2"],
+        }
+        return alias_map.get(self, [])
 
 
 # Position order (early to late)
