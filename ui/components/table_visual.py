@@ -729,7 +729,7 @@ def _generate_table_html_9max(
             width: 70%;
             height: 45%;
             left: 15%;
-            top: 28%;
+            top: 32%;
             background: linear-gradient(145deg, #1a5f3c 0%, #0d3d25 100%);
             border-radius: 100px;
             border: 5px solid #8B4513;
