@@ -136,7 +136,7 @@ def _generate_table_html_6max(
         width: 65%;
         height: 50%;
         left: 17.5%;
-        top: 24%;
+        top: 22%;
         background: linear-gradient(145deg, #1a5f3c 0%, #0d3d25 100%);
         border-radius: 100px;
         border: 8px solid #8B4513;
