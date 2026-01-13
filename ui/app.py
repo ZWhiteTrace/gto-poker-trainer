@@ -870,6 +870,13 @@ def drill_page():
             explanation = result.explanation_zh if st.session_state.language == "zh" else result.explanation
             next_label = t('next_hand')
 
+            # Next hand button FIRST (above feedback)
+            if st.button(next_label, use_container_width=True, type="primary"):
+                st.session_state.current_spot = None
+                st.session_state.show_result = False
+                st.rerun()
+
+            # Then show feedback
             if result.is_correct:
                 st.markdown(f"""
                 <div style="background: #065f46; padding: 8px 10px; border-radius: 8px; border-left: 4px solid #10b981; margin: 6px 0;">
@@ -885,12 +892,6 @@ def drill_page():
                     <div style="font-size: 0.75rem; color: #94a3b8; margin-top: 3px;">{explanation}</div>
                 </div>
                 """, unsafe_allow_html=True)
-
-            # Next hand button
-            if st.button(next_label, use_container_width=True, type="primary"):
-                st.session_state.current_spot = None
-                st.session_state.show_result = False
-                st.rerun()
 
             # Show equity breakdown for vs 4-bet scenarios
             if spot.scenario.action_type == ActionType.VS_4BET:
@@ -1020,55 +1021,60 @@ def viewer_page():
     if "viewer_villain_pos" not in st.session_state:
         st.session_state.viewer_villain_pos = None
 
-    # Compact header row: Title + context on left, scenario selector on right
+    # CSS to force all columns on this page to stay horizontal on mobile
+    st.markdown("""
+    <style>
+    /* Force all button columns to stay horizontal on mobile */
+    [data-testid="stHorizontalBlock"]:has(button) {
+        flex-wrap: nowrap !important;
+        gap: 0.25rem !important;
+    }
+    [data-testid="stHorizontalBlock"]:has(button) > div {
+        flex: 1 1 0 !important;
+        min-width: 0 !important;
+    }
+    /* Smaller button padding on mobile */
+    @media (max-width: 640px) {
+        [data-testid="stHorizontalBlock"]:has(button) button {
+            padding: 0.4rem 0.3rem !important;
+            font-size: 0.75rem !important;
+        }
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
+    # Compact header (full width)
     if lang == "zh":
         context_info = "📊 Cash Game · 100bb · 開池 2.5bb"
     else:
         context_info = "📊 Cash Game · 100bb · Open 2.5bb"
 
-    col_header, col_tabs = st.columns([1, 1])
+    st.markdown(f"""
+    <div style="display: flex; justify-content: space-between; align-items: center; padding: 6px 0; margin-bottom: 4px;">
+        <span style="font-size: 1.2rem; font-weight: bold;">{t('range_viewer')}</span>
+        <span style="color: #94a3b8; font-size: 0.8rem;">{context_info}</span>
+    </div>
+    """, unsafe_allow_html=True)
 
-    with col_header:
-        st.markdown(f"""
-        <div style="display: flex; justify-content: space-between; align-items: center; padding: 8px 0;">
-            <span style="font-size: 1.3rem; font-weight: bold;">{t('range_viewer')}</span>
-            <span style="color: #94a3b8; font-size: 0.85rem;">{context_info}</span>
-        </div>
-        """, unsafe_allow_html=True)
+    # Scenario type selector (3-column layout)
+    if table_format == "9max":
+        action_types = ["RFI", "vs Open", "vs 3-Bet"]
+    else:
+        action_types = ["RFI", "vs Open", "vs 3-Bet", "vs 4-Bet"]
 
-    with col_tabs:
-        # Scenario type selector as segmented control
-        if table_format == "9max":
-            action_types = ["RFI", "vs Open", "vs 3-Bet"]
-        else:
-            action_types = ["RFI", "vs Open", "vs 3-Bet", "vs 4-Bet"]
+    if "viewer_selected_tab" not in st.session_state:
+        st.session_state.viewer_selected_tab = 0
 
-        if "viewer_selected_tab" not in st.session_state:
-            st.session_state.viewer_selected_tab = 0
-
-        # Create 2-column tab selection
-        row1_tabs = action_types[:2]
-        row2_tabs = action_types[2:] if len(action_types) > 2 else []
-
-        col1, col2 = st.columns(2)
-        for idx, tab_name in enumerate(row1_tabs):
-            with col1 if idx == 0 else col2:
-                is_selected = st.session_state.viewer_selected_tab == idx
-                btn_type = "primary" if is_selected else "secondary"
-                if st.button(tab_name, key=f"viewer_tab_{idx}", use_container_width=True, type=btn_type):
-                    st.session_state.viewer_selected_tab = idx
-                    st.rerun()
-
-        if row2_tabs:
-            col3, col4 = st.columns(2)
-            for idx, tab_name in enumerate(row2_tabs):
-                actual_idx = idx + 2
-                with col3 if idx == 0 else col4:
-                    is_selected = st.session_state.viewer_selected_tab == actual_idx
-                    btn_type = "primary" if is_selected else "secondary"
-                    if st.button(tab_name, key=f"viewer_tab_{actual_idx}", use_container_width=True, type=btn_type):
-                        st.session_state.viewer_selected_tab = actual_idx
-                        st.rerun()
+    # Create 3-column (or 4-column for 6-max) scenario buttons - single row
+    num_actions = len(action_types)
+    tab_cols = st.columns(num_actions)
+    for idx, tab_name in enumerate(action_types):
+        with tab_cols[idx]:
+            is_selected = st.session_state.viewer_selected_tab == idx
+            btn_type = "primary" if is_selected else "secondary"
+            if st.button(tab_name, key=f"viewer_tab_{idx}", use_container_width=True, type=btn_type):
+                st.session_state.viewer_selected_tab = idx
+                st.rerun()
 
     # Content based on selected tab
     i = st.session_state.viewer_selected_tab

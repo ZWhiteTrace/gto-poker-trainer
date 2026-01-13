@@ -52,7 +52,7 @@ def display_table_6max(
         folded_positions=folded_positions or [],
     )
 
-    components.html(html, height=260)
+    components.html(html, height=230)
 
 
 def display_table_9max(
@@ -107,7 +107,7 @@ def display_table_9max(
         folded_positions=folded_positions or [],
     )
 
-    components.html(html, height=350)
+    components.html(html, height=310)
 
 
 def _generate_table_html_6max(
@@ -145,18 +145,18 @@ def _generate_table_html_6max(
     .poker-table-container {
         position: relative;
         width: 100%;
-        max-width: 540px;
-        height: 250px;
+        max-width: 520px;
+        height: 225px;
         margin: 0 auto;
-        padding: 10px 20px;
+        padding: 8px 12px;
         overflow: visible;
     }
     .poker-table {
         position: absolute;
-        width: 65%;
-        height: 55%;
-        left: 17.5%;
-        top: 22%;
+        width: 58%;
+        height: 58%;
+        left: 21%;
+        top: 20%;
         background: linear-gradient(145deg, #1a5f3c 0%, #0d3d25 100%);
         border-radius: 9999px;
         border: 6px solid #8B4513;
@@ -174,14 +174,14 @@ def _generate_table_html_6max(
     }
     .seat {
         position: absolute;
-        width: 54px;
-        height: 54px;
+        width: 52px;
+        height: 52px;
         border-radius: 50%;
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        font-size: 13px;
+        font-size: 14px;
         font-weight: bold;
         transform: translate(-50%, -50%);
         transition: all 0.2s ease;
@@ -221,7 +221,7 @@ def _generate_table_html_6max(
         opacity: 0.5;
     }
     .seat-label {
-        font-size: 13px;
+        font-size: 14px;
         position: absolute;
         bottom: -22px;
         left: 50%;
@@ -230,7 +230,7 @@ def _generate_table_html_6max(
         white-space: nowrap;
         font-weight: bold;
         background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
-        padding: 3px 14px;
+        padding: 3px 16px;
         border-radius: 12px;
         box-shadow: 0 0 12px rgba(251, 191, 36, 0.8);
         animation: label-pulse 1.5s ease-in-out infinite;
@@ -355,19 +355,19 @@ def _generate_table_html_6max(
     @media (max-width: 768px) and (min-width: 515px) {
         .poker-table-container {
             max-width: 100%;
-            height: 240px;
-            padding: 8px 15px;
+            height: 215px;
+            padding: 6px 10px;
         }
         .poker-table {
-            width: 70%;
-            left: 15%;
-            height: 52%;
-            top: 24%;
+            width: 60%;
+            left: 20%;
+            height: 56%;
+            top: 20%;
         }
         .seat {
             width: 48px;
             height: 48px;
-            font-size: 12px;
+            font-size: 13px;
         }
     }
 
@@ -375,23 +375,23 @@ def _generate_table_html_6max(
     @media (max-width: 640px) and (min-width: 481px) {
         .poker-table-container {
             max-width: 100%;
-            height: 230px;
-            padding: 5px 10px;
+            height: 200px;
+            padding: 4px 8px;
         }
         .poker-table {
-            width: 75%;
-            left: 12.5%;
-            height: 50%;
-            top: 26%;
+            width: 62%;
+            left: 19%;
+            height: 55%;
+            top: 22%;
         }
         .seat {
             width: 44px;
             height: 44px;
-            font-size: 11px;
+            font-size: 12px;
         }
         .seat-label {
-            font-size: 10px;
-            padding: 2px 8px;
+            font-size: 11px;
+            padding: 2px 10px;
             bottom: -18px;
         }
     }
@@ -400,23 +400,23 @@ def _generate_table_html_6max(
     @media (max-width: 480px) {
         .poker-table-container {
             max-width: 100%;
-            height: 220px;
-            padding: 5px 8px;
+            height: 190px;
+            padding: 3px 6px;
         }
         .poker-table {
-            width: 78%;
-            left: 11%;
-            height: 48%;
-            top: 28%;
+            width: 64%;
+            left: 18%;
+            height: 54%;
+            top: 24%;
         }
         .seat {
-            width: 42px;
-            height: 42px;
-            font-size: 10px;
+            width: 40px;
+            height: 40px;
+            font-size: 11px;
         }
         .seat-label {
-            font-size: 9px;
-            padding: 2px 6px;
+            font-size: 10px;
+            padding: 2px 8px;
             bottom: -18px;
         }
         .chips-label {
@@ -822,17 +822,17 @@ def _generate_table_html_9max(
         .gto-container {{
             position: relative;
             width: 100%;
-            max-width: 560px;
-            height: 340px;
-            margin: 5px auto 0 auto;
-            padding: 15px 20px;
+            max-width: 540px;
+            height: 300px;
+            margin: 3px auto 0 auto;
+            padding: 10px 12px;
         }}
         .gto-table {{
             position: absolute;
-            width: 70%;
-            height: 45%;
-            left: 15%;
-            top: 28%;
+            width: 62%;
+            height: 50%;
+            left: 19%;
+            top: 26%;
             background: linear-gradient(145deg, #1a5f3c 0%, #0d3d25 100%);
             border-radius: 9999px;
             border: 6px solid #8B4513;
@@ -850,21 +850,21 @@ def _generate_table_html_9max(
         }}
         .gto-seat {{
             position: absolute;
-            width: 50px;
-            height: 50px;
+            width: 48px;
+            height: 48px;
             border-radius: 50%;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            font-size: 11px;
+            font-size: 13px;
             font-weight: bold;
             transform: translate(-50%, -50%);
             border: 3px solid transparent;
             transition: all 0.2s ease;
         }}
         .gto-pos-name {{
-            font-size: 11px;
+            font-size: 13px;
             font-weight: bold;
             line-height: 1.1;
         }}
@@ -906,39 +906,53 @@ def _generate_table_html_9max(
         .gto-label {{
             position: absolute;
             bottom: -20px;
-            font-size: 11px;
+            font-size: 13px;
             color: #000;
             font-weight: bold;
             background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
-            padding: 2px 8px;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(251, 191, 36, 0.8);
+            padding: 3px 14px;
+            border-radius: 12px;
+            box-shadow: 0 0 12px rgba(251, 191, 36, 0.8);
             animation: gto-label-pulse 1.5s ease-in-out infinite;
             white-space: nowrap;
         }}
         .gto-label::before {{
-            content: "▼";
+            content: "▶";
             position: absolute;
-            top: -10px;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 9px;
+            left: -14px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 10px;
             color: #fbbf24;
-            animation: gto-arrow-bounce 1s ease-in-out infinite;
+            animation: gto-arrow-bounce-left 0.8s ease-in-out infinite;
+        }}
+        .gto-label::after {{
+            content: "◀";
+            position: absolute;
+            right: -14px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 10px;
+            color: #fbbf24;
+            animation: gto-arrow-bounce-right 0.8s ease-in-out infinite;
         }}
         @keyframes gto-label-pulse {{
             0%, 100% {{
-                box-shadow: 0 0 10px rgba(251, 191, 36, 0.8);
+                box-shadow: 0 0 12px rgba(251, 191, 36, 0.8);
                 transform: scale(1);
             }}
             50% {{
-                box-shadow: 0 0 16px rgba(251, 191, 36, 1);
+                box-shadow: 0 0 18px rgba(251, 191, 36, 1);
                 transform: scale(1.03);
             }}
         }}
-        @keyframes gto-arrow-bounce {{
-            0%, 100% {{ transform: translateX(-50%) translateY(0); }}
-            50% {{ transform: translateX(-50%) translateY(-3px); }}
+        @keyframes gto-arrow-bounce-left {{
+            0%, 100% {{ transform: translateY(-50%) translateX(0); }}
+            50% {{ transform: translateY(-50%) translateX(-3px); }}
+        }}
+        @keyframes gto-arrow-bounce-right {{
+            0%, 100% {{ transform: translateY(-50%) translateX(0); }}
+            50% {{ transform: translateY(-50%) translateX(3px); }}
         }}
         .gto-chips {{
             position: absolute;
@@ -1023,26 +1037,28 @@ def _generate_table_html_9max(
         @media (max-width: 480px) {{
             .gto-container {{
                 max-width: 100%;
-                height: 300px;
+                height: 260px;
                 margin: 0 auto;
+                padding: 6px 8px;
             }}
             .gto-table {{
-                width: 85%;
-                left: 7.5%;
+                width: 68%;
+                left: 16%;
+                height: 48%;
             }}
             .gto-seat {{
-                width: 42px;
-                height: 42px;
+                width: 40px;
+                height: 40px;
             }}
             .gto-pos-name {{
-                font-size: 10px;
+                font-size: 11px;
             }}
             .gto-stack {{
                 font-size: 7px;
             }}
             .gto-label {{
-                font-size: 10px;
-                padding: 2px 6px;
+                font-size: 11px;
+                padding: 2px 10px;
             }}
             .gto-legend {{
                 font-size: 9px;
