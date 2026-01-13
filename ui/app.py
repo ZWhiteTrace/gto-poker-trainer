@@ -1469,10 +1469,7 @@ def postflop_page():
     result = st.session_state.postflop_result
 
     with col_right:
-        # Hero's hand
-        st.markdown(f"<div style='text-align:center;color:#fbbf24;font-weight:bold;font-size:0.85rem;margin-bottom:5px;'>{t('your_hand')}</div>", unsafe_allow_html=True)
-
-        # Build cards HTML
+        # Hero's hand - cards first, then title below
         cards_parts = []
         for card in hero_cards_display:
             color = get_suit_color(card.suit)
@@ -1480,43 +1477,36 @@ def postflop_page():
             cards_parts.append(f'<div style="width:50px;height:70px;background:linear-gradient(145deg,#fff 0%,#f0f0f0 100%);border-radius:6px;display:inline-flex;flex-direction:column;align-items:center;justify-content:center;color:{color};font-weight:bold;box-shadow:0 2px 8px rgba(0,0,0,0.3);margin:2px;"><span style="font-size:20px;">{fmt_rank(card.rank)}</span><span style="font-size:16px;">{symbol}</span></div>')
 
         cards_html = "".join(cards_parts)
-        st.markdown(f'<div style="display:flex;justify-content:center;">{cards_html}</div><div style="text-align:center;color:#94a3b8;font-size:0.75rem;margin-top:3px;">({str(scenario.hero_hand)})</div>', unsafe_allow_html=True)
+        st.markdown(f'''
+        <div style="display:flex;justify-content:center;">{cards_html}</div>
+        <div style="display:flex;justify-content:center;align-items:center;gap:6px;margin-top:3px;margin-bottom:5px;">
+            <span style="color:#fbbf24;font-size:0.8rem;">{t('your_hand')}</span>
+            <span style="color:#94a3b8;font-size:0.75rem;">({str(scenario.hero_hand)})</span>
+        </div>
+        ''', unsafe_allow_html=True)
 
         if result is None:
-            # Action buttons - show all options directly
-            st.markdown(f"<div style='text-align:center;color:#94a3b8;font-size:0.8rem;margin: 8px 0 5px 0;'>{t('postflop_action')}</div>", unsafe_allow_html=True)
+            # Action buttons - 2-column layout
+            st.markdown(f"<div style='text-align:center;color:#94a3b8;font-size:0.8rem;margin: 3px 0;'>{t('postflop_action')}</div>", unsafe_allow_html=True)
 
-            # Check button (full width)
-            if st.button(f"☑️ {t('postflop_check')}", key="postflop_check", use_container_width=True):
-                result = drill.check_answer(spot, PostflopAction.CHECK, None, lang)
-                st.session_state.postflop_result = result
-                st.session_state.postflop_score["total"] += 1
-                if result.is_correct:
-                    st.session_state.postflop_score["correct"] += 1
-                st.rerun()
+            # All buttons in 2-column grid
+            all_actions = [("check", f"☑️ {t('postflop_check')}", None)] + [(f"bet_{s}", f"💰 {s}%", s) for s in ["25", "33", "50", "66", "75", "100"]]
 
-            # Bet sizing buttons in rows
-            sizing_row1 = st.columns(3)
-            sizing_row2 = st.columns(3)
-            sizings = ["25", "33", "50", "66", "75", "100"]
-            for i, sizing in enumerate(sizings[:3]):
-                with sizing_row1[i]:
-                    if st.button(f"💰 {sizing}%", key=f"sizing_{sizing}", use_container_width=True):
-                        result = drill.check_answer(spot, PostflopAction.BET, sizing, lang)
-                        st.session_state.postflop_result = result
-                        st.session_state.postflop_score["total"] += 1
-                        if result.is_correct:
-                            st.session_state.postflop_score["correct"] += 1
-                        st.rerun()
-            for i, sizing in enumerate(sizings[3:]):
-                with sizing_row2[i]:
-                    if st.button(f"💰 {sizing}%", key=f"sizing_{sizing}", use_container_width=True):
-                        result = drill.check_answer(spot, PostflopAction.BET, sizing, lang)
-                        st.session_state.postflop_result = result
-                        st.session_state.postflop_score["total"] += 1
-                        if result.is_correct:
-                            st.session_state.postflop_score["correct"] += 1
-                        st.rerun()
+            for row_start in range(0, len(all_actions), 2):
+                row_actions = all_actions[row_start:row_start + 2]
+                cols = st.columns(2)
+                for col_idx, (key, label, sizing) in enumerate(row_actions):
+                    with cols[col_idx]:
+                        if st.button(label, key=f"pf_{key}", use_container_width=True):
+                            if sizing is None:
+                                result = drill.check_answer(spot, PostflopAction.CHECK, None, lang)
+                            else:
+                                result = drill.check_answer(spot, PostflopAction.BET, sizing, lang)
+                            st.session_state.postflop_result = result
+                            st.session_state.postflop_score["total"] += 1
+                            if result.is_correct:
+                                st.session_state.postflop_score["correct"] += 1
+                            st.rerun()
         else:
             # Show result in right column
             action_label = t("postflop_check") if result.correct_action == PostflopAction.CHECK else t("postflop_bet")
@@ -2563,48 +2553,38 @@ def equity_quiz_page():
     categories = quiz.get_categories()
     category_options = [(None, t("equity_all_categories"))] + categories
 
-    # Two-column layout: Cards on left, Choices on right
-    col_cards, col_choices = st.columns([3, 2])
+    # Use stored category or default
+    selected_category = st.session_state.equity_category
 
-    with col_cards:
-        # Header with score (left column only)
-        score = st.session_state.equity_score
-        accuracy = (score["correct"] / score["total"] * 100) if score["total"] > 0 else 0
-        st.markdown(f"""
-        <div style="
-            background: linear-gradient(135deg, #1e3a5f 0%, #0f172a 100%);
-            padding: 6px 12px;
-            border-radius: 8px;
-            margin-bottom: 8px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        ">
-            <span style="font-size: 1.1rem; font-weight: bold;">📊 {t("equity_quiz")}</span>
-            <span style="color: #fbbf24; font-size: 0.9rem;">
-                {score["correct"]}/{score["total"]} ({accuracy:.0f}%)
-            </span>
-        </div>
-        """, unsafe_allow_html=True)
-
-    with col_choices:
-        # Category filter in right column
-        selected_idx = st.selectbox(
-            t("equity_category"),
-            options=range(len(category_options)),
-            format_func=lambda i: category_options[i][1],
-            key="equity_category_select",
-            label_visibility="collapsed",
-        )
-        selected_category = category_options[selected_idx][0]
-
-    # Generate question if needed (after selectbox is defined)
-    if st.session_state.equity_question is None or selected_category != st.session_state.equity_category:
-        st.session_state.equity_category = selected_category
+    # Generate question if needed
+    if st.session_state.equity_question is None:
         st.session_state.equity_question = quiz.generate_question(category=selected_category)
         st.session_state.equity_choices = quiz.generate_choices(st.session_state.equity_question)
         st.session_state.equity_show_result = False
         st.session_state.equity_answered_idx = None
+
+    # Header with score (full width)
+    score = st.session_state.equity_score
+    accuracy = (score["correct"] / score["total"] * 100) if score["total"] > 0 else 0
+    st.markdown(f"""
+    <div style="
+        background: linear-gradient(135deg, #1e3a5f 0%, #0f172a 100%);
+        padding: 6px 12px;
+        border-radius: 8px;
+        margin-bottom: 8px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    ">
+        <span style="font-size: 1.1rem; font-weight: bold;">📊 {t("equity_quiz")}</span>
+        <span style="color: #fbbf24; font-size: 0.9rem;">
+            {score["correct"]}/{score["total"]} ({accuracy:.0f}%)
+        </span>
+    </div>
+    """, unsafe_allow_html=True)
+
+    # Two-column layout: Cards on left, Choices on right
+    col_cards, col_choices = st.columns([3, 2])
 
     question = st.session_state.equity_question
     choices = st.session_state.equity_choices
@@ -2826,15 +2806,15 @@ def equity_quiz_page():
                     st.session_state.equity_score["correct"] += 1
                 st.rerun()
 
-            # Visual bar below button
+            # Visual bar below button - tight to button like underline
             st.markdown(f"""
             <div style="
                 display: flex;
                 height: 6px;
                 border-radius: 3px;
                 overflow: hidden;
-                margin-top: -8px;
-                margin-bottom: 6px;
+                margin-top: -12px;
+                margin-bottom: 14px;
                 {border_style}
             ">
                 <div style="width: {hero_pct}%; background: linear-gradient(90deg, #1e40af, #3b82f6);"></div>
@@ -2849,6 +2829,25 @@ def equity_quiz_page():
                 st.session_state.equity_choices = quiz.generate_choices(st.session_state.equity_question)
                 st.session_state.equity_answered_idx = None
                 st.rerun()
+
+    # Category filter at bottom (full width)
+    st.markdown(f"<div style='color:#64748b;font-size:0.75rem;margin-top:10px;'>{t('equity_category')}</div>", unsafe_allow_html=True)
+    current_idx = next((i for i, (cat, _) in enumerate(category_options) if cat == st.session_state.equity_category), 0)
+    selected_idx = st.selectbox(
+        t("equity_category"),
+        options=range(len(category_options)),
+        format_func=lambda i: category_options[i][1],
+        index=current_idx,
+        key="equity_category_select",
+        label_visibility="collapsed",
+    )
+    new_category = category_options[selected_idx][0]
+    if new_category != st.session_state.equity_category:
+        st.session_state.equity_category = new_category
+        st.session_state.equity_question = quiz.generate_question(category=new_category)
+        st.session_state.equity_choices = quiz.generate_choices(st.session_state.equity_question)
+        st.session_state.equity_answered_idx = None
+        st.rerun()
 
 
 def outs_quiz_page():
