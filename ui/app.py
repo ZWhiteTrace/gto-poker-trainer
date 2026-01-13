@@ -1566,28 +1566,22 @@ def stats_page():
         st.info(t("no_stats"))
         return
 
-    # Overall stats - now includes streak
-    col1, col2, col3, col4, col5 = st.columns(5)
-    with col1:
-        st.markdown('<div class="stats-card">', unsafe_allow_html=True)
+    # Overall stats - 2-column layout for mobile
+    row1_col1, row1_col2 = st.columns(2)
+    with row1_col1:
         st.metric(t("total_hands"), session.total_spots)
-        st.markdown('</div>', unsafe_allow_html=True)
-    with col2:
-        st.markdown('<div class="stats-card">', unsafe_allow_html=True)
+    with row1_col2:
         st.metric(t("correct"), session.correct_count)
-        st.markdown('</div>', unsafe_allow_html=True)
-    with col3:
-        st.markdown('<div class="stats-card">', unsafe_allow_html=True)
+
+    row2_col1, row2_col2 = st.columns(2)
+    with row2_col1:
         st.metric(t("incorrect_count"), session.incorrect_count)
-        st.markdown('</div>', unsafe_allow_html=True)
-    with col4:
-        st.markdown('<div class="stats-card">', unsafe_allow_html=True)
+    with row2_col2:
         st.metric(t("accuracy"), session.accuracy_percent)
-        st.markdown('</div>', unsafe_allow_html=True)
-    with col5:
-        st.markdown('<div class="stats-card">', unsafe_allow_html=True)
+
+    row3_col1, row3_col2 = st.columns(2)
+    with row3_col1:
         st.metric(t("best_streak"), f"🔥 {st.session_state.best_streak}")
-        st.markdown('</div>', unsafe_allow_html=True)
 
     st.markdown("---")
 
@@ -3058,15 +3052,19 @@ def outs_quiz_page():
             </div>
             """, unsafe_allow_html=True)
 
-            # Display choices as buttons
-            for i, choice in enumerate(choices):
-                if st.button(f"{choice} outs", key=f"outs_choice_{i}", use_container_width=True):
-                    st.session_state.outs_show_result = True
-                    st.session_state.outs_selected = choice
-                    st.session_state.outs_score["total"] += 1
-                    if choice == question.result.total_outs:
-                        st.session_state.outs_score["correct"] += 1
-                    st.rerun()
+            # Display choices as buttons - 2-column layout
+            for row_start in range(0, len(choices), 2):
+                row_choices = choices[row_start:row_start + 2]
+                cols = st.columns(2)
+                for col_idx, choice in enumerate(row_choices):
+                    with cols[col_idx]:
+                        if st.button(f"{choice} outs", key=f"outs_choice_{row_start + col_idx}", use_container_width=True):
+                            st.session_state.outs_show_result = True
+                            st.session_state.outs_selected = choice
+                            st.session_state.outs_score["total"] += 1
+                            if choice == question.result.total_outs:
+                                st.session_state.outs_score["correct"] += 1
+                            st.rerun()
         else:
             # Show result
             selected = st.session_state.outs_selected
