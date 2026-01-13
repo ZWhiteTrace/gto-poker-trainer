@@ -1251,7 +1251,6 @@ def viewer_page():
     """, unsafe_allow_html=True)
 
     # Get and display range
-    ranges = evaluator.load_ranges(table_format)
     range_data = evaluator.get_range_for_scenario(scenario, format=table_format)
 
     if range_data:
