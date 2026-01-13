@@ -52,7 +52,7 @@ def display_table_6max(
         folded_positions=folded_positions or [],
     )
 
-    components.html(html, height=310)
+    components.html(html, height=260)
 
 
 def display_table_9max(
@@ -146,17 +146,17 @@ def _generate_table_html_6max(
         position: relative;
         width: 100%;
         max-width: 540px;
-        height: 320px;
-        margin: 5px auto;
-        padding: 15px 20px;
+        height: 250px;
+        margin: 0 auto;
+        padding: 10px 20px;
         overflow: visible;
     }
     .poker-table {
         position: absolute;
         width: 65%;
-        height: 50%;
+        height: 55%;
         left: 17.5%;
-        top: 24%;
+        top: 22%;
         background: linear-gradient(145deg, #1a5f3c 0%, #0d3d25 100%);
         border-radius: 9999px;
         border: 6px solid #8B4513;
@@ -355,58 +355,34 @@ def _generate_table_html_6max(
     @media (max-width: 768px) and (min-width: 515px) {
         .poker-table-container {
             max-width: 100%;
-            height: 300px;
-            padding: 10px 15px;
+            height: 240px;
+            padding: 8px 15px;
         }
         .poker-table {
-            width: 68%;
-            left: 16%;
-            height: 48%;
-            top: 26%;
+            width: 70%;
+            left: 15%;
+            height: 52%;
+            top: 24%;
         }
         .seat {
-            width: 50px;
-            height: 50px;
+            width: 48px;
+            height: 48px;
             font-size: 12px;
         }
     }
 
-    /* Small tablet / large phone (480-514px) */
-    @media (max-width: 514px) and (min-width: 481px) {
+    /* Small tablet / large phone (480-640px) */
+    @media (max-width: 640px) and (min-width: 481px) {
         .poker-table-container {
             max-width: 100%;
-            height: 290px;
-            padding: 8px 12px;
-        }
-        .poker-table {
-            width: 72%;
-            left: 14%;
-            height: 46%;
-            top: 28%;
-        }
-        .seat {
-            width: 46px;
-            height: 46px;
-            font-size: 11px;
-        }
-        .seat-label {
-            font-size: 10px;
-            padding: 2px 8px;
-        }
-    }
-
-    /* Mobile responsive */
-    @media (max-width: 480px) {
-        .poker-table-container {
-            max-width: 100%;
-            height: 260px;
+            height: 230px;
             padding: 5px 10px;
         }
         .poker-table {
             width: 75%;
             left: 12.5%;
-            height: 44%;
-            top: 30%;
+            height: 50%;
+            top: 26%;
         }
         .seat {
             width: 44px;
@@ -416,14 +392,39 @@ def _generate_table_html_6max(
         .seat-label {
             font-size: 10px;
             padding: 2px 8px;
-            bottom: -20px;
+            bottom: -18px;
+        }
+    }
+
+    /* Mobile responsive */
+    @media (max-width: 480px) {
+        .poker-table-container {
+            max-width: 100%;
+            height: 220px;
+            padding: 5px 8px;
+        }
+        .poker-table {
+            width: 78%;
+            left: 11%;
+            height: 48%;
+            top: 28%;
+        }
+        .seat {
+            width: 42px;
+            height: 42px;
+            font-size: 10px;
+        }
+        .seat-label {
+            font-size: 9px;
+            padding: 2px 6px;
+            bottom: -18px;
         }
         .chips-label {
-            font-size: 9px;
+            font-size: 8px;
         }
         .legend {
-            font-size: 10px;
-            gap: 12px;
+            font-size: 9px;
+            gap: 10px;
         }
     }
     </style>
