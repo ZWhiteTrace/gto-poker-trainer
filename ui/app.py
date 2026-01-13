@@ -938,53 +938,58 @@ def drill_page():
                                      type="primary" if action in ["raise", "3bet", "4bet", "5bet"] else "secondary"):
                             handle_action(action)
         else:
-            # Show result in right column
+            # Show result in right column with inline Next button
             result = st.session_state.last_result
             explanation = result.explanation_zh if st.session_state.language == "zh" else result.explanation
+            next_label = t('next_hand')
 
             if result.is_correct:
                 st.markdown(f"""
-                <div style="background: #065f46; padding: 10px; border-radius: 8px; border-left: 4px solid #10b981; margin-bottom: 8px;">
-                    <div style="color: #10b981; font-weight: bold; font-size: 1rem;">✅ {t('correct_answer')}</div>
-                    <div style="font-size: 0.85rem; color: #94a3b8; margin-top: 4px;">{explanation}</div>
+                <div style="background: #065f46; padding: 8px 10px; border-radius: 8px; border-left: 4px solid #10b981; margin-bottom: 6px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span style="color: #10b981; font-weight: bold; font-size: 0.95rem;">✅ {t('correct_answer')}</span>
+                    </div>
+                    <div style="font-size: 0.8rem; color: #94a3b8; margin-top: 3px;">{explanation}</div>
                 </div>
                 """, unsafe_allow_html=True)
             else:
                 st.markdown(f"""
-                <div style="background: #7f1d1d; padding: 10px; border-radius: 8px; border-left: 4px solid #ef4444; margin-bottom: 8px;">
-                    <div style="color: #ef4444; font-weight: bold; font-size: 1rem;">❌ {t('incorrect')}</div>
-                    <div style="font-size: 0.85rem; margin-top: 4px;">{t('your_action')}: <b>{result.player_action.upper()}</b> → {t('correct_action')}: <b>{result.correct_action.upper()}</b></div>
-                    <div style="font-size: 0.8rem; color: #94a3b8; margin-top: 4px;">{explanation}</div>
+                <div style="background: #7f1d1d; padding: 8px 10px; border-radius: 8px; border-left: 4px solid #ef4444; margin-bottom: 6px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span style="color: #ef4444; font-weight: bold; font-size: 0.95rem;">❌ {t('incorrect')}</span>
+                    </div>
+                    <div style="font-size: 0.8rem; margin-top: 3px;">{t('your_action')}: <b>{result.player_action.upper()}</b> → {t('correct_action')}: <b>{result.correct_action.upper()}</b></div>
+                    <div style="font-size: 0.75rem; color: #94a3b8; margin-top: 3px;">{explanation}</div>
                 </div>
                 """, unsafe_allow_html=True)
 
-            # Next hand button - immediately after result for easy access
-            if st.button(t('next_hand'), use_container_width=True, type="primary"):
+            # Next hand button
+            if st.button(next_label, use_container_width=True, type="primary"):
                 st.session_state.current_spot = None
                 st.session_state.show_result = False
                 st.rerun()
 
-            # Show equity breakdown for vs 4-bet scenarios (below button)
+            # Show equity breakdown for vs 4-bet scenarios
             if spot.scenario.action_type == ActionType.VS_4BET:
                 equity_html = get_equity_breakdown_html(str(spot.hand), st.session_state.language)
                 if equity_html:
                     st.markdown(equity_html, unsafe_allow_html=True)
 
-    # Show range below (full width) - auto expanded after answer
+    # Show range below - compact, no expander (saves space)
     if st.session_state.show_result:
-        with st.expander(f"📊 {t('view_range')}", expanded=True):
-            range_data = st.session_state.drill.get_range_for_spot(spot)
-            raise_key = next((k for k in ["raise", "3bet", "4bet", "5bet"] if k in range_data), None)
-            raise_hands = range_data.get(raise_key, []) if raise_key else []
-            call_hands = range_data.get("call", [])
-            drillable_hands = st.session_state.drill.get_drillable_hands_for_spot(spot)
+        st.markdown(f"<div style='color:#94a3b8;font-size:0.75rem;margin:4px 0;'>📊 {t('view_range')}</div>", unsafe_allow_html=True)
+        range_data = st.session_state.drill.get_range_for_spot(spot)
+        raise_key = next((k for k in ["raise", "3bet", "4bet", "5bet"] if k in range_data), None)
+        raise_hands = range_data.get(raise_key, []) if raise_key else []
+        call_hands = range_data.get("call", [])
+        drillable_hands = st.session_state.drill.get_drillable_hands_for_spot(spot)
 
-            display_range_grid(
-                raise_hands=raise_hands,
-                call_hands=call_hands,
-                highlight_hand=str(spot.hand),
-                drillable_hands=drillable_hands,
-            )
+        display_range_grid(
+            raise_hands=raise_hands,
+            call_hands=call_hands,
+            highlight_hand=str(spot.hand),
+            drillable_hands=drillable_hands,
+        )
 
 
 def viewer_page():
@@ -1033,15 +1038,29 @@ def viewer_page():
         if "viewer_selected_tab" not in st.session_state:
             st.session_state.viewer_selected_tab = 0
 
-        # Create button row for tab selection
-        tab_cols = st.columns(len(action_types))
-        for idx, action_type in enumerate(action_types):
-            with tab_cols[idx]:
+        # Create 2-column tab selection
+        row1_tabs = action_types[:2]
+        row2_tabs = action_types[2:] if len(action_types) > 2 else []
+
+        col1, col2 = st.columns(2)
+        for idx, tab_name in enumerate(row1_tabs):
+            with col1 if idx == 0 else col2:
                 is_selected = st.session_state.viewer_selected_tab == idx
                 btn_type = "primary" if is_selected else "secondary"
-                if st.button(action_type, key=f"viewer_tab_{idx}", use_container_width=True, type=btn_type):
+                if st.button(tab_name, key=f"viewer_tab_{idx}", use_container_width=True, type=btn_type):
                     st.session_state.viewer_selected_tab = idx
                     st.rerun()
+
+        if row2_tabs:
+            col3, col4 = st.columns(2)
+            for idx, tab_name in enumerate(row2_tabs):
+                actual_idx = idx + 2
+                with col3 if idx == 0 else col4:
+                    is_selected = st.session_state.viewer_selected_tab == actual_idx
+                    btn_type = "primary" if is_selected else "secondary"
+                    if st.button(tab_name, key=f"viewer_tab_{actual_idx}", use_container_width=True, type=btn_type):
+                        st.session_state.viewer_selected_tab = actual_idx
+                        st.rerun()
 
     # Content based on selected tab
     i = st.session_state.viewer_selected_tab
@@ -1284,42 +1303,40 @@ def viewer_page():
         raise_hands = range_data.get(raise_key, []) if raise_key else []
         call_hands = range_data.get("call", [])
 
-        # Range statistics
-        total_raise = len(raise_hands)
-        total_call = len(call_hands)
-        total_combos = 169  # Total unique starting hands
-
-        # Calculate combo percentages (approximate)
-        raise_pct = (total_raise / total_combos) * 100 if total_combos > 0 else 0
-        call_pct = (total_call / total_combos) * 100 if total_combos > 0 else 0
-
-        # Stats display
-        stat_cols = st.columns(4)
-        with stat_cols[0]:
-            action_label = raise_key.upper() if raise_key else "RAISE"
-            st.metric(action_label, f"{total_raise} hands", f"~{raise_pct:.1f}%")
-        with stat_cols[1]:
-            st.metric("CALL", f"{total_call} hands", f"~{call_pct:.1f}%")
-        with stat_cols[2]:
-            fold_count = total_combos - total_raise - total_call
-            fold_pct = (fold_count / total_combos) * 100
-            st.metric("FOLD", f"{fold_count} hands", f"~{fold_pct:.1f}%")
-        with stat_cols[3]:
-            total_play = total_raise + total_call
-            play_pct = (total_play / total_combos) * 100
-            st.metric("VPIP", f"{total_play} hands", f"~{play_pct:.1f}%")
-
         # Get drillable hands for visual distinction
         scenario_type = action_type.lower().replace(" ", "_").replace("-", "_")
         drillable_hands = get_drillable_hands(range_data, scenario_type)
 
-        # Display range grid (hide stats since we show them above)
+        # Display range grid first
         display_range_grid(
             raise_hands=raise_hands,
             call_hands=call_hands,
             show_stats=False,
             drillable_hands=drillable_hands,
         )
+
+        # Range statistics (below grid, 2-column layout)
+        total_raise = len(raise_hands)
+        total_call = len(call_hands)
+        total_combos = 169  # Total unique starting hands
+        fold_count = total_combos - total_raise - total_call
+        total_play = total_raise + total_call
+
+        # Calculate percentages
+        raise_pct = (total_raise / total_combos) * 100 if total_combos > 0 else 0
+        call_pct = (total_call / total_combos) * 100 if total_combos > 0 else 0
+        fold_pct = (fold_count / total_combos) * 100 if total_combos > 0 else 0
+        play_pct = (total_play / total_combos) * 100 if total_combos > 0 else 0
+
+        # 2-column stats display
+        action_label = raise_key.upper() if raise_key else "RAISE"
+        col1, col2 = st.columns(2)
+        with col1:
+            st.metric(action_label, f"{total_raise} hands", f"~{raise_pct:.1f}%")
+            st.metric("FOLD", f"{fold_count} hands", f"~{fold_pct:.1f}%")
+        with col2:
+            st.metric("CALL", f"{total_call} hands", f"~{call_pct:.1f}%")
+            st.metric("VPIP", f"{total_play} hands", f"~{play_pct:.1f}%")
     else:
         st.warning(t("no_data"))
 
