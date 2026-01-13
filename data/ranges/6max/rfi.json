@@ -24,46 +24,45 @@
   },
   "HJ": {
     "raise": [
-      "AA", "KK", "QQ", "JJ", "TT", "99", "88", "77", "66", "55",
-      "AKs", "AQs", "AJs", "ATs", "A9s", "A8s", "A7s", "A6s", "A5s", "A4s", "A3s",
-      "KQs", "KJs", "KTs", "K9s", "K8s", "K7s", "K6s",
-      "QJs", "QTs", "Q9s", "Q8s",
+      "AA", "KK", "QQ", "JJ", "TT", "99", "88", "77", "66", "55", "44", "33",
+      "AKs", "AQs", "AJs", "ATs", "A9s", "A8s", "A7s", "A6s", "A5s", "A4s", "A3s", "A2s",
+      "KQs", "KJs", "KTs", "K9s", "K8s", "K7s",
+      "QJs", "QTs", "Q9s",
       "JTs", "J9s",
-      "T9s",
+      "T9s", "T8s",
       "98s",
       "87s",
       "76s",
       "65s",
-      "A9o",
+      "54s",
       "AKo", "AQo", "AJo", "ATo",
-      "KQo", "KJo", "KTo", "QTo"
+      "KQo", "KJo",
+      "QJo"
     ],
     "comments": {
-      "note": "22.0% VPIP (292/1326) - Freebetrange HJ/MP",
-      "vs_weak_bb": ["K5s", "K4s", "A2s", "55"]
+      "note": "HJ: A2s+, K7s+(不打K6s), Q9s+, J9s+, T8s可打, 44/33可打",
+      "not_played": ["K6s", "A9o", "KTo", "QTo"]
     }
   },
   "CO": {
     "raise": [
-      "AA", "KK", "QQ", "JJ", "TT", "99", "88", "77", "66", "55", "44", "33",
+      "AA", "KK", "QQ", "JJ", "TT", "99", "88", "77", "66", "55", "44", "33", "22",
       "AKs", "AQs", "AJs", "ATs", "A9s", "A8s", "A7s", "A6s", "A5s", "A4s", "A3s", "A2s",
-      "KQs", "KJs", "KTs", "K9s", "K8s", "K7s", "K6s", "K5s", "K4s", "K3s", "K2s",
+      "KQs", "KJs", "KTs", "K9s", "K8s", "K7s", "K6s", "K5s", "K4s", "K3s",
       "QJs", "QTs", "Q9s", "Q8s", "Q7s", "Q6s",
       "JTs", "J9s", "J8s", "J7s",
-      "T9s", "T8s",
+      "T9s", "T8s", "T7s",
       "98s", "97s",
-      "87s",
-      "76s", "76s",
-      "65s", "65s",
+      "87s", "86s",
+      "76s",
+      "65s",
       "54s",
-      "A5o",
       "AKo", "AQo", "AJo", "ATo", "A9o",
       "KQo", "KJo", "KTo",
       "QJo", "QTo"
     ],
     "comments": {
-      "note": "29.3% VPIP (388/1326) - Freebetrange CO",
-      "vs_weak_bb_or_tight_btn": ["33", "K2s", "K3s", "54s", "65s"]
+      "note": "CO: K3s+(不打K2s), T7s可打, 86s可打, 22可打, 不打A5o"
     }
   },
   "BTN": {
