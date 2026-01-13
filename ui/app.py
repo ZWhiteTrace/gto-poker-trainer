@@ -1163,13 +1163,13 @@ def viewer_page():
         )
 
     with col_select:
-        # Position selection with styled buttons - fixed 2-column layout
+        # Position selection with styled buttons - 3-column layout
         st.markdown(f"**{t('your_position')}**")
 
-        # 2-column layout for hero positions
-        for row_start in range(0, len(valid_positions), 2):
-            row_positions = valid_positions[row_start:row_start + 2]
-            cols = st.columns(2)
+        # 3-column layout for hero positions
+        for row_start in range(0, len(valid_positions), 3):
+            row_positions = valid_positions[row_start:row_start + 3]
+            cols = st.columns(3)
             for j, pos in enumerate(row_positions):
                 with cols[j]:
                     is_selected = pos == hero_pos
@@ -1199,10 +1199,10 @@ def viewer_page():
                 stored_villain = st.session_state.get(f"viewer_villain_{i}")
                 villain_pos_select = stored_villain if stored_villain in villains else villains[0]
 
-                # 2-column layout for villain positions
-                for row_start in range(0, len(villains), 2):
-                    row_positions = villains[row_start:row_start + 2]
-                    vcols = st.columns(2)
+                # 3-column layout for villain positions
+                for row_start in range(0, len(villains), 3):
+                    row_positions = villains[row_start:row_start + 3]
+                    vcols = st.columns(3)
                     for j, pos in enumerate(row_positions):
                         with vcols[j]:
                             is_selected = pos == villain_pos_select
