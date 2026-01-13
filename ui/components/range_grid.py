@@ -198,9 +198,15 @@ def _generate_grid_html(grid_data: List[List[Dict]], highlight_hand: str = None)
         grid-template-columns: repeat(13, 1fr);
         gap: 1px;
         width: 100%;
-        max-width: min(100%, 400px);
+        max-width: min(100%, 500px);
         margin: 8px auto;
         overflow: hidden;
+    }
+    /* Wider on larger screens */
+    @media (min-width: 768px) {
+        .range-grid {
+            max-width: min(100%, 520px);
+        }
     }
     .range-cell {
         aspect-ratio: 1;

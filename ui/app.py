@@ -1622,23 +1622,13 @@ def stats_page():
     pos_stats = session.get_stats_by_position()
     action_stats = session.get_stats_by_action_type()
 
-    # Build position stats HTML
+    # Build position stats HTML (no leading whitespace to avoid markdown code block)
     pos_html = ""
     if pos_stats:
         for pos, stats in pos_stats.items():
             acc = stats['accuracy'] * 100
             color = "#10b981" if acc >= 70 else "#f59e0b" if acc >= 50 else "#ef4444"
-            pos_html += f"""
-            <div style="margin-bottom: 8px;">
-                <div style="display: flex; justify-content: space-between; margin-bottom: 2px;">
-                    <span style="color: #e2e8f0; font-weight: bold;">{pos}</span>
-                    <span style="color: {color};">{stats['correct']}/{stats['total']} ({acc:.0f}%)</span>
-                </div>
-                <div style="background: #374151; border-radius: 4px; height: 6px; overflow: hidden;">
-                    <div style="background: {color}; width: {acc}%; height: 100%;"></div>
-                </div>
-            </div>
-            """
+            pos_html += f'<div style="margin-bottom: 8px;"><div style="display: flex; justify-content: space-between; margin-bottom: 2px;"><span style="color: #e2e8f0; font-weight: bold;">{pos}</span><span style="color: {color};">{stats["correct"]}/{stats["total"]} ({acc:.0f}%)</span></div><div style="background: #374151; border-radius: 4px; height: 6px; overflow: hidden;"><div style="background: {color}; width: {acc}%; height: 100%;"></div></div></div>'
 
     # Build action stats HTML
     action_html = ""
@@ -1646,33 +1636,12 @@ def stats_page():
         for action_type, stats in action_stats.items():
             acc = stats['accuracy'] * 100
             color = "#10b981" if acc >= 70 else "#f59e0b" if acc >= 50 else "#ef4444"
-            action_html += f"""
-            <div style="margin-bottom: 8px;">
-                <div style="display: flex; justify-content: space-between; margin-bottom: 2px;">
-                    <span style="color: #e2e8f0; font-weight: bold;">{action_type.upper()}</span>
-                    <span style="color: {color};">{stats['correct']}/{stats['total']} ({acc:.0f}%)</span>
-                </div>
-                <div style="background: #374151; border-radius: 4px; height: 6px; overflow: hidden;">
-                    <div style="background: {color}; width: {acc}%; height: 100%;"></div>
-                </div>
-            </div>
-            """
+            action_html += f'<div style="margin-bottom: 8px;"><div style="display: flex; justify-content: space-between; margin-bottom: 2px;"><span style="color: #e2e8f0; font-weight: bold;">{action_type.upper()}</span><span style="color: {color};">{stats["correct"]}/{stats["total"]} ({acc:.0f}%)</span></div><div style="background: #374151; border-radius: 4px; height: 6px; overflow: hidden;"><div style="background: {color}; width: {acc}%; height: 100%;"></div></div></div>'
 
     by_position_label = t("by_position")
     by_action_label = t("by_action_type")
 
-    st.markdown(f"""
-    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
-        <div>
-            <div style="color: #f8fafc; font-size: 1rem; font-weight: bold; margin-bottom: 10px;">{by_position_label}</div>
-            {pos_html}
-        </div>
-        <div>
-            <div style="color: #f8fafc; font-size: 1rem; font-weight: bold; margin-bottom: 10px;">{by_action_label}</div>
-            {action_html}
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
+    st.markdown(f'<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;"><div><div style="color: #f8fafc; font-size: 1rem; font-weight: bold; margin-bottom: 10px;">{by_position_label}</div>{pos_html}</div><div><div style="color: #f8fafc; font-size: 1rem; font-weight: bold; margin-bottom: 10px;">{by_action_label}</div>{action_html}</div></div>', unsafe_allow_html=True)
 
     # Mistakes review
     st.markdown("---")
@@ -2826,13 +2795,31 @@ def equity_quiz_page():
         </div>
         """, unsafe_allow_html=True)
 
-        # Labels for hero/villain
-        hero_label = "我" if lang == "zh" else "Me"
-        villain_label = "對手" if lang == "zh" else "Opp"
         hero_hand_str = question.hand1
         villain_hand_str = question.hand2
 
-        # Display choices as styled equity matchup cards
+        # CSS to style equity card buttons
+        st.markdown("""
+        <style>
+        .equity-card-btn button {
+            background: #1e293b !important;
+            border: 2px solid #3b82f6 !important;
+            border-radius: 8px !important;
+            padding: 8px 10px !important;
+            text-align: left !important;
+            transition: all 0.2s ease !important;
+        }
+        .equity-card-btn button:hover {
+            border-color: #60a5fa !important;
+            transform: scale(1.02);
+        }
+        .equity-card-btn button p {
+            margin: 0 !important;
+        }
+        </style>
+        """, unsafe_allow_html=True)
+
+        # Display choices as clickable equity matchup cards
         for i, choice in enumerate(choices):
             hero_pct = choice.equity1
             villain_pct = choice.equity2
@@ -2840,55 +2827,37 @@ def equity_quiz_page():
             # Determine styling based on answer state
             if has_answered:
                 if choice.is_correct:
-                    indicator = "✅"
+                    indicator = " ✅"
                     border_color = "#22c55e"
                     opacity = "1"
                 elif i == answered_idx:
-                    indicator = "❌"
+                    indicator = " ❌"
                     border_color = "#ef4444"
                     opacity = "1"
                 else:
                     indicator = ""
                     border_color = "#374151"
-                    opacity = "0.4"
+                    opacity = "0.5"
             else:
                 indicator = ""
-                border_color = "#374151"
+                border_color = "#3b82f6"
                 opacity = "1"
 
-            # Styled equity matchup card (like Learning page)
-            st.markdown(f"""
-            <div style="background: #1e293b; border-radius: 8px; padding: 10px; margin-bottom: 6px; border: 2px solid {border_color}; opacity: {opacity};">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-                    <span style="color: #3b82f6; font-weight: bold; font-size: 0.95rem;">{hero_hand_str}</span>
-                    <span style="color: #64748b; font-size: 0.8rem;">vs</span>
-                    <span style="color: #ef4444; font-weight: bold; font-size: 0.95rem;">{villain_hand_str}</span>
-                    <span style="font-size: 0.9rem;">{indicator}</span>
-                </div>
-                <div style="display: flex; height: 22px; border-radius: 4px; overflow: hidden; background: #374151;">
-                    <div style="width: {hero_pct}%; background: linear-gradient(90deg, #1e40af, #3b82f6); display: flex; align-items: center; justify-content: center;">
-                        <span style="color: white; font-size: 11px; font-weight: bold;">{hero_pct}%</span>
-                    </div>
-                    <div style="width: {villain_pct}%; background: linear-gradient(90deg, #dc2626, #991b1b); display: flex; align-items: center; justify-content: center;">
-                        <span style="color: white; font-size: 11px; font-weight: bold;">{villain_pct}%</span>
-                    </div>
-                </div>
-            </div>
-            """, unsafe_allow_html=True)
-
-            # Small button below card for selection
             if not has_answered:
-                select_label = "選擇" if lang == "zh" else "Select"
-                if st.button(
-                    select_label,
-                    key=f"equity_choice_{i}",
-                    use_container_width=True,
-                ):
+                # Clickable card button
+                st.markdown('<div class="equity-card-btn">', unsafe_allow_html=True)
+                # Button label shows the equity bar visualization
+                btn_label = f"**{hero_hand_str}** {hero_pct}% vs {villain_pct}% **{villain_hand_str}**"
+                if st.button(btn_label, key=f"equity_card_{i}", use_container_width=True):
                     st.session_state.equity_answered_idx = i
                     st.session_state.equity_score["total"] += 1
                     if choice.is_correct:
                         st.session_state.equity_score["correct"] += 1
                     st.rerun()
+                st.markdown('</div>', unsafe_allow_html=True)
+            else:
+                # After answering, show non-clickable card with result indicator
+                st.markdown(f'<div style="background: #1e293b; border-radius: 8px; padding: 10px; margin-bottom: 6px; border: 2px solid {border_color}; opacity: {opacity};"><div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;"><span style="color: #3b82f6; font-weight: bold; font-size: 0.95rem;">{hero_hand_str}</span><span style="color: #64748b; font-size: 0.8rem;">vs</span><span style="color: #ef4444; font-weight: bold; font-size: 0.95rem;">{villain_hand_str}</span><span style="font-size: 0.9rem;">{indicator}</span></div><div style="display: flex; height: 22px; border-radius: 4px; overflow: hidden; background: #374151;"><div style="width: {hero_pct}%; background: linear-gradient(90deg, #1e40af, #3b82f6); display: flex; align-items: center; justify-content: center;"><span style="color: white; font-size: 11px; font-weight: bold;">{hero_pct}%</span></div><div style="width: {villain_pct}%; background: linear-gradient(90deg, #dc2626, #991b1b); display: flex; align-items: center; justify-content: center;"><span style="color: white; font-size: 11px; font-weight: bold;">{villain_pct}%</span></div></div></div>', unsafe_allow_html=True)
 
         # Next button
         if has_answered:
