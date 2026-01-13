@@ -898,7 +898,7 @@ def drill_page():
                 if equity_html:
                     st.markdown(equity_html, unsafe_allow_html=True)
 
-    # Action buttons - OUTSIDE columns for proper horizontal layout
+    # Action buttons - force horizontal on all screen sizes with CSS override
     if not st.session_state.show_result:
         actions = spot.scenario.available_actions
 
@@ -924,6 +924,20 @@ def drill_page():
             }
             save_progress_to_storage(progress)
             st.rerun()
+
+        # CSS to force columns to stay horizontal on mobile
+        st.markdown("""
+        <style>
+        [data-testid="stHorizontalBlock"]:has(button) {
+            flex-wrap: nowrap !important;
+            gap: 0.5rem !important;
+        }
+        [data-testid="stHorizontalBlock"]:has(button) > div {
+            flex: 1 1 0 !important;
+            min-width: 0 !important;
+        }
+        </style>
+        """, unsafe_allow_html=True)
 
         # Horizontal button layout - 2 columns side by side
         if len(actions) == 2:
