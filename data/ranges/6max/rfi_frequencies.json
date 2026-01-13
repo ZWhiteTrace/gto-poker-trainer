@@ -15,31 +15,31 @@
   },
   "UTG": {
     "frequencies": {
-      "AA": {"raise": 100}, "AKs": {"raise": 100}, "AQs": {"raise": 100}, "AJs": {"raise": 100}, "ATs": {"raise": 100},
-      "A9s": {"raise": 25}, "A8s": {"raise": 0}, "A7s": {"raise": 0}, "A6s": {"raise": 0},
-      "A5s": {"raise": 50}, "A4s": {"raise": 50}, "A3s": {"raise": 25}, "A2s": {"raise": 25},
-      "AKo": {"raise": 100}, "AQo": {"raise": 100}, "AJo": {"raise": 50}, "ATo": {"raise": 0},
-      "KK": {"raise": 100}, "KQs": {"raise": 100}, "KJs": {"raise": 100}, "KTs": {"raise": 50},
-      "K9s": {"raise": 25}, "K8s": {"raise": 0}, "K7s": {"raise": 0}, "K6s": {"raise": 0}, "K5s": {"raise": 25},
-      "KQo": {"raise": 50}, "KJo": {"raise": 0}, "KTo": {"raise": 0},
-      "QQ": {"raise": 100}, "QJs": {"raise": 100}, "QTs": {"raise": 50}, "Q9s": {"raise": 0},
-      "QJo": {"raise": 0}, "QTo": {"raise": 0},
-      "JJ": {"raise": 100}, "JTs": {"raise": 100}, "J9s": {"raise": 25},
-      "JTo": {"raise": 0},
-      "TT": {"raise": 100}, "T9s": {"raise": 75}, "T8s": {"raise": 0},
-      "99": {"raise": 100}, "98s": {"raise": 50}, "97s": {"raise": 0},
-      "88": {"raise": 75}, "87s": {"raise": 50}, "86s": {"raise": 0},
-      "77": {"raise": 75}, "76s": {"raise": 50}, "75s": {"raise": 0},
-      "66": {"raise": 50}, "65s": {"raise": 50}, "64s": {"raise": 0},
-      "55": {"raise": 50}, "54s": {"raise": 50}, "53s": {"raise": 0},
-      "44": {"raise": 50}, "43s": {"raise": 0},
-      "33": {"raise": 50}, "32s": {"raise": 0},
-      "22": {"raise": 50}
+      "AA": {"raise": 100}, "KK": {"raise": 100}, "QQ": {"raise": 100}, "JJ": {"raise": 100}, "TT": {"raise": 100},
+      "99": {"raise": 100}, "88": {"raise": 100}, "77": {"raise": 100}, "66": {"raise": 75}, "55": {"raise": 100},
+      "44": {"raise": 50}, "33": {"raise": 50}, "22": {"raise": 50},
+      "AKs": {"raise": 100}, "AQs": {"raise": 100}, "AJs": {"raise": 100}, "ATs": {"raise": 100},
+      "A9s": {"raise": 100}, "A8s": {"raise": 100}, "A7s": {"raise": 100}, "A6s": {"raise": 100},
+      "A5s": {"raise": 100}, "A4s": {"raise": 100}, "A3s": {"raise": 100}, "A2s": {"raise": 100},
+      "KQs": {"raise": 100}, "KJs": {"raise": 100}, "KTs": {"raise": 100}, "K9s": {"raise": 100}, "K8s": {"raise": 100},
+      "K7s": {"raise": 50}, "K6s": {"raise": 50}, "K5s": {"raise": 25},
+      "QJs": {"raise": 100}, "QTs": {"raise": 100}, "Q9s": {"raise": 100}, "Q8s": {"raise": 50},
+      "JTs": {"raise": 100}, "J9s": {"raise": 75}, "J8s": {"raise": 25},
+      "T9s": {"raise": 100}, "T8s": {"raise": 50},
+      "98s": {"raise": 50}, "97s": {"raise": 25},
+      "87s": {"raise": 50}, "86s": {"raise": 25},
+      "76s": {"raise": 50}, "75s": {"raise": 25},
+      "65s": {"raise": 50}, "64s": {"raise": 25},
+      "54s": {"raise": 50},
+      "AKo": {"raise": 100}, "AQo": {"raise": 100}, "AJo": {"raise": 100}, "ATo": {"raise": 75},
+      "KQo": {"raise": 100}, "KJo": {"raise": 100}, "KTo": {"raise": 50},
+      "QJo": {"raise": 50}, "QTo": {"raise": 25}
     },
     "stats": {
       "total_hands": 169,
-      "raise_hands": 35,
-      "estimated_vpip_contribution": 2.9
+      "raise_hands": 50,
+      "estimated_vpip_contribution": 3.5,
+      "note": "Cash 6-max 100bb: A2s+, K8s+, Q9s+, KJo, 連張50%"
     }
   },
   "HJ": {

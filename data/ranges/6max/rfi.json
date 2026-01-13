@@ -3,26 +3,23 @@
     "format": "6max",
     "stack_depth": "100bb",
     "raise_size": "2.5bb (SB 3bb)",
-    "source": "Freebetrange.com",
-    "note": "Purple = always raise, Blue = raise vs weak BB"
+    "source": "Mixed - GTOWizard / Freebetrange",
+    "note": "Frequencies in rfi_frequencies.json, 75%+ hands listed as raise"
   },
   "UTG": {
     "raise": [
-      "AA", "KK", "QQ", "JJ", "TT", "99", "88", "77",
-      "AKs", "AQs", "AJs", "ATs", "A9s", "A5s",
-      "KQs", "KJs", "KTs", "K9s", "K8s", "K7s", "K6s",
+      "AA", "KK", "QQ", "JJ", "TT", "99", "88", "77", "55",
+      "AKs", "AQs", "AJs", "ATs", "A9s", "A8s", "A7s", "A6s", "A5s", "A4s", "A3s", "A2s",
+      "KQs", "KJs", "KTs", "K9s", "K8s",
       "QJs", "QTs", "Q9s",
       "JTs", "J9s",
       "T9s",
-      "98s",
-      "87s",
-      "76s",
-      "66",
-      "AKo", "AQo", "AJo", "ATo"
+      "AKo", "AQo", "AJo", "ATo",
+      "KQo", "KJo"
     ],
     "comments": {
-      "note": "17.0% VPIP (226/1326) - Freebetrange UTG",
-      "vs_weak_bb": ["66", "K6s", "K7s", "K8s"]
+      "note": "Cash 6-max 100bb: A2s+, K8s+, Q9s+, KJo",
+      "mixed_50pct": ["66", "44", "33", "22", "K7s", "K6s", "Q8s", "T8s", "98s", "87s", "76s", "65s", "54s", "KTo", "QJo"]
     }
   },
   "HJ": {
