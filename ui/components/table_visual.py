@@ -52,7 +52,7 @@ def display_table_6max(
         folded_positions=folded_positions or [],
     )
 
-    components.html(html, height=290)
+    components.html(html, height=310)
 
 
 def display_table_9max(
@@ -351,25 +351,72 @@ def _generate_table_html_6max(
     .legend-dot.blind { background: #3b82f6; }
     .legend-dot.folded { background: #374151; }
 
+    /* Tablet responsive (515-768px) */
+    @media (max-width: 768px) and (min-width: 515px) {
+        .poker-table-container {
+            max-width: 100%;
+            height: 300px;
+            padding: 10px 15px;
+        }
+        .poker-table {
+            width: 68%;
+            left: 16%;
+            height: 48%;
+            top: 26%;
+        }
+        .seat {
+            width: 50px;
+            height: 50px;
+            font-size: 12px;
+        }
+    }
+
+    /* Small tablet / large phone (480-514px) */
+    @media (max-width: 514px) and (min-width: 481px) {
+        .poker-table-container {
+            max-width: 100%;
+            height: 290px;
+            padding: 8px 12px;
+        }
+        .poker-table {
+            width: 72%;
+            left: 14%;
+            height: 46%;
+            top: 28%;
+        }
+        .seat {
+            width: 46px;
+            height: 46px;
+            font-size: 11px;
+        }
+        .seat-label {
+            font-size: 10px;
+            padding: 2px 8px;
+        }
+    }
+
     /* Mobile responsive */
     @media (max-width: 480px) {
         .poker-table-container {
             max-width: 100%;
-            height: 280px;
-            padding-top: 5px;
+            height: 260px;
+            padding: 5px 10px;
         }
         .poker-table {
-            width: 70%;
-            left: 15%;
+            width: 75%;
+            left: 12.5%;
+            height: 44%;
+            top: 30%;
         }
         .seat {
-            width: 48px;
-            height: 48px;
-            font-size: 12px;
+            width: 44px;
+            height: 44px;
+            font-size: 11px;
         }
         .seat-label {
-            font-size: 11px;
-            padding: 2px 10px;
+            font-size: 10px;
+            padding: 2px 8px;
+            bottom: -20px;
         }
         .chips-label {
             font-size: 9px;
