@@ -207,7 +207,7 @@ def _generate_grid_html(grid_data: List[List[Dict]], highlight_hand: str = None)
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: clamp(8px, 2.2vw, 11px);
+        font-size: clamp(9px, 2.5vw, 13px);
         font-weight: bold;
         border-radius: 2px;
         cursor: default;

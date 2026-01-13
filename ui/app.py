@@ -760,9 +760,8 @@ def drill_page():
     accuracy_color = "#10b981" if session.accuracy >= 0.7 else "#f59e0b" if session.accuracy >= 0.5 else "#ef4444"
 
     header_html = f"""
-    <div style="background: linear-gradient(135deg, #1e3a5f 0%, #0f172a 100%); padding: 6px 12px; border-radius: 6px; border-left: 3px solid #fbbf24; margin: -1rem 0 4px 0; display: flex; justify-content: space-between; align-items: center;">
+    <div style="background: linear-gradient(135deg, #1e3a5f 0%, #0f172a 100%); padding: 6px 12px; border-radius: 6px; border-left: 3px solid #fbbf24; margin: -1rem 0 4px 0;">
         <span style="font-size: 1rem; font-weight: bold; color: #fbbf24;">🎯 {scenario_text} <span style="color: #94a3b8; font-weight: normal; font-size: 0.9rem;">| {spot.scenario.hero_position.value}</span></span>
-        <span style="font-size: 0.75rem; color: #94a3b8;">📊 {session.total_spots} · ✅ {session.correct_count} · <span style="color: {accuracy_color};">{session.accuracy_percent}</span> · <span style="color: {streak_color};">🔥{streak}</span></span>
     </div>
     """
 
@@ -969,9 +968,12 @@ def drill_page():
                 if equity_html:
                     st.markdown(equity_html, unsafe_allow_html=True)
 
-    # Show range below - compact, no expander (saves space)
+    # Show range below with stats - no title needed
     if st.session_state.show_result:
-        st.markdown(f"<div style='color:#94a3b8;font-size:0.75rem;margin:4px 0;'>📊 {t('view_range')}</div>", unsafe_allow_html=True)
+        # Stats line next to range (moved from header)
+        stats_html = f"<div style='color:#94a3b8;font-size:0.75rem;margin:4px 0;'>📊 {session.total_spots} · ✅ {session.correct_count} · <span style='color:{accuracy_color};'>{session.accuracy_percent}</span> · <span style='color:{streak_color};'>🔥{streak}</span></div>"
+        st.markdown(stats_html, unsafe_allow_html=True)
+
         range_data = st.session_state.drill.get_range_for_spot(spot)
         raise_key = next((k for k in ["raise", "3bet", "4bet", "5bet"] if k in range_data), None)
         raise_hands = range_data.get(raise_key, []) if raise_key else []
