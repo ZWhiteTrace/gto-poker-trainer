@@ -595,16 +595,13 @@ def main():
             # Advanced settings in expander (collapsed by default)
             adv_label = "⚙️ 進階設定" if st.session_state.language == "zh" else "⚙️ Advanced Settings"
             with st.expander(adv_label, expanded=False):
-                # Action types - 9-max has RFI, vs Open, vs 3-Bet (no vs 4-Bet yet)
+                # Action types - 9-max only has complete RFI data
                 if st.session_state.table_format == "9max":
-                    action_options = ["RFI", "vs Open", "vs 3-Bet"]
-                    # Filter saved action types to valid options for 9-max
-                    valid_action_types = [a for a in st.session_state.drill_action_types if a in action_options]
-                    if not valid_action_types:
-                        valid_action_types = action_options
-                    # Show warning about missing data
-                    warning_msg = "⚠️ 9-max 的 vs 4-Bet 資料尚未完成" if st.session_state.language == "zh" else "⚠️ 9-max vs 4-Bet data not yet available"
-                    st.caption(warning_msg)
+                    action_options = ["RFI"]  # Only RFI available for 9-max
+                    valid_action_types = ["RFI"]
+                    # Show warning about incomplete 9-max data
+                    warning_msg = "⚠️ 9-max 目前只有 RFI 資料完整，vs Open / vs 3-Bet / vs 4-Bet 資料建構中" if st.session_state.language == "zh" else "⚠️ 9-max only has complete RFI data. vs Open/3-Bet/4-Bet coming soon"
+                    st.warning(warning_msg)
                 else:
                     action_options = ["RFI", "vs Open", "vs 3-Bet", "vs 4-Bet"]
                     valid_action_types = st.session_state.drill_action_types
@@ -1014,6 +1011,11 @@ def viewer_page():
     # Content based on selected tab
     i = st.session_state.viewer_selected_tab
     action_type = action_types[i]
+
+    # Show warning for 9-max non-RFI scenarios (incomplete data)
+    if table_format == "9max" and action_type != "RFI":
+        warning_msg = "⚠️ 9-max 的此場景資料不完整，僅供參考" if lang == "zh" else "⚠️ 9-max data for this scenario is incomplete"
+        st.warning(warning_msg)
 
     # Filter valid positions for this action type
     if action_type == "RFI":
