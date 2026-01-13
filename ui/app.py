@@ -792,16 +792,11 @@ def drill_page():
         if spot.scenario.action_type == ActionType.VS_RFI:
             villain_action = "Raises 2.5bb"
             bets = {spot.scenario.villain_position: "2.5bb"}
-            # In VS_RFI, positions between villain and hero have folded
-            # SB/BB haven't acted yet (still show as blinds)
-            position_order = [Position.UTG, Position.HJ, Position.CO, Position.BTN, Position.SB, Position.BB]
-            try:
-                villain_idx = position_order.index(spot.scenario.villain_position)
-                hero_idx = position_order.index(spot.scenario.hero_position)
-                for i in range(villain_idx + 1, hero_idx):
-                    folded_positions.append(position_order[i])
-            except ValueError:
-                pass  # Position not in 6-max list
+            # In VS_RFI: show as heads-up (everyone except hero and villain has folded)
+            # SB/BB should be gray when folded, not blue
+            for pos in [Position.UTG, Position.HJ, Position.CO, Position.BTN, Position.SB, Position.BB]:
+                if pos != spot.scenario.hero_position and pos != spot.scenario.villain_position:
+                    folded_positions.append(pos)
         elif spot.scenario.action_type == ActionType.VS_3BET:
             villain_action = "3-Bets"
             bets = {spot.scenario.hero_position: "2.5bb", spot.scenario.villain_position: "8bb"}
@@ -1071,15 +1066,39 @@ def viewer_page():
         # Build bets and action based on scenario type
         bets = None
         show_action = None
+        folded_positions = []
+
+        # For non-RFI scenarios, all positions except hero and villain are folded
         if action_type == "vs Open" and villain_position:
             show_action = "Raises"
             bets = {villain_position: "2.5bb"}
+            # Everyone except hero and villain has folded
+            all_positions = [Position.UTG, Position.HJ, Position.CO, Position.BTN, Position.SB, Position.BB]
+            if table_format == "9max":
+                all_positions = [Position.UTG, Position.UTG1, Position.UTG2, Position.MP, Position.HJ, Position.CO, Position.BTN, Position.SB, Position.BB]
+            for pos in all_positions:
+                if pos != hero_position and pos != villain_position:
+                    folded_positions.append(pos)
         elif action_type == "vs 3-Bet" and villain_position:
             show_action = "3-Bets"
             bets = {hero_position: "2.5bb", villain_position: "8bb"}
+            # Everyone except hero and villain has folded
+            all_positions = [Position.UTG, Position.HJ, Position.CO, Position.BTN, Position.SB, Position.BB]
+            if table_format == "9max":
+                all_positions = [Position.UTG, Position.UTG1, Position.UTG2, Position.MP, Position.HJ, Position.CO, Position.BTN, Position.SB, Position.BB]
+            for pos in all_positions:
+                if pos != hero_position and pos != villain_position:
+                    folded_positions.append(pos)
         elif action_type == "vs 4-Bet" and villain_position:
             show_action = "4-Bets"
             bets = {hero_position: "8bb", villain_position: "20bb"}
+            # Everyone except hero and villain has folded
+            all_positions = [Position.UTG, Position.HJ, Position.CO, Position.BTN, Position.SB, Position.BB]
+            if table_format == "9max":
+                all_positions = [Position.UTG, Position.UTG1, Position.UTG2, Position.MP, Position.HJ, Position.CO, Position.BTN, Position.SB, Position.BB]
+            for pos in all_positions:
+                if pos != hero_position and pos != villain_position:
+                    folded_positions.append(pos)
 
         display_table(
             hero_position=hero_position,
@@ -1088,6 +1107,7 @@ def viewer_page():
             format=table_format,
             bets=bets,
             lang=st.session_state.language,
+            folded_positions=folded_positions if folded_positions else None,
         )
 
     with col_select:
@@ -1446,20 +1466,32 @@ def postflop_page():
         else:
             # Show result in right column
             action_label = t("postflop_check") if result.correct_action == PostflopAction.CHECK else t("postflop_bet")
-            sizing_label = f" ({result.correct_sizing}%)" if result.correct_sizing else ""
+            sizing_label = f" {result.correct_sizing}%" if result.correct_sizing else ""
+
+            # Calculate alternative action frequency
+            alt_freq = 100 - result.frequency
+            if result.correct_action == PostflopAction.CHECK:
+                alt_action = t("postflop_bet") if lang == "zh" else "Bet"
+            else:
+                alt_action = t("postflop_check") if lang == "zh" else "Check"
+
+            # Format frequency display: "Bet 33% (freq 80%) | Check (20%)"
+            freq_display = f"{action_label}{sizing_label} <span style='color:#22c55e'>{result.frequency}%</span>"
+            if alt_freq > 0:
+                freq_display += f" <span style='color:#6b7280'>|</span> {alt_action} <span style='color:#94a3b8'>{alt_freq}%</span>"
 
             if result.is_correct:
                 st.markdown(f"""
                 <div style="padding: 10px; background: #065f46; border-radius: 8px; border-left: 4px solid #10b981; margin: 8px 0;">
                     <div style="color: #10b981; font-weight: bold; font-size: 0.95rem;">✅ {t("postflop_correct")}</div>
-                    <div style="color: #94a3b8; font-size: 0.8rem; margin-top: 4px;">{action_label}{sizing_label} ({result.frequency}%)</div>
+                    <div style="color: #e2e8f0; font-size: 0.8rem; margin-top: 4px;">GTO: {freq_display}</div>
                 </div>
                 """, unsafe_allow_html=True)
             else:
                 st.markdown(f"""
                 <div style="padding: 10px; background: #7f1d1d; border-radius: 8px; border-left: 4px solid #ef4444; margin: 8px 0;">
                     <div style="color: #ef4444; font-weight: bold; font-size: 0.95rem;">❌ {t("postflop_incorrect")}</div>
-                    <div style="color: #94a3b8; font-size: 0.8rem; margin-top: 4px;">{t("postflop_gto_action")}: {action_label}{sizing_label} ({result.frequency}%)</div>
+                    <div style="color: #e2e8f0; font-size: 0.8rem; margin-top: 4px;">GTO: {freq_display}</div>
                 </div>
                 """, unsafe_allow_html=True)
 
@@ -1605,22 +1637,39 @@ def stats_page():
 
 
 def learning_page():
-    """Learning page - reference materials for equity and outs."""
+    """Learning page - comprehensive poker strategy reference."""
     lang = st.session_state.language
 
     st.markdown(f'<div class="main-header">📚 {t("learning")}</div>', unsafe_allow_html=True)
 
     # Tabs for different topics
-    tab_equity = "權益對抗" if lang == "zh" else "Equity Matchups"
-    tab_outs = "Outs 補牌" if lang == "zh" else "Outs Reference"
+    if lang == "zh":
+        tabs = ["權益對抗", "Outs 補牌", "賠率表", "起手牌", "SPR 法則", "翻後策略", "資金管理"]
+    else:
+        tabs = ["Equity", "Outs", "Pot Odds", "Starting Hands", "SPR", "Post-flop", "Bankroll"]
 
-    tab1, tab2 = st.tabs([tab_equity, tab_outs])
+    tab1, tab2, tab3, tab4, tab5, tab6, tab7 = st.tabs(tabs)
 
     with tab1:
         _display_equity_learning(lang)
 
     with tab2:
         _display_outs_learning(lang)
+
+    with tab3:
+        _display_pot_odds_learning(lang)
+
+    with tab4:
+        _display_starting_hands_learning(lang)
+
+    with tab5:
+        _display_spr_learning(lang)
+
+    with tab6:
+        _display_postflop_learning(lang)
+
+    with tab7:
+        _display_bankroll_learning(lang)
 
 
 def _display_equity_learning(lang: str):
@@ -1876,6 +1925,562 @@ def _display_outs_learning(lang: str):
         tips_html += tip_card("Consider opponent's hand", "Some outs may be in villain's hand", "👤")
         tips_html += tip_card("Reverse outs", "Some cards may also help opponent", "⚔️")
     st.markdown(tips_html, unsafe_allow_html=True)
+
+
+def _display_pot_odds_learning(lang: str):
+    """Display pot odds learning content with visual tables."""
+
+    def odds_card(bet_size: str, pot_odds: str, equity: str, color: str = "#3b82f6"):
+        """Generate HTML for a pot odds card."""
+        return f'''<div style="background: #1e293b; border-radius: 6px; padding: 10px 15px; margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center; border-left: 4px solid {color};">
+            <span style="color: #e2e8f0; font-weight: bold; min-width: 80px;">{bet_size}</span>
+            <span style="color: #fbbf24; min-width: 60px;">{pot_odds}</span>
+            <span style="background: {color}; color: white; padding: 3px 12px; border-radius: 12px; font-weight: bold;">{equity}</span>
+        </div>'''
+
+    def concept_box(title: str, content: str, color: str = "#3b82f6"):
+        """Generate HTML for concept explanation box."""
+        return f'''<div style="background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); border-radius: 8px; padding: 12px; margin-bottom: 10px; border-left: 4px solid {color};">
+            <div style="color: {color}; font-weight: bold; font-size: 1rem; margin-bottom: 6px;">{title}</div>
+            <div style="color: #cbd5e1; font-size: 0.9rem;">{content}</div>
+        </div>'''
+
+    # Header
+    title = "📊 賠率與權益對照表" if lang == "zh" else "📊 Pot Odds vs Required Equity"
+    st.markdown(f"**{title}**")
+
+    # Header row
+    header_bet = "下注大小" if lang == "zh" else "Bet Size"
+    header_odds = "賠率" if lang == "zh" else "Pot Odds"
+    header_equity = "所需權益" if lang == "zh" else "Required Equity"
+
+    header_html = f'''<div style="background: #374151; border-radius: 6px; padding: 10px 15px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center;">
+        <span style="color: #e2e8f0; font-weight: bold; min-width: 80px;">{header_bet}</span>
+        <span style="color: #e2e8f0; font-weight: bold; min-width: 60px;">{header_odds}</span>
+        <span style="color: #e2e8f0; font-weight: bold;">{header_equity}</span>
+    </div>'''
+    st.markdown(header_html, unsafe_allow_html=True)
+
+    # Pot odds data as cards
+    odds_html = ""
+    odds_html += odds_card("25% pot", "5:1", "16.7%", "#22c55e")
+    odds_html += odds_card("33% pot", "4:1", "20%", "#22c55e")
+    odds_html += odds_card("50% pot", "3:1", "25%", "#3b82f6")
+    odds_html += odds_card("66% pot", "2.5:1", "28.5%", "#3b82f6")
+    odds_html += odds_card("75% pot", "2.3:1", "30%", "#f59e0b")
+    odds_html += odds_card("100% pot", "2:1", "33%", "#f59e0b")
+    odds_html += odds_card("150% pot", "1.67:1", "37.5%", "#ef4444")
+    odds_html += odds_card("200% pot", "1.5:1", "40%", "#ef4444")
+    st.markdown(odds_html, unsafe_allow_html=True)
+
+    st.markdown("")  # Spacer
+
+    # Two columns for concepts
+    col1, col2 = st.columns(2)
+
+    with col1:
+        formula_title = "🧮 計算公式" if lang == "zh" else "🧮 Formula"
+        st.markdown(f"**{formula_title}**")
+
+        formula_html = '''
+        <div style="background: linear-gradient(135deg, #1e3a5f 0%, #0f172a 100%); border-radius: 8px; padding: 15px; margin-bottom: 12px; text-align: center;">
+            <div style="color: #fbbf24; font-size: 1.3rem; font-weight: bold; margin-bottom: 8px;">
+                所需權益 = 跟注額 ÷ (底池 + 跟注額)
+            </div>
+            <div style="color: #94a3b8; font-size: 0.85rem;">
+                Required Equity = Call ÷ (Pot + Call)
+            </div>
+        </div>
+        '''
+        st.markdown(formula_html, unsafe_allow_html=True)
+
+        if lang == "zh":
+            st.markdown(concept_box(
+                "範例計算",
+                "底池 100，對手下注 50 (50% pot)<br/>跟注需要：50 ÷ (100+50+50) = 25%",
+                "#22c55e"
+            ), unsafe_allow_html=True)
+        else:
+            st.markdown(concept_box(
+                "Example Calculation",
+                "Pot is 100, opponent bets 50 (50% pot)<br/>Need to call: 50 ÷ (100+50+50) = 25%",
+                "#22c55e"
+            ), unsafe_allow_html=True)
+
+    with col2:
+        tips_title = "💡 實戰要點" if lang == "zh" else "💡 Key Tips"
+        st.markdown(f"**{tips_title}**")
+
+        if lang == "zh":
+            tips_html = ""
+            tips_html += concept_box("順/同花聽牌", "9 outs ≈ 35% (河牌前) → 可跟 100% pot", "#3b82f6")
+            tips_html += concept_box("卡順聽牌", "4 outs ≈ 17% → 只能跟 33% pot 以下", "#f59e0b")
+            tips_html += concept_box("隱含賠率", "考慮中牌後還能贏多少，允許跟注略鬆", "#22c55e")
+        else:
+            tips_html = ""
+            tips_html += concept_box("Flush/Straight Draw", "9 outs ≈ 35% (by river) → can call pot-size", "#3b82f6")
+            tips_html += concept_box("Gutshot Draw", "4 outs ≈ 17% → only call 33% pot or less", "#f59e0b")
+            tips_html += concept_box("Implied Odds", "Consider future winnings, allows looser calls", "#22c55e")
+        st.markdown(tips_html, unsafe_allow_html=True)
+
+
+def _display_starting_hands_learning(lang: str):
+    """Display starting hands learning content - trap hands and strategies."""
+
+    def trap_card(hand: str, name: str, problem: str, advice: str, color: str = "#ef4444"):
+        """Generate HTML for a trap hand card."""
+        return f'''
+        <div style="background: #1e293b; border-radius: 8px; padding: 12px; margin-bottom: 10px; border-left: 4px solid {color};">
+            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+                <span style="background: {color}; color: white; padding: 4px 12px; border-radius: 6px; font-weight: bold; font-size: 1.1rem;">{hand}</span>
+                <span style="color: #e2e8f0; font-weight: bold;">{name}</span>
+            </div>
+            <div style="color: #fbbf24; font-size: 0.9rem; margin-bottom: 6px;">⚠️ {problem}</div>
+            <div style="color: #94a3b8; font-size: 0.85rem;">✅ {advice}</div>
+        </div>
+        '''
+
+    def strategy_card(title: str, hands: str, strategy: str, icon: str = "🎯", color: str = "#3b82f6"):
+        """Generate HTML for strategy card."""
+        return f'''
+        <div style="background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); border-radius: 8px; padding: 12px; margin-bottom: 10px;">
+            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                <span style="font-size: 1.2rem;">{icon}</span>
+                <span style="color: {color}; font-weight: bold; font-size: 1rem;">{title}</span>
+            </div>
+            <div style="color: #fbbf24; font-size: 0.9rem; margin-bottom: 6px;">{hands}</div>
+            <div style="color: #94a3b8; font-size: 0.85rem;">{strategy}</div>
+        </div>
+        '''
+
+    # Title
+    title = "🚫 起手牌陷阱" if lang == "zh" else "🚫 Starting Hand Traps"
+    st.markdown(f"**{title}**")
+
+    col1, col2 = st.columns(2)
+
+    with col1:
+        if lang == "zh":
+            traps_html = ""
+            traps_html += trap_card("A-Rag", "弱 A (A2-A9)",
+                "中對時 kicker 極弱，容易被壓制",
+                "前位棄牌，後位 suited 可考慮", "#ef4444")
+            traps_html += trap_card("KJ/QJ", "百老匯殺手",
+                "經常被 AK/AQ/KQ 壓制",
+                "限位置玩，避免大底池", "#f59e0b")
+            traps_html += trap_card("KTo/QTo", "雜色百老匯",
+                "缺乏同花潛力，翻後難打",
+                "只在按鈕/盲注位防守", "#f59e0b")
+        else:
+            traps_html = ""
+            traps_html += trap_card("A-Rag", "Weak Aces (A2-A9)",
+                "Weak kicker when pairing, often dominated",
+                "Fold early position, suited may play late", "#ef4444")
+            traps_html += trap_card("KJ/QJ", "Broadway Killers",
+                "Often dominated by AK/AQ/KQ",
+                "Position-dependent, avoid big pots", "#f59e0b")
+            traps_html += trap_card("KTo/QTo", "Offsuit Broadway",
+                "No flush potential, hard post-flop",
+                "Only BTN/blind defense", "#f59e0b")
+        st.markdown(traps_html, unsafe_allow_html=True)
+
+    with col2:
+        if lang == "zh":
+            traps_html = ""
+            traps_html += trap_card("22-66", "小對子",
+                "只能靠中 set，機率約 12%",
+                "需要好的隱含賠率才能跟注", "#8b5cf6")
+            traps_html += trap_card("J9s/T8s", "中間連張",
+                "容易做小順子/同花被大牌打敗",
+                "深籌碼時有價值，淺籌避免", "#3b82f6")
+        else:
+            traps_html = ""
+            traps_html += trap_card("22-66", "Small Pairs",
+                "Only set-mining, ~12% chance",
+                "Need good implied odds to call", "#8b5cf6")
+            traps_html += trap_card("J9s/T8s", "Middle Connectors",
+                "Can make second-best straights/flushes",
+                "Valuable deep, avoid shallow", "#3b82f6")
+        st.markdown(traps_html, unsafe_allow_html=True)
+
+    st.markdown("---")
+
+    # Raise or Fold principle
+    rof_title = "📌 Raise or Fold 法則" if lang == "zh" else "📌 Raise or Fold Principle"
+    st.markdown(f"### {rof_title}")
+
+    col1, col2 = st.columns(2)
+
+    with col1:
+        if lang == "zh":
+            strategy_html = ""
+            strategy_html += strategy_card("適合 Raise 的手牌",
+                "AA-TT, AK, AQ, AJs+, KQs",
+                "強牌主動加注建立底池，逼走邊緣牌", "🚀", "#22c55e")
+            strategy_html += strategy_card("適合 Fold 的手牌",
+                "A9o-A2o, K9o-K2o, 雜色小牌",
+                "這些牌跟注後翻後難打，不如放棄", "🛑", "#ef4444")
+        else:
+            strategy_html = ""
+            strategy_html += strategy_card("Hands to Raise",
+                "AA-TT, AK, AQ, AJs+, KQs",
+                "Strong hands raise to build pot, fold out marginals", "🚀", "#22c55e")
+            strategy_html += strategy_card("Hands to Fold",
+                "A9o-A2o, K9o-K2o, offsuit rags",
+                "Difficult post-flop, better to fold pre", "🛑", "#ef4444")
+        st.markdown(strategy_html, unsafe_allow_html=True)
+
+    with col2:
+        if lang == "zh":
+            strategy_html = ""
+            strategy_html += strategy_card("可以 Limp/Call 的場景",
+                "深籌小對、同花連張",
+                "只在多人底池、好位置、深籌碼時", "🎯", "#fbbf24")
+            strategy_html += strategy_card("位置決定價值",
+                "CO/BTN 可以玩更多牌",
+                "前位收緊，後位放寬，大盲位防守", "📍", "#3b82f6")
+        else:
+            strategy_html = ""
+            strategy_html += strategy_card("When to Limp/Call",
+                "Deep stack small pairs, suited connectors",
+                "Only multiway, good position, deep stacks", "🎯", "#fbbf24")
+            strategy_html += strategy_card("Position Matters",
+                "CO/BTN can play wider",
+                "Tight early, loose late, BB defense", "📍", "#3b82f6")
+        st.markdown(strategy_html, unsafe_allow_html=True)
+
+
+def _display_spr_learning(lang: str):
+    """Display SPR (Stack-to-Pot Ratio) learning content."""
+
+    def spr_zone(spr_range: str, name: str, hands: str, strategy: str, color: str):
+        """Generate HTML for SPR zone card."""
+        return f'''
+        <div style="background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); border-radius: 8px; padding: 15px; margin-bottom: 12px; border-left: 4px solid {color};">
+            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+                <span style="background: {color}; color: white; padding: 6px 14px; border-radius: 8px; font-weight: bold; font-size: 1.2rem;">{spr_range}</span>
+                <span style="color: #e2e8f0; font-weight: bold; font-size: 1.1rem;">{name}</span>
+            </div>
+            <div style="color: #fbbf24; font-size: 0.9rem; margin-bottom: 8px;">🎯 適合手牌: {hands}</div>
+            <div style="color: #94a3b8; font-size: 0.9rem;">📌 {strategy}</div>
+        </div>
+        '''
+
+    def example_box(title: str, scenario: str, calculation: str, advice: str):
+        """Generate HTML for example box."""
+        return f'''
+        <div style="background: #1e293b; border-radius: 8px; padding: 12px; margin-bottom: 10px;">
+            <div style="color: #fbbf24; font-weight: bold; margin-bottom: 6px;">📝 {title}</div>
+            <div style="color: #e2e8f0; font-size: 0.9rem; margin-bottom: 4px;">{scenario}</div>
+            <div style="color: #3b82f6; font-size: 0.9rem; margin-bottom: 4px;">🧮 {calculation}</div>
+            <div style="color: #22c55e; font-size: 0.85rem;">✅ {advice}</div>
+        </div>
+        '''
+
+    # Title and formula
+    title = "📐 SPR 法則 (Stack-to-Pot Ratio)" if lang == "zh" else "📐 SPR (Stack-to-Pot Ratio)"
+    st.markdown(f"**{title}**")
+
+    # Formula box
+    formula_html = '''
+    <div style="background: linear-gradient(135deg, #1e3a5f 0%, #0f172a 100%); border-radius: 8px; padding: 15px; margin-bottom: 15px; text-align: center;">
+        <div style="color: #fbbf24; font-size: 1.4rem; font-weight: bold; margin-bottom: 8px;">
+            SPR = 有效籌碼 ÷ 翻牌前底池
+        </div>
+        <div style="color: #94a3b8; font-size: 0.9rem;">
+            SPR = Effective Stack ÷ Pot on Flop
+        </div>
+    </div>
+    '''
+    st.markdown(formula_html, unsafe_allow_html=True)
+
+    # Three SPR zones
+    if lang == "zh":
+        st.markdown(spr_zone("SPR > 6", "深籌碼區",
+            "同花連張、小對子、投機牌",
+            "追求隱含賠率，可以 set mining，適合詐唬和複雜玩法", "#22c55e"), unsafe_allow_html=True)
+        st.markdown(spr_zone("SPR 3-6", "中等籌碼區",
+            "強 top pair、兩對、暗三",
+            "平衡價值下注與保護，謹慎對待單純的一對", "#fbbf24"), unsafe_allow_html=True)
+        st.markdown(spr_zone("SPR < 3", "淺籌碼區",
+            "超對、top pair top kicker、sets",
+            "簡單打法：中 flop 就全下，不需複雜詐唬", "#ef4444"), unsafe_allow_html=True)
+    else:
+        st.markdown(spr_zone("SPR > 6", "Deep Stack Zone",
+            "Suited connectors, small pairs, speculative hands",
+            "Play for implied odds, set mining, complex plays work", "#22c55e"), unsafe_allow_html=True)
+        st.markdown(spr_zone("SPR 3-6", "Medium Stack Zone",
+            "Strong top pair, two pair, sets",
+            "Balance value betting & protection, be cautious with one pair", "#fbbf24"), unsafe_allow_html=True)
+        st.markdown(spr_zone("SPR < 3", "Shallow Stack Zone",
+            "Overpairs, TPTK, sets",
+            "Simple play: hit flop → commit. No fancy bluffs needed", "#ef4444"), unsafe_allow_html=True)
+
+    st.markdown("---")
+
+    # Examples
+    examples_title = "📝 實戰範例" if lang == "zh" else "📝 Examples"
+    st.markdown(f"### {examples_title}")
+
+    col1, col2 = st.columns(2)
+
+    with col1:
+        if lang == "zh":
+            st.markdown(example_box("深 SPR 場景",
+                "籌碼 200bb，3bet pot 底池 25bb",
+                "SPR = 175 ÷ 25 = 7",
+                "小對可以追 set，別用 TPGK 全下"), unsafe_allow_html=True)
+        else:
+            st.markdown(example_box("Deep SPR Scenario",
+                "Stack 200bb, 3bet pot is 25bb",
+                "SPR = 175 ÷ 25 = 7",
+                "Small pairs can set mine, don't stack off with TPGK"), unsafe_allow_html=True)
+
+    with col2:
+        if lang == "zh":
+            st.markdown(example_box("淺 SPR 場景",
+                "籌碼 30bb，單 raise pot 底池 12bb",
+                "SPR = 18 ÷ 12 = 1.5",
+                "AA/KK 直接 cbet 全下保護"), unsafe_allow_html=True)
+        else:
+            st.markdown(example_box("Shallow SPR Scenario",
+                "Stack 30bb, single raise pot is 12bb",
+                "SPR = 18 ÷ 12 = 1.5",
+                "AA/KK just cbet shove for protection"), unsafe_allow_html=True)
+
+
+def _display_postflop_learning(lang: str):
+    """Display post-flop learning content - fold signals and strategies."""
+
+    def danger_signal(signal: str, desc: str, action: str, severity: str = "high"):
+        """Generate HTML for a danger signal card."""
+        colors = {"high": "#ef4444", "medium": "#f59e0b", "low": "#fbbf24"}
+        color = colors.get(severity, "#ef4444")
+        return f'''
+        <div style="background: #1e293b; border-radius: 8px; padding: 12px; margin-bottom: 10px; border-left: 4px solid {color};">
+            <div style="color: {color}; font-weight: bold; font-size: 1rem; margin-bottom: 6px;">🚨 {signal}</div>
+            <div style="color: #e2e8f0; font-size: 0.9rem; margin-bottom: 6px;">{desc}</div>
+            <div style="color: #94a3b8; font-size: 0.85rem;">✅ 建議: {action}</div>
+        </div>
+        '''
+
+    def board_type(name: str, example: str, danger: str, color: str = "#ef4444"):
+        """Generate HTML for a dangerous board type."""
+        return f'''
+        <div style="background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); border-radius: 8px; padding: 12px; margin-bottom: 10px;">
+            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+                <span style="color: {color}; font-weight: bold; font-size: 1rem;">{name}</span>
+            </div>
+            <div style="color: #fbbf24; font-size: 0.9rem; margin-bottom: 4px;">🃏 {example}</div>
+            <div style="color: #94a3b8; font-size: 0.85rem;">⚠️ {danger}</div>
+        </div>
+        '''
+
+    # Title
+    title = "🚨 翻後「必跑」信號" if lang == "zh" else "🚨 Post-flop Fold Signals"
+    st.markdown(f"**{title}**")
+
+    col1, col2 = st.columns(2)
+
+    with col1:
+        signals_title = "對手行為信號" if lang == "zh" else "Opponent Behavior Signals"
+        st.markdown(f"**{signals_title}**")
+
+        if lang == "zh":
+            signals_html = ""
+            signals_html += danger_signal("緊凶玩家突然加注",
+                "平時很少下注的玩家突然 raise 你的 cbet",
+                "除非你有 nuts，否則放棄", "high")
+            signals_html += danger_signal("被動玩家三條街價值下注",
+                "call station 連續三條街主動下注",
+                "他有很強的牌，一對通常不夠", "high")
+            signals_html += danger_signal("多人底池被加注",
+                "3+ 人底池有人 raise",
+                "需要更強的牌才能繼續", "medium")
+        else:
+            signals_html = ""
+            signals_html += danger_signal("Nit Suddenly Raises",
+                "Tight player who rarely bets suddenly raises your cbet",
+                "Fold unless you have the nuts", "high")
+            signals_html += danger_signal("Passive Player Value Bets 3 Streets",
+                "A call station betting all three streets",
+                "They have a strong hand, one pair usually not enough", "high")
+            signals_html += danger_signal("Raised in Multiway Pot",
+                "Someone raises in a 3+ player pot",
+                "Need stronger hands to continue", "medium")
+        st.markdown(signals_html, unsafe_allow_html=True)
+
+    with col2:
+        boards_title = "危險牌面結構" if lang == "zh" else "Dangerous Board Textures"
+        st.markdown(f"**{boards_title}**")
+
+        if lang == "zh":
+            boards_html = ""
+            boards_html += board_type("四張同花", "A♠ 7♠ 3♠ K♠ x",
+                "對手很可能有同花，你的兩對/暗三價值暴跌", "#3b82f6")
+            boards_html += board_type("四張順子連牌", "6-7-8-9 或 J-Q-K-A",
+                "順子完成機率高，非堅果要小心", "#22c55e")
+            boards_html += board_type("對子公共牌", "K-K-7 或 9-9-3",
+                "葫蘆/四條可能，頂對 kicker 很重要", "#f59e0b")
+        else:
+            boards_html = ""
+            boards_html += board_type("4-Flush Board", "A♠ 7♠ 3♠ K♠ x",
+                "Opponent likely has flush, your two pair/set loses value", "#3b82f6")
+            boards_html += board_type("4-Straight Board", "6-7-8-9 or J-Q-K-A",
+                "Straight completion likely, careful without nuts", "#22c55e")
+            boards_html += board_type("Paired Board", "K-K-7 or 9-9-3",
+                "Full house/quads possible, kicker matters with top pair", "#f59e0b")
+        st.markdown(boards_html, unsafe_allow_html=True)
+
+    st.markdown("---")
+
+    # Key principles
+    principles_title = "💡 核心原則" if lang == "zh" else "💡 Core Principles"
+    st.markdown(f"### {principles_title}")
+
+    if lang == "zh":
+        principles_html = '''
+        <div style="background: linear-gradient(135deg, #1e3a5f 0%, #0f172a 100%); border-radius: 8px; padding: 15px; margin-bottom: 10px;">
+            <div style="color: #fbbf24; font-weight: bold; margin-bottom: 10px;">🎯 判斷是否該棄牌的三個問題：</div>
+            <div style="color: #e2e8f0; margin-bottom: 6px;">1️⃣ 對手的行為是否代表超強牌力？</div>
+            <div style="color: #e2e8f0; margin-bottom: 6px;">2️⃣ 牌面結構是否讓我的牌大幅貶值？</div>
+            <div style="color: #e2e8f0; margin-bottom: 6px;">3️⃣ 我能打敗對手的價值範圍嗎？</div>
+            <div style="color: #94a3b8; margin-top: 10px; font-size: 0.9rem;">如果三個答案都不樂觀，果斷放棄！</div>
+        </div>
+        '''
+    else:
+        principles_html = '''
+        <div style="background: linear-gradient(135deg, #1e3a5f 0%, #0f172a 100%); border-radius: 8px; padding: 15px; margin-bottom: 10px;">
+            <div style="color: #fbbf24; font-weight: bold; margin-bottom: 10px;">🎯 Three Questions Before Folding:</div>
+            <div style="color: #e2e8f0; margin-bottom: 6px;">1️⃣ Does opponent's action represent a very strong hand?</div>
+            <div style="color: #e2e8f0; margin-bottom: 6px;">2️⃣ Does the board texture devalue my hand significantly?</div>
+            <div style="color: #e2e8f0; margin-bottom: 6px;">3️⃣ Can I beat opponent's value range?</div>
+            <div style="color: #94a3b8; margin-top: 10px; font-size: 0.9rem;">If all three answers are negative, fold decisively!</div>
+        </div>
+        '''
+    st.markdown(principles_html, unsafe_allow_html=True)
+
+
+def _display_bankroll_learning(lang: str):
+    """Display bankroll management learning content."""
+
+    def rule_card(rule: str, desc: str, example: str, color: str = "#fbbf24"):
+        """Generate HTML for a rule card."""
+        return f'''
+        <div style="background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); border-radius: 8px; padding: 15px; margin-bottom: 12px; border-left: 4px solid {color};">
+            <div style="color: {color}; font-weight: bold; font-size: 1.1rem; margin-bottom: 8px;">{rule}</div>
+            <div style="color: #e2e8f0; font-size: 0.9rem; margin-bottom: 6px;">{desc}</div>
+            <div style="color: #94a3b8; font-size: 0.85rem;">📌 {example}</div>
+        </div>
+        '''
+
+    def level_card(level: str, buyins: str, note: str, color: str):
+        """Generate HTML for stake level recommendation."""
+        return f'''
+        <div style="background: #1e293b; border-radius: 8px; padding: 12px; margin-bottom: 8px; display: flex; align-items: center; gap: 12px;">
+            <span style="background: {color}; color: white; padding: 8px 12px; border-radius: 6px; font-weight: bold; min-width: 100px; text-align: center;">{level}</span>
+            <div>
+                <div style="color: #e2e8f0; font-weight: bold;">{buyins}</div>
+                <div style="color: #94a3b8; font-size: 0.85rem;">{note}</div>
+            </div>
+        </div>
+        '''
+
+    # Title
+    title = "💰 資金管理法則" if lang == "zh" else "💰 Bankroll Management"
+    st.markdown(f"**{title}**")
+
+    # Main rule - 20 buy-ins
+    main_rule_html = '''
+    <div style="background: linear-gradient(135deg, #1e3a5f 0%, #0f172a 100%); border-radius: 12px; padding: 20px; margin-bottom: 20px; text-align: center; border: 2px solid #fbbf24;">
+        <div style="color: #fbbf24; font-size: 2rem; font-weight: bold; margin-bottom: 10px;">20 Buy-ins 法則</div>
+        <div style="color: #e2e8f0; font-size: 1.1rem;">永遠保持至少 20 倍買入的資金</div>
+        <div style="color: #94a3b8; font-size: 0.9rem; margin-top: 8px;">這能抵抗短期波動，讓你專注於正確決策</div>
+    </div>
+    '''
+    st.markdown(main_rule_html, unsafe_allow_html=True)
+
+    col1, col2 = st.columns(2)
+
+    with col1:
+        rules_title = "📋 基本原則" if lang == "zh" else "📋 Basic Rules"
+        st.markdown(f"**{rules_title}**")
+
+        if lang == "zh":
+            rules_html = ""
+            rules_html += rule_card("單桌買入 = 資金的 5%",
+                "這意味著你需要 20 個買入才能打某個級別",
+                "資金 $1000 → 最高打 $50 買入 (NL50)", "#22c55e")
+            rules_html += rule_card("下風時降級",
+                "連續輸掉 3-5 個買入，考慮降一級",
+                "保護資金，重建信心後再回來", "#f59e0b")
+            rules_html += rule_card("上風時不急升",
+                "贏了幾個買入不代表可以跳級",
+                "需要穩定的勝率，至少 30 個買入再升", "#3b82f6")
+        else:
+            rules_html = ""
+            rules_html += rule_card("Single Buy-in = 5% of Bankroll",
+                "This means you need 20 buy-ins for a stake level",
+                "Bankroll $1000 → Max NL50 ($50 buy-in)", "#22c55e")
+            rules_html += rule_card("Move Down When Losing",
+                "After 3-5 buy-in downswing, consider moving down",
+                "Protect bankroll, rebuild confidence", "#f59e0b")
+            rules_html += rule_card("Don't Rush Moving Up",
+                "Winning a few buy-ins doesn't mean you can jump stakes",
+                "Need stable win rate, at least 30 buy-ins to move up", "#3b82f6")
+        st.markdown(rules_html, unsafe_allow_html=True)
+
+    with col2:
+        levels_title = "📊 級別建議" if lang == "zh" else "📊 Stake Recommendations"
+        st.markdown(f"**{levels_title}**")
+
+        if lang == "zh":
+            levels_html = ""
+            levels_html += level_card("NL2-NL5", "$40-$100", "新手入門，學習基礎", "#22c55e")
+            levels_html += level_card("NL10-NL25", "$200-$500", "基礎穩固，建立風格", "#3b82f6")
+            levels_html += level_card("NL50-NL100", "$1000-$2000", "中級玩家，需要調整能力", "#fbbf24")
+            levels_html += level_card("NL200+", "$4000+", "高級玩家，需要專業心態", "#ef4444")
+        else:
+            levels_html = ""
+            levels_html += level_card("NL2-NL5", "$40-$100", "Beginner, learn fundamentals", "#22c55e")
+            levels_html += level_card("NL10-NL25", "$200-$500", "Solid basics, develop style", "#3b82f6")
+            levels_html += level_card("NL50-NL100", "$1000-$2000", "Intermediate, need adaptability", "#fbbf24")
+            levels_html += level_card("NL200+", "$4000+", "Advanced, professional mindset", "#ef4444")
+        st.markdown(levels_html, unsafe_allow_html=True)
+
+    st.markdown("---")
+
+    # Mental game
+    mental_title = "🧠 心態管理" if lang == "zh" else "🧠 Mental Game"
+    st.markdown(f"### {mental_title}")
+
+    if lang == "zh":
+        mental_html = '''
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+            <div style="background: #1e293b; border-radius: 8px; padding: 12px; border-left: 4px solid #22c55e;">
+                <div style="color: #22c55e; font-weight: bold; margin-bottom: 6px;">✅ 正確心態</div>
+                <div style="color: #94a3b8; font-size: 0.85rem;">• 專注於決策質量，不是結果<br/>• 接受短期波動是正常的<br/>• 設定止損點並遵守</div>
+            </div>
+            <div style="background: #1e293b; border-radius: 8px; padding: 12px; border-left: 4px solid #ef4444;">
+                <div style="color: #ef4444; font-weight: bold; margin-bottom: 6px;">❌ 錯誤心態</div>
+                <div style="color: #94a3b8; font-size: 0.85rem;">• 輸錢後想立刻贏回來<br/>• 贏錢後覺得自己無敵<br/>• 用生活費或借款打牌</div>
+            </div>
+        </div>
+        '''
+    else:
+        mental_html = '''
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+            <div style="background: #1e293b; border-radius: 8px; padding: 12px; border-left: 4px solid #22c55e;">
+                <div style="color: #22c55e; font-weight: bold; margin-bottom: 6px;">✅ Right Mindset</div>
+                <div style="color: #94a3b8; font-size: 0.85rem;">• Focus on decision quality, not results<br/>• Accept short-term variance<br/>• Set stop-loss limits and follow them</div>
+            </div>
+            <div style="background: #1e293b; border-radius: 8px; padding: 12px; border-left: 4px solid #ef4444;">
+                <div style="color: #ef4444; font-weight: bold; margin-bottom: 6px;">❌ Wrong Mindset</div>
+                <div style="color: #94a3b8; font-size: 0.85rem;">• Chasing losses immediately<br/>• Feeling invincible after winning<br/>• Playing with living expenses or loans</div>
+            </div>
+        </div>
+        '''
+    st.markdown(mental_html, unsafe_allow_html=True)
 
 
 def equity_quiz_page():

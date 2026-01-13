@@ -18,22 +18,28 @@ def display_table_6max(
 ):
     """
     Display a 6-max poker table with positions highlighted.
-    Layout:    [SB]  [BB]
-           [BTN]        [UTG]
-               [CO]  [HJ]
+    Uses stadium (racetrack) shape with perfectly even seat distribution.
+
+    Stadium shape: straight top/bottom edges + semicircular left/right ends
+    6 seats at 60° intervals around the perimeter.
+
+    Layout:
+           [SB]    [BB]       ← top straight edge
+        [BTN]          [UTG]  ← semicircular ends
+           [CO]    [HJ]       ← bottom straight edge
 
     Args:
         folded_positions: List of positions that have folded (shown as gray/inactive)
     """
-    # Table spans 17.5% to 82.5% (width 65%, centered at 50%)
-    # All positions symmetric around center (50%)
+    # 6-max positions - adjusted for better visual balance
+    # Fine-tuned: SB/BB up 2%, BTN/UTG up 1% with slight horizontal adjustments
     positions_6max = {
-        Position.SB: ("38%", "18%"),   # 12% left of center
-        Position.BB: ("62%", "18%"),   # 12% right of center (symmetric with SB)
-        Position.UTG: ("86%", "47%"),  # 3.5% from table right edge
-        Position.HJ: ("62%", "76%"),   # Match BB horizontal (symmetric)
-        Position.CO: ("38%", "76%"),   # Match SB horizontal (symmetric)
-        Position.BTN: ("14%", "47%"),  # 3.5% from table left edge
+        Position.SB: ("38%", "20%"),   # top-left (up 2%)
+        Position.BB: ("62%", "20%"),   # top-right (up 2%)
+        Position.UTG: ("85%", "49%"),  # right side (up 1%, left 1%)
+        Position.HJ: ("62%", "78%"),   # bottom-right
+        Position.CO: ("38%", "78%"),   # bottom-left
+        Position.BTN: ("15%", "49%"),  # left side (up 1%, right 1%)
     }
 
     html = _generate_table_html_6max(
@@ -46,7 +52,7 @@ def display_table_6max(
         folded_positions=folded_positions or [],
     )
 
-    components.html(html, height=355)
+    components.html(html, height=330)
 
 
 def display_table_9max(
@@ -55,27 +61,40 @@ def display_table_9max(
     show_action: str = None,
     bets: dict = None,
     lang: str = "zh",
+    folded_positions: list = None,
 ):
     """
     Display a 9-max poker table with positions highlighted.
-    Uses a larger container with even seat distribution around an oval.
+    Uses stadium (racetrack) shape with 9 seats evenly distributed.
+
+    Stadium perimeter ≈ 189% (38% top + 56.5% right + 38% bottom + 56.5% left)
+    9 seats at 21% intervals around the perimeter.
+
+    Layout (clockwise from BTN):
+            UTG   UTG+1   UTG+2    ← top edge (3 seats)
+        BB                    LJ   ← upper curves
+        SB                    HJ   ← lower curves
+               BTN    CO          ← bottom edge (2 seats)
+
+    Args:
+        folded_positions: List of positions that have folded (shown as gray/inactive)
     """
-    # 9-max positions based on standard poker table layout
-    # Adjusted for better visual balance around the oval table
+    # 9-max positions - adjusted for better visual balance
+    # UTG+1, UTG+2, LJ moved up to reduce top whitespace
     positions_9max = {
         # Bottom row (Late positions + Blinds)
         Position.BTN: ("62%", "82%"),      # Bottom right (Dealer)
         Position.SB: ("38%", "82%"),       # Bottom center-left
-        Position.BB: ("10%", "65%"),       # Left side lower - slightly left
+        Position.BB: ("10%", "65%"),       # Left side lower
         # Left side (Early positions)
-        Position.UTG: ("10%", "35%"),      # Left side upper - slightly left & up
-        # Top row (Early-Mid positions) - moved down closer to table
-        Position.UTG1: ("28%", "24%"),     # Top left (UTG+1) - closer to table
-        Position.UTG2: ("50%", "24%"),     # Top center (MP-1) - closer to table
-        Position.MP: ("72%", "24%"),       # Top right (MP-2/LJ) - closer to table
+        Position.UTG: ("10%", "35%"),      # Left side upper
+        # Top row (Early-Mid positions) - moved up 6%
+        Position.UTG1: ("28%", "18%"),     # Top left (UTG+1)
+        Position.UTG2: ("50%", "18%"),     # Top center (MP-1)
+        Position.MP: ("72%", "18%"),       # Top right (LJ)
         # Right side (Middle-Late positions)
-        Position.HJ: ("90%", "35%"),       # Right side upper - slightly right & up
-        Position.CO: ("90%", "65%"),       # Right side lower - slightly right
+        Position.HJ: ("90%", "35%"),       # Right side upper
+        Position.CO: ("90%", "65%"),       # Right side lower
     }
 
     html = _generate_table_html_9max(
@@ -85,9 +104,10 @@ def display_table_9max(
         show_action=show_action,
         bets=bets,
         lang=lang,
+        folded_positions=folded_positions or [],
     )
 
-    components.html(html, height=400)
+    components.html(html, height=350)
 
 
 def _generate_table_html_6max(
@@ -125,10 +145,10 @@ def _generate_table_html_6max(
     .poker-table-container {
         position: relative;
         width: 100%;
-        max-width: 520px;
+        max-width: 540px;
         height: 320px;
         margin: 5px auto;
-        padding-top: 10px;
+        padding: 15px 20px;
         overflow: visible;
     }
     .poker-table {
@@ -136,10 +156,10 @@ def _generate_table_html_6max(
         width: 65%;
         height: 50%;
         left: 17.5%;
-        top: 22%;
+        top: 24%;
         background: linear-gradient(145deg, #1a5f3c 0%, #0d3d25 100%);
-        border-radius: 100px;
-        border: 8px solid #8B4513;
+        border-radius: 9999px;
+        border: 6px solid #8B4513;
         box-shadow: 0 4px 15px rgba(0,0,0,0.5), inset 0 0 30px rgba(0,0,0,0.3);
     }
     .table-label {
@@ -147,24 +167,33 @@ def _generate_table_html_6max(
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
-        color: rgba(255,255,255,0.3);
+        color: rgba(255,255,255,0.25);
         font-size: 14px;
         font-weight: bold;
+        letter-spacing: 2px;
     }
     .seat {
         position: absolute;
-        width: 60px;
-        height: 60px;
+        width: 54px;
+        height: 54px;
         border-radius: 50%;
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        font-size: 14px;
+        font-size: 13px;
         font-weight: bold;
         transform: translate(-50%, -50%);
-        transition: all 0.3s ease;
+        transition: all 0.2s ease;
         border: 3px solid transparent;
+    }
+    .seat-stack {
+        font-size: 9px;
+        opacity: 0.85;
+        margin-top: 1px;
+    }
+    .seat-stack-dim {
+        opacity: 0.5;
     }
     .seat.hero {
         background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
@@ -321,6 +350,35 @@ def _generate_table_html_6max(
     .legend-dot.villain { background: #ef4444; }
     .legend-dot.blind { background: #3b82f6; }
     .legend-dot.folded { background: #374151; }
+
+    /* Mobile responsive */
+    @media (max-width: 480px) {
+        .poker-table-container {
+            max-width: 100%;
+            height: 280px;
+            padding-top: 5px;
+        }
+        .poker-table {
+            width: 70%;
+            left: 15%;
+        }
+        .seat {
+            width: 48px;
+            height: 48px;
+            font-size: 12px;
+        }
+        .seat-label {
+            font-size: 11px;
+            padding: 2px 10px;
+        }
+        .chips-label {
+            font-size: 9px;
+        }
+        .legend {
+            font-size: 10px;
+            gap: 12px;
+        }
+    }
     </style>
     </head>
     <body>
@@ -329,7 +387,7 @@ def _generate_table_html_6max(
     html = css + '''
     <div class="poker-table-container">
         <div class="poker-table">
-            <div class="table-label">6-max</div>
+            <div class="table-label">6-MAX</div>
         </div>
     '''
 
@@ -347,7 +405,6 @@ def _generate_table_html_6max(
             seat_class += " hero"
             label_html = f'<span class="seat-label">{hero_label}</span>'
             if pos in bets:
-                # Use hero-chips class to position below YOU label
                 chips_html = f'<span class="chips-label chips-bet hero-chips">{bets[pos]}</span>'
         elif pos == villain_position:
             seat_class += " villain"
@@ -356,7 +413,6 @@ def _generate_table_html_6max(
             if pos in bets:
                 chips_html = f'<span class="chips-label chips-bet">{bets[pos]}</span>'
         elif is_folded:
-            # Folded positions (including SB/BB in later streets)
             seat_class += " folded"
         elif pos == Position.SB:
             seat_class += " blind"
@@ -381,12 +437,6 @@ def _generate_table_html_6max(
         '''
 
     html += '''
-    </div>
-    <div class="legend">
-        <div class="legend-item"><div class="legend-dot hero"></div>You</div>
-        <div class="legend-item"><div class="legend-dot villain"></div>Raiser</div>
-        <div class="legend-item"><div class="legend-dot blind"></div>Blinds</div>
-        <div class="legend-item"><div class="legend-dot folded"></div>Folded</div>
     </div>
     </body>
     </html>
@@ -628,12 +678,6 @@ def _generate_table_html(
             </div>
             {seats_html}
         </div>
-        <div class="gto-legend">
-            <div class="gto-legend-item"><div class="gto-dot gto-dot-hero"></div>You</div>
-            <div class="gto-legend-item"><div class="gto-dot gto-dot-villain"></div>Raiser</div>
-            <div class="gto-legend-item"><div class="gto-dot gto-dot-blind"></div>Blinds</div>
-            <div class="gto-legend-item"><div class="gto-dot gto-dot-fold"></div>Folded</div>
-        </div>
     </body>
     </html>
     '''
@@ -648,9 +692,15 @@ def _generate_table_html_9max(
     show_action: str,
     bets: dict = None,
     lang: str = "zh",
+    folded_positions: list = None,
 ) -> str:
-    """Generate HTML for the 9-max poker table with optimized layout."""
+    """Generate HTML for the 9-max poker table with optimized layout.
+
+    Args:
+        folded_positions: List of positions that have folded (shown as gray/inactive)
+    """
     bets = bets or {}
+    folded_positions = folded_positions or []
     hero_label = "我" if lang == "zh" else "ME"
 
     # Generate seats HTML
@@ -661,19 +711,23 @@ def _generate_table_html_9max(
         label_html = ""
         chips_html = ""
 
+        # Check if this position has folded (overrides blind display)
+        is_folded = pos in folded_positions
+
+        # Determine seat type
         if pos == hero_position:
             seat_class += " gto-hero"
             label_html = f'<span class="gto-label">{hero_label}</span>'
-            # Show hero's bet if any (use hero-chips class to position below hero label)
             if pos in bets:
                 chips_html = f'<div class="gto-chips gto-chips-bet gto-hero-chips">{bets[pos]}</div>'
         elif pos == villain_position:
             seat_class += " gto-villain"
             if show_action:
                 action_html = f'<div class="gto-action">{show_action}</div>'
-            # Show villain's bet if any
             if pos in bets:
                 chips_html = f'<div class="gto-chips gto-chips-bet">{bets[pos]}</div>'
+        elif is_folded:
+            seat_class += " gto-folded"
         elif pos == Position.SB:
             seat_class += " gto-blind"
             chips_html = '<div class="gto-chips">0.5bb</div>'
@@ -720,19 +774,20 @@ def _generate_table_html_9max(
         .gto-container {{
             position: relative;
             width: 100%;
-            max-width: 580px;
-            height: 360px;
-            margin: 8px auto 0 auto;
+            max-width: 560px;
+            height: 340px;
+            margin: 5px auto 0 auto;
+            padding: 15px 20px;
         }}
         .gto-table {{
             position: absolute;
             width: 70%;
             height: 45%;
             left: 15%;
-            top: 30%;
+            top: 28%;
             background: linear-gradient(145deg, #1a5f3c 0%, #0d3d25 100%);
-            border-radius: 100px;
-            border: 5px solid #8B4513;
+            border-radius: 9999px;
+            border: 6px solid #8B4513;
             box-shadow: 0 4px 15px rgba(0,0,0,0.5), inset 0 0 30px rgba(0,0,0,0.3);
         }}
         .gto-table-label {{
@@ -740,33 +795,44 @@ def _generate_table_html_9max(
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            color: rgba(255,255,255,0.2);
-            font-size: 13px;
+            color: rgba(255,255,255,0.25);
+            font-size: 14px;
             font-weight: bold;
+            letter-spacing: 2px;
         }}
         .gto-seat {{
             position: absolute;
-            width: 52px;
-            height: 52px;
+            width: 50px;
+            height: 50px;
             border-radius: 50%;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            font-size: 12px;
+            font-size: 11px;
             font-weight: bold;
             transform: translate(-50%, -50%);
             border: 3px solid transparent;
+            transition: all 0.2s ease;
         }}
         .gto-pos-name {{
-            font-size: 12px;
+            font-size: 11px;
             font-weight: bold;
+            line-height: 1.1;
+        }}
+        .gto-stack {{
+            font-size: 8px;
+            opacity: 0.85;
+            margin-top: 1px;
+        }}
+        .gto-stack-dim {{
+            opacity: 0.5;
         }}
         .gto-hero {{
             background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
             color: #000;
-            border: 4px solid #ffffff;
-            box-shadow: 0 0 20px rgba(251, 191, 36, 0.8), 0 0 0 2px #fbbf24;
+            border: 3px solid #ffffff;
+            box-shadow: 0 0 18px rgba(251, 191, 36, 0.8), 0 0 0 2px #fbbf24;
             animation: gto-pulse 1.5s ease-in-out infinite;
             z-index: 10;
         }}
@@ -787,133 +853,162 @@ def _generate_table_html_9max(
             background: #2d3748;
             color: #718096;
             border-color: #4a5568;
-            opacity: 0.5;
+            opacity: 0.6;
         }}
         .gto-label {{
             position: absolute;
-            bottom: -22px;
-            font-size: 12px;
+            bottom: -20px;
+            font-size: 11px;
             color: #000;
             font-weight: bold;
             background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
-            padding: 3px 10px;
-            border-radius: 12px;
-            box-shadow: 0 0 12px rgba(251, 191, 36, 0.8);
+            padding: 2px 8px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(251, 191, 36, 0.8);
             animation: gto-label-pulse 1.5s ease-in-out infinite;
+            white-space: nowrap;
         }}
         .gto-label::before {{
             content: "▼";
             position: absolute;
-            top: -12px;
+            top: -10px;
             left: 50%;
             transform: translateX(-50%);
-            font-size: 10px;
+            font-size: 9px;
             color: #fbbf24;
             animation: gto-arrow-bounce 1s ease-in-out infinite;
         }}
         @keyframes gto-label-pulse {{
             0%, 100% {{
-                box-shadow: 0 0 12px rgba(251, 191, 36, 0.8);
+                box-shadow: 0 0 10px rgba(251, 191, 36, 0.8);
                 transform: scale(1);
             }}
             50% {{
-                box-shadow: 0 0 20px rgba(251, 191, 36, 1);
-                transform: scale(1.05);
+                box-shadow: 0 0 16px rgba(251, 191, 36, 1);
+                transform: scale(1.03);
             }}
         }}
         @keyframes gto-arrow-bounce {{
             0%, 100% {{ transform: translateX(-50%) translateY(0); }}
-            50% {{ transform: translateX(-50%) translateY(-4px); }}
+            50% {{ transform: translateX(-50%) translateY(-3px); }}
         }}
         .gto-chips {{
             position: absolute;
-            bottom: -16px;
-            font-size: 10px;
+            bottom: -14px;
+            font-size: 9px;
             color: #60a5fa;
             font-weight: bold;
             background: rgba(0,0,0,0.6);
-            padding: 2px 5px;
+            padding: 2px 4px;
             border-radius: 4px;
+            white-space: nowrap;
         }}
         .gto-chips-bet {{
             color: #fca5a5;
             background: rgba(220, 38, 38, 0.8);
             border: 1px solid #ef4444;
         }}
-        /* Hero's chips positioned below YOU label to avoid overlap */
         .gto-hero-chips {{
-            bottom: -42px;
+            bottom: -38px;
         }}
         .gto-action {{
             position: absolute;
-            top: -22px;
+            top: -20px;
             background: #dc2626;
             color: white;
-            padding: 3px 8px;
-            border-radius: 8px;
-            font-size: 11px;
+            padding: 2px 6px;
+            border-radius: 6px;
+            font-size: 10px;
             font-weight: bold;
             white-space: nowrap;
             box-shadow: 0 2px 4px rgba(0,0,0,0.3);
         }}
         .gto-dealer {{
             position: absolute;
-            top: -5px;
-            right: -5px;
-            width: 18px;
-            height: 18px;
+            top: -4px;
+            right: -4px;
+            width: 16px;
+            height: 16px;
             background: white;
             color: #000;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 9px;
+            font-size: 8px;
             font-weight: bold;
             border: 2px solid #e2e8f0;
             box-shadow: 0 2px 4px rgba(0,0,0,0.2);
         }}
         @keyframes gto-pulse {{
-            0%, 100% {{ box-shadow: 0 0 16px rgba(251, 191, 36, 0.8); }}
-            50% {{ box-shadow: 0 0 24px rgba(251, 191, 36, 1); }}
+            0%, 100% {{ box-shadow: 0 0 14px rgba(251, 191, 36, 0.8), 0 0 0 2px #fbbf24; }}
+            50% {{ box-shadow: 0 0 22px rgba(251, 191, 36, 1), 0 0 0 2px #fbbf24; }}
         }}
         .gto-legend {{
+            position: absolute;
+            bottom: 8px;
+            left: 50%;
+            transform: translateX(-50%);
             display: flex;
             justify-content: center;
-            gap: 14px;
-            margin-top: 10px;
-            font-size: 11px;
+            gap: 12px;
+            font-size: 10px;
             color: #a0aec0;
             flex-wrap: wrap;
         }}
         .gto-legend-item {{
             display: flex;
             align-items: center;
-            gap: 4px;
+            gap: 3px;
         }}
         .gto-dot {{
-            width: 9px;
-            height: 9px;
+            width: 8px;
+            height: 8px;
             border-radius: 50%;
         }}
         .gto-dot-hero {{ background: #fbbf24; }}
         .gto-dot-villain {{ background: #ef4444; }}
         .gto-dot-blind {{ background: #3b82f6; }}
         .gto-dot-fold {{ background: #4a5568; }}
+
+        /* Mobile responsive */
+        @media (max-width: 480px) {{
+            .gto-container {{
+                max-width: 100%;
+                height: 300px;
+                margin: 0 auto;
+            }}
+            .gto-table {{
+                width: 85%;
+                left: 7.5%;
+            }}
+            .gto-seat {{
+                width: 42px;
+                height: 42px;
+            }}
+            .gto-pos-name {{
+                font-size: 10px;
+            }}
+            .gto-stack {{
+                font-size: 7px;
+            }}
+            .gto-label {{
+                font-size: 10px;
+                padding: 2px 6px;
+            }}
+            .gto-legend {{
+                font-size: 9px;
+                gap: 8px;
+            }}
+        }}
     </style>
     </head>
     <body>
         <div class="gto-container">
             <div class="gto-table">
-                <div class="gto-table-label">9-max</div>
+                <div class="gto-table-label">9-MAX</div>
             </div>
             {seats_html}
-        </div>
-        <div class="gto-legend">
-            <div class="gto-legend-item"><div class="gto-dot gto-dot-hero"></div>You</div>
-            <div class="gto-legend-item"><div class="gto-dot gto-dot-villain"></div>Raiser</div>
-            <div class="gto-legend-item"><div class="gto-dot gto-dot-blind"></div>Blinds</div>
-            <div class="gto-legend-item"><div class="gto-dot gto-dot-fold"></div>Folded</div>
         </div>
     </body>
     </html>
@@ -939,7 +1034,7 @@ def display_table(
         folded_positions: List of positions that have folded (shown as gray/inactive)
     """
     if format == "9max":
-        display_table_9max(hero_position, villain_position, show_action, bets, lang)
+        display_table_9max(hero_position, villain_position, show_action, bets, lang, folded_positions)
     else:
         display_table_6max(hero_position, villain_position, show_action, bets, lang, folded_positions)
 
