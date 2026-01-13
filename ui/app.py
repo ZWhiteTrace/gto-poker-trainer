@@ -1296,7 +1296,7 @@ def viewer_page():
             frequencies=frequencies,
         )
 
-        # Range statistics (below grid, 2-column layout)
+        # Range statistics (below grid, 2-column layout with custom HTML for mobile)
         total_raise = len(raise_hands)
         total_call = len(call_hands)
         total_combos = 169  # Total unique starting hands
@@ -1309,15 +1309,28 @@ def viewer_page():
         fold_pct = (fold_count / total_combos) * 100 if total_combos > 0 else 0
         play_pct = (total_play / total_combos) * 100 if total_combos > 0 else 0
 
-        # 2-column stats display
+        # 2x2 stats display using HTML to maintain columns on mobile
         action_label = raise_key.upper() if raise_key else "RAISE"
-        col1, col2 = st.columns(2)
-        with col1:
-            st.metric(action_label, f"{total_raise} hands", f"~{raise_pct:.1f}%")
-            st.metric("FOLD", f"{fold_count} hands", f"~{fold_pct:.1f}%")
-        with col2:
-            st.metric("CALL", f"{total_call} hands", f"~{call_pct:.1f}%")
-            st.metric("VPIP", f"{total_play} hands", f"~{play_pct:.1f}%")
+        st.markdown(f"""
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px;">
+            <div style="background: #1e293b; padding: 10px; border-radius: 6px; text-align: center;">
+                <div style="color: #22c55e; font-size: 1.2rem; font-weight: bold;">{total_raise}</div>
+                <div style="color: #94a3b8; font-size: 0.75rem;">{action_label} ~{raise_pct:.1f}%</div>
+            </div>
+            <div style="background: #1e293b; padding: 10px; border-radius: 6px; text-align: center;">
+                <div style="color: #3b82f6; font-size: 1.2rem; font-weight: bold;">{total_call}</div>
+                <div style="color: #94a3b8; font-size: 0.75rem;">CALL ~{call_pct:.1f}%</div>
+            </div>
+            <div style="background: #1e293b; padding: 10px; border-radius: 6px; text-align: center;">
+                <div style="color: #6b7280; font-size: 1.2rem; font-weight: bold;">{fold_count}</div>
+                <div style="color: #94a3b8; font-size: 0.75rem;">FOLD ~{fold_pct:.1f}%</div>
+            </div>
+            <div style="background: #1e293b; padding: 10px; border-radius: 6px; text-align: center;">
+                <div style="color: #fbbf24; font-size: 1.2rem; font-weight: bold;">{total_play}</div>
+                <div style="color: #94a3b8; font-size: 0.75rem;">VPIP ~{play_pct:.1f}%</div>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
     else:
         st.warning(t("no_data"))
 
@@ -1325,6 +1338,32 @@ def viewer_page():
 def postflop_page():
     """Postflop C-bet practice page."""
     lang = st.session_state.language
+
+    # CSS to force columns and buttons to stay horizontal on mobile, and align columns at bottom
+    st.markdown("""
+    <style>
+    /* Force button columns to stay horizontal */
+    [data-testid="stHorizontalBlock"]:has(button) {
+        flex-wrap: nowrap !important;
+        gap: 0.3rem !important;
+    }
+    [data-testid="stHorizontalBlock"]:has(button) > div {
+        flex: 1 1 0 !important;
+        min-width: 0 !important;
+    }
+    /* Smaller button padding on mobile */
+    @media (max-width: 640px) {
+        [data-testid="stHorizontalBlock"]:has(button) button {
+            padding: 0.5rem 0.2rem !important;
+            font-size: 0.8rem !important;
+        }
+    }
+    /* Align main columns at bottom for postflop page */
+    [data-testid="stHorizontalBlock"]:first-of-type {
+        align-items: flex-end !important;
+    }
+    </style>
+    """, unsafe_allow_html=True)
 
     # Initialize postflop drill
     if 'postflop_drill' not in st.session_state:
@@ -2735,18 +2774,18 @@ def equity_quiz_page():
     with col_choices:
         # Question prompt
         st.markdown(f"""
-        <div style="text-align: center; margin: 10px 0 15px 0; font-size: 1rem; color: #94a3b8;">
+        <div style="text-align: center; margin: 10px 0 12px 0; font-size: 0.95rem; color: #94a3b8;">
             {t("equity_question")}
         </div>
         """, unsafe_allow_html=True)
 
-        # Labels for hero/villain with hand notation
+        # Labels for hero/villain
         hero_label = "我" if lang == "zh" else "Me"
         villain_label = "對手" if lang == "zh" else "Opp"
         hero_hand_str = question.hand1
         villain_hand_str = question.hand2
 
-        # Display choices as clickable equity bars with hand notation
+        # Display choices as styled equity matchup cards
         for i, choice in enumerate(choices):
             hero_pct = choice.equity1
             villain_pct = choice.equity2
@@ -2754,52 +2793,59 @@ def equity_quiz_page():
             # Determine styling based on answer state
             if has_answered:
                 if choice.is_correct:
-                    indicator = " ✅"
-                    border_style = "border: 3px solid #22c55e;"
+                    indicator = "✅"
+                    border_color = "#22c55e"
+                    opacity = "1"
                 elif i == answered_idx:
-                    indicator = " ❌"
-                    border_style = "border: 3px solid #ef4444;"
+                    indicator = "❌"
+                    border_color = "#ef4444"
+                    opacity = "1"
                 else:
                     indicator = ""
-                    border_style = "border: 2px solid #374151; opacity: 0.4;"
+                    border_color = "#374151"
+                    opacity = "0.4"
             else:
                 indicator = ""
-                border_style = "border: 2px solid #374151;"
+                border_color = "#374151"
+                opacity = "1"
 
-            # Button shows: "我 76s: 22% vs 對手 AA: 78%"
-            button_label = f"{hero_label} {hero_hand_str}: {hero_pct}% vs {villain_label} {villain_hand_str}: {villain_pct}%{indicator}"
-
-            if st.button(
-                button_label,
-                key=f"equity_choice_{i}",
-                use_container_width=True,
-                disabled=has_answered,
-            ):
-                st.session_state.equity_answered_idx = i
-                st.session_state.equity_score["total"] += 1
-                if choice.is_correct:
-                    st.session_state.equity_score["correct"] += 1
-                st.rerun()
-
-            # Visual bar below button - tight to button like underline
+            # Styled equity matchup card (like Learning page)
             st.markdown(f"""
-            <div style="
-                display: flex;
-                height: 6px;
-                border-radius: 3px;
-                overflow: hidden;
-                margin-top: -12px;
-                margin-bottom: 14px;
-                {border_style}
-            ">
-                <div style="width: {hero_pct}%; background: linear-gradient(90deg, #1e40af, #3b82f6);"></div>
-                <div style="width: {villain_pct}%; background: linear-gradient(90deg, #dc2626, #991b1b);"></div>
+            <div style="background: #1e293b; border-radius: 8px; padding: 10px; margin-bottom: 6px; border: 2px solid {border_color}; opacity: {opacity};">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                    <span style="color: #3b82f6; font-weight: bold; font-size: 0.95rem;">{hero_hand_str}</span>
+                    <span style="color: #64748b; font-size: 0.8rem;">vs</span>
+                    <span style="color: #ef4444; font-weight: bold; font-size: 0.95rem;">{villain_hand_str}</span>
+                    <span style="font-size: 0.9rem;">{indicator}</span>
+                </div>
+                <div style="display: flex; height: 22px; border-radius: 4px; overflow: hidden; background: #374151;">
+                    <div style="width: {hero_pct}%; background: linear-gradient(90deg, #1e40af, #3b82f6); display: flex; align-items: center; justify-content: center;">
+                        <span style="color: white; font-size: 11px; font-weight: bold;">{hero_pct}%</span>
+                    </div>
+                    <div style="width: {villain_pct}%; background: linear-gradient(90deg, #dc2626, #991b1b); display: flex; align-items: center; justify-content: center;">
+                        <span style="color: white; font-size: 11px; font-weight: bold;">{villain_pct}%</span>
+                    </div>
+                </div>
             </div>
             """, unsafe_allow_html=True)
 
-        # Next button only (no result message box)
+            # Small button below card for selection
+            if not has_answered:
+                select_label = "選擇" if lang == "zh" else "Select"
+                if st.button(
+                    select_label,
+                    key=f"equity_choice_{i}",
+                    use_container_width=True,
+                ):
+                    st.session_state.equity_answered_idx = i
+                    st.session_state.equity_score["total"] += 1
+                    if choice.is_correct:
+                        st.session_state.equity_score["correct"] += 1
+                    st.rerun()
+
+        # Next button
         if has_answered:
-            if st.button(t("equity_next"), key="equity_next", use_container_width=True):
+            if st.button(t("equity_next"), key="equity_next", use_container_width=True, type="primary"):
                 st.session_state.equity_question = quiz.generate_question(category=st.session_state.equity_category)
                 st.session_state.equity_choices = quiz.generate_choices(st.session_state.equity_question)
                 st.session_state.equity_answered_idx = None
