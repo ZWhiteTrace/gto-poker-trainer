@@ -52,7 +52,7 @@ def display_table_6max(
         folded_positions=folded_positions or [],
     )
 
-    components.html(html, height=330)
+    components.html(html, height=290)
 
 
 def display_table_9max(
