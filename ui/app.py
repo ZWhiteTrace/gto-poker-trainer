@@ -820,7 +820,6 @@ def drill_page():
         )
 
     with col_right:
-        # Display hand as visual cards with FIXED suits (seeded by spot)
         # Generate consistent suits based on spot identity
         import random
         spot_seed = f"{spot.scenario.hero_position.value}_{spot.scenario.action_type.value}_{spot.hand.notation}"
@@ -838,13 +837,10 @@ def drill_page():
             chosen_suits = rng.sample(suits, 2)
             s1, s2 = chosen_suits[0], chosen_suits[1]
 
-        # Display cards with fixed suits
         def get_suit_color(suit):
             return {'s': '#1a1a2e', 'h': '#ef4444', 'd': '#3b82f6', 'c': '#22c55e'}.get(suit, '#1a1a2e')
-
         def fmt_rank(rank):
             return "10" if rank == "T" else rank
-
         def get_suit_symbol(suit):
             return {'s': '♠', 'h': '♥', 'd': '♦', 'c': '♣'}.get(suit, suit)
 
@@ -853,25 +849,23 @@ def drill_page():
         c1, c2 = get_suit_color(s1), get_suit_color(s2)
         sym1, sym2 = get_suit_symbol(s1), get_suit_symbol(s2)
 
-        # Cards + title below (title left-aligned with hand notation)
+        # Build cards HTML (compact for inline display)
         cards_html = f'''
-        <div style="display:flex;justify-content:center;gap:6px;margin:0 0 5px 0;">
-            <div style="width:55px;height:78px;background:linear-gradient(145deg,#fff 0%,#f0f0f0 100%);border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;color:{c1};font-weight:bold;box-shadow:0 3px 10px rgba(0,0,0,0.3);transform:rotate(-5deg);">
-                <span style="font-size:22px;">{r1}</span><span style="font-size:18px;">{sym1}</span>
+        <div style="display:flex;gap:4px;align-items:center;">
+            <div style="width:38px;height:54px;background:linear-gradient(145deg,#fff 0%,#f0f0f0 100%);border-radius:5px;display:flex;flex-direction:column;align-items:center;justify-content:center;color:{c1};font-weight:bold;box-shadow:0 2px 4px rgba(0,0,0,0.3);transform:rotate(-3deg);">
+                <span style="font-size:16px;">{r1}</span><span style="font-size:12px;">{sym1}</span>
             </div>
-            <div style="width:55px;height:78px;background:linear-gradient(145deg,#fff 0%,#f0f0f0 100%);border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;color:{c2};font-weight:bold;box-shadow:0 3px 10px rgba(0,0,0,0.3);transform:rotate(5deg);margin-left:-10px;">
-                <span style="font-size:22px;">{r2}</span><span style="font-size:18px;">{sym2}</span>
+            <div style="width:38px;height:54px;background:linear-gradient(145deg,#fff 0%,#f0f0f0 100%);border-radius:5px;display:flex;flex-direction:column;align-items:center;justify-content:center;color:{c2};font-weight:bold;box-shadow:0 2px 4px rgba(0,0,0,0.3);transform:rotate(3deg);margin-left:-6px;">
+                <span style="font-size:16px;">{r2}</span><span style="font-size:12px;">{sym2}</span>
             </div>
         </div>
-        <div style="display:flex;justify-content:center;align-items:center;gap:8px;margin-bottom:8px;">
-            <span style="color:#fbbf24;font-size:0.85rem;">{t('your_hand')}</span>
-            <span style="color:#94a3b8;font-size:0.8rem;">({str(hand)})</span>
-        </div>
+        <div style="color:#fbbf24;font-size:0.7rem;margin-top:2px;">{t('your_hand')} <span style="color:#94a3b8;">({str(hand)})</span></div>
         '''
-        st.markdown(cards_html, unsafe_allow_html=True)
 
         # Action buttons - 2 columns for mobile-friendly layout
         if not st.session_state.show_result:
+            # Show cards above buttons when answering
+            st.markdown(cards_html, unsafe_allow_html=True)
             actions = spot.scenario.available_actions
 
             def handle_action(action):
@@ -938,38 +932,42 @@ def drill_page():
                                      type="primary" if action in ["raise", "3bet", "4bet", "5bet"] else "secondary"):
                             handle_action(action)
         else:
-            # Show result in right column with inline Next button
+            # Show result with 2-column layout: cards on left, result + next on right
             result = st.session_state.last_result
             explanation = result.explanation_zh if st.session_state.language == "zh" else result.explanation
             next_label = t('next_hand')
 
-            if result.is_correct:
-                st.markdown(f"""
-                <div style="background: #065f46; padding: 8px 10px; border-radius: 8px; border-left: 4px solid #10b981; margin-bottom: 6px;">
-                    <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <span style="color: #10b981; font-weight: bold; font-size: 0.95rem;">✅ {t('correct_answer')}</span>
-                    </div>
-                    <div style="font-size: 0.8rem; color: #94a3b8; margin-top: 3px;">{explanation}</div>
-                </div>
-                """, unsafe_allow_html=True)
-            else:
-                st.markdown(f"""
-                <div style="background: #7f1d1d; padding: 8px 10px; border-radius: 8px; border-left: 4px solid #ef4444; margin-bottom: 6px;">
-                    <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <span style="color: #ef4444; font-weight: bold; font-size: 0.95rem;">❌ {t('incorrect')}</span>
-                    </div>
-                    <div style="font-size: 0.8rem; margin-top: 3px;">{t('your_action')}: <b>{result.player_action.upper()}</b> → {t('correct_action')}: <b>{result.correct_action.upper()}</b></div>
-                    <div style="font-size: 0.75rem; color: #94a3b8; margin-top: 3px;">{explanation}</div>
-                </div>
-                """, unsafe_allow_html=True)
+            # 2-column layout within the right column
+            sub_left, sub_right = st.columns([1, 2])
 
-            # Next hand button
-            if st.button(next_label, use_container_width=True, type="primary"):
-                st.session_state.current_spot = None
-                st.session_state.show_result = False
-                st.rerun()
+            with sub_left:
+                # Show cards
+                st.markdown(cards_html, unsafe_allow_html=True)
 
-            # Show equity breakdown for vs 4-bet scenarios
+            with sub_right:
+                if result.is_correct:
+                    st.markdown(f"""
+                    <div style="background: #065f46; padding: 6px 8px; border-radius: 6px; border-left: 3px solid #10b981; margin-bottom: 4px;">
+                        <span style="color: #10b981; font-weight: bold; font-size: 0.85rem;">✅ {t('correct_answer')}</span>
+                        <div style="font-size: 0.7rem; color: #94a3b8; margin-top: 2px;">{explanation}</div>
+                    </div>
+                    """, unsafe_allow_html=True)
+                else:
+                    st.markdown(f"""
+                    <div style="background: #7f1d1d; padding: 6px 8px; border-radius: 6px; border-left: 3px solid #ef4444; margin-bottom: 4px;">
+                        <span style="color: #ef4444; font-weight: bold; font-size: 0.85rem;">❌ {t('incorrect')}</span>
+                        <div style="font-size: 0.7rem; margin-top: 2px;">{t('your_action')}: <b>{result.player_action.upper()}</b> → <b>{result.correct_action.upper()}</b></div>
+                        <div style="font-size: 0.65rem; color: #94a3b8; margin-top: 2px;">{explanation}</div>
+                    </div>
+                    """, unsafe_allow_html=True)
+
+                # Next hand button
+                if st.button(next_label, use_container_width=True, type="primary"):
+                    st.session_state.current_spot = None
+                    st.session_state.show_result = False
+                    st.rerun()
+
+            # Show equity breakdown for vs 4-bet scenarios (full width)
             if spot.scenario.action_type == ActionType.VS_4BET:
                 equity_html = get_equity_breakdown_html(str(spot.hand), st.session_state.language)
                 if equity_html:

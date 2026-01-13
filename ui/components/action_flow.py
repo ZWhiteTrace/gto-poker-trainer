@@ -96,10 +96,9 @@ def _display_vs_rfi_flow(hero_position: Position, villain_position: Position, la
 
 
 def _display_vs_3bet_flow(hero_position: Position, villain_position: Position, language: str):
-    """Display vs 3-bet action flow."""
-    # Simplified: "UTG 2.5bb → CO 3bet 8bb → UTG ?"
+    """Display vs 3-bet action flow - only last 2 steps for mobile."""
+    # Mobile-friendly: only show "CO 3bet 8bb → UTG ?"
     steps = [
-        {"pos": hero_position.value, "bb": 2.5, "color": "#3b82f6"},
         {"pos": villain_position.value, "action": "3bet", "bb": 8, "color": "#ef4444"},
         {"pos": hero_position.value, "action": "?", "color": "#fbbf24"},
     ]
@@ -107,11 +106,9 @@ def _display_vs_3bet_flow(hero_position: Position, villain_position: Position, l
 
 
 def _display_vs_4bet_flow(hero_position: Position, villain_position: Position, language: str):
-    """Display vs 4-bet action flow."""
-    # Simplified: "CO 2.5bb → SB 3bet 8bb → CO 4bet 20bb → SB ?"
+    """Display vs 4-bet action flow - only last 2 steps for mobile."""
+    # Mobile-friendly: only show "SB 4bet 20bb → BB ?"
     steps = [
-        {"pos": villain_position.value, "bb": 2.5, "color": "#6b7280"},
-        {"pos": hero_position.value, "action": "3bet", "bb": 8, "color": "#3b82f6"},
         {"pos": villain_position.value, "action": "4bet", "bb": 20, "color": "#ef4444"},
         {"pos": hero_position.value, "action": "?", "color": "#fbbf24"},
     ]

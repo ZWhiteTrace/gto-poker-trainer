@@ -196,22 +196,25 @@ def _generate_grid_html(grid_data: List[List[Dict]], highlight_hand: str = None)
     .range-grid {
         display: grid;
         grid-template-columns: repeat(13, 1fr);
-        gap: 2px;
-        max-width: 500px;
-        margin: 10px auto;
+        gap: 1px;
+        width: 100%;
+        max-width: min(100%, 400px);
+        margin: 8px auto;
+        overflow: hidden;
     }
     .range-cell {
         aspect-ratio: 1;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 11px;
+        font-size: clamp(8px, 2.2vw, 11px);
         font-weight: bold;
-        border-radius: 3px;
+        border-radius: 2px;
         cursor: default;
-        min-width: 32px;
-        min-height: 32px;
+        min-width: 0;
+        min-height: 0;
         position: relative;
+        overflow: hidden;
     }
     .range-cell.raise {
         background-color: #22c55e;
@@ -315,7 +318,7 @@ def _generate_grid_html(grid_data: List[List[Dict]], highlight_hand: str = None)
     </style>
     """
 
-    html = css + '<div class="range-grid">'
+    html = css + '<div style="width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch;"><div class="range-grid">'
 
     for row in grid_data:
         for cell in row:
@@ -329,7 +332,7 @@ def _generate_grid_html(grid_data: List[List[Dict]], highlight_hand: str = None)
             freq_attr = f' data-freq="Raise {freq}%"' if freq > 0 and freq < 100 else ''
             html += f'<div class="{classes}"{freq_attr}>{cell["hand"]}</div>'
 
-    html += '</div>'
+    html += '</div></div>'
     return html
 
 
