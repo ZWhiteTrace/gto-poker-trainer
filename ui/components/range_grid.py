@@ -74,6 +74,7 @@ def display_range_grid(
     mixed_raise: List[str] = None,
     mixed_call: List[str] = None,
     drillable_hands: List[str] = None,
+    frequencies: Dict[str, Dict[str, int]] = None,
 ):
     """
     Display an interactive range grid using Streamlit.
@@ -82,11 +83,13 @@ def display_range_grid(
     Args:
         drillable_hands: If provided, hands NOT in this list will be dimmed.
                          Used to show which hands are in the drilling focus.
+        frequencies: Dict of hand -> {action: frequency%}, e.g. {"A5s": {"raise": 70}}
     """
     raise_hands = raise_hands or []
     call_hands = call_hands or []
     mixed_raise = mixed_raise or []
     mixed_call = mixed_call or []
+    frequencies = frequencies or {}
 
     # Create sets for faster lookup
     raise_set = set(raise_hands)
@@ -110,16 +113,45 @@ def display_range_grid(
                 hand = f"{r2}{r1}o"
                 hand_type = "offsuit"
 
-            if hand in raise_set:
-                action = "raise"
-            elif hand in call_set:
-                action = "call"
-            elif hand in mixed_raise_set:
-                action = "mixed-raise"
-            elif hand in mixed_call_set:
-                action = "mixed-call"
+            # Get frequency for this hand
+            hand_freq = frequencies.get(hand, {})
+            raise_freq = hand_freq.get("raise", 0)
+
+            # Determine action based on frequency or existing logic
+            if frequencies:
+                # Use frequency-based coloring
+                if raise_freq >= 100:
+                    action = "raise"
+                    freq = 100
+                elif raise_freq >= 70:
+                    action = "raise-high"  # 70-99%
+                    freq = raise_freq
+                elif raise_freq >= 30:
+                    action = "raise-medium"  # 30-69%
+                    freq = raise_freq
+                elif raise_freq > 0:
+                    action = "raise-low"  # 1-29%
+                    freq = raise_freq
+                else:
+                    action = "fold"
+                    freq = 0
             else:
-                action = "fold"
+                # Legacy logic
+                if hand in raise_set:
+                    action = "raise"
+                    freq = 100
+                elif hand in call_set:
+                    action = "call"
+                    freq = 100
+                elif hand in mixed_raise_set:
+                    action = "mixed-raise"
+                    freq = 50
+                elif hand in mixed_call_set:
+                    action = "mixed-call"
+                    freq = 50
+                else:
+                    action = "fold"
+                    freq = 0
 
             is_highlight = (highlight_hand == hand)
             is_drillable = drillable_set is None or hand in drillable_set
@@ -130,6 +162,7 @@ def display_range_grid(
                 "action": action,
                 "highlight": is_highlight,
                 "drillable": is_drillable,
+                "freq": freq,
             })
         grid_data.append(row_data)
 
@@ -141,7 +174,8 @@ def display_range_grid(
         has_mixed = len(mixed_raise) > 0 or len(mixed_call) > 0
         has_drillable = drillable_set is not None
         has_call = len(call_hands) > 0 or len(mixed_call) > 0
-        _display_legend(show_mixed=has_mixed, show_drillable=has_drillable, show_call=has_call)
+        has_frequency = bool(frequencies)
+        _display_legend(show_mixed=has_mixed, show_drillable=has_drillable, show_call=has_call, show_frequency=has_frequency)
 
     # Show stats (optional)
     if show_stats:
@@ -182,6 +216,19 @@ def _generate_grid_html(grid_data: List[List[Dict]], highlight_hand: str = None)
     .range-cell.raise {
         background-color: #22c55e;
         color: white;
+    }
+    /* Frequency-based raise colors */
+    .range-cell.raise-high {
+        background-color: rgba(34, 197, 94, 0.85);  /* 70-99% */
+        color: white;
+    }
+    .range-cell.raise-medium {
+        background-color: rgba(34, 197, 94, 0.55);  /* 30-69% */
+        color: white;
+    }
+    .range-cell.raise-low {
+        background-color: rgba(34, 197, 94, 0.30);  /* 1-29% */
+        color: #d1d5db;
     }
     .range-cell.call {
         background-color: #3b82f6;
@@ -238,10 +285,13 @@ def _generate_grid_html(grid_data: List[List[Dict]], highlight_hand: str = None)
     .range-cell.offsuit {
         font-style: normal;
     }
-    /* Tooltip for mixed hands */
+    /* Tooltip for mixed/frequency hands */
     .range-cell.mixed-raise:hover::after,
-    .range-cell.mixed-call:hover::after {
-        content: "Mixed";
+    .range-cell.mixed-call:hover::after,
+    .range-cell.raise-high:hover::after,
+    .range-cell.raise-medium:hover::after,
+    .range-cell.raise-low:hover::after {
+        content: attr(data-freq);
         position: absolute;
         bottom: -20px;
         left: 50%;
@@ -274,20 +324,29 @@ def _generate_grid_html(grid_data: List[List[Dict]], highlight_hand: str = None)
                 classes += " highlight"
             if not cell.get('drillable', True):
                 classes += " dimmed"
-            html += f'<div class="{classes}">{cell["hand"]}</div>'
+            # Add frequency data attribute for tooltip
+            freq = cell.get('freq', 0)
+            freq_attr = f' data-freq="Raise {freq}%"' if freq > 0 and freq < 100 else ''
+            html += f'<div class="{classes}"{freq_attr}>{cell["hand"]}</div>'
 
     html += '</div>'
     return html
 
 
-def _display_legend(show_mixed: bool = False, show_drillable: bool = False, show_call: bool = True):
+def _display_legend(show_mixed: bool = False, show_drillable: bool = False, show_call: bool = True, show_frequency: bool = False):
     """Display the color legend with optional mixed frequency and drillable indicators."""
     mixed_html = '<span style="margin-right: 10px;"><span style="background: linear-gradient(135deg, #22c55e 50%, #374151 50%); color: white; padding: 2px 8px; border-radius: 3px; text-shadow: 0 1px 2px rgba(0,0,0,0.5);">M</span> Mixed</span>' if show_mixed else ""
     drillable_html = '<span style="margin-right: 10px;"><span style="background: #374151; color: #9ca3af; padding: 2px 8px; border-radius: 3px; opacity: 0.35;">dim</span> 非出題範圍</span>' if show_drillable else ""
     call_html = '<span style="margin-right: 10px;"><span style="background: #3b82f6; color: white; padding: 2px 8px; border-radius: 3px;">C</span> Call</span>' if show_call else ""
 
+    # Frequency legend
+    if show_frequency:
+        freq_html = '<span style="margin-right: 10px;"><span style="background: rgba(34, 197, 94, 0.85); color: white; padding: 2px 6px; border-radius: 3px;">70%+</span> <span style="background: rgba(34, 197, 94, 0.55); color: white; padding: 2px 6px; border-radius: 3px;">30-69%</span> <span style="background: rgba(34, 197, 94, 0.30); color: #d1d5db; padding: 2px 6px; border-radius: 3px;">&lt;30%</span></span>'
+    else:
+        freq_html = ""
+
     # Use single-line HTML to avoid rendering issues
-    html = f'<div style="display: flex; gap: 15px; justify-content: center; margin: 10px 0; flex-wrap: wrap;"><span style="margin-right: 10px;"><span style="background: #22c55e; color: white; padding: 2px 8px; border-radius: 3px;">R</span> Raise/3bet</span>{call_html}<span style="margin-right: 10px;"><span style="background: #374151; color: #9ca3af; padding: 2px 8px; border-radius: 3px;">F</span> Fold</span>{mixed_html}<span><span style="background: #f59e0b; color: black; padding: 2px 8px; border-radius: 3px;">H</span> Current Hand</span>{drillable_html}</div>'
+    html = f'<div style="display: flex; gap: 15px; justify-content: center; margin: 10px 0; flex-wrap: wrap;"><span style="margin-right: 10px;"><span style="background: #22c55e; color: white; padding: 2px 8px; border-radius: 3px;">R</span> Raise 100%</span>{freq_html}{call_html}<span style="margin-right: 10px;"><span style="background: #374151; color: #9ca3af; padding: 2px 8px; border-radius: 3px;">F</span> Fold</span>{mixed_html}<span><span style="background: #f59e0b; color: black; padding: 2px 8px; border-radius: 3px;">H</span> Current</span>{drillable_html}</div>'
     st.markdown(html, unsafe_allow_html=True)
 
 

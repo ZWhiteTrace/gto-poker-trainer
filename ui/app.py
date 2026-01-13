@@ -1307,12 +1307,18 @@ def viewer_page():
         scenario_type = action_type.lower().replace(" ", "_").replace("-", "_")
         drillable_hands = get_drillable_hands(range_data, scenario_type)
 
+        # Get frequency data if available (only for 6-max RFI currently)
+        frequencies = {}
+        if table_format == "6max" and action_type == "RFI":
+            frequencies = evaluator.get_frequencies_for_scenario(scenario, format=table_format)
+
         # Display range grid first
         display_range_grid(
             raise_hands=raise_hands,
             call_hands=call_hands,
             show_stats=False,
             drillable_hands=drillable_hands,
+            frequencies=frequencies,
         )
 
         # Range statistics (below grid, 2-column layout)
