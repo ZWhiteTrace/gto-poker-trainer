@@ -818,128 +818,58 @@ def drill_page():
             folded_positions=folded_positions,
         )
 
-    with col_right:
-        # Generate consistent suits based on spot identity
-        import random
-        spot_seed = f"{spot.scenario.hero_position.value}_{spot.scenario.action_type.value}_{spot.hand.notation}"
-        rng = random.Random(spot_seed)
-        suits = ['s', 'h', 'd', 'c']
-        hand = spot.hand
+    # Generate cards HTML (used in both col_right and buttons section)
+    import random
+    spot_seed = f"{spot.scenario.hero_position.value}_{spot.scenario.action_type.value}_{spot.hand.notation}"
+    rng = random.Random(spot_seed)
+    suits = ['s', 'h', 'd', 'c']
+    hand = spot.hand
 
-        if hand.is_pair:
-            chosen_suits = rng.sample(suits, 2)
-            s1, s2 = chosen_suits[0], chosen_suits[1]
-        elif hand.is_suited:
-            suit = rng.choice(suits)
-            s1, s2 = suit, suit
-        else:  # offsuit
-            chosen_suits = rng.sample(suits, 2)
-            s1, s2 = chosen_suits[0], chosen_suits[1]
+    if hand.is_pair:
+        chosen_suits = rng.sample(suits, 2)
+        s1, s2 = chosen_suits[0], chosen_suits[1]
+    elif hand.is_suited:
+        suit = rng.choice(suits)
+        s1, s2 = suit, suit
+    else:  # offsuit
+        chosen_suits = rng.sample(suits, 2)
+        s1, s2 = chosen_suits[0], chosen_suits[1]
 
-        def get_suit_color(suit):
-            return {'s': '#1a1a2e', 'h': '#ef4444', 'd': '#3b82f6', 'c': '#22c55e'}.get(suit, '#1a1a2e')
-        def fmt_rank(rank):
-            return "10" if rank == "T" else rank
-        def get_suit_symbol(suit):
-            return {'s': '♠', 'h': '♥', 'd': '♦', 'c': '♣'}.get(suit, suit)
+    def get_suit_color(suit):
+        return {'s': '#1a1a2e', 'h': '#ef4444', 'd': '#3b82f6', 'c': '#22c55e'}.get(suit, '#1a1a2e')
+    def fmt_rank(rank):
+        return "10" if rank == "T" else rank
+    def get_suit_symbol(suit):
+        return {'s': '♠', 'h': '♥', 'd': '♦', 'c': '♣'}.get(suit, suit)
 
-        r1 = fmt_rank(hand.rank1)
-        r2 = fmt_rank(hand.rank2)
-        c1, c2 = get_suit_color(s1), get_suit_color(s2)
-        sym1, sym2 = get_suit_symbol(s1), get_suit_symbol(s2)
+    r1 = fmt_rank(hand.rank1)
+    r2 = fmt_rank(hand.rank2)
+    c1, c2 = get_suit_color(s1), get_suit_color(s2)
+    sym1, sym2 = get_suit_symbol(s1), get_suit_symbol(s2)
 
-        # Build cards HTML - centered and larger
-        cards_html = f'''
-        <div style="display:flex;justify-content:center;gap:6px;align-items:center;">
-            <div style="width:55px;height:78px;background:linear-gradient(145deg,#fff 0%,#f0f0f0 100%);border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:center;color:{c1};font-weight:bold;box-shadow:0 2px 6px rgba(0,0,0,0.3);transform:rotate(-3deg);">
-                <span style="font-size:22px;">{r1}</span><span style="font-size:18px;">{sym1}</span>
-            </div>
-            <div style="width:55px;height:78px;background:linear-gradient(145deg,#fff 0%,#f0f0f0 100%);border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:center;color:{c2};font-weight:bold;box-shadow:0 2px 6px rgba(0,0,0,0.3);transform:rotate(3deg);margin-left:-8px;">
-                <span style="font-size:22px;">{r2}</span><span style="font-size:18px;">{sym2}</span>
-            </div>
+    # Build cards HTML - centered and larger
+    cards_html = f'''
+    <div style="display:flex;justify-content:center;gap:6px;align-items:center;">
+        <div style="width:55px;height:78px;background:linear-gradient(145deg,#fff 0%,#f0f0f0 100%);border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:center;color:{c1};font-weight:bold;box-shadow:0 2px 6px rgba(0,0,0,0.3);transform:rotate(-3deg);">
+            <span style="font-size:22px;">{r1}</span><span style="font-size:18px;">{sym1}</span>
         </div>
-        <div style="text-align:center;color:#fbbf24;font-size:0.85rem;margin-top:6px;">{t('your_hand')} <span style="color:#94a3b8;">({str(hand)})</span></div>
-        '''
+        <div style="width:55px;height:78px;background:linear-gradient(145deg,#fff 0%,#f0f0f0 100%);border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:center;color:{c2};font-weight:bold;box-shadow:0 2px 6px rgba(0,0,0,0.3);transform:rotate(3deg);margin-left:-8px;">
+            <span style="font-size:22px;">{r2}</span><span style="font-size:18px;">{sym2}</span>
+        </div>
+    </div>
+    <div style="text-align:center;color:#fbbf24;font-size:0.85rem;margin-top:6px;">{t('your_hand')} <span style="color:#94a3b8;">({str(hand)})</span></div>
+    '''
 
-        # Action buttons - 2 columns for mobile-friendly layout
-        if not st.session_state.show_result:
-            # Show cards above buttons when answering
-            st.markdown(cards_html, unsafe_allow_html=True)
-            actions = spot.scenario.available_actions
+    with col_right:
+        # Show cards in right column
+        st.markdown(cards_html, unsafe_allow_html=True)
 
-            def handle_action(action):
-                result = st.session_state.drill.check_answer(spot, action)
-                session.add_result(spot, action, result)
-                st.session_state.last_result = result
-                st.session_state.show_result = True
-
-                # Update streak
-                if result.is_correct:
-                    st.session_state.current_streak += 1
-                    if st.session_state.current_streak > st.session_state.best_streak:
-                        st.session_state.best_streak = st.session_state.current_streak
-                else:
-                    st.session_state.current_streak = 0
-
-                # Save progress to localStorage
-                progress = {
-                    'best_streak': st.session_state.best_streak,
-                    'total_hands_all_time': st.session_state.get('total_hands_all_time', 0) + 1,
-                    'total_correct_all_time': st.session_state.get('total_correct_all_time', 0) + (1 if result.is_correct else 0),
-                }
-                save_progress_to_storage(progress)
-                st.rerun()
-
-            # Always use 2-column layout for buttons
-            if len(actions) == 2:
-                col1, col2 = st.columns(2)
-                with col1:
-                    btn_label = get_action_label(actions[0], spot.scenario, st.session_state.language)
-                    if st.button(btn_label, key=f"action_{actions[0]}", use_container_width=True,
-                                 type="primary" if actions[0] in ["raise", "3bet", "4bet", "5bet"] else "secondary"):
-                        handle_action(actions[0])
-                with col2:
-                    btn_label = get_action_label(actions[1], spot.scenario, st.session_state.language)
-                    if st.button(btn_label, key=f"action_{actions[1]}", use_container_width=True,
-                                 type="secondary"):
-                        handle_action(actions[1])
-            elif len(actions) == 3:
-                # Row 1: first two actions
-                col1, col2 = st.columns(2)
-                with col1:
-                    btn_label = get_action_label(actions[0], spot.scenario, st.session_state.language)
-                    if st.button(btn_label, key=f"action_{actions[0]}", use_container_width=True,
-                                 type="primary" if actions[0] in ["raise", "3bet", "4bet", "5bet"] else "secondary"):
-                        handle_action(actions[0])
-                with col2:
-                    btn_label = get_action_label(actions[1], spot.scenario, st.session_state.language)
-                    if st.button(btn_label, key=f"action_{actions[1]}", use_container_width=True,
-                                 type="secondary"):
-                        handle_action(actions[1])
-                # Row 2: third action (full width)
-                btn_label = get_action_label(actions[2], spot.scenario, st.session_state.language)
-                if st.button(btn_label, key=f"action_{actions[2]}", use_container_width=True,
-                             type="secondary"):
-                    handle_action(actions[2])
-            else:
-                # Fallback for any other number of actions
-                cols = st.columns(min(len(actions), 2))
-                for i, action in enumerate(actions):
-                    with cols[i % 2]:
-                        btn_label = get_action_label(action, spot.scenario, st.session_state.language)
-                        if st.button(btn_label, key=f"action_{action}", use_container_width=True,
-                                     type="primary" if action in ["raise", "3bet", "4bet", "5bet"] else "secondary"):
-                            handle_action(action)
-        else:
-            # Show result - vertical layout (cards above result)
+        if st.session_state.show_result:
+            # Show result feedback
             result = st.session_state.last_result
             explanation = result.explanation_zh if st.session_state.language == "zh" else result.explanation
             next_label = t('next_hand')
 
-            # Show cards
-            st.markdown(cards_html, unsafe_allow_html=True)
-
-            # Show result feedback
             if result.is_correct:
                 st.markdown(f"""
                 <div style="background: #065f46; padding: 8px 10px; border-radius: 8px; border-left: 4px solid #10b981; margin: 6px 0;">
@@ -967,6 +897,74 @@ def drill_page():
                 equity_html = get_equity_breakdown_html(str(spot.hand), st.session_state.language)
                 if equity_html:
                     st.markdown(equity_html, unsafe_allow_html=True)
+
+    # Action buttons - OUTSIDE columns for proper horizontal layout
+    if not st.session_state.show_result:
+        actions = spot.scenario.available_actions
+
+        def handle_action(action):
+            result = st.session_state.drill.check_answer(spot, action)
+            session.add_result(spot, action, result)
+            st.session_state.last_result = result
+            st.session_state.show_result = True
+
+            # Update streak
+            if result.is_correct:
+                st.session_state.current_streak += 1
+                if st.session_state.current_streak > st.session_state.best_streak:
+                    st.session_state.best_streak = st.session_state.current_streak
+            else:
+                st.session_state.current_streak = 0
+
+            # Save progress to localStorage
+            progress = {
+                'best_streak': st.session_state.best_streak,
+                'total_hands_all_time': st.session_state.get('total_hands_all_time', 0) + 1,
+                'total_correct_all_time': st.session_state.get('total_correct_all_time', 0) + (1 if result.is_correct else 0),
+            }
+            save_progress_to_storage(progress)
+            st.rerun()
+
+        # Horizontal button layout - 2 columns side by side
+        if len(actions) == 2:
+            btn_cols = st.columns(2)
+            with btn_cols[0]:
+                btn_label = get_action_label(actions[0], spot.scenario, st.session_state.language)
+                if st.button(btn_label, key=f"action_{actions[0]}", use_container_width=True,
+                             type="primary" if actions[0] in ["raise", "3bet", "4bet", "5bet"] else "secondary"):
+                    handle_action(actions[0])
+            with btn_cols[1]:
+                btn_label = get_action_label(actions[1], spot.scenario, st.session_state.language)
+                if st.button(btn_label, key=f"action_{actions[1]}", use_container_width=True,
+                             type="secondary"):
+                    handle_action(actions[1])
+        elif len(actions) == 3:
+            # Row 1: first two actions side by side
+            btn_cols = st.columns(2)
+            with btn_cols[0]:
+                btn_label = get_action_label(actions[0], spot.scenario, st.session_state.language)
+                if st.button(btn_label, key=f"action_{actions[0]}", use_container_width=True,
+                             type="primary" if actions[0] in ["raise", "3bet", "4bet", "5bet"] else "secondary"):
+                    handle_action(actions[0])
+            with btn_cols[1]:
+                btn_label = get_action_label(actions[1], spot.scenario, st.session_state.language)
+                if st.button(btn_label, key=f"action_{actions[1]}", use_container_width=True,
+                             type="secondary"):
+                    handle_action(actions[1])
+            # Row 2: third action (full width)
+            btn_label = get_action_label(actions[2], spot.scenario, st.session_state.language)
+            if st.button(btn_label, key=f"action_{actions[2]}", use_container_width=True,
+                         type="secondary"):
+                handle_action(actions[2])
+        else:
+            # Fallback for any other number of actions (2 per row)
+            btn_cols = st.columns(2)
+            for idx, action in enumerate(actions):
+                with btn_cols[idx % 2]:
+                    btn_label = get_action_label(action, spot.scenario, st.session_state.language)
+                    if st.button(btn_label, key=f"action_{action}", use_container_width=True,
+                                 type="primary" if action in ["raise", "3bet", "4bet", "5bet"] else "secondary"):
+                        handle_action(action)
 
     # Show range below with stats - no title needed
     if st.session_state.show_result:
