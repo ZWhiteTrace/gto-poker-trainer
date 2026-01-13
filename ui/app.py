@@ -1104,135 +1104,115 @@ def viewer_page():
     stored_hero = st.session_state.get(f"viewer_hero_{i}")
     hero_pos = stored_hero if stored_hero in valid_positions else (valid_positions[-1] if valid_positions else "BTN")
 
-    # Two-column layout: Table visual + Position selectors
-    col_table, col_select = st.columns([1, 1.2])
+    # Determine villain position first (needed for table display)
+    villain_pos = None
+    villains = []
+    if action_type != "RFI":
+        hero_idx = position_options.index(hero_pos) if hero_pos in position_options else 0
+        if action_type == "vs Open":
+            villains = position_options[:hero_idx]
+        elif action_type == "vs 3-Bet":
+            villains = position_options[hero_idx + 1:]
+        else:  # vs 4-Bet
+            villains = position_options[:hero_idx]
+        stored_villain = st.session_state.get(f"viewer_villain_{i}")
+        villain_pos = stored_villain if stored_villain in villains else (villains[0] if villains else None)
 
-    with col_table:
-        # Display mini poker table with current selection
-        villain_pos = None
-        if action_type != "RFI":
-            hero_idx = position_options.index(hero_pos) if hero_pos in position_options else 0
-            if action_type == "vs Open":
-                # Facing open: villain opened from earlier position
-                villains = position_options[:hero_idx]
-            elif action_type == "vs 3-Bet":
-                # You opened, villain 3-bet from later position
-                villains = position_options[hero_idx + 1:]
-            else:  # vs 4-Bet
-                # Villain opened, you 3-bet, villain 4-bet - villain is earlier position
-                villains = position_options[:hero_idx]
-            # Validate stored villain is in current valid villains list
-            stored_villain = st.session_state.get(f"viewer_villain_{i}")
-            villain_pos = stored_villain if stored_villain in villains else (villains[0] if villains else None)
+    # Position mapping
+    pos_map = {
+        "UTG": Position.UTG, "HJ": Position.HJ, "CO": Position.CO,
+        "BTN": Position.BTN, "SB": Position.SB, "BB": Position.BB,
+        "UTG+1": Position.UTG1, "UTG+2": Position.UTG2, "MP": Position.MP,
+    }
+    hero_position = pos_map.get(hero_pos)
+    villain_position = pos_map.get(villain_pos) if villain_pos else None
 
-        # Show table visualization
-        pos_map = {
-            "UTG": Position.UTG, "HJ": Position.HJ, "CO": Position.CO,
-            "BTN": Position.BTN, "SB": Position.SB, "BB": Position.BB,
-            "UTG+1": Position.UTG1, "UTG+2": Position.UTG2, "MP": Position.MP,
-        }
-        hero_position = pos_map.get(hero_pos)
-        villain_position = pos_map.get(villain_pos) if villain_pos else None
+    # Build bets and action based on scenario type
+    bets = None
+    show_action = None
+    folded_positions = []
+    all_positions = [Position.UTG, Position.HJ, Position.CO, Position.BTN, Position.SB, Position.BB]
+    if table_format == "9max":
+        all_positions = [Position.UTG, Position.UTG1, Position.UTG2, Position.MP, Position.HJ, Position.CO, Position.BTN, Position.SB, Position.BB]
 
-        # Build bets and action based on scenario type
-        bets = None
-        show_action = None
-        folded_positions = []
+    if action_type == "vs Open" and villain_position:
+        show_action = "Raises"
+        bets = {villain_position: "2.5bb"}
+        for pos in all_positions:
+            if pos != hero_position and pos != villain_position:
+                folded_positions.append(pos)
+    elif action_type == "vs 3-Bet" and villain_position:
+        show_action = "3-Bets"
+        bets = {hero_position: "2.5bb", villain_position: "8bb"}
+        for pos in all_positions:
+            if pos != hero_position and pos != villain_position:
+                folded_positions.append(pos)
+    elif action_type == "vs 4-Bet" and villain_position:
+        show_action = "4-Bets"
+        bets = {hero_position: "8bb", villain_position: "20bb"}
+        for pos in all_positions:
+            if pos != hero_position and pos != villain_position:
+                folded_positions.append(pos)
 
-        # For non-RFI scenarios, all positions except hero and villain are folded
-        if action_type == "vs Open" and villain_position:
-            show_action = "Raises"
-            bets = {villain_position: "2.5bb"}
-            # Everyone except hero and villain has folded
-            all_positions = [Position.UTG, Position.HJ, Position.CO, Position.BTN, Position.SB, Position.BB]
-            if table_format == "9max":
-                all_positions = [Position.UTG, Position.UTG1, Position.UTG2, Position.MP, Position.HJ, Position.CO, Position.BTN, Position.SB, Position.BB]
-            for pos in all_positions:
-                if pos != hero_position and pos != villain_position:
-                    folded_positions.append(pos)
-        elif action_type == "vs 3-Bet" and villain_position:
-            show_action = "3-Bets"
-            bets = {hero_position: "2.5bb", villain_position: "8bb"}
-            # Everyone except hero and villain has folded
-            all_positions = [Position.UTG, Position.HJ, Position.CO, Position.BTN, Position.SB, Position.BB]
-            if table_format == "9max":
-                all_positions = [Position.UTG, Position.UTG1, Position.UTG2, Position.MP, Position.HJ, Position.CO, Position.BTN, Position.SB, Position.BB]
-            for pos in all_positions:
-                if pos != hero_position and pos != villain_position:
-                    folded_positions.append(pos)
-        elif action_type == "vs 4-Bet" and villain_position:
-            show_action = "4-Bets"
-            bets = {hero_position: "8bb", villain_position: "20bb"}
-            # Everyone except hero and villain has folded
-            all_positions = [Position.UTG, Position.HJ, Position.CO, Position.BTN, Position.SB, Position.BB]
-            if table_format == "9max":
-                all_positions = [Position.UTG, Position.UTG1, Position.UTG2, Position.MP, Position.HJ, Position.CO, Position.BTN, Position.SB, Position.BB]
-            for pos in all_positions:
-                if pos != hero_position and pos != villain_position:
-                    folded_positions.append(pos)
+    # Display table (centered, full width)
+    display_table(
+        hero_position=hero_position,
+        villain_position=villain_position,
+        show_action=show_action,
+        format=table_format,
+        bets=bets,
+        lang=st.session_state.language,
+        folded_positions=folded_positions if folded_positions else None,
+    )
 
-        display_table(
-            hero_position=hero_position,
-            villain_position=villain_position,
-            show_action=show_action,
-            format=table_format,
-            bets=bets,
-            lang=st.session_state.language,
-            folded_positions=folded_positions if folded_positions else None,
-        )
+    # Position buttons below table - 5 or 6 columns
+    st.markdown(f"<div style='font-size: 0.85rem; color: #94a3b8; margin-top: 8px;'>{t('your_position')}</div>", unsafe_allow_html=True)
 
-    with col_select:
-        # Position selection with styled buttons - 3-column layout
-        st.markdown(f"**{t('your_position')}**")
+    # Use 5 columns for 6-max (5 positions excl BB), 5 columns for 9-max row 1, remaining in row 2
+    num_cols = min(len(valid_positions), 6)
+    hero_cols = st.columns(num_cols)
+    for j, pos in enumerate(valid_positions[:num_cols]):
+        with hero_cols[j]:
+            is_selected = pos == hero_pos
+            if st.button(pos, key=f"hero_{i}_{pos}", use_container_width=True, type="primary" if is_selected else "secondary"):
+                st.session_state[f"viewer_hero_{i}"] = pos
+                st.rerun()
 
-        # 3-column layout for hero positions
-        for row_start in range(0, len(valid_positions), 3):
-            row_positions = valid_positions[row_start:row_start + 3]
-            cols = st.columns(3)
-            for j, pos in enumerate(row_positions):
-                with cols[j]:
-                    is_selected = pos == hero_pos
-                    if st.button(
-                        pos,
-                        key=f"hero_{i}_{pos}",
-                        use_container_width=True,
-                        type="primary" if is_selected else "secondary"
-                    ):
-                        st.session_state[f"viewer_hero_{i}"] = pos
+    # Second row if needed (9-max has more positions)
+    if len(valid_positions) > num_cols:
+        remaining = valid_positions[num_cols:]
+        hero_cols2 = st.columns(len(remaining))
+        for j, pos in enumerate(remaining):
+            with hero_cols2[j]:
+                is_selected = pos == hero_pos
+                if st.button(pos, key=f"hero_{i}_{pos}", use_container_width=True, type="primary" if is_selected else "secondary"):
+                    st.session_state[f"viewer_hero_{i}"] = pos
+                    st.rerun()
+
+    # Villain position (if applicable)
+    villain_pos_select = villain_pos
+    if action_type != "RFI" and villains:
+        st.markdown(f"<div style='font-size: 0.85rem; color: #94a3b8; margin-top: 6px;'>{t('opponent_position')}</div>", unsafe_allow_html=True)
+
+        num_villain_cols = min(len(villains), 6)
+        villain_cols = st.columns(num_villain_cols)
+        for j, pos in enumerate(villains[:num_villain_cols]):
+            with villain_cols[j]:
+                is_selected = pos == villain_pos_select
+                if st.button(pos, key=f"villain_{i}_{pos}", use_container_width=True, type="primary" if is_selected else "secondary"):
+                    st.session_state[f"viewer_villain_{i}"] = pos
+                    st.rerun()
+
+        # Second row if needed
+        if len(villains) > num_villain_cols:
+            remaining_v = villains[num_villain_cols:]
+            villain_cols2 = st.columns(len(remaining_v))
+            for j, pos in enumerate(remaining_v):
+                with villain_cols2[j]:
+                    is_selected = pos == villain_pos_select
+                    if st.button(pos, key=f"villain_{i}_{pos}", use_container_width=True, type="primary" if is_selected else "secondary"):
+                        st.session_state[f"viewer_villain_{i}"] = pos
                         st.rerun()
-
-        # Villain position (if applicable)
-        villain_pos_select = None
-        if action_type != "RFI":
-            hero_idx = position_options.index(hero_pos) if hero_pos in position_options else 0
-
-            if action_type == "vs Open":
-                villains = position_options[:hero_idx]
-            elif action_type == "vs 3-Bet":
-                villains = position_options[hero_idx + 1:]
-            else:  # vs 4-Bet
-                villains = position_options[:hero_idx]
-
-            if villains:
-                st.markdown(f"**{t('opponent_position')}**")
-                stored_villain = st.session_state.get(f"viewer_villain_{i}")
-                villain_pos_select = stored_villain if stored_villain in villains else villains[0]
-
-                # 3-column layout for villain positions
-                for row_start in range(0, len(villains), 3):
-                    row_positions = villains[row_start:row_start + 3]
-                    vcols = st.columns(3)
-                    for j, pos in enumerate(row_positions):
-                        with vcols[j]:
-                            is_selected = pos == villain_pos_select
-                            if st.button(
-                                pos,
-                                key=f"villain_{i}_{pos}",
-                                use_container_width=True,
-                                type="primary" if is_selected else "secondary"
-                            ):
-                                st.session_state[f"viewer_villain_{i}"] = pos
-                                st.rerun()
 
     # Build and display scenario
     action_map = {
