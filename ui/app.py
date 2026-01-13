@@ -849,17 +849,17 @@ def drill_page():
         c1, c2 = get_suit_color(s1), get_suit_color(s2)
         sym1, sym2 = get_suit_symbol(s1), get_suit_symbol(s2)
 
-        # Build cards HTML
+        # Build cards HTML - centered and larger
         cards_html = f'''
-        <div style="display:flex;gap:6px;align-items:center;">
-            <div style="width:50px;height:70px;background:linear-gradient(145deg,#fff 0%,#f0f0f0 100%);border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:center;color:{c1};font-weight:bold;box-shadow:0 2px 6px rgba(0,0,0,0.3);transform:rotate(-3deg);">
-                <span style="font-size:20px;">{r1}</span><span style="font-size:16px;">{sym1}</span>
+        <div style="display:flex;justify-content:center;gap:6px;align-items:center;">
+            <div style="width:55px;height:78px;background:linear-gradient(145deg,#fff 0%,#f0f0f0 100%);border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:center;color:{c1};font-weight:bold;box-shadow:0 2px 6px rgba(0,0,0,0.3);transform:rotate(-3deg);">
+                <span style="font-size:22px;">{r1}</span><span style="font-size:18px;">{sym1}</span>
             </div>
-            <div style="width:50px;height:70px;background:linear-gradient(145deg,#fff 0%,#f0f0f0 100%);border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:center;color:{c2};font-weight:bold;box-shadow:0 2px 6px rgba(0,0,0,0.3);transform:rotate(3deg);margin-left:-8px;">
-                <span style="font-size:20px;">{r2}</span><span style="font-size:16px;">{sym2}</span>
+            <div style="width:55px;height:78px;background:linear-gradient(145deg,#fff 0%,#f0f0f0 100%);border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:center;color:{c2};font-weight:bold;box-shadow:0 2px 6px rgba(0,0,0,0.3);transform:rotate(3deg);margin-left:-8px;">
+                <span style="font-size:22px;">{r2}</span><span style="font-size:18px;">{sym2}</span>
             </div>
         </div>
-        <div style="color:#fbbf24;font-size:0.8rem;margin-top:4px;">{t('your_hand')} <span style="color:#94a3b8;">({str(hand)})</span></div>
+        <div style="text-align:center;color:#fbbf24;font-size:0.85rem;margin-top:6px;">{t('your_hand')} <span style="color:#94a3b8;">({str(hand)})</span></div>
         '''
 
         # Action buttons - 2 columns for mobile-friendly layout
