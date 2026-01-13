@@ -30,6 +30,7 @@ class Evaluator:
 
     # Threshold for "acceptable" actions in mixed strategies
     ACCEPTABLE_THRESHOLD = 30  # Actions with >=30% frequency are acceptable
+    PRIMARY_ACTION_THRESHOLD = 75  # Actions with >=75% frequency are "correct"
 
     def __init__(self, data_dir: Path = None):
         if data_dir is None:
@@ -99,19 +100,26 @@ class Evaluator:
         """
         Get the GTO-correct action for a hand in a scenario.
         Returns: "raise", "fold", "call", "3bet", "4bet", "5bet"
+
+        For RFI: Uses frequency data directly (>= PRIMARY_ACTION_THRESHOLD = raise)
         """
-        ranges = self.load_ranges(format)
-
         if scenario.action_type == ActionType.RFI:
-            rfi_data = ranges.get("rfi", {})
-            position_data = rfi_data.get(scenario.hero_position.value, {})
-            raise_hands = position_data.get("raise", [])
+            # Use frequencies directly - single source of truth
+            frequencies = self.load_frequencies(format)
+            rfi_freq = frequencies.get("rfi", {})
+            position_data = rfi_freq.get(scenario.hero_position.value, {})
+            freq_data = position_data.get("frequencies", {})
+            hand_freq = freq_data.get(str(hand), {})
 
-            if str(hand) in raise_hands:
+            raise_freq = hand_freq.get("raise", 0)
+            if raise_freq >= self.PRIMARY_ACTION_THRESHOLD:
                 return "raise"
             return "fold"
 
-        elif scenario.action_type == ActionType.VS_RFI:
+        # For other scenarios, still use load_ranges (TODO: migrate to frequencies)
+        ranges = self.load_ranges(format)
+
+        if scenario.action_type == ActionType.VS_RFI:
             vs_rfi_data = ranges.get("vs_rfi", {})
             key = f"{scenario.hero_position.value}_vs_{scenario.villain_position.value}"
             position_data = vs_rfi_data.get(key, {})
@@ -275,14 +283,29 @@ class Evaluator:
         return f"正確動作是{action_zh}。{freq_info}"
 
     def get_range_for_scenario(self, scenario: Scenario, format: str = "6max") -> Dict[str, List[str]]:
-        """Get full range data for a scenario."""
+        """Get full range data for a scenario. Derives raise/fold lists from frequencies for RFI."""
+        if scenario.action_type == ActionType.RFI:
+            # Derive from frequencies - single source of truth
+            frequencies = self.load_frequencies(format)
+            rfi_freq = frequencies.get("rfi", {})
+            position_data = rfi_freq.get(scenario.hero_position.value, {})
+            freq_data = position_data.get("frequencies", {})
+
+            raise_hands = []
+            fold_hands = []
+            for hand, freq in freq_data.items():
+                raise_freq = freq.get("raise", 0)
+                if raise_freq >= self.PRIMARY_ACTION_THRESHOLD:
+                    raise_hands.append(hand)
+                elif raise_freq == 0:
+                    fold_hands.append(hand)
+                # Mixed hands (0 < freq < 75) go to neither list explicitly
+
+            return {"raise": raise_hands, "fold": fold_hands}
+
         ranges = self.load_ranges(format)
 
-        if scenario.action_type == ActionType.RFI:
-            rfi_data = ranges.get("rfi", {})
-            return rfi_data.get(scenario.hero_position.value, {})
-
-        elif scenario.action_type == ActionType.VS_RFI:
+        if scenario.action_type == ActionType.VS_RFI:
             vs_rfi_data = ranges.get("vs_rfi", {})
             key = f"{scenario.hero_position.value}_vs_{scenario.villain_position.value}"
             return vs_rfi_data.get(key, {})
