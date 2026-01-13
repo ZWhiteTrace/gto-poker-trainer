@@ -849,17 +849,17 @@ def drill_page():
         c1, c2 = get_suit_color(s1), get_suit_color(s2)
         sym1, sym2 = get_suit_symbol(s1), get_suit_symbol(s2)
 
-        # Build cards HTML (compact for inline display)
+        # Build cards HTML
         cards_html = f'''
-        <div style="display:flex;gap:4px;align-items:center;">
-            <div style="width:38px;height:54px;background:linear-gradient(145deg,#fff 0%,#f0f0f0 100%);border-radius:5px;display:flex;flex-direction:column;align-items:center;justify-content:center;color:{c1};font-weight:bold;box-shadow:0 2px 4px rgba(0,0,0,0.3);transform:rotate(-3deg);">
-                <span style="font-size:16px;">{r1}</span><span style="font-size:12px;">{sym1}</span>
+        <div style="display:flex;gap:6px;align-items:center;">
+            <div style="width:50px;height:70px;background:linear-gradient(145deg,#fff 0%,#f0f0f0 100%);border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:center;color:{c1};font-weight:bold;box-shadow:0 2px 6px rgba(0,0,0,0.3);transform:rotate(-3deg);">
+                <span style="font-size:20px;">{r1}</span><span style="font-size:16px;">{sym1}</span>
             </div>
-            <div style="width:38px;height:54px;background:linear-gradient(145deg,#fff 0%,#f0f0f0 100%);border-radius:5px;display:flex;flex-direction:column;align-items:center;justify-content:center;color:{c2};font-weight:bold;box-shadow:0 2px 4px rgba(0,0,0,0.3);transform:rotate(3deg);margin-left:-6px;">
-                <span style="font-size:16px;">{r2}</span><span style="font-size:12px;">{sym2}</span>
+            <div style="width:50px;height:70px;background:linear-gradient(145deg,#fff 0%,#f0f0f0 100%);border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:center;color:{c2};font-weight:bold;box-shadow:0 2px 6px rgba(0,0,0,0.3);transform:rotate(3deg);margin-left:-8px;">
+                <span style="font-size:20px;">{r2}</span><span style="font-size:16px;">{sym2}</span>
             </div>
         </div>
-        <div style="color:#fbbf24;font-size:0.7rem;margin-top:2px;">{t('your_hand')} <span style="color:#94a3b8;">({str(hand)})</span></div>
+        <div style="color:#fbbf24;font-size:0.8rem;margin-top:4px;">{t('your_hand')} <span style="color:#94a3b8;">({str(hand)})</span></div>
         '''
 
         # Action buttons - 2 columns for mobile-friendly layout
@@ -932,42 +932,38 @@ def drill_page():
                                      type="primary" if action in ["raise", "3bet", "4bet", "5bet"] else "secondary"):
                             handle_action(action)
         else:
-            # Show result with 2-column layout: cards on left, result + next on right
+            # Show result - vertical layout (cards above result)
             result = st.session_state.last_result
             explanation = result.explanation_zh if st.session_state.language == "zh" else result.explanation
             next_label = t('next_hand')
 
-            # 2-column layout within the right column
-            sub_left, sub_right = st.columns([1, 2])
+            # Show cards
+            st.markdown(cards_html, unsafe_allow_html=True)
 
-            with sub_left:
-                # Show cards
-                st.markdown(cards_html, unsafe_allow_html=True)
+            # Show result feedback
+            if result.is_correct:
+                st.markdown(f"""
+                <div style="background: #065f46; padding: 8px 10px; border-radius: 8px; border-left: 4px solid #10b981; margin: 6px 0;">
+                    <span style="color: #10b981; font-weight: bold; font-size: 0.95rem;">✅ {t('correct_answer')}</span>
+                    <div style="font-size: 0.8rem; color: #94a3b8; margin-top: 3px;">{explanation}</div>
+                </div>
+                """, unsafe_allow_html=True)
+            else:
+                st.markdown(f"""
+                <div style="background: #7f1d1d; padding: 8px 10px; border-radius: 8px; border-left: 4px solid #ef4444; margin: 6px 0;">
+                    <span style="color: #ef4444; font-weight: bold; font-size: 0.95rem;">❌ {t('incorrect')}</span>
+                    <div style="font-size: 0.8rem; margin-top: 3px;">{t('your_action')}: <b>{result.player_action.upper()}</b> → {t('correct_action')}: <b>{result.correct_action.upper()}</b></div>
+                    <div style="font-size: 0.75rem; color: #94a3b8; margin-top: 3px;">{explanation}</div>
+                </div>
+                """, unsafe_allow_html=True)
 
-            with sub_right:
-                if result.is_correct:
-                    st.markdown(f"""
-                    <div style="background: #065f46; padding: 6px 8px; border-radius: 6px; border-left: 3px solid #10b981; margin-bottom: 4px;">
-                        <span style="color: #10b981; font-weight: bold; font-size: 0.85rem;">✅ {t('correct_answer')}</span>
-                        <div style="font-size: 0.7rem; color: #94a3b8; margin-top: 2px;">{explanation}</div>
-                    </div>
-                    """, unsafe_allow_html=True)
-                else:
-                    st.markdown(f"""
-                    <div style="background: #7f1d1d; padding: 6px 8px; border-radius: 6px; border-left: 3px solid #ef4444; margin-bottom: 4px;">
-                        <span style="color: #ef4444; font-weight: bold; font-size: 0.85rem;">❌ {t('incorrect')}</span>
-                        <div style="font-size: 0.7rem; margin-top: 2px;">{t('your_action')}: <b>{result.player_action.upper()}</b> → <b>{result.correct_action.upper()}</b></div>
-                        <div style="font-size: 0.65rem; color: #94a3b8; margin-top: 2px;">{explanation}</div>
-                    </div>
-                    """, unsafe_allow_html=True)
+            # Next hand button
+            if st.button(next_label, use_container_width=True, type="primary"):
+                st.session_state.current_spot = None
+                st.session_state.show_result = False
+                st.rerun()
 
-                # Next hand button
-                if st.button(next_label, use_container_width=True, type="primary"):
-                    st.session_state.current_spot = None
-                    st.session_state.show_result = False
-                    st.rerun()
-
-            # Show equity breakdown for vs 4-bet scenarios (full width)
+            # Show equity breakdown for vs 4-bet scenarios
             if spot.scenario.action_type == ActionType.VS_4BET:
                 equity_html = get_equity_breakdown_html(str(spot.hand), st.session_state.language)
                 if equity_html:
@@ -1165,36 +1161,15 @@ def viewer_page():
         )
 
     with col_select:
-        # Position selection with styled buttons
+        # Position selection with styled buttons - fixed 2-column layout
         st.markdown(f"**{t('your_position')}**")
 
-        # Split positions into two rows for better layout
-        if len(valid_positions) > 4:
-            row1 = valid_positions[:len(valid_positions)//2 + 1]
-            row2 = valid_positions[len(valid_positions)//2 + 1:]
-        else:
-            row1 = valid_positions
-            row2 = []
-
-        # First row of hero positions
-        cols1 = st.columns(len(row1))
-        for j, pos in enumerate(row1):
-            with cols1[j]:
-                is_selected = pos == hero_pos
-                if st.button(
-                    pos,
-                    key=f"hero_{i}_{pos}",
-                    use_container_width=True,
-                    type="primary" if is_selected else "secondary"
-                ):
-                    st.session_state[f"viewer_hero_{i}"] = pos
-                    st.rerun()
-
-        # Second row if needed
-        if row2:
-            cols2 = st.columns(len(row2))
-            for j, pos in enumerate(row2):
-                with cols2[j]:
+        # 2-column layout for hero positions
+        for row_start in range(0, len(valid_positions), 2):
+            row_positions = valid_positions[row_start:row_start + 2]
+            cols = st.columns(2)
+            for j, pos in enumerate(row_positions):
+                with cols[j]:
                     is_selected = pos == hero_pos
                     if st.button(
                         pos,
@@ -1222,30 +1197,12 @@ def viewer_page():
                 stored_villain = st.session_state.get(f"viewer_villain_{i}")
                 villain_pos_select = stored_villain if stored_villain in villains else villains[0]
 
-                if len(villains) > 4:
-                    v_row1 = villains[:len(villains)//2 + 1]
-                    v_row2 = villains[len(villains)//2 + 1:]
-                else:
-                    v_row1 = villains
-                    v_row2 = []
-
-                vcols1 = st.columns(len(v_row1))
-                for j, pos in enumerate(v_row1):
-                    with vcols1[j]:
-                        is_selected = pos == villain_pos_select
-                        if st.button(
-                            pos,
-                            key=f"villain_{i}_{pos}",
-                            use_container_width=True,
-                            type="primary" if is_selected else "secondary"
-                        ):
-                            st.session_state[f"viewer_villain_{i}"] = pos
-                            st.rerun()
-
-                if v_row2:
-                    vcols2 = st.columns(len(v_row2))
-                    for j, pos in enumerate(v_row2):
-                        with vcols2[j]:
+                # 2-column layout for villain positions
+                for row_start in range(0, len(villains), 2):
+                    row_positions = villains[row_start:row_start + 2]
+                    vcols = st.columns(2)
+                    for j, pos in enumerate(row_positions):
+                        with vcols[j]:
                             is_selected = pos == villain_pos_select
                             if st.button(
                                 pos,
