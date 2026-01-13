@@ -552,30 +552,31 @@ def main():
         )
         page = ["Drill Mode", "Range Viewer", "Postflop", "Equity Quiz", "Outs Quiz", "Learning", "Statistics"][page_idx]
 
-        # Settings section (compact)
-        st.caption(f"⚙️ {t('settings')}")
+        # Settings section (compact) - only show table format on Drill Mode and Range Viewer
+        if page in ["Drill Mode", "Range Viewer"]:
+            st.caption(f"⚙️ {t('settings')}")
 
-        # Table format toggle
-        table_format = st.radio(
-            t("table_format"),
-            options=["6-max", "9-max"],
-            index=0 if st.session_state.table_format == "6max" else 1,
-            horizontal=True,
-            label_visibility="collapsed",
-        )
-        new_format = "6max" if table_format == "6-max" else "9max"
-        if new_format != st.session_state.table_format:
-            st.session_state.table_format = new_format
-            st.session_state.drill = PreflopDrill(format=new_format)
-            st.session_state.current_spot = None
-            # Reset drill settings for new format (RFI only for beginners)
-            if new_format == "9max":
-                st.session_state.drill_action_types = ["RFI"]
-                st.session_state.drill_positions = ["UTG", "UTG+1", "UTG+2", "MP", "HJ", "CO", "BTN", "SB", "BB"]
-            else:
-                st.session_state.drill_action_types = ["RFI"]
-                st.session_state.drill_positions = ["UTG", "HJ", "CO", "BTN", "SB", "BB"]
-            st.rerun()
+            # Table format toggle
+            table_format = st.radio(
+                t("table_format"),
+                options=["6-max", "9-max"],
+                index=0 if st.session_state.table_format == "6max" else 1,
+                horizontal=True,
+                label_visibility="collapsed",
+            )
+            new_format = "6max" if table_format == "6-max" else "9max"
+            if new_format != st.session_state.table_format:
+                st.session_state.table_format = new_format
+                st.session_state.drill = PreflopDrill(format=new_format)
+                st.session_state.current_spot = None
+                # Reset drill settings for new format (RFI only for beginners)
+                if new_format == "9max":
+                    st.session_state.drill_action_types = ["RFI"]
+                    st.session_state.drill_positions = ["UTG", "UTG+1", "UTG+2", "MP", "HJ", "CO", "BTN", "SB", "BB"]
+                else:
+                    st.session_state.drill_action_types = ["RFI"]
+                    st.session_state.drill_positions = ["UTG", "HJ", "CO", "BTN", "SB", "BB"]
+                st.rerun()
 
         # Drill settings (collapsed by default for 6-max with complete data)
         if page == "Drill Mode":
@@ -1285,7 +1286,10 @@ def viewer_page():
         # Get frequency data if available (only for 6-max RFI currently)
         frequencies = {}
         if table_format == "6max" and action_type == "RFI":
-            frequencies = evaluator.get_frequencies_for_scenario(scenario, format=table_format)
+            try:
+                frequencies = evaluator.get_frequencies_for_scenario(scenario, format=table_format)
+            except AttributeError:
+                frequencies = {}  # Fallback if method doesn't exist
 
         # Display range grid first
         display_range_grid(
@@ -1586,46 +1590,89 @@ def stats_page():
         st.info(t("no_stats"))
         return
 
-    # Overall stats - 2-column layout for mobile
-    row1_col1, row1_col2 = st.columns(2)
-    with row1_col1:
-        st.metric(t("total_hands"), session.total_spots)
-    with row1_col2:
-        st.metric(t("correct"), session.correct_count)
-
-    row2_col1, row2_col2 = st.columns(2)
-    with row2_col1:
-        st.metric(t("incorrect_count"), session.incorrect_count)
-    with row2_col2:
-        st.metric(t("accuracy"), session.accuracy_percent)
-
-    row3_col1, row3_col2 = st.columns(2)
-    with row3_col1:
-        st.metric(t("best_streak"), f"🔥 {st.session_state.best_streak}")
+    # Overall stats using CSS grid (maintains 2-column on mobile)
+    st.markdown(f"""
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px;">
+        <div style="background: #1e293b; padding: 12px; border-radius: 8px; text-align: center;">
+            <div style="color: #fbbf24; font-size: 1.5rem; font-weight: bold;">{session.total_spots}</div>
+            <div style="color: #94a3b8; font-size: 0.8rem;">{t("total_hands")}</div>
+        </div>
+        <div style="background: #1e293b; padding: 12px; border-radius: 8px; text-align: center;">
+            <div style="color: #22c55e; font-size: 1.5rem; font-weight: bold;">{session.correct_count}</div>
+            <div style="color: #94a3b8; font-size: 0.8rem;">{t("correct")}</div>
+        </div>
+        <div style="background: #1e293b; padding: 12px; border-radius: 8px; text-align: center;">
+            <div style="color: #ef4444; font-size: 1.5rem; font-weight: bold;">{session.incorrect_count}</div>
+            <div style="color: #94a3b8; font-size: 0.8rem;">{t("incorrect_count")}</div>
+        </div>
+        <div style="background: #1e293b; padding: 12px; border-radius: 8px; text-align: center;">
+            <div style="color: #3b82f6; font-size: 1.5rem; font-weight: bold;">{session.accuracy_percent}</div>
+            <div style="color: #94a3b8; font-size: 0.8rem;">{t("accuracy")}</div>
+        </div>
+    </div>
+    <div style="background: linear-gradient(135deg, #1e3a5f 0%, #0f172a 100%); padding: 12px; border-radius: 8px; text-align: center; margin-bottom: 12px;">
+        <div style="color: #fbbf24; font-size: 1.8rem; font-weight: bold;">🔥 {st.session_state.best_streak}</div>
+        <div style="color: #94a3b8; font-size: 0.8rem;">{t("best_streak")}</div>
+    </div>
+    """, unsafe_allow_html=True)
 
     st.markdown("---")
 
-    # Stats by position
-    col1, col2 = st.columns(2)
+    # Stats by position/action - use CSS grid (maintains 2-column on mobile)
+    pos_stats = session.get_stats_by_position()
+    action_stats = session.get_stats_by_action_type()
 
-    with col1:
-        st.subheader(t("by_position"))
-        pos_stats = session.get_stats_by_position()
-        if pos_stats:
-            for pos, stats in pos_stats.items():
-                acc = stats['accuracy'] * 100
-                color = "#10b981" if acc >= 70 else "#f59e0b" if acc >= 50 else "#ef4444"
-                st.markdown(f"**{pos}**: {stats['correct']}/{stats['total']} ({acc:.0f}%)")
-                st.progress(stats['accuracy'])
+    # Build position stats HTML
+    pos_html = ""
+    if pos_stats:
+        for pos, stats in pos_stats.items():
+            acc = stats['accuracy'] * 100
+            color = "#10b981" if acc >= 70 else "#f59e0b" if acc >= 50 else "#ef4444"
+            pos_html += f"""
+            <div style="margin-bottom: 8px;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 2px;">
+                    <span style="color: #e2e8f0; font-weight: bold;">{pos}</span>
+                    <span style="color: {color};">{stats['correct']}/{stats['total']} ({acc:.0f}%)</span>
+                </div>
+                <div style="background: #374151; border-radius: 4px; height: 6px; overflow: hidden;">
+                    <div style="background: {color}; width: {acc}%; height: 100%;"></div>
+                </div>
+            </div>
+            """
 
-    with col2:
-        st.subheader(t("by_action_type"))
-        action_stats = session.get_stats_by_action_type()
-        if action_stats:
-            for action_type, stats in action_stats.items():
-                acc = stats['accuracy'] * 100
-                st.markdown(f"**{action_type.upper()}**: {stats['correct']}/{stats['total']} ({acc:.0f}%)")
-                st.progress(stats['accuracy'])
+    # Build action stats HTML
+    action_html = ""
+    if action_stats:
+        for action_type, stats in action_stats.items():
+            acc = stats['accuracy'] * 100
+            color = "#10b981" if acc >= 70 else "#f59e0b" if acc >= 50 else "#ef4444"
+            action_html += f"""
+            <div style="margin-bottom: 8px;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 2px;">
+                    <span style="color: #e2e8f0; font-weight: bold;">{action_type.upper()}</span>
+                    <span style="color: {color};">{stats['correct']}/{stats['total']} ({acc:.0f}%)</span>
+                </div>
+                <div style="background: #374151; border-radius: 4px; height: 6px; overflow: hidden;">
+                    <div style="background: {color}; width: {acc}%; height: 100%;"></div>
+                </div>
+            </div>
+            """
+
+    by_position_label = t("by_position")
+    by_action_label = t("by_action_type")
+
+    st.markdown(f"""
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+        <div>
+            <div style="color: #f8fafc; font-size: 1rem; font-weight: bold; margin-bottom: 10px;">{by_position_label}</div>
+            {pos_html}
+        </div>
+        <div>
+            <div style="color: #f8fafc; font-size: 1rem; font-weight: bold; margin-bottom: 10px;">{by_action_label}</div>
+            {action_html}
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
 
     # Mistakes review
     st.markdown("---")
