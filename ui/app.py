@@ -994,11 +994,21 @@ def drill_page():
         call_hands = range_data.get("call", [])
         drillable_hands = st.session_state.drill.get_drillable_hands_for_spot(spot)
 
+        # Get frequency data for RFI scenarios (6-max only currently)
+        frequencies = {}
+        if st.session_state.table_format == "6max" and spot.scenario.action_type == ActionType.RFI:
+            try:
+                evaluator = Evaluator()
+                frequencies = evaluator.get_frequencies_for_scenario(spot.scenario, format="6max")
+            except (AttributeError, Exception):
+                frequencies = {}
+
         display_range_grid(
             raise_hands=raise_hands,
             call_hands=call_hands,
             highlight_hand=str(spot.hand),
             drillable_hands=drillable_hands,
+            frequencies=frequencies,
         )
 
 
@@ -1676,6 +1686,14 @@ def stats_page():
                         scenario_type = m.spot.scenario.action_type.value
                         drillable_hands = get_drillable_hands(range_data, scenario_type)
 
+                        # Get frequency data for RFI scenarios
+                        frequencies = {}
+                        if st.session_state.table_format == "6max" and m.spot.scenario.action_type == ActionType.RFI:
+                            try:
+                                frequencies = evaluator.get_frequencies_for_scenario(m.spot.scenario, format="6max")
+                            except (AttributeError, Exception):
+                                frequencies = {}
+
                         display_range_grid(
                             raise_hands=raise_hands,
                             call_hands=call_hands,
@@ -1684,6 +1702,7 @@ def stats_page():
                             show_stats=False,
                             key=f"mistake_range_{m.spot.hand}_{m.spot.scenario.hero_position.value}",
                             drillable_hands=drillable_hands,
+                            frequencies=frequencies,
                         )
     else:
         st.success(t("no_mistakes") + " 🎉")
