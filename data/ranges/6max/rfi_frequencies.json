@@ -4,7 +4,7 @@
     "stack_depth": "100bb",
     "raise_size": "2.5bb (SB 3.5bb)",
     "source": "GTOWizard NL25 100BB 2026",
-    "note": "Frequencies from GTOWizard Cash 6-Max NL25 常規 2.5x",
+    "note": "Frequencies from GTOWizard Cash 6-Max NL25 Simple 簡單下注模式",
     "version": "3.0",
     "last_updated": "2026-01-17",
     "frequency_threshold": {
@@ -17,29 +17,28 @@
   "UTG": {
     "frequencies": {
       "AA": {"raise": 100}, "KK": {"raise": 100}, "QQ": {"raise": 100}, "JJ": {"raise": 100}, "TT": {"raise": 100},
-      "99": {"raise": 100}, "88": {"raise": 100}, "77": {"raise": 100}, "66": {"raise": 50},
-      "55": {"raise": 30}, "44": {"raise": 20}, "33": {"raise": 15}, "22": {"raise": 20},
+      "99": {"raise": 100}, "88": {"raise": 100}, "77": {"raise": 50}, "66": {"raise": 10},
+      "55": {"raise": 10},
       "AKs": {"raise": 100}, "AQs": {"raise": 100}, "AJs": {"raise": 100}, "ATs": {"raise": 100},
       "A9s": {"raise": 100}, "A8s": {"raise": 100}, "A7s": {"raise": 100}, "A6s": {"raise": 100},
-      "A5s": {"raise": 100}, "A4s": {"raise": 100}, "A3s": {"raise": 100}, "A2s": {"raise": 50},
+      "A5s": {"raise": 100}, "A4s": {"raise": 100}, "A3s": {"raise": 100}, "A2s": {"raise": 100},
       "KQs": {"raise": 100}, "KJs": {"raise": 100}, "KTs": {"raise": 100}, "K9s": {"raise": 100},
-      "K8s": {"raise": 100}, "K7s": {"raise": 35}, "K6s": {"raise": 50}, "K5s": {"raise": 50},
+      "K8s": {"raise": 100}, "K7s": {"raise": 100}, "K6s": {"raise": 100}, "K5s": {"raise": 100}, "K4s": {"raise": 10},
       "QJs": {"raise": 100}, "QTs": {"raise": 100}, "Q9s": {"raise": 100},
-      "JTs": {"raise": 100}, "J9s": {"raise": 50},
-      "T9s": {"raise": 100},
+      "JTs": {"raise": 50},
       "87s": {"raise": 30},
-      "76s": {"raise": 50},
-      "65s": {"raise": 50},
-      "54s": {"raise": 50},
+      "65s": {"raise": 10},
+      "54s": {"raise": 10},
       "AKo": {"raise": 100}, "AQo": {"raise": 100}, "AJo": {"raise": 100}, "ATo": {"raise": 100},
-      "KQo": {"raise": 100}, "KJo": {"raise": 100}, "KTo": {"raise": 35},
+      "A9o": {"raise": 35}, "A5o": {"raise": 35},
+      "KQo": {"raise": 100}, "KJo": {"raise": 100}, "KTo": {"raise": 60},
       "QJo": {"raise": 50}
     },
     "stats": {
       "total_hands": 169,
-      "raise_hands": 48,
-      "estimated_vpip_contribution": 3.2,
-      "note": "UTG: 22-66混合, A2s+, K5s+混合, 連張(87s-54s)混合"
+      "raise_hands": 42,
+      "estimated_vpip_contribution": 2.8,
+      "note": "UTG簡單模式: 88+, 77/66/55混合, A2s+, K4s+, 無小對子無連張"
     }
   },
   "HJ": {
