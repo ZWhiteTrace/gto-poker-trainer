@@ -262,7 +262,7 @@ def display_rfi_chart_earliest(evaluator: Evaluator, lang: str = "zh"):
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: clamp(10px, 3.5vw, 14px);
+        font-size: clamp(12px, 4vw, 18px);
         font-weight: bold;
         border-radius: 3px;
         color: white;
