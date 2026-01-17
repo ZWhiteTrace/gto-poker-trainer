@@ -172,7 +172,7 @@ def display_rfi_chart_earliest(evaluator: Evaluator, lang: str = "zh"):
     legend_html = '<div style="display: flex; gap: 15px; justify-content: center; margin: 10px 0; flex-wrap: wrap;">'
     for pos, color in POSITION_COLORS.items():
         legend_html += f'<span style="display: flex; align-items: center; gap: 4px;"><span style="background: {color}; width: 20px; height: 14px; border-radius: 2px; display: inline-block;"></span> {pos}</span>'
-    legend_html += '<span style="display: flex; align-items: center; gap: 4px;"><span style="background: #6b7280; width: 20px; height: 14px; border-radius: 2px; display: inline-block;"></span> Fold</span>'
+    legend_html += '<span style="display: flex; align-items: center; gap: 4px;"><span style="background: #374151; width: 20px; height: 14px; border-radius: 2px; display: inline-block;"></span> Fold</span>'
     legend_html += '</div>'
     st.markdown(legend_html, unsafe_allow_html=True)
 
@@ -186,7 +186,7 @@ def display_rfi_chart_earliest(evaluator: Evaluator, lang: str = "zh"):
         width: 100%;
         max-width: 650px;
         margin: 10px auto;
-        background: #f0f0f0;
+        background: #1a1a2e;
         padding: 8px;
         border-radius: 8px;
     }
@@ -199,12 +199,12 @@ def display_rfi_chart_earliest(evaluator: Evaluator, lang: str = "zh"):
         font-weight: bold;
         border-radius: 3px;
         color: white;
-        text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+        text-shadow: 0 1px 2px rgba(0,0,0,0.5);
     }
     .rfi-earliest-cell.fold {
-        background: #e5e5e5;
-        color: #9ca3af;
-        text-shadow: none;
+        background: #374151;
+        color: white;
+        text-shadow: 0 1px 2px rgba(0,0,0,0.5);
     }
     </style>
     """
