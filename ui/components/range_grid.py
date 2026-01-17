@@ -226,7 +226,7 @@ def _generate_grid_html(grid_data: List[List[Dict]], highlight_hand: str = None)
         width: 100%;
         max-width: min(100%, 500px);
         margin: 8px auto;
-        overflow: hidden;
+        overflow: visible;
     }
     @media (min-width: 768px) {
         .range-grid {
@@ -241,13 +241,19 @@ def _generate_grid_html(grid_data: List[List[Dict]], highlight_hand: str = None)
         font-size: clamp(10px, 3vw, 15px);
         font-weight: bold;
         border-radius: 2px;
-        cursor: default;
+        cursor: pointer;
         min-width: 0;
         min-height: 0;
         position: relative;
-        overflow: hidden;
+        overflow: visible;
         color: white;
         text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+        transition: transform 0.15s ease, z-index 0s;
+    }
+    .range-cell:hover {
+        transform: scale(1.3);
+        z-index: 100;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.4);
     }
     .range-cell.highlight {
         box-shadow: 0 0 0 3px white;
@@ -256,6 +262,45 @@ def _generate_grid_html(grid_data: List[List[Dict]], highlight_hand: str = None)
     .range-cell.dimmed {
         opacity: 0.80;
     }
+    /* Custom tooltip */
+    .range-cell .tooltip {
+        visibility: hidden;
+        opacity: 0;
+        position: absolute;
+        bottom: 100%;
+        left: 50%;
+        transform: translateX(-50%);
+        background: rgba(15, 23, 42, 0.95);
+        color: white;
+        padding: 6px 10px;
+        border-radius: 6px;
+        font-size: 12px;
+        font-weight: normal;
+        white-space: nowrap;
+        z-index: 1000;
+        pointer-events: none;
+        transition: opacity 0.2s ease, visibility 0.2s ease;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        margin-bottom: 6px;
+        text-shadow: none;
+    }
+    .range-cell .tooltip::after {
+        content: '';
+        position: absolute;
+        top: 100%;
+        left: 50%;
+        transform: translateX(-50%);
+        border: 6px solid transparent;
+        border-top-color: rgba(15, 23, 42, 0.95);
+    }
+    .range-cell:hover .tooltip {
+        visibility: visible;
+        opacity: 1;
+    }
+    .tooltip .freq-raise { color: #f87171; font-weight: bold; }
+    .tooltip .freq-call { color: #4ade80; font-weight: bold; }
+    .tooltip .freq-fold { color: #60a5fa; font-weight: bold; }
+    .tooltip .hand-name { color: #fbbf24; font-weight: bold; margin-right: 6px; }
     </style>
     """
 
@@ -309,18 +354,22 @@ def _generate_grid_html(grid_data: List[List[Dict]], highlight_hand: str = None)
 
                 bg_style = f"background:linear-gradient(to right,{','.join(stops)});"
 
-            # Build tooltip with frequency info
-            tooltip_parts = []
-            if raise_freq > 0:
-                tooltip_parts.append(f"R:{raise_freq}%")
-            if call_freq > 0:
-                tooltip_parts.append(f"C:{call_freq}%")
-            if fold_freq > 0 and (raise_freq > 0 or call_freq > 0):
-                tooltip_parts.append(f"F:{fold_freq}%")
-            tooltip = ' '.join(tooltip_parts) if tooltip_parts and raise_freq < 100 and call_freq < 100 else ''
-            title_attr = f' title="{tooltip}"' if tooltip else ''
+            # Build styled tooltip with frequency info
+            tooltip_html = ""
+            if raise_freq > 0 or call_freq > 0:
+                tooltip_parts = []
+                tooltip_parts.append(f'<span class="hand-name">{cell["hand"]}</span>')
+                if raise_freq > 0:
+                    tooltip_parts.append(f'<span class="freq-raise">R:{raise_freq}%</span>')
+                if call_freq > 0:
+                    tooltip_parts.append(f'<span class="freq-call">C:{call_freq}%</span>')
+                if fold_freq > 0:
+                    tooltip_parts.append(f'<span class="freq-fold">F:{fold_freq}%</span>')
+                tooltip_html = f'<span class="tooltip">{" ".join(tooltip_parts)}</span>'
+            elif fold_freq == 100:
+                tooltip_html = f'<span class="tooltip"><span class="hand-name">{cell["hand"]}</span> <span class="freq-fold">Fold 100%</span></span>'
 
-            html += f'<div class="{classes}" style="{bg_style}"{title_attr}>{cell["hand"]}</div>'
+            html += f'<div class="{classes}" style="{bg_style}">{cell["hand"]}{tooltip_html}</div>'
 
     html += '</div></div>'
     return html
