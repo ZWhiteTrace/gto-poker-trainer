@@ -17,265 +17,213 @@
   "HJ_vs_UTG": {
     "frequencies": {
       "AA": {
-        "3bet": 12,
-        "call": 88
+        "3bet": 100
       },
       "KK": {
-        "3bet": 10,
-        "call": 90
+        "3bet": 100
       },
       "QQ": {
-        "call": 100
+        "3bet": 100
       },
       "JJ": {
-        "call": 100
-      },
-      "AKs": {
-        "3bet": 10,
-        "call": 90
-      },
-      "AKo": {
-        "3bet": 10,
-        "call": 90
-      },
-      "AQs": {
-        "3bet": 10,
-        "call": 90
-      },
-      "AQo": {
-        "call": 100
-      },
-      "AJs": {
-        "call": 100
-      },
-      "ATs": {
-        "call": 100
-      },
-      "A9s": {
-        "call": 100
-      },
-      "A8s": {
-        "call": 100
-      },
-      "A7s": {
-        "call": 100
-      },
-      "A5s": {
-        "3bet": 10,
-        "call": 90
-      },
-      "A4s": {
-        "3bet": 10,
-        "call": 90
-      },
-      "A3s": {
-        "call": 100
-      },
-      "A2s": {
-        "call": 100
-      },
-      "KQs": {
-        "3bet": 10,
-        "call": 90
-      },
-      "KJs": {
-        "call": 100
-      },
-      "KTs": {
-        "call": 100
-      },
-      "K9s": {
-        "call": 100
-      },
-      "KQo": {
-        "call": 100
+        "3bet": 100
       },
       "TT": {
-        "call": 100
+        "3bet": 100
       },
       "99": {
-        "call": 100
+        "3bet": 100
       },
-      "88": {
-        "call": 14
+      "AKs": {
+        "3bet": 100
       },
-      "77": {
-        "call": 19
+      "AQs": {
+        "3bet": 100
+      },
+      "AJs": {
+        "3bet": 100
+      },
+      "ATs": {
+        "3bet": 100
+      },
+      "A9s": {
+        "3bet": 50
+      },
+      "A8s": {
+        "3bet": 50
+      },
+      "A7s": {
+        "3bet": 45
+      },
+      "A6s": {
+        "3bet": 10
+      },
+      "A5s": {
+        "3bet": 100
+      },
+      "A4s": {
+        "3bet": 100
+      },
+      "A3s": {
+        "3bet": 55
+      },
+      "AKo": {
+        "3bet": 100
+      },
+      "AQo": {
+        "3bet": 100
+      },
+      "AJo": {
+        "3bet": 100
+      },
+      "ATo": {
+        "3bet": 100
+      },
+      "KQs": {
+        "3bet": 100
+      },
+      "KJs": {
+        "3bet": 100
+      },
+      "KTs": {
+        "3bet": 100
+      },
+      "K9s": {
+        "3bet": 100
+      },
+      "KQo": {
+        "3bet": 100
       },
       "QJs": {
-        "call": 100
+        "3bet": 100
       },
       "QTs": {
-        "call": 100
+        "3bet": 100
       },
       "JTs": {
-        "call": 100
-      },
-      "J9s": {
-        "call": 10
+        "3bet": 100
       },
       "T9s": {
-        "call": 100
-      },
-      "98s": {
-        "call": 10
-      },
-      "87s": {
-        "call": 14
+        "3bet": 100
       },
       "76s": {
-        "call": 19
+        "3bet": 10
       },
       "65s": {
-        "call": 10
+        "3bet": 25
       },
       "54s": {
-        "call": 18
+        "3bet": 20
       }
     },
     "stats": {
-      "note": "HJ vs UTG Full GTO: Mostly call, low 3bet frequency"
+      "note": "HJ_vs_UTG: 3bet/fold only (no call) vs UTG open"
     }
   },
   "CO_vs_UTG": {
     "frequencies": {
       "AA": {
-        "3bet": 12,
-        "call": 88
+        "3bet": 100
       },
       "KK": {
-        "3bet": 10,
-        "call": 90
+        "3bet": 100
       },
       "QQ": {
-        "call": 100
+        "3bet": 100
       },
       "JJ": {
-        "call": 100
-      },
-      "AKs": {
-        "3bet": 10,
-        "call": 90
-      },
-      "AKo": {
-        "3bet": 10,
-        "call": 90
-      },
-      "AQs": {
-        "3bet": 10,
-        "call": 90
-      },
-      "AQo": {
-        "call": 100
-      },
-      "AJs": {
-        "call": 100
-      },
-      "ATs": {
-        "call": 100
-      },
-      "A9s": {
-        "call": 100
-      },
-      "A8s": {
-        "call": 100
-      },
-      "A7s": {
-        "call": 100
-      },
-      "A5s": {
-        "3bet": 10,
-        "call": 90
-      },
-      "A4s": {
-        "3bet": 10,
-        "call": 90
-      },
-      "A3s": {
-        "call": 100
-      },
-      "A2s": {
-        "call": 100
-      },
-      "KQs": {
-        "3bet": 10,
-        "call": 90
-      },
-      "KJs": {
-        "call": 100
-      },
-      "KTs": {
-        "call": 100
-      },
-      "K9s": {
-        "call": 100
-      },
-      "KQo": {
-        "call": 100
+        "3bet": 100
       },
       "TT": {
-        "call": 100
+        "3bet": 100
       },
       "99": {
-        "call": 100
+        "3bet": 100
       },
-      "88": {
-        "call": 100
+      "AKs": {
+        "3bet": 100
       },
-      "77": {
-        "call": 100
+      "AQs": {
+        "3bet": 100
       },
-      "66": {
-        "call": 100
+      "AJs": {
+        "3bet": 100
       },
-      "55": {
-        "call": 100
+      "ATs": {
+        "3bet": 100
       },
-      "44": {
-        "call": 43
+      "A9s": {
+        "3bet": 50
       },
-      "33": {
-        "call": 23
+      "A8s": {
+        "3bet": 50
       },
-      "22": {
-        "call": 43
+      "A7s": {
+        "3bet": 45
+      },
+      "A6s": {
+        "3bet": 10
+      },
+      "A5s": {
+        "3bet": 100
+      },
+      "A4s": {
+        "3bet": 100
+      },
+      "A3s": {
+        "3bet": 55
+      },
+      "AKo": {
+        "3bet": 100
+      },
+      "AQo": {
+        "3bet": 100
+      },
+      "AJo": {
+        "3bet": 100
+      },
+      "ATo": {
+        "3bet": 100
+      },
+      "KQs": {
+        "3bet": 100
+      },
+      "KJs": {
+        "3bet": 100
+      },
+      "KTs": {
+        "3bet": 100
+      },
+      "K9s": {
+        "3bet": 100
+      },
+      "KQo": {
+        "3bet": 100
       },
       "QJs": {
-        "call": 100
+        "3bet": 100
       },
       "QTs": {
-        "call": 100
-      },
-      "Q9s": {
-        "call": 100
+        "3bet": 100
       },
       "JTs": {
-        "call": 100
-      },
-      "J9s": {
-        "call": 100
+        "3bet": 100
       },
       "T9s": {
-        "call": 100
-      },
-      "98s": {
-        "call": 10
-      },
-      "87s": {
-        "call": 12
+        "3bet": 100
       },
       "76s": {
-        "call": 18
+        "3bet": 10
       },
       "65s": {
-        "call": 17
+        "3bet": 25
       },
       "54s": {
-        "call": 17
+        "3bet": 20
       }
     },
     "stats": {
-      "note": "CO vs UTG Full GTO: Wide call range"
+      "note": "CO_vs_UTG: 3bet/fold only (no call) vs UTG open"
     }
   },
   "CO_vs_HJ": {
@@ -423,161 +371,107 @@
   "BTN_vs_UTG": {
     "frequencies": {
       "AA": {
-        "3bet": 14,
-        "call": 86
+        "3bet": 100
       },
       "KK": {
-        "3bet": 10,
-        "call": 90
+        "3bet": 100
       },
       "QQ": {
-        "3bet": 10,
-        "call": 90
+        "3bet": 100
       },
       "JJ": {
-        "call": 100
-      },
-      "AKs": {
-        "3bet": 10,
-        "call": 90
-      },
-      "AKo": {
-        "3bet": 10,
-        "call": 90
-      },
-      "AQs": {
-        "3bet": 10,
-        "call": 90
-      },
-      "AQo": {
-        "call": 100
-      },
-      "AJs": {
-        "call": 100
-      },
-      "ATs": {
-        "call": 100
-      },
-      "A9s": {
-        "call": 100
-      },
-      "A8s": {
-        "call": 100
-      },
-      "A7s": {
-        "call": 100
-      },
-      "A5s": {
-        "3bet": 10,
-        "call": 90
-      },
-      "A4s": {
-        "3bet": 10,
-        "call": 90
-      },
-      "A3s": {
-        "call": 100
-      },
-      "A2s": {
-        "call": 100
-      },
-      "KQs": {
-        "3bet": 10,
-        "call": 90
-      },
-      "KJs": {
-        "call": 100
-      },
-      "KTs": {
-        "call": 100
-      },
-      "K9s": {
-        "call": 100
-      },
-      "KQo": {
-        "call": 100
+        "3bet": 100
       },
       "TT": {
-        "call": 100
+        "3bet": 100
       },
       "99": {
-        "call": 100
+        "3bet": 100
       },
-      "88": {
-        "call": 100
+      "AKs": {
+        "3bet": 100
       },
-      "77": {
-        "call": 100
+      "AQs": {
+        "3bet": 100
       },
-      "66": {
-        "call": 100
+      "AJs": {
+        "3bet": 100
       },
-      "55": {
-        "call": 100
+      "ATs": {
+        "3bet": 100
       },
-      "44": {
-        "call": 100
+      "A9s": {
+        "3bet": 50
       },
-      "33": {
-        "call": 100
+      "A8s": {
+        "3bet": 50
       },
-      "22": {
-        "call": 100
+      "A7s": {
+        "3bet": 45
+      },
+      "A6s": {
+        "3bet": 10
+      },
+      "A5s": {
+        "3bet": 100
+      },
+      "A4s": {
+        "3bet": 100
+      },
+      "A3s": {
+        "3bet": 55
+      },
+      "AKo": {
+        "3bet": 100
+      },
+      "AQo": {
+        "3bet": 100
+      },
+      "AJo": {
+        "3bet": 100
+      },
+      "ATo": {
+        "3bet": 100
+      },
+      "KQs": {
+        "3bet": 100
+      },
+      "KJs": {
+        "3bet": 100
+      },
+      "KTs": {
+        "3bet": 100
+      },
+      "K9s": {
+        "3bet": 100
+      },
+      "KQo": {
+        "3bet": 100
       },
       "QJs": {
-        "call": 100
+        "3bet": 100
       },
       "QTs": {
-        "call": 100
-      },
-      "Q9s": {
-        "call": 100
+        "3bet": 100
       },
       "JTs": {
-        "call": 100
-      },
-      "J9s": {
-        "call": 100
+        "3bet": 100
       },
       "T9s": {
-        "call": 100
-      },
-      "T8s": {
-        "call": 100
-      },
-      "98s": {
-        "call": 100
-      },
-      "97s": {
-        "call": 100
-      },
-      "87s": {
-        "call": 100
-      },
-      "86s": {
-        "call": 100
+        "3bet": 100
       },
       "76s": {
-        "call": 100
-      },
-      "75s": {
-        "call": 100
+        "3bet": 10
       },
       "65s": {
-        "call": 100
-      },
-      "64s": {
-        "call": 100
+        "3bet": 25
       },
       "54s": {
-        "call": 100
-      },
-      "53s": {
-        "call": 100
+        "3bet": 20
       }
     },
     "stats": {
-      "note": "BTN vs UTG Full GTO: Very wide call range"
+      "note": "BTN_vs_UTG: 3bet/fold only (no call) vs UTG open"
     }
   },
   "BTN_vs_HJ": {
@@ -921,136 +815,107 @@
   "SB_vs_UTG": {
     "frequencies": {
       "AA": {
-        "3bet": 12,
-        "call": 88
+        "3bet": 100
       },
       "KK": {
-        "3bet": 10,
-        "call": 90
+        "3bet": 100
       },
       "QQ": {
-        "call": 100
+        "3bet": 100
       },
       "JJ": {
-        "call": 100
-      },
-      "AKs": {
-        "3bet": 10,
-        "call": 90
-      },
-      "AKo": {
-        "3bet": 10,
-        "call": 90
-      },
-      "AQs": {
-        "3bet": 10,
-        "call": 90
-      },
-      "AQo": {
-        "call": 100
-      },
-      "AJs": {
-        "call": 100
-      },
-      "ATs": {
-        "call": 100
-      },
-      "A9s": {
-        "call": 100
-      },
-      "A8s": {
-        "call": 100
-      },
-      "A7s": {
-        "call": 100
-      },
-      "A5s": {
-        "3bet": 10,
-        "call": 90
-      },
-      "A4s": {
-        "3bet": 10,
-        "call": 90
-      },
-      "A3s": {
-        "call": 100
-      },
-      "A2s": {
-        "call": 100
-      },
-      "KQs": {
-        "3bet": 10,
-        "call": 90
-      },
-      "KJs": {
-        "call": 100
-      },
-      "KTs": {
-        "call": 100
-      },
-      "K9s": {
-        "call": 100
-      },
-      "KQo": {
-        "call": 100
+        "3bet": 100
       },
       "TT": {
-        "call": 100
+        "3bet": 100
       },
       "99": {
-        "call": 100
+        "3bet": 100
       },
-      "88": {
-        "call": 100
+      "AKs": {
+        "3bet": 100
       },
-      "77": {
-        "call": 77
+      "AQs": {
+        "3bet": 100
       },
-      "66": {
-        "call": 19
+      "AJs": {
+        "3bet": 100
       },
-      "55": {
-        "call": 10
+      "ATs": {
+        "3bet": 100
       },
-      "44": {
-        "call": 18
+      "A9s": {
+        "3bet": 50
+      },
+      "A8s": {
+        "3bet": 50
+      },
+      "A7s": {
+        "3bet": 45
+      },
+      "A6s": {
+        "3bet": 10
+      },
+      "A5s": {
+        "3bet": 100
+      },
+      "A4s": {
+        "3bet": 100
+      },
+      "A3s": {
+        "3bet": 55
+      },
+      "AKo": {
+        "3bet": 100
+      },
+      "AQo": {
+        "3bet": 100
+      },
+      "AJo": {
+        "3bet": 100
+      },
+      "ATo": {
+        "3bet": 100
+      },
+      "KQs": {
+        "3bet": 100
+      },
+      "KJs": {
+        "3bet": 100
+      },
+      "KTs": {
+        "3bet": 100
+      },
+      "K9s": {
+        "3bet": 100
+      },
+      "KQo": {
+        "3bet": 100
       },
       "QJs": {
-        "call": 100
+        "3bet": 100
       },
       "QTs": {
-        "call": 100
-      },
-      "Q9s": {
-        "call": 10
+        "3bet": 100
       },
       "JTs": {
-        "call": 100
-      },
-      "J9s": {
-        "call": 45
+        "3bet": 100
       },
       "T9s": {
-        "call": 100
-      },
-      "98s": {
-        "call": 87
-      },
-      "87s": {
-        "call": 76
+        "3bet": 100
       },
       "76s": {
-        "call": 65
+        "3bet": 10
       },
       "65s": {
-        "call": 54
+        "3bet": 25
       },
       "54s": {
-        "call": 55
+        "3bet": 20
       }
     },
     "stats": {
-      "note": "SB vs UTG Full GTO: Tight 3bet, wide call"
+      "note": "SB_vs_UTG: 3bet/fold only (no call) vs UTG open"
     }
   },
   "SB_vs_HJ": {
