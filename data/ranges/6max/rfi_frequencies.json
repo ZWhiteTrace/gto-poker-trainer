@@ -163,7 +163,7 @@
       "J8s": {"raise": 100}, "J7s": {"raise": 100}, "J6s": {"raise": 100}, "J5s": {"raise": 100},
       "J4s": {"raise": 100},
       "T9s": {"raise": 100}, "T8s": {"raise": 100}, "T7s": {"raise": 100},
-      "T6s": {"raise": 100}, "T5s": {"raise": 20},
+      "T6s": {"raise": 100},
       "98s": {"raise": 100}, "97s": {"raise": 100}, "96s": {"raise": 100},
       "87s": {"raise": 100}, "86s": {"raise": 100}, "85s": {"raise": 100},
       "76s": {"raise": 100}, "75s": {"raise": 100}, "74s": {"raise": 25},
