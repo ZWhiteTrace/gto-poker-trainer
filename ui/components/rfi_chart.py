@@ -56,7 +56,32 @@ POSITION_COLORS = {
     "SB": "#84cc16",   # Yellow-Green/Lime - loosest
 }
 
+# Position opacity (earlier = more opaque, later = more transparent)
+POSITION_OPACITY = {
+    "UTG": 1.0,    # 100% - tightest, most visible
+    "HJ": 0.9,     # 90%
+    "CO": 0.8,     # 80%
+    "BTN": 0.7,    # 70%
+    "SB": 0.6,     # 60% - loosest, most transparent
+}
+
+# Premium hands worth 3-betting (shown with white border in UTG range)
+PREMIUM_3BET_HANDS = {
+    "AA", "KK", "QQ", "JJ", "TT",
+    "AKs", "AKo", "AQs", "AQo", "AJs",
+    "KQs",
+}
+
 POSITION_ORDER = ["UTG", "HJ", "CO", "BTN", "SB"]
+
+
+def hex_to_rgba(hex_color: str, opacity: float) -> str:
+    """Convert hex color to rgba with opacity."""
+    hex_color = hex_color.lstrip('#')
+    r = int(hex_color[0:2], 16)
+    g = int(hex_color[2:4], 16)
+    b = int(hex_color[4:6], 16)
+    return f"rgba({r}, {g}, {b}, {opacity})"
 
 
 def get_all_rfi_ranges(evaluator: Evaluator, format: str = "6max") -> Dict[str, List[str]]:
@@ -226,7 +251,7 @@ def display_rfi_chart_earliest(evaluator: Evaluator, lang: str = "zh"):
         grid-template-columns: repeat(13, 1fr);
         gap: 2px;
         width: 100%;
-        max-width: 650px;
+        max-width: 555px;
         margin: 10px auto;
         background: #1a1a2e;
         padding: 8px;
@@ -237,8 +262,8 @@ def display_rfi_chart_earliest(evaluator: Evaluator, lang: str = "zh"):
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: clamp(10px, 3.5vw, 16px);
-        font-weight: normal;
+        font-size: clamp(10px, 3.5vw, 14px);
+        font-weight: bold;
         border-radius: 3px;
         color: white;
         text-shadow: 0 1px 2px rgba(0,0,0,0.5);
@@ -270,8 +295,17 @@ def display_rfi_chart_earliest(evaluator: Evaluator, lang: str = "zh"):
             earliest = get_earliest_position(hand, ranges)
 
             if earliest:
-                color = POSITION_COLORS[earliest]
-                html += f'<div class="rfi-earliest-cell" style="background: {color};">{hand}</div>'
+                hex_color = POSITION_COLORS[earliest]
+                opacity = POSITION_OPACITY[earliest]
+                rgba_color = hex_to_rgba(hex_color, opacity)
+
+                # Add white border for premium 3-bet hands in UTG range
+                if earliest == "UTG" and hand in PREMIUM_3BET_HANDS:
+                    border_style = "border: 2px solid white;"
+                else:
+                    border_style = ""
+
+                html += f'<div class="rfi-earliest-cell" style="background: {rgba_color}; {border_style}">{hand}</div>'
             elif hand in DRILLABLE_HANDS:
                 html += f'<div class="rfi-earliest-cell fold">{hand}</div>'
             else:
@@ -281,7 +315,7 @@ def display_rfi_chart_earliest(evaluator: Evaluator, lang: str = "zh"):
     st.markdown(html, unsafe_allow_html=True)
 
     # Description
-    desc = "每格顯示「最早可開池」的位置顏色。例如 AA = 紅色(UTG) 表示最早從 UTG 就能開。" if lang == "zh" else "Each cell shows the earliest position that can open. e.g., AA = Red(UTG) means can open from UTG."
+    desc = "每格顯示「最早可開池」的位置顏色。白框 = 適合3bet的強牌。透明度越低表示位置越後面。" if lang == "zh" else "Each cell shows the earliest position that can open. White border = premium 3-bet hands. Lower opacity = later position."
     st.caption(desc)
 
 

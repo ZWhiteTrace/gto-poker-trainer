@@ -245,10 +245,8 @@ def _generate_grid_html(grid_data: List[List[Dict]], highlight_hand: str = None)
         text-shadow: 0 1px 2px rgba(0,0,0,0.3);
     }
     .range-cell.highlight {
-        background: #f59e0b !important;
-        color: black !important;
-        box-shadow: 0 0 0 3px #fbbf24;
-        text-shadow: none;
+        box-shadow: 0 0 0 3px white;
+        z-index: 1;
     }
     .range-cell.dimmed {
         opacity: 0.80;
@@ -271,41 +269,40 @@ def _generate_grid_html(grid_data: List[List[Dict]], highlight_hand: str = None)
 
             # Build inline background style based on frequencies
             if cell['highlight']:
-                bg_style = ""  # Let CSS handle highlight
                 classes = f"range-cell {cell['type']} highlight"
             else:
                 classes = f"range-cell {cell['type']}"
                 if not cell.get('drillable', True):
                     classes += " dimmed"
 
-                # Generate GTOWizard-style proportional gradient (top to bottom)
-                if raise_freq >= 100:
-                    bg_style = f"background:{COLOR_RAISE};"
-                elif call_freq >= 100:
-                    bg_style = f"background:{COLOR_CALL};"
-                elif raise_freq == 0 and call_freq == 0:
-                    bg_style = f"background:{COLOR_FOLD};"
-                else:
-                    # Mixed strategy: build gradient stops
-                    # Order: Raise (top/red) → Call (middle/green) → Fold (bottom/blue)
-                    stops = []
-                    current_pos = 0
+            # Generate GTOWizard-style proportional gradient (top to bottom)
+            if raise_freq >= 100:
+                bg_style = f"background:{COLOR_RAISE};"
+            elif call_freq >= 100:
+                bg_style = f"background:{COLOR_CALL};"
+            elif raise_freq == 0 and call_freq == 0:
+                bg_style = f"background:{COLOR_FOLD};"
+            else:
+                # Mixed strategy: build gradient stops
+                # Order: Raise (top/red) → Call (middle/green) → Fold (bottom/blue)
+                stops = []
+                current_pos = 0
 
-                    if raise_freq > 0:
-                        stops.append(f"{COLOR_RAISE} {current_pos}%")
-                        current_pos += raise_freq
-                        stops.append(f"{COLOR_RAISE} {current_pos}%")
+                if raise_freq > 0:
+                    stops.append(f"{COLOR_RAISE} {current_pos}%")
+                    current_pos += raise_freq
+                    stops.append(f"{COLOR_RAISE} {current_pos}%")
 
-                    if call_freq > 0:
-                        stops.append(f"{COLOR_CALL} {current_pos}%")
-                        current_pos += call_freq
-                        stops.append(f"{COLOR_CALL} {current_pos}%")
+                if call_freq > 0:
+                    stops.append(f"{COLOR_CALL} {current_pos}%")
+                    current_pos += call_freq
+                    stops.append(f"{COLOR_CALL} {current_pos}%")
 
-                    if fold_freq > 0:
-                        stops.append(f"{COLOR_FOLD} {current_pos}%")
-                        stops.append(f"{COLOR_FOLD} 100%")
+                if fold_freq > 0:
+                    stops.append(f"{COLOR_FOLD} {current_pos}%")
+                    stops.append(f"{COLOR_FOLD} 100%")
 
-                    bg_style = f"background:linear-gradient(to right,{','.join(stops)});"
+                bg_style = f"background:linear-gradient(to right,{','.join(stops)});"
 
             # Build tooltip with frequency info
             tooltip_parts = []

@@ -81,12 +81,13 @@ class Evaluator:
         Returns: {"raise": 75, "fold": 25} or {"3bet": 50, "call": 30, "fold": 20}
         """
         frequencies = self.load_frequencies(format)
+        hand_str = str(hand)
 
         if scenario.action_type == ActionType.RFI:
             rfi_freq = frequencies.get("rfi", {})
             position_data = rfi_freq.get(scenario.hero_position.value, {})
             freq_data = position_data.get("frequencies", {})
-            hand_freq = freq_data.get(str(hand), {})
+            hand_freq = freq_data.get(hand_str, {})
 
             if hand_freq:
                 raise_freq = hand_freq.get("raise", 0)
@@ -98,8 +99,45 @@ class Evaluator:
                     return {"raise": raise_freq, "call": call_freq, "fold": max(0, fold_freq)}
                 return {"raise": raise_freq, "fold": 100 - raise_freq}
 
-        # For non-RFI scenarios, fall back to binary (100/0) based on simple ranges
-        # TODO: Add frequency data for vs_rfi, vs_3bet, vs_4bet
+        elif scenario.action_type == ActionType.VS_RFI:
+            vs_rfi_freq = frequencies.get("vs_rfi", {})
+            key = f"{scenario.hero_position.value}_vs_{scenario.villain_position.value}"
+            position_data = vs_rfi_freq.get(key, {})
+            freq_data = position_data.get("frequencies", {})
+            hand_freq = freq_data.get(hand_str, {})
+
+            if hand_freq:
+                bet3_freq = hand_freq.get("3bet", 0)
+                call_freq = hand_freq.get("call", 0)
+                fold_freq = 100 - bet3_freq - call_freq
+                return {"3bet": bet3_freq, "call": call_freq, "fold": max(0, fold_freq)}
+
+        elif scenario.action_type == ActionType.VS_3BET:
+            vs_3bet_freq = frequencies.get("vs_3bet", {})
+            key = f"{scenario.hero_position.value}_vs_{scenario.villain_position.value}"
+            position_data = vs_3bet_freq.get(key, {})
+            freq_data = position_data.get("frequencies", {})
+            hand_freq = freq_data.get(hand_str, {})
+
+            if hand_freq:
+                bet4_freq = hand_freq.get("4bet", 0)
+                call_freq = hand_freq.get("call", 0)
+                fold_freq = 100 - bet4_freq - call_freq
+                return {"4bet": bet4_freq, "call": call_freq, "fold": max(0, fold_freq)}
+
+        elif scenario.action_type == ActionType.VS_4BET:
+            vs_4bet_freq = frequencies.get("vs_4bet", {})
+            key = f"{scenario.hero_position.value}_vs_{scenario.villain_position.value}"
+            position_data = vs_4bet_freq.get(key, {})
+            freq_data = position_data.get("frequencies", {})
+            hand_freq = freq_data.get(hand_str, {})
+
+            if hand_freq:
+                bet5_freq = hand_freq.get("5bet", 0)
+                call_freq = hand_freq.get("call", 0)
+                fold_freq = 100 - bet5_freq - call_freq
+                return {"5bet": bet5_freq, "call": call_freq, "fold": max(0, fold_freq)}
+
         return {}
 
     def get_correct_action(self, hand: Hand, scenario: Scenario, format: str = "6max") -> str:
@@ -144,39 +182,113 @@ class Evaluator:
                 return "raise"
             return "fold"
 
-        # For other scenarios, still use load_ranges (TODO: migrate to frequencies)
-        ranges = self.load_ranges(format)
+        # Try to use frequency data first, fall back to old range format
+        frequencies = self.load_frequencies(format)
+        hand_str = str(hand)
 
         if scenario.action_type == ActionType.VS_RFI:
-            vs_rfi_data = ranges.get("vs_rfi", {})
             key = f"{scenario.hero_position.value}_vs_{scenario.villain_position.value}"
-            position_data = vs_rfi_data.get(key, {})
 
-            if str(hand) in position_data.get("3bet", []):
+            # Try frequency data first
+            vs_rfi_freq = frequencies.get("vs_rfi", {})
+            position_data = vs_rfi_freq.get(key, {})
+            freq_data = position_data.get("frequencies", {})
+            hand_freq = freq_data.get(hand_str, {})
+
+            if hand_freq:
+                bet3_freq = hand_freq.get("3bet", 0)
+                call_freq = hand_freq.get("call", 0)
+
+                if bet3_freq >= self.PRIMARY_ACTION_THRESHOLD:
+                    return "3bet"
+                if call_freq >= self.PRIMARY_ACTION_THRESHOLD:
+                    return "call"
+                # Mixed: prefer higher frequency action if >= ACCEPTABLE
+                if bet3_freq >= self.ACCEPTABLE_THRESHOLD and bet3_freq >= call_freq:
+                    return "3bet"
+                if call_freq >= self.ACCEPTABLE_THRESHOLD and call_freq > bet3_freq:
+                    return "call"
+                if bet3_freq == 0 and call_freq == 0:
+                    return "fold"
+                return "3bet" if bet3_freq >= call_freq else "call"
+
+            # Fall back to old range format
+            ranges = self.load_ranges(format)
+            vs_rfi_data = ranges.get("vs_rfi", {})
+            position_data = vs_rfi_data.get(key, {})
+            if hand_str in position_data.get("3bet", []):
                 return "3bet"
-            if str(hand) in position_data.get("call", []):
+            if hand_str in position_data.get("call", []):
                 return "call"
             return "fold"
 
         elif scenario.action_type == ActionType.VS_3BET:
-            vs_3bet_data = ranges.get("vs_3bet", {})
             key = f"{scenario.hero_position.value}_vs_{scenario.villain_position.value}"
-            position_data = vs_3bet_data.get(key, {})
 
-            if str(hand) in position_data.get("4bet", []):
+            # Try frequency data first
+            vs_3bet_freq = frequencies.get("vs_3bet", {})
+            position_data = vs_3bet_freq.get(key, {})
+            freq_data = position_data.get("frequencies", {})
+            hand_freq = freq_data.get(hand_str, {})
+
+            if hand_freq:
+                bet4_freq = hand_freq.get("4bet", 0)
+                call_freq = hand_freq.get("call", 0)
+
+                if bet4_freq >= self.PRIMARY_ACTION_THRESHOLD:
+                    return "4bet"
+                if call_freq >= self.PRIMARY_ACTION_THRESHOLD:
+                    return "call"
+                if bet4_freq >= self.ACCEPTABLE_THRESHOLD and bet4_freq >= call_freq:
+                    return "4bet"
+                if call_freq >= self.ACCEPTABLE_THRESHOLD and call_freq > bet4_freq:
+                    return "call"
+                if bet4_freq == 0 and call_freq == 0:
+                    return "fold"
+                return "4bet" if bet4_freq >= call_freq else "call"
+
+            # Fall back to old range format
+            ranges = self.load_ranges(format)
+            vs_3bet_data = ranges.get("vs_3bet", {})
+            position_data = vs_3bet_data.get(key, {})
+            if hand_str in position_data.get("4bet", []):
                 return "4bet"
-            if str(hand) in position_data.get("call", []):
+            if hand_str in position_data.get("call", []):
                 return "call"
             return "fold"
 
         elif scenario.action_type == ActionType.VS_4BET:
-            vs_4bet_data = ranges.get("vs_4bet", {})
             key = f"{scenario.hero_position.value}_vs_{scenario.villain_position.value}"
-            position_data = vs_4bet_data.get(key, {})
 
-            if str(hand) in position_data.get("5bet", []):
+            # Try frequency data first
+            vs_4bet_freq = frequencies.get("vs_4bet", {})
+            position_data = vs_4bet_freq.get(key, {})
+            freq_data = position_data.get("frequencies", {})
+            hand_freq = freq_data.get(hand_str, {})
+
+            if hand_freq:
+                bet5_freq = hand_freq.get("5bet", 0)
+                call_freq = hand_freq.get("call", 0)
+
+                if bet5_freq >= self.PRIMARY_ACTION_THRESHOLD:
+                    return "5bet"
+                if call_freq >= self.PRIMARY_ACTION_THRESHOLD:
+                    return "call"
+                if bet5_freq >= self.ACCEPTABLE_THRESHOLD and bet5_freq >= call_freq:
+                    return "5bet"
+                if call_freq >= self.ACCEPTABLE_THRESHOLD and call_freq > bet5_freq:
+                    return "call"
+                if bet5_freq == 0 and call_freq == 0:
+                    return "fold"
+                return "5bet" if bet5_freq >= call_freq else "call"
+
+            # Fall back to old range format
+            ranges = self.load_ranges(format)
+            vs_4bet_data = ranges.get("vs_4bet", {})
+            position_data = vs_4bet_data.get(key, {})
+            if hand_str in position_data.get("5bet", []):
                 return "5bet"
-            if str(hand) in position_data.get("call", []):
+            if hand_str in position_data.get("call", []):
                 return "call"
             return "fold"
 
@@ -356,24 +468,83 @@ class Evaluator:
                 result["call"] = call_hands
             return result
 
-        ranges = self.load_ranges(format)
+        # Try frequency data first, fall back to old range format
+        frequencies = self.load_frequencies(format)
+        key = f"{scenario.hero_position.value}_vs_{scenario.villain_position.value}"
 
         if scenario.action_type == ActionType.VS_RFI:
+            # Try frequency data first
+            vs_rfi_freq = frequencies.get("vs_rfi", {})
+            position_data = vs_rfi_freq.get(key, {})
+            freq_data = position_data.get("frequencies", {})
+
+            if freq_data:
+                return self._derive_range_from_frequencies(freq_data, ["3bet", "call"])
+
+            # Fall back to old range format
+            ranges = self.load_ranges(format)
             vs_rfi_data = ranges.get("vs_rfi", {})
-            key = f"{scenario.hero_position.value}_vs_{scenario.villain_position.value}"
             return vs_rfi_data.get(key, {})
 
         elif scenario.action_type == ActionType.VS_3BET:
+            # Try frequency data first
+            vs_3bet_freq = frequencies.get("vs_3bet", {})
+            position_data = vs_3bet_freq.get(key, {})
+            freq_data = position_data.get("frequencies", {})
+
+            if freq_data:
+                return self._derive_range_from_frequencies(freq_data, ["4bet", "call"])
+
+            # Fall back to old range format
+            ranges = self.load_ranges(format)
             vs_3bet_data = ranges.get("vs_3bet", {})
-            key = f"{scenario.hero_position.value}_vs_{scenario.villain_position.value}"
             return vs_3bet_data.get(key, {})
 
         elif scenario.action_type == ActionType.VS_4BET:
+            # Try frequency data first
+            vs_4bet_freq = frequencies.get("vs_4bet", {})
+            position_data = vs_4bet_freq.get(key, {})
+            freq_data = position_data.get("frequencies", {})
+
+            if freq_data:
+                return self._derive_range_from_frequencies(freq_data, ["5bet", "call"])
+
+            # Fall back to old range format
+            ranges = self.load_ranges(format)
             vs_4bet_data = ranges.get("vs_4bet", {})
-            key = f"{scenario.hero_position.value}_vs_{scenario.villain_position.value}"
             return vs_4bet_data.get(key, {})
 
         return {}
+
+    def _derive_range_from_frequencies(self, freq_data: Dict, action_types: List[str]) -> Dict[str, List[str]]:
+        """
+        Derive hand lists from frequency data.
+        action_types: ["3bet", "call"] or ["4bet", "call"] or ["5bet", "call"]
+        """
+        result = {action: [] for action in action_types}
+        result["fold"] = []
+
+        for hand, freq in freq_data.items():
+            action_freqs = [(action, freq.get(action, 0)) for action in action_types]
+            max_action, max_freq = max(action_freqs, key=lambda x: x[1])
+
+            if max_freq >= self.PRIMARY_ACTION_THRESHOLD:
+                result[max_action].append(hand)
+            elif max_freq >= self.ACCEPTABLE_THRESHOLD:
+                result[max_action].append(hand)
+            elif max_freq == 0:
+                # All actions are 0, it's a fold
+                all_zero = all(freq.get(action, 0) == 0 for action in action_types)
+                if all_zero:
+                    result["fold"].append(hand)
+                else:
+                    # Has some frequency but below threshold, still assign to highest
+                    result[max_action].append(hand)
+            else:
+                # Low frequency but not zero
+                result[max_action].append(hand)
+
+        return result
 
     def get_frequencies_for_scenario(self, scenario: Scenario, format: str = "6max") -> Dict[str, Dict[str, int]]:
         """
@@ -387,5 +558,21 @@ class Evaluator:
             position_data = rfi_freq.get(scenario.hero_position.value, {})
             return position_data.get("frequencies", {})
 
-        # TODO: Add frequency data for other scenarios
+        key = f"{scenario.hero_position.value}_vs_{scenario.villain_position.value}"
+
+        if scenario.action_type == ActionType.VS_RFI:
+            vs_rfi_freq = frequencies.get("vs_rfi", {})
+            position_data = vs_rfi_freq.get(key, {})
+            return position_data.get("frequencies", {})
+
+        elif scenario.action_type == ActionType.VS_3BET:
+            vs_3bet_freq = frequencies.get("vs_3bet", {})
+            position_data = vs_3bet_freq.get(key, {})
+            return position_data.get("frequencies", {})
+
+        elif scenario.action_type == ActionType.VS_4BET:
+            vs_4bet_freq = frequencies.get("vs_4bet", {})
+            position_data = vs_4bet_freq.get(key, {})
+            return position_data.get("frequencies", {})
+
         return {}
