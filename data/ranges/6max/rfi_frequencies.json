@@ -166,7 +166,7 @@
       "T6s": {"raise": 100},
       "98s": {"raise": 100}, "97s": {"raise": 100}, "96s": {"raise": 100},
       "87s": {"raise": 100}, "86s": {"raise": 100}, "85s": {"raise": 100},
-      "76s": {"raise": 100}, "75s": {"raise": 100}, "74s": {"raise": 25},
+      "76s": {"raise": 100}, "75s": {"raise": 100},
       "65s": {"raise": 100}, "64s": {"raise": 100},
       "54s": {"raise": 100}, "53s": {"raise": 80},
       "AKo": {"raise": 100}, "AQo": {"raise": 100}, "AJo": {"raise": 100}, "ATo": {"raise": 100},

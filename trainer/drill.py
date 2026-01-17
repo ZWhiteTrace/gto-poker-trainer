@@ -32,7 +32,7 @@ BORDERLINE_HANDS = {
         "T9s", "T8s", "T7s", "T6s", "T5s",
         "98s", "97s", "96s", "95s",
         "87s", "86s", "85s", "84s",
-        "76s", "75s", "74s", "73s",
+        "76s", "75s", "74s",
         "65s", "64s", "63s",
         "54s", "53s", "52s",
         "43s",
@@ -51,7 +51,8 @@ BORDERLINE_HANDS = {
         "76o",
         "65o",
         "54o",
-        "43o"
+        "43o",
+        "32o"
     ],
 
     # Trap hands - look playable but should fold (test range boundaries)
