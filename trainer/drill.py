@@ -190,9 +190,13 @@ class PreflopDrill:
             action_type=ActionType.RFI,
         )
 
-        # Use interesting hands focused on borderline decisions
-        range_data = self.evaluator.get_range_for_scenario(scenario, format=self.format) or {}
-        hand = get_interesting_hand(range_data, "rfi")
+        # SB uses full range drilling (all 169 hands) for comprehensive practice
+        # Other positions use interesting hands focused on borderline decisions
+        if hero_pos == Position.SB:
+            hand = random_hand()
+        else:
+            range_data = self.evaluator.get_range_for_scenario(scenario, format=self.format) or {}
+            hand = get_interesting_hand(range_data, "rfi")
 
         return Spot(hand=hand, scenario=scenario)
 
