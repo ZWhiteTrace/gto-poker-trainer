@@ -238,12 +238,12 @@ def display_rfi_chart_earliest(evaluator: Evaluator, lang: str = "zh"):
 
 def display_rfi_charts(evaluator: Evaluator, lang: str = "zh"):
     """Display both RFI chart styles."""
-    tab_labels = ["🎨 所有位置疊加", "📍 最早可開位置"] if lang == "zh" else ["🎨 All Positions", "📍 Earliest Position"]
+    tab_labels = ["📍 最早可開位置", "🎨 所有位置疊加"] if lang == "zh" else ["📍 Earliest Position", "🎨 All Positions"]
 
     tab1, tab2 = st.tabs(tab_labels)
 
     with tab1:
-        display_rfi_chart_overlay(evaluator, lang)
+        display_rfi_chart_earliest(evaluator, lang)
 
     with tab2:
-        display_rfi_chart_earliest(evaluator, lang)
+        display_rfi_chart_overlay(evaluator, lang)
