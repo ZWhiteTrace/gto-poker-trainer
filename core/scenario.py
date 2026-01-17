@@ -34,6 +34,9 @@ class Scenario:
     def available_actions(self) -> List[str]:
         """Return available actions for this scenario."""
         if self.action_type == ActionType.RFI:
+            # SB has call (limp) option in GTO
+            if self.hero_position == Position.SB:
+                return ["raise", "call", "fold"]
             return ["raise", "fold"]
         elif self.action_type == ActionType.VS_RFI:
             # All positions can potentially call (except SB in some cases, but data handles this)

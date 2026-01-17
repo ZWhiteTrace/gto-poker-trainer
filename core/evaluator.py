@@ -90,6 +90,12 @@ class Evaluator:
 
             if hand_freq:
                 raise_freq = hand_freq.get("raise", 0)
+                call_freq = hand_freq.get("call", 0)
+                fold_freq = 100 - raise_freq - call_freq
+
+                # SB has call option
+                if scenario.hero_position == Position.SB:
+                    return {"raise": raise_freq, "call": call_freq, "fold": max(0, fold_freq)}
                 return {"raise": raise_freq, "fold": 100 - raise_freq}
 
         # For non-RFI scenarios, fall back to binary (100/0) based on simple ranges
@@ -102,6 +108,7 @@ class Evaluator:
         Returns: "raise", "fold", "call", "3bet", "4bet", "5bet"
 
         For RFI: Uses frequency data directly (>= PRIMARY_ACTION_THRESHOLD = raise)
+        For SB RFI: Also considers call option
         """
         if scenario.action_type == ActionType.RFI:
             # Use frequencies directly - single source of truth
@@ -112,6 +119,27 @@ class Evaluator:
             hand_freq = freq_data.get(str(hand), {})
 
             raise_freq = hand_freq.get("raise", 0)
+            call_freq = hand_freq.get("call", 0)
+
+            # For SB, consider call as well
+            if scenario.hero_position == Position.SB:
+                # Return the action with highest frequency (if >= threshold)
+                if raise_freq >= self.PRIMARY_ACTION_THRESHOLD:
+                    return "raise"
+                if call_freq >= self.PRIMARY_ACTION_THRESHOLD:
+                    return "call"
+                # If both have some frequency but neither is dominant, prefer raise if it's higher
+                if raise_freq > call_freq and raise_freq >= self.ACCEPTABLE_THRESHOLD:
+                    return "raise"
+                if call_freq > raise_freq and call_freq >= self.ACCEPTABLE_THRESHOLD:
+                    return "call"
+                # Default to fold if neither action is strong enough
+                if raise_freq == 0 and call_freq == 0:
+                    return "fold"
+                # If mixed, return the higher frequency action
+                return "raise" if raise_freq >= call_freq else "call"
+
+            # For other positions, simple raise/fold
             if raise_freq >= self.PRIMARY_ACTION_THRESHOLD:
                 return "raise"
             return "fold"
@@ -199,6 +227,8 @@ class Evaluator:
         if scenario.action_type == ActionType.RFI:
             if correct_action == "raise":
                 return f"{hand_str} is in the opening range from {pos}.{freq_info}"
+            elif correct_action == "call":
+                return f"{hand_str} should limp (call) from SB for pot odds.{freq_info}"
             else:
                 return f"{hand_str} is too weak to open from {pos}.{freq_info}"
 
@@ -251,6 +281,8 @@ class Evaluator:
         if scenario.action_type == ActionType.RFI:
             if correct_action == "raise":
                 return f"{hand_str} 在 {pos} 是開池手牌。{freq_info}"
+            elif correct_action == "call":
+                return f"{hand_str} 從 SB 應該跟注 (limp)，利用底池賠率。{freq_info}"
             else:
                 return f"{hand_str} 從 {pos} 開池太弱。{freq_info}"
 
@@ -283,7 +315,7 @@ class Evaluator:
         return f"正確動作是{action_zh}。{freq_info}"
 
     def get_range_for_scenario(self, scenario: Scenario, format: str = "6max") -> Dict[str, List[str]]:
-        """Get full range data for a scenario. Derives raise/fold lists from frequencies for RFI."""
+        """Get full range data for a scenario. Derives raise/fold/call lists from frequencies for RFI."""
         if scenario.action_type == ActionType.RFI:
             # Derive from frequencies - single source of truth
             frequencies = self.load_frequencies(format)
@@ -292,16 +324,37 @@ class Evaluator:
             freq_data = position_data.get("frequencies", {})
 
             raise_hands = []
+            call_hands = []
             fold_hands = []
+
             for hand, freq in freq_data.items():
                 raise_freq = freq.get("raise", 0)
-                if raise_freq >= self.PRIMARY_ACTION_THRESHOLD:
-                    raise_hands.append(hand)
-                elif raise_freq == 0:
-                    fold_hands.append(hand)
-                # Mixed hands (0 < freq < 75) go to neither list explicitly
+                call_freq = freq.get("call", 0)
 
-            return {"raise": raise_hands, "fold": fold_hands}
+                # For SB, handle call separately
+                if scenario.hero_position == Position.SB:
+                    if raise_freq >= self.PRIMARY_ACTION_THRESHOLD:
+                        raise_hands.append(hand)
+                    elif call_freq >= self.PRIMARY_ACTION_THRESHOLD:
+                        call_hands.append(hand)
+                    elif raise_freq == 0 and call_freq == 0:
+                        fold_hands.append(hand)
+                    # Mixed hands go to the dominant action list if >= ACCEPTABLE
+                    elif raise_freq >= self.ACCEPTABLE_THRESHOLD:
+                        raise_hands.append(hand)
+                    elif call_freq >= self.ACCEPTABLE_THRESHOLD:
+                        call_hands.append(hand)
+                else:
+                    # Other positions: just raise/fold
+                    if raise_freq >= self.PRIMARY_ACTION_THRESHOLD:
+                        raise_hands.append(hand)
+                    elif raise_freq == 0:
+                        fold_hands.append(hand)
+
+            result = {"raise": raise_hands, "fold": fold_hands}
+            if call_hands:
+                result["call"] = call_hands
+            return result
 
         ranges = self.load_ranges(format)
 

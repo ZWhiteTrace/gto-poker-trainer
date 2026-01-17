@@ -500,7 +500,13 @@ def get_action_label(action: str, scenario: Scenario, lang: str = "zh") -> str:
 
     if action_type == ActionType.RFI:
         if action == "raise":
+            # SB raises 3.5bb, others 2.5bb
+            if scenario.hero_position == Position.SB:
+                return "RAISE 3.5bb"
             return "RAISE 2.5bb"
+        elif action == "call":
+            # SB limp (complete the blind)
+            return "LIMP 0.5bb" if lang == "zh" else "LIMP 0.5bb"
 
     elif action_type == ActionType.VS_RFI:
         if action == "3bet":
