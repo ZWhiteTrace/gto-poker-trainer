@@ -1414,29 +1414,27 @@ def postflop_page():
 
     flop_cards = [(c.rank, c.suit) for c in scenario.flop]
 
+    # Header section - single column at top
+    st.markdown(f"""
+    <div style="background: linear-gradient(135deg, #1e3a5f 0%, #0f172a 100%); padding: 8px 14px; border-radius: 8px; border-left: 4px solid #7c3aed; margin-bottom: 8px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+            <span style="font-size: 1.1rem; font-weight: bold; color: #7c3aed;">🎯 {t("postflop_cbet")}</span>
+            <span style="font-size: 0.85rem; color: #94a3b8;">{t('outs_score')} <span style="color: #22c55e; font-weight: bold;">{score_text}</span></span>
+        </div>
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <span style="color: #e2e8f0; font-size: 0.9rem;">{scenario.preflop}</span>
+            <div>
+                <span style="background: #3b82f6; color: white; padding: 2px 8px; border-radius: 4px; font-size: 0.75rem; margin-right: 4px;">{pot_type_label}</span>
+                <span style="background: #7c3aed; color: white; padding: 2px 8px; border-radius: 4px; font-size: 0.75rem;">{texture_label}</span>
+            </div>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
     # Two-column layout: Table (left) | Hand + Actions (right)
     col_left, col_right = st.columns([1, 1])
 
     with col_left:
-        # Compact header: title + score on same line
-        st.markdown(f"""
-        <div style="background: linear-gradient(135deg, #1e3a5f 0%, #0f172a 100%); padding: 6px 12px; border-radius: 6px; border-left: 3px solid #7c3aed; margin-bottom: 4px; display: flex; justify-content: space-between; align-items: center;">
-            <span style="font-size: 0.95rem; font-weight: bold; color: #7c3aed;">🎯 {t("postflop_cbet")}</span>
-            <span style="font-size: 0.75rem; color: #94a3b8;">{t('outs_score')} <span style="color: #22c55e; font-weight: bold;">{score_text}</span></span>
-        </div>
-        """, unsafe_allow_html=True)
-
-        # Preflop context + tags
-        st.markdown(f"""
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
-            <span style="color: #94a3b8; font-size: 0.8rem;">{scenario.preflop}</span>
-            <div>
-                <span style="background: #3b82f6; color: white; padding: 1px 6px; border-radius: 4px; font-size: 0.7rem; margin-right: 4px;">{pot_type_label}</span>
-                <span style="background: #7c3aed; color: white; padding: 1px 6px; border-radius: 4px; font-size: 0.7rem;">{texture_label}</span>
-            </div>
-        </div>
-        """, unsafe_allow_html=True)
-
         # Display postflop table
         display_postflop_table(
             hero_position=scenario.hero_position,

@@ -1153,16 +1153,7 @@ def display_postflop_table(
         </div>
         '''
 
-    # Turn and river placeholders
-    for _ in range(2):
-        flop_cards_html += '''
-        <div style="width:46px;height:64px;background:linear-gradient(145deg,#374151 0%,#1f2937 100%);
-                    border-radius:5px;display:flex;align-items:center;justify-content:center;
-                    color:#6b7280;font-size:18px;font-weight:bold;
-                    box-shadow:0 2px 6px rgba(0,0,0,0.4);border:1px dashed #4b5563;">
-            ?
-        </div>
-        '''
+    # Flop only - no turn/river placeholders for cleaner look
 
     # Simple 2-player heads-up layout (positions on opposite sides)
     # Hero at bottom, Villain at top - seats overlap table edge for compact design
@@ -1179,8 +1170,8 @@ def display_postflop_table(
         .postflop-container {{
             position: relative;
             width: 100%;
-            max-width: 340px;
-            height: 320px;
+            max-width: 280px;
+            height: 280px;
             margin: 0 auto;
             padding: 10px 0;
         }}
