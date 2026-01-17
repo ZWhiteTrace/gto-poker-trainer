@@ -1056,9 +1056,9 @@ def viewer_page():
 
     # Compact header (full width)
     if lang == "zh":
-        context_info = "📊 Cash Game · 100bb · 開池 2.5bb"
+        context_info = "📊 NL25 · 100bb · 開池 2.5bb"
     else:
-        context_info = "📊 Cash Game · 100bb · Open 2.5bb"
+        context_info = "📊 NL25 · 100bb · Open 2.5bb"
 
     st.markdown(f"""
     <div style="display: flex; justify-content: space-between; align-items: center; padding: 6px 0; margin-bottom: 4px;">
