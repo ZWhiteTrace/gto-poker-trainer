@@ -12,13 +12,13 @@ from core.scenario import Scenario, ActionType
 
 RANKS = ['A', 'K', 'Q', 'J', 'T', '9', '8', '7', '6', '5', '4', '3', '2']
 
-# Position colors (matching the reference images)
+# Position colors (rainbow spectrum: warm=early/tight, cool=late/loose)
 POSITION_COLORS = {
-    "UTG": "#ef4444",  # Red
-    "HJ": "#22c55e",   # Green
-    "CO": "#3b82f6",   # Blue
-    "BTN": "#a855f7",  # Purple
-    "SB": "#eab308",   # Yellow
+    "UTG": "#ef4444",  # Red - tightest
+    "HJ": "#f59e0b",   # Orange/Yellow
+    "CO": "#22c55e",   # Green
+    "BTN": "#3b82f6",  # Blue
+    "SB": "#a855f7",   # Purple - loosest
 }
 
 POSITION_ORDER = ["UTG", "HJ", "CO", "BTN", "SB"]
