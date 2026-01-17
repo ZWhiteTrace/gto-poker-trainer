@@ -24,6 +24,7 @@ from ui.components.table_visual import display_table, display_postflop_table
 from ui.components.card_display import display_hand_cards
 from ui.components.action_flow import display_action_flow
 from ui.components.storage import save_progress_to_storage, load_progress_from_storage, init_storage_sync
+from ui.components.rfi_chart import display_rfi_charts
 # Achievements system removed for simplification
 
 # Equity breakdown data for vs 4-bet scenarios
@@ -1722,11 +1723,15 @@ def learning_page():
 
     # Tabs for different topics
     if lang == "zh":
-        tabs = ["權益對抗", "Outs 補牌", "賠率表", "起手牌", "SPR 法則", "翻後策略", "資金管理"]
+        tabs = ["RFI 速記表", "權益對抗", "Outs 補牌", "賠率表", "起手牌", "SPR 法則", "翻後策略", "資金管理"]
     else:
-        tabs = ["Equity", "Outs", "Pot Odds", "Starting Hands", "SPR", "Post-flop", "Bankroll"]
+        tabs = ["RFI Charts", "Equity", "Outs", "Pot Odds", "Starting Hands", "SPR", "Post-flop", "Bankroll"]
 
-    tab1, tab2, tab3, tab4, tab5, tab6, tab7 = st.tabs(tabs)
+    tab0, tab1, tab2, tab3, tab4, tab5, tab6, tab7 = st.tabs(tabs)
+
+    with tab0:
+        evaluator = Evaluator()
+        display_rfi_charts(evaluator, lang)
 
     with tab1:
         _display_equity_learning(lang)
