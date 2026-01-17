@@ -144,7 +144,7 @@ def display_rfi_chart_overlay(evaluator: Evaluator, lang: str = "zh"):
         grid-template-columns: repeat(13, 1fr);
         gap: 2px;
         width: 100%;
-        max-width: 650px;
+        max-width: min(600px, calc(100vw - 40px));
         margin: 10px auto;
         background: #1a1a2e;
         padding: 8px;
@@ -156,8 +156,8 @@ def display_rfi_chart_overlay(evaluator: Evaluator, lang: str = "zh"):
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        font-size: clamp(10px, 3.5vw, 16px);
-        font-weight: normal;
+        font-size: clamp(10px, 3vw, 16px);
+        font-weight: bold;
         border-radius: 3px;
         position: relative;
         overflow: hidden;
