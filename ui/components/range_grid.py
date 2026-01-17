@@ -251,7 +251,7 @@ def _generate_grid_html(grid_data: List[List[Dict]], highlight_hand: str = None)
         text-shadow: none;
     }
     .range-cell.dimmed {
-        opacity: 0.88;
+        opacity: 0.80;
     }
     </style>
     """
@@ -326,7 +326,7 @@ def _generate_grid_html(grid_data: List[List[Dict]], highlight_hand: str = None)
 
 def _display_legend(show_mixed: bool = False, show_drillable: bool = False, show_call: bool = True, show_frequency: bool = False):
     """Display the color legend - GTOWizard style (Red=Raise, Green=Call, Blue=Fold)."""
-    drillable_html = '<span style="margin-right: 10px;"><span style="background: #374151; color: #9ca3af; padding: 2px 8px; border-radius: 3px; opacity: 0.88;">dim</span> 非出題範圍</span>' if show_drillable else ""
+    drillable_html = '<span style="margin-right: 10px;"><span style="background: #374151; color: #9ca3af; padding: 2px 8px; border-radius: 3px; opacity: 0.80;">dim</span> 非出題範圍</span>' if show_drillable else ""
     call_html = '<span style="margin-right: 10px;"><span style="background: #22c55e; color: white; padding: 2px 8px; border-radius: 3px;">C</span> Call</span>' if show_call else ""
 
     # Mixed legend - GTOWizard style horizontal gradient (R:70% F:30% example)
