@@ -77,7 +77,7 @@
       "JTs": {"raise": 100}, "J9s": {"raise": 100}, "J8s": {"raise": 100}, "J7s": {"raise": 50},
       "T9s": {"raise": 100}, "T8s": {"raise": 50},
       "AKo": {"raise": 100}, "AQo": {"raise": 100}, "AJo": {"raise": 100}, "ATo": {"raise": 100},
-      "A9o": {"raise": 100}, "A8o": {"raise": 100}, "A7o": {"raise": 90}, "A6o": {"raise": 10}, "A5o": {"raise": 100}, "A4o": {"raise": 20},
+      "A9o": {"raise": 100}, "A8o": {"raise": 100}, "A7o": {"raise": 100}, "A5o": {"raise": 100},
       "KQo": {"raise": 100}, "KJo": {"raise": 100}, "KTo": {"raise": 100}, "K9o": {"raise": 40},
       "QJo": {"raise": 100}, "QTo": {"raise": 100},
       "JTo": {"raise": 100}
