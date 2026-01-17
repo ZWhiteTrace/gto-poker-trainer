@@ -26,13 +26,13 @@
       "QJs": {"raise": 100}, "QTs": {"raise": 100}, "Q9s": {"raise": 100},
       "JTs": {"raise": 100},
       "AKo": {"raise": 100}, "AQo": {"raise": 100}, "AJo": {"raise": 100}, "ATo": {"raise": 100},
-      "KQo": {"raise": 100}, "KJo": {"raise": 100}, "KTo": {"raise": 100}
+      "KQo": {"raise": 100}, "KJo": {"raise": 100}, "KTo": {"raise": 50}
     },
     "stats": {
       "total_hands": 169,
-      "raise_hands": 38,
-      "estimated_vpip_contribution": 2.8,
-      "note": "簡化版 UTG: 88+, A2s+, K5s+, QTs+, JTs, ATo+, KJo+"
+      "raise_hands": 37,
+      "estimated_vpip_contribution": 2.7,
+      "note": "簡化版 UTG: 77+, A2s+, K5s+, Q9s+, JTs, ATo+, KJo+, KTo混合"
     }
   },
   "HJ": {
