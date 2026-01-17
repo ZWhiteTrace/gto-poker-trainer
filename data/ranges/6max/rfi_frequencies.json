@@ -17,16 +17,16 @@
   "UTG": {
     "frequencies": {
       "AA": {"raise": 100}, "KK": {"raise": 100}, "QQ": {"raise": 100}, "JJ": {"raise": 100}, "TT": {"raise": 100},
-      "99": {"raise": 100}, "88": {"raise": 100}, "77": {"raise": 50},
+      "99": {"raise": 100}, "88": {"raise": 100}, "77": {"raise": 75},
       "AKs": {"raise": 100}, "AQs": {"raise": 100}, "AJs": {"raise": 100}, "ATs": {"raise": 100},
       "A9s": {"raise": 100}, "A8s": {"raise": 100}, "A7s": {"raise": 100}, "A6s": {"raise": 100},
       "A5s": {"raise": 100}, "A4s": {"raise": 100}, "A3s": {"raise": 100}, "A2s": {"raise": 100},
       "KQs": {"raise": 100}, "KJs": {"raise": 100}, "KTs": {"raise": 100}, "K9s": {"raise": 100},
-      "K8s": {"raise": 100}, "K7s": {"raise": 100}, "K6s": {"raise": 100}, "K5s": {"raise": 100},
+      "K8s": {"raise": 100}, "K7s": {"raise": 100}, "K6s": {"raise": 70}, "K5s": {"raise": 100},
       "QJs": {"raise": 100}, "QTs": {"raise": 100}, "Q9s": {"raise": 75},
       "JTs": {"raise": 100},
       "AKo": {"raise": 100}, "AQo": {"raise": 100}, "AJo": {"raise": 100}, "ATo": {"raise": 100},
-      "KQo": {"raise": 100}, "KJo": {"raise": 100}
+      "KQo": {"raise": 100}, "KJo": {"raise": 100}, "KTo": {"raise": 50}
     },
     "stats": {
       "total_hands": 169,
