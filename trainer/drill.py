@@ -28,35 +28,34 @@ BORDERLINE_HANDS = {
     "medium_suited": [
         "KTs", "K9s", "K8s", "K7s", "K6s", "K5s", "K4s", "K3s", "K2s",
         "QTs", "Q9s", "Q8s", "Q7s", "Q6s", "Q5s", "Q4s", "Q3s", "Q2s",
-        "JTs", "J9s", "J8s", "J7s", "J6s", "J5s", "J4s", "J3s", "J2s",
-        "T9s", "T8s", "T7s", "T6s", "T5s", "T4s", "T3s",
-        "98s", "97s", "96s", "95s", "94s",
-        "87s", "86s", "85s", "84s", "83s",
-        "76s", "75s", "74s", "73s", "72s",
-        "65s", "64s", "63s", "62s",
+        "JTs", "J9s", "J8s", "J7s", "J6s", "J5s", "J4s", "J3s",
+        "T9s", "T8s", "T7s", "T6s", "T5s", "T4s",
+        "98s", "97s", "96s", "95s",
+        "87s", "86s", "85s", "84s",
+        "76s", "75s", "74s", "73s",
+        "65s", "64s", "63s",
         "54s", "53s", "52s",
-        "43s", "42s",
+        "43s",
         "32s"
     ],
 
-    # Medium offsuit - expanded to include more playable hands from late position
+    # Medium offsuit - playable hands from late position
     "medium_offsuit": [
-        "A9o", "A8o", "A7o", "A6o", "A5o", "A4o", "A3o", "A2o",
-        "KTo", "K9o", "K8o", "K7o", "K6o", "K5o", "K4o", "K3o", "K2o",
-        "QTo", "Q9o", "Q8o", "Q7o", "Q6o",
-        "JTo", "J9o", "J8o", "J7o", "J6o",
-        "T9o", "T8o", "T7o", "T6o",
-        "98o", "97o", "96o",
-        "87o", "86o", "85o",
-        "76o", "75o", "74o",
-        "65o", "64o",
+        "A9o", "A8o", "A7o", "A6o", "A5o", "A4o", "A3o",
+        "KTo", "K9o", "K8o", "K7o",
+        "QTo", "Q9o", "Q8o",
+        "JTo", "J9o", "J8o", "J7o",
+        "T9o", "T8o", "T7o",
+        "98o", "97o",
+        "87o",
+        "76o",
+        "65o",
         "54o",
-        "43o",
-        "32o"
+        "43o"
     ],
 
     # Trap hands - look playable but should fold (test range boundaries)
-    "trap": ["Q5o"]
+    "trap": []
 }
 
 def get_drillable_hands(range_data: dict, scenario_type: str = "vs_rfi") -> List[str]:
