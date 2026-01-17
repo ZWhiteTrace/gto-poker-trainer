@@ -29,7 +29,7 @@ BORDERLINE_HANDS = {
         "KTs", "K9s", "K8s", "K7s", "K6s", "K5s", "K4s", "K3s", "K2s",
         "QTs", "Q9s", "Q8s", "Q7s", "Q6s", "Q5s", "Q4s", "Q3s", "Q2s",
         "JTs", "J9s", "J8s", "J7s", "J6s", "J5s", "J4s", "J3s",
-        "T9s", "T8s", "T7s", "T6s", "T5s", "T4s",
+        "T9s", "T8s", "T7s", "T6s", "T5s",
         "98s", "97s", "96s", "95s",
         "87s", "86s", "85s", "84s",
         "76s", "75s", "74s", "73s",
