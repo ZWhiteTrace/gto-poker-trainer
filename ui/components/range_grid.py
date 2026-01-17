@@ -115,12 +115,13 @@ def display_range_grid(
 
             # Get frequency for this hand
             hand_freq = frequencies.get(hand, {})
-            raise_freq = hand_freq.get("raise", 0)
+            # Support multiple action types: raise, 3bet, 4bet, 5bet
+            raise_freq = hand_freq.get("raise", 0) or hand_freq.get("3bet", 0) or hand_freq.get("4bet", 0) or hand_freq.get("5bet", 0)
             call_freq = hand_freq.get("call", 0)
 
             # Determine action based on frequency or existing logic
             if frequencies:
-                # GTOWizard style: Red=Raise, Green=Call, Blue=Fold
+                # GTOWizard style: Red=Raise/3bet/4bet, Green=Call, Blue=Fold
                 if raise_freq >= 100:
                     action = "raise"
                     freq = 100
@@ -134,9 +135,13 @@ def display_range_grid(
                     action = "call"  # Solid call
                     freq = call_freq
                 elif raise_freq > 0 and call_freq > 0:
-                    # Mixed raise/call - show split
-                    action = "mixed-raise-call"
-                    freq = raise_freq
+                    # Mixed raise/call - show split based on dominant action
+                    if raise_freq >= call_freq:
+                        action = "mixed-raise-call"
+                        freq = raise_freq
+                    else:
+                        action = "mixed-call-raise"
+                        freq = call_freq
                 elif raise_freq > 0:
                     # Mixed raise/fold
                     if raise_freq >= 50:
