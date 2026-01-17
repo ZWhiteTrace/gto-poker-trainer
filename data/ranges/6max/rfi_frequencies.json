@@ -17,14 +17,15 @@
   "UTG": {
     "frequencies": {
       "AA": {"raise": 100}, "KK": {"raise": 100}, "QQ": {"raise": 100}, "JJ": {"raise": 100}, "TT": {"raise": 100},
-      "99": {"raise": 100}, "88": {"raise": 100}, "77": {"raise": 50},
+      "99": {"raise": 100}, "88": {"raise": 100}, "77": {"raise": 100}, "66": {"raise": 50},
       "AKs": {"raise": 100}, "AQs": {"raise": 100}, "AJs": {"raise": 100}, "ATs": {"raise": 100},
       "A9s": {"raise": 100}, "A8s": {"raise": 100}, "A7s": {"raise": 100}, "A6s": {"raise": 100},
       "A5s": {"raise": 100}, "A4s": {"raise": 100}, "A3s": {"raise": 100}, "A2s": {"raise": 100},
       "KQs": {"raise": 100}, "KJs": {"raise": 100}, "KTs": {"raise": 100}, "K9s": {"raise": 100},
       "K8s": {"raise": 100}, "K7s": {"raise": 100}, "K6s": {"raise": 100}, "K5s": {"raise": 100},
       "QJs": {"raise": 100}, "QTs": {"raise": 100}, "Q9s": {"raise": 100},
-      "JTs": {"raise": 50},
+      "JTs": {"raise": 100}, "J9s": {"raise": 30},
+      "T9s": {"raise": 50},
       "AKo": {"raise": 100}, "AQo": {"raise": 100}, "AJo": {"raise": 100}, "ATo": {"raise": 100},
       "A9o": {"raise": 35}, "A5o": {"raise": 30},
       "KQo": {"raise": 100}, "KJo": {"raise": 100}, "KTo": {"raise": 60},
@@ -32,15 +33,15 @@
     },
     "stats": {
       "total_hands": 169,
-      "raise_hands": 37,
-      "estimated_vpip_contribution": 2.4,
-      "note": "UTG簡單模式: 88+, 77混合, A2s+, K5s+, 無小對子無連張"
+      "raise_hands": 40,
+      "estimated_vpip_contribution": 2.6,
+      "note": "UTG: 77+, 66混合, A2s+, K5s+, JTs, T9s混合, J9s混合"
     }
   },
   "HJ": {
     "frequencies": {
       "AA": {"raise": 100}, "KK": {"raise": 100}, "QQ": {"raise": 100}, "JJ": {"raise": 100}, "TT": {"raise": 100},
-      "99": {"raise": 100}, "88": {"raise": 100}, "77": {"raise": 100}, "66": {"raise": 100},
+      "99": {"raise": 100}, "88": {"raise": 100}, "77": {"raise": 100}, "66": {"raise": 100}, "55": {"raise": 50},
       "AKs": {"raise": 100}, "AQs": {"raise": 100}, "AJs": {"raise": 100}, "ATs": {"raise": 100},
       "A9s": {"raise": 100}, "A8s": {"raise": 100}, "A7s": {"raise": 100}, "A6s": {"raise": 100},
       "A5s": {"raise": 100}, "A4s": {"raise": 100}, "A3s": {"raise": 100}, "A2s": {"raise": 100},
@@ -48,24 +49,25 @@
       "K8s": {"raise": 100}, "K7s": {"raise": 100}, "K6s": {"raise": 100}, "K5s": {"raise": 100},
       "K4s": {"raise": 100}, "K3s": {"raise": 40},
       "QJs": {"raise": 100}, "QTs": {"raise": 100}, "Q9s": {"raise": 100}, "Q8s": {"raise": 85},
-      "JTs": {"raise": 100}, "J9s": {"raise": 60},
+      "JTs": {"raise": 100}, "J9s": {"raise": 100},
+      "T9s": {"raise": 50},
       "AKo": {"raise": 100}, "AQo": {"raise": 100}, "AJo": {"raise": 100}, "ATo": {"raise": 100},
       "A9o": {"raise": 100}, "A8o": {"raise": 40}, "A5o": {"raise": 65},
       "KQo": {"raise": 100}, "KJo": {"raise": 100}, "KTo": {"raise": 100},
-      "QJo": {"raise": 100}, "QTo": {"raise": 30}
+      "QJo": {"raise": 100}, "QTo": {"raise": 50}
     },
     "stats": {
       "total_hands": 169,
-      "raise_hands": 43,
-      "estimated_vpip_contribution": 2.9,
-      "note": "HJ簡單模式: 66+, A2s+, K3s+混合, Q8s混合, 無連張, A5o-A9o混合"
+      "raise_hands": 46,
+      "estimated_vpip_contribution": 3.1,
+      "note": "HJ: 66+, 55混合, A2s+, K3s+混合, JTs, J9s, T9s混合"
     }
   },
   "CO": {
     "frequencies": {
       "AA": {"raise": 100}, "KK": {"raise": 100}, "QQ": {"raise": 100}, "JJ": {"raise": 100}, "TT": {"raise": 100},
       "99": {"raise": 100}, "88": {"raise": 100}, "77": {"raise": 100}, "66": {"raise": 100}, "55": {"raise": 100},
-      "44": {"raise": 30},
+      "44": {"raise": 50}, "33": {"raise": 30},
       "AKs": {"raise": 100}, "AQs": {"raise": 100}, "AJs": {"raise": 100}, "ATs": {"raise": 100},
       "A9s": {"raise": 100}, "A8s": {"raise": 100}, "A7s": {"raise": 100}, "A6s": {"raise": 100},
       "A5s": {"raise": 100}, "A4s": {"raise": 100}, "A3s": {"raise": 100}, "A2s": {"raise": 100},
@@ -73,9 +75,12 @@
       "K8s": {"raise": 100}, "K7s": {"raise": 100}, "K6s": {"raise": 100}, "K5s": {"raise": 100},
       "K4s": {"raise": 100}, "K3s": {"raise": 100}, "K2s": {"raise": 50},
       "QJs": {"raise": 100}, "QTs": {"raise": 100}, "Q9s": {"raise": 100}, "Q8s": {"raise": 100},
-      "Q6s": {"raise": 100},
-      "JTs": {"raise": 100}, "J9s": {"raise": 100}, "J8s": {"raise": 100}, "J7s": {"raise": 50},
-      "T9s": {"raise": 100}, "T8s": {"raise": 50},
+      "Q7s": {"raise": 50}, "Q6s": {"raise": 100},
+      "JTs": {"raise": 100}, "J9s": {"raise": 100}, "J8s": {"raise": 100}, "J7s": {"raise": 100},
+      "T9s": {"raise": 100}, "T8s": {"raise": 100},
+      "98s": {"raise": 100}, "97s": {"raise": 50},
+      "87s": {"raise": 100}, "86s": {"raise": 50},
+      "76s": {"raise": 50}, "65s": {"raise": 50}, "54s": {"raise": 40},
       "AKo": {"raise": 100}, "AQo": {"raise": 100}, "AJo": {"raise": 100}, "ATo": {"raise": 100},
       "A9o": {"raise": 100}, "A8o": {"raise": 100}, "A7o": {"raise": 100}, "A5o": {"raise": 100},
       "KQo": {"raise": 100}, "KJo": {"raise": 100}, "KTo": {"raise": 100}, "K9o": {"raise": 40},
@@ -84,16 +89,16 @@
     },
     "stats": {
       "total_hands": 169,
-      "raise_hands": 48,
-      "estimated_vpip_contribution": 3.2,
-      "note": "CO簡單模式: 55+, 44混合, A2s+, K2s+混合, Q6s+, 無Q5s/Q7s/97s/86s"
+      "raise_hands": 58,
+      "estimated_vpip_contribution": 3.8,
+      "note": "CO: 55+, 44/33混合, A2s+, K2s混合, 同花連張87s-54s混合"
     }
   },
   "BTN": {
     "frequencies": {
       "AA": {"raise": 100}, "KK": {"raise": 100}, "QQ": {"raise": 100}, "JJ": {"raise": 100}, "TT": {"raise": 100},
       "99": {"raise": 100}, "88": {"raise": 100}, "77": {"raise": 100}, "66": {"raise": 100}, "55": {"raise": 100},
-      "44": {"raise": 100}, "33": {"raise": 100},
+      "44": {"raise": 100}, "33": {"raise": 100}, "22": {"raise": 50},
       "AKs": {"raise": 100}, "AQs": {"raise": 100}, "AJs": {"raise": 100}, "ATs": {"raise": 100},
       "A9s": {"raise": 100}, "A8s": {"raise": 100}, "A7s": {"raise": 100}, "A6s": {"raise": 100},
       "A5s": {"raise": 100}, "A4s": {"raise": 100}, "A3s": {"raise": 100}, "A2s": {"raise": 100},
@@ -102,29 +107,31 @@
       "K4s": {"raise": 100}, "K3s": {"raise": 100}, "K2s": {"raise": 100},
       "QJs": {"raise": 100}, "QTs": {"raise": 100}, "Q9s": {"raise": 100}, "Q8s": {"raise": 100},
       "Q7s": {"raise": 100}, "Q6s": {"raise": 100}, "Q5s": {"raise": 100}, "Q4s": {"raise": 100},
-      "Q3s": {"raise": 100},
+      "Q3s": {"raise": 100}, "Q2s": {"raise": 50},
       "JTs": {"raise": 100}, "J9s": {"raise": 100}, "J8s": {"raise": 100}, "J7s": {"raise": 100},
-      "J6s": {"raise": 100}, "J5s": {"raise": 100},
+      "J6s": {"raise": 100}, "J5s": {"raise": 100}, "J4s": {"raise": 50}, "J3s": {"raise": 30},
       "T9s": {"raise": 100}, "T8s": {"raise": 100}, "T7s": {"raise": 100}, "T6s": {"raise": 100},
-      "98s": {"raise": 100}, "97s": {"raise": 100},
-      "87s": {"raise": 100}, "86s": {"raise": 100},
-      "76s": {"raise": 100},
-      "65s": {"raise": 80},
-      "54s": {"raise": 50},
+      "T5s": {"raise": 50},
+      "98s": {"raise": 100}, "97s": {"raise": 100}, "96s": {"raise": 50},
+      "87s": {"raise": 100}, "86s": {"raise": 100}, "85s": {"raise": 50},
+      "76s": {"raise": 100}, "75s": {"raise": 50}, "74s": {"raise": 30},
+      "65s": {"raise": 100}, "64s": {"raise": 50},
+      "54s": {"raise": 100}, "53s": {"raise": 50}, "43s": {"raise": 30},
       "AKo": {"raise": 100}, "AQo": {"raise": 100}, "AJo": {"raise": 100}, "ATo": {"raise": 100},
       "A9o": {"raise": 100}, "A8o": {"raise": 100}, "A7o": {"raise": 100}, "A6o": {"raise": 100},
-      "A5o": {"raise": 100}, "A4o": {"raise": 100}, "A3o": {"raise": 100},
+      "A5o": {"raise": 100}, "A4o": {"raise": 100}, "A3o": {"raise": 100}, "A2o": {"raise": 50},
       "KQo": {"raise": 100}, "KJo": {"raise": 100}, "KTo": {"raise": 100}, "K9o": {"raise": 100},
-      "K8o": {"raise": 100},
-      "QJo": {"raise": 100}, "QTo": {"raise": 100}, "Q9o": {"raise": 100},
-      "JTo": {"raise": 100}, "J9o": {"raise": 100},
-      "T9o": {"raise": 100}
+      "K8o": {"raise": 100}, "K7o": {"raise": 50},
+      "QJo": {"raise": 100}, "QTo": {"raise": 100}, "Q9o": {"raise": 100}, "Q8o": {"raise": 50},
+      "JTo": {"raise": 100}, "J9o": {"raise": 100}, "J8o": {"raise": 30},
+      "T9o": {"raise": 100}, "T8o": {"raise": 50},
+      "98o": {"raise": 30}, "97o": {"raise": 20}
     },
     "stats": {
       "total_hands": 169,
-      "raise_hands": 82,
-      "estimated_vpip_contribution": 5.3,
-      "note": "BTN簡單模式: 33+, A2s+, K2s+, Q3s+, J5s+, A3o+, K8o+, 無22/A2o"
+      "raise_hands": 95,
+      "estimated_vpip_contribution": 6.1,
+      "note": "BTN: 33+, 22混合, A2s+, K2s+, Q2s混合, J3s混合, 同花連張43s+混合, A2o混合, K7o混合"
     }
   },
   "SB": {
@@ -141,32 +148,33 @@
       "K5s": {"raise": 100}, "K4s": {"raise": 100}, "K3s": {"raise": 100}, "K2s": {"raise": 100},
       "QJs": {"raise": 100}, "QTs": {"raise": 100},
       "Q9s": {"raise": 100}, "Q8s": {"raise": 100}, "Q7s": {"raise": 100}, "Q6s": {"raise": 100},
-      "Q5s": {"raise": 100}, "Q4s": {"raise": 100}, "Q3s": {"raise": 100}, "Q2s": {"raise": 30},
+      "Q5s": {"raise": 100}, "Q4s": {"raise": 100}, "Q3s": {"raise": 100}, "Q2s": {"raise": 50},
       "JTs": {"raise": 100}, "J9s": {"raise": 100},
-      "J8s": {"raise": 100}, "J7s": {"raise": 100}, "J6s": {"raise": 100}, "J5s": {"raise": 65},
+      "J8s": {"raise": 100}, "J7s": {"raise": 100}, "J6s": {"raise": 100}, "J5s": {"raise": 100},
+      "J4s": {"raise": 100}, "J3s": {"raise": 50},
       "T9s": {"raise": 100}, "T8s": {"raise": 100}, "T7s": {"raise": 100},
-      "T6s": {"raise": 100},
-      "98s": {"raise": 100}, "97s": {"raise": 100}, "96s": {"raise": 100},
-      "87s": {"raise": 100}, "86s": {"raise": 100}, "85s": {"raise": 60},
-      "76s": {"raise": 100}, "75s": {"raise": 100},
-      "65s": {"raise": 100},
-      "54s": {"raise": 100},
+      "T6s": {"raise": 100}, "T5s": {"raise": 100}, "T4s": {"raise": 30},
+      "98s": {"raise": 100}, "97s": {"raise": 100}, "96s": {"raise": 100}, "95s": {"raise": 50},
+      "87s": {"raise": 100}, "86s": {"raise": 100}, "85s": {"raise": 100}, "84s": {"raise": 30},
+      "76s": {"raise": 100}, "75s": {"raise": 100}, "74s": {"raise": 50},
+      "65s": {"raise": 100}, "64s": {"raise": 50},
+      "54s": {"raise": 100}, "53s": {"raise": 50}, "43s": {"raise": 30}, "32s": {"raise": 20},
       "AKo": {"raise": 100}, "AQo": {"raise": 100}, "AJo": {"raise": 100}, "ATo": {"raise": 100},
       "A9o": {"raise": 100}, "A8o": {"raise": 100}, "A7o": {"raise": 100}, "A6o": {"raise": 100},
-      "A5o": {"raise": 100}, "A4o": {"raise": 100}, "A3o": {"raise": 100},
+      "A5o": {"raise": 100}, "A4o": {"raise": 100}, "A3o": {"raise": 100}, "A2o": {"raise": 50},
       "KQo": {"raise": 100}, "KJo": {"raise": 100}, "KTo": {"raise": 100},
-      "K9o": {"raise": 100}, "K8o": {"raise": 60},
+      "K9o": {"raise": 100}, "K8o": {"raise": 100},
       "QJo": {"raise": 100}, "QTo": {"raise": 100},
-      "Q9o": {"raise": 100},
-      "JTo": {"raise": 100}, "J9o": {"raise": 100},
-      "T9o": {"raise": 100},
-      "98o": {"raise": 70}
+      "Q9o": {"raise": 100}, "Q8o": {"raise": 30},
+      "JTo": {"raise": 100}, "J9o": {"raise": 100}, "J8o": {"raise": 30},
+      "T9o": {"raise": 100}, "T8o": {"raise": 30},
+      "98o": {"raise": 70}, "87o": {"raise": 30}
     },
     "stats": {
       "total_hands": 169,
-      "raise_hands": 78,
-      "estimated_vpip_contribution": 7.0,
-      "note": "SB簡單模式: 22+, A2s+, K2s+, Q2s混合, J5s混合, 85s混合, A3o+, 無64s/53s/J4s/T8o/87o"
+      "raise_hands": 98,
+      "estimated_vpip_contribution": 8.5,
+      "note": "SB: 22+, A2s+, K2s+, Q2s+混合, J3s混合, 同花連張32s+混合, A2o混合, K8o+"
     }
   }
 }
