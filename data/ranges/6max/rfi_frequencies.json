@@ -169,15 +169,15 @@
       "JTo": {"raise": 100}, "J9o": {"call": 100}, "J8o": {"call": 100},
       "T9o": {"call": 100}, "T8o": {"raise": 40, "call": 60},
       "98o": {"call": 100}, "97o": {"call": 100},
-      "87o": {"raise": 30, "call": 70}, "86o": {"call": 100},
+      "87o": {"raise": 30, "call": 70},
       "76o": {"call": 60}
     },
     "stats": {
       "total_hands": 169,
       "raise_hands": 45,
-      "call_hands": 90,
-      "estimated_vpip_contribution": 8.0,
-      "note": "NL25 SB vs BB: Raise 3.5bb 高牌/blocker，低同花連張偏 Call，根據GTOWizard 2026"
+      "call_hands": 100,
+      "estimated_vpip_contribution": 8.5,
+      "note": "NL25 SB vs BB: Raise 3.5bb 高牌/blocker，低同花連張 Call，根據GTOWizard 2026"
     }
   }
 }
