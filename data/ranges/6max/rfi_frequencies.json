@@ -163,12 +163,12 @@
       "J8s": {"raise": 100}, "J7s": {"raise": 100}, "J6s": {"raise": 100}, "J5s": {"raise": 100},
       "J4s": {"raise": 100},
       "T9s": {"raise": 100}, "T8s": {"raise": 100}, "T7s": {"raise": 100},
-      "T6s": {"raise": 100},
+      "T6s": {"raise": 100}, "T5s": {"raise": 20},
       "98s": {"raise": 100}, "97s": {"raise": 100}, "96s": {"raise": 100},
       "87s": {"raise": 100}, "86s": {"raise": 100}, "85s": {"raise": 100},
-      "76s": {"raise": 100}, "75s": {"raise": 100},
-      "65s": {"raise": 100},
-      "54s": {"raise": 100}, "53s": {"raise": 100},
+      "76s": {"raise": 100}, "75s": {"raise": 100}, "74s": {"raise": 25},
+      "65s": {"raise": 100}, "64s": {"raise": 100},
+      "54s": {"raise": 100}, "53s": {"raise": 80},
       "AKo": {"raise": 100}, "AQo": {"raise": 100}, "AJo": {"raise": 100}, "ATo": {"raise": 100},
       "A9o": {"raise": 100}, "A8o": {"raise": 100}, "A7o": {"raise": 100}, "A6o": {"raise": 100},
       "A5o": {"raise": 100}, "A4o": {"raise": 100},
@@ -178,7 +178,8 @@
       "Q9o": {"raise": 100},
       "JTo": {"raise": 100}, "J9o": {"raise": 100},
       "T9o": {"raise": 100}, "T8o": {"raise": 60},
-      "98o": {"raise": 100}
+      "98o": {"raise": 70},
+      "87o": {"raise": 40}
     },
     "stats": {
       "total_hands": 169,
