@@ -116,22 +116,41 @@ def display_range_grid(
             # Get frequency for this hand
             hand_freq = frequencies.get(hand, {})
             raise_freq = hand_freq.get("raise", 0)
+            call_freq = hand_freq.get("call", 0)
 
             # Determine action based on frequency or existing logic
             if frequencies:
-                # Use frequency-based coloring
+                # GTOWizard style: Red=Raise, Green=Call, Blue=Fold
                 if raise_freq >= 100:
                     action = "raise"
                     freq = 100
-                elif raise_freq >= 70:
-                    action = "raise-high"  # 70-99%
+                elif call_freq >= 100:
+                    action = "call"
+                    freq = 100
+                elif raise_freq >= 70 and call_freq == 0:
+                    action = "raise"  # Solid raise
                     freq = raise_freq
-                elif raise_freq >= 30:
-                    action = "raise-medium"  # 30-69%
+                elif call_freq >= 70 and raise_freq == 0:
+                    action = "call"  # Solid call
+                    freq = call_freq
+                elif raise_freq > 0 and call_freq > 0:
+                    # Mixed raise/call - show split
+                    action = "mixed-raise-call"
                     freq = raise_freq
                 elif raise_freq > 0:
-                    action = "raise-low"  # 1-29%
+                    # Mixed raise/fold
+                    if raise_freq >= 50:
+                        action = "raise-mixed"
+                    else:
+                        action = "fold-mixed"
                     freq = raise_freq
+                elif call_freq > 0:
+                    # Mixed call/fold
+                    if call_freq >= 50:
+                        action = "call-mixed"
+                    else:
+                        action = "fold-mixed-call"
+                    freq = call_freq
                 else:
                     action = "fold"
                     freq = 0
@@ -222,60 +241,55 @@ def _generate_grid_html(grid_data: List[List[Dict]], highlight_hand: str = None)
         position: relative;
         overflow: hidden;
     }
+    /* GTOWizard Style: Red=Raise, Green=Call, Blue=Fold */
     .range-cell.raise {
+        background-color: #ef4444;
+        color: white;
+    }
+    .range-cell.call {
         background-color: #22c55e;
         color: white;
     }
-    /* Frequency-based raise colors */
-    .range-cell.raise-high {
-        background-color: rgba(34, 197, 94, 0.85);  /* 70-99% */
-        color: white;
-    }
-    .range-cell.raise-medium {
-        background-color: rgba(34, 197, 94, 0.55);  /* 30-69% */
-        color: white;
-    }
-    .range-cell.raise-low {
-        background-color: rgba(34, 197, 94, 0.30);  /* 1-29% */
-        color: #d1d5db;
-    }
-    .range-cell.call {
+    .range-cell.fold {
         background-color: #3b82f6;
         color: white;
     }
-    .range-cell.fold {
-        background-color: #374151;
-        color: #9ca3af;
-    }
-    /* Mixed raise: green with diagonal stripes */
-    .range-cell.mixed-raise {
-        background: linear-gradient(
-            135deg,
-            #22c55e 25%,
-            #374151 25%,
-            #374151 50%,
-            #22c55e 50%,
-            #22c55e 75%,
-            #374151 75%,
-            #374151 100%
-        );
-        background-size: 8px 8px;
+    /* Mixed raise/fold: Red with blue stripes */
+    .range-cell.raise-mixed {
+        background: linear-gradient(135deg, #ef4444 50%, #3b82f6 50%);
         color: white;
         text-shadow: 0 1px 2px rgba(0,0,0,0.5);
     }
-    /* Mixed call: blue with diagonal stripes */
+    .range-cell.fold-mixed {
+        background: linear-gradient(135deg, #3b82f6 50%, #ef4444 50%);
+        color: white;
+        text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+    }
+    /* Mixed call/fold: Green with blue stripes */
+    .range-cell.call-mixed {
+        background: linear-gradient(135deg, #22c55e 50%, #3b82f6 50%);
+        color: white;
+        text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+    }
+    .range-cell.fold-mixed-call {
+        background: linear-gradient(135deg, #3b82f6 50%, #22c55e 50%);
+        color: white;
+        text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+    }
+    /* Mixed raise/call: Red with green stripes */
+    .range-cell.mixed-raise-call {
+        background: linear-gradient(135deg, #ef4444 50%, #22c55e 50%);
+        color: white;
+        text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+    }
+    /* Legacy mixed classes */
+    .range-cell.mixed-raise {
+        background: linear-gradient(135deg, #ef4444 50%, #3b82f6 50%);
+        color: white;
+        text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+    }
     .range-cell.mixed-call {
-        background: linear-gradient(
-            135deg,
-            #3b82f6 25%,
-            #374151 25%,
-            #374151 50%,
-            #3b82f6 50%,
-            #3b82f6 75%,
-            #374151 75%,
-            #374151 100%
-        );
-        background-size: 8px 8px;
+        background: linear-gradient(135deg, #22c55e 50%, #3b82f6 50%);
         color: white;
         text-shadow: 0 1px 2px rgba(0,0,0,0.5);
     }
@@ -343,19 +357,17 @@ def _generate_grid_html(grid_data: List[List[Dict]], highlight_hand: str = None)
 
 
 def _display_legend(show_mixed: bool = False, show_drillable: bool = False, show_call: bool = True, show_frequency: bool = False):
-    """Display the color legend with optional mixed frequency and drillable indicators."""
-    mixed_html = '<span style="margin-right: 10px;"><span style="background: linear-gradient(135deg, #22c55e 50%, #374151 50%); color: white; padding: 2px 8px; border-radius: 3px; text-shadow: 0 1px 2px rgba(0,0,0,0.5);">M</span> Mixed</span>' if show_mixed else ""
+    """Display the color legend - GTOWizard style (Red=Raise, Green=Call, Blue=Fold)."""
     drillable_html = '<span style="margin-right: 10px;"><span style="background: #374151; color: #9ca3af; padding: 2px 8px; border-radius: 3px; opacity: 0.35;">dim</span> 非出題範圍</span>' if show_drillable else ""
-    call_html = '<span style="margin-right: 10px;"><span style="background: #3b82f6; color: white; padding: 2px 8px; border-radius: 3px;">C</span> Call</span>' if show_call else ""
+    call_html = '<span style="margin-right: 10px;"><span style="background: #22c55e; color: white; padding: 2px 8px; border-radius: 3px;">C</span> Call</span>' if show_call else ""
 
-    # Frequency legend
-    if show_frequency:
-        freq_html = '<span style="margin-right: 10px;"><span style="background: rgba(34, 197, 94, 0.85); color: white; padding: 2px 6px; border-radius: 3px;">70%+</span> <span style="background: rgba(34, 197, 94, 0.55); color: white; padding: 2px 6px; border-radius: 3px;">30-69%</span> <span style="background: rgba(34, 197, 94, 0.30); color: #d1d5db; padding: 2px 6px; border-radius: 3px;">&lt;30%</span></span>'
-    else:
-        freq_html = ""
+    # Mixed legend
+    mixed_html = ""
+    if show_mixed or show_frequency:
+        mixed_html = '<span style="margin-right: 10px;"><span style="background: linear-gradient(135deg, #ef4444 50%, #3b82f6 50%); color: white; padding: 2px 8px; border-radius: 3px; text-shadow: 0 1px 2px rgba(0,0,0,0.5);">M</span> Mixed</span>'
 
-    # Use single-line HTML to avoid rendering issues
-    html = f'<div style="display: flex; gap: 15px; justify-content: center; margin: 10px 0; flex-wrap: wrap;"><span style="margin-right: 10px;"><span style="background: #22c55e; color: white; padding: 2px 8px; border-radius: 3px;">R</span> Raise 100%</span>{freq_html}{call_html}<span style="margin-right: 10px;"><span style="background: #374151; color: #9ca3af; padding: 2px 8px; border-radius: 3px;">F</span> Fold</span>{mixed_html}<span><span style="background: #f59e0b; color: black; padding: 2px 8px; border-radius: 3px;">H</span> Current</span>{drillable_html}</div>'
+    # GTOWizard style: Red=Raise, Green=Call, Blue=Fold
+    html = f'<div style="display: flex; gap: 15px; justify-content: center; margin: 10px 0; flex-wrap: wrap;"><span style="margin-right: 10px;"><span style="background: #ef4444; color: white; padding: 2px 8px; border-radius: 3px;">R</span> Raise</span>{call_html}<span style="margin-right: 10px;"><span style="background: #3b82f6; color: white; padding: 2px 8px; border-radius: 3px;">F</span> Fold</span>{mixed_html}<span><span style="background: #f59e0b; color: black; padding: 2px 8px; border-radius: 3px;">H</span> Current</span>{drillable_html}</div>'
     st.markdown(html, unsafe_allow_html=True)
 
 
