@@ -38,30 +38,24 @@
   "HJ": {
     "frequencies": {
       "AA": {"raise": 100}, "KK": {"raise": 100}, "QQ": {"raise": 100}, "JJ": {"raise": 100}, "TT": {"raise": 100},
-      "99": {"raise": 100}, "88": {"raise": 100}, "77": {"raise": 75}, "66": {"raise": 50}, "55": {"raise": 25},
+      "99": {"raise": 100}, "88": {"raise": 100}, "77": {"raise": 100}, "66": {"raise": 100}, "55": {"raise": 50},
       "AKs": {"raise": 100}, "AQs": {"raise": 100}, "AJs": {"raise": 100}, "ATs": {"raise": 100},
       "A9s": {"raise": 100}, "A8s": {"raise": 100}, "A7s": {"raise": 100}, "A6s": {"raise": 100},
       "A5s": {"raise": 100}, "A4s": {"raise": 100}, "A3s": {"raise": 100}, "A2s": {"raise": 100},
       "KQs": {"raise": 100}, "KJs": {"raise": 100}, "KTs": {"raise": 100}, "K9s": {"raise": 100},
-      "K8s": {"raise": 75}, "K7s": {"raise": 50},
-      "QJs": {"raise": 100}, "QTs": {"raise": 100}, "Q9s": {"raise": 100}, "Q8s": {"raise": 50},
-      "JTs": {"raise": 100}, "J9s": {"raise": 100}, "J8s": {"raise": 50},
-      "T9s": {"raise": 100}, "T8s": {"raise": 75},
-      "98s": {"raise": 100}, "97s": {"raise": 50},
-      "87s": {"raise": 75}, "86s": {"raise": 25},
-      "76s": {"raise": 50},
-      "65s": {"raise": 50},
-      "54s": {"raise": 25},
+      "K8s": {"raise": 100}, "K7s": {"raise": 100}, "K6s": {"raise": 100}, "K5s": {"raise": 100}, "K4s": {"raise": 100},
+      "QJs": {"raise": 100}, "QTs": {"raise": 100}, "Q9s": {"raise": 100}, "Q8s": {"raise": 65},
+      "JTs": {"raise": 100}, "J9s": {"raise": 50},
+      "T9s": {"raise": 50},
       "AKo": {"raise": 100}, "AQo": {"raise": 100}, "AJo": {"raise": 100}, "ATo": {"raise": 75},
-      "A8o": {"raise": 25}, "A5o": {"raise": 25},
-      "KQo": {"raise": 100}, "KJo": {"raise": 75}, "KTo": {"raise": 50},
-      "QJo": {"raise": 75}
+      "KQo": {"raise": 100}, "KJo": {"raise": 75}, "KTo": {"raise": 100},
+      "QJo": {"raise": 100}, "QTo": {"raise": 50}
     },
     "stats": {
       "total_hands": 169,
-      "raise_hands": 45,
-      "estimated_vpip_contribution": 3.0,
-      "note": "NL25 HJ: 88+, A2s+, K9s+, QTs+, J9s+, T9s/98s, 低頻連張"
+      "raise_hands": 40,
+      "estimated_vpip_contribution": 2.9,
+      "note": "NL25 HJ: 77+, A2s+, K4s+, QTs+, JTs, 少量J9s/T9s混合"
     }
   },
   "CO": {
