@@ -96,7 +96,7 @@ def display_rfi_chart_overlay(evaluator: Evaluator, lang: str = "zh"):
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        font-size: clamp(8px, 2.5vw, 12px);
+        font-size: clamp(10px, 3.5vw, 16px);
         font-weight: bold;
         border-radius: 3px;
         position: relative;
@@ -195,7 +195,7 @@ def display_rfi_chart_earliest(evaluator: Evaluator, lang: str = "zh"):
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: clamp(8px, 2.5vw, 12px);
+        font-size: clamp(10px, 3.5vw, 16px);
         font-weight: bold;
         border-radius: 3px;
         color: white;
