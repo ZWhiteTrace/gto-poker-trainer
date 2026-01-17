@@ -251,7 +251,7 @@ def display_rfi_chart_earliest(evaluator: Evaluator, lang: str = "zh"):
         grid-template-columns: repeat(13, 1fr);
         gap: 2px;
         width: 100%;
-        max-width: 555px;
+        max-width: min(555px, calc(100vw - 40px));
         margin: 10px auto;
         background: #1a1a2e;
         padding: 8px;
@@ -262,7 +262,7 @@ def display_rfi_chart_earliest(evaluator: Evaluator, lang: str = "zh"):
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: clamp(12px, 4vw, 18px);
+        font-size: clamp(10px, 3vw, 16px);
         font-weight: bold;
         border-radius: 3px;
         color: white;
