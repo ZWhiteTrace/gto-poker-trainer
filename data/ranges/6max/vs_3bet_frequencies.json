@@ -131,10 +131,51 @@
   },
   "CO_vs_BTN": {
     "frequencies": {
-      "AA": {"4bet": 100}, "KK": {"4bet": 100}, "QQ": {"4bet": 100}, "JJ": {"4bet": 100},
-      "AKs": {"4bet": 100}, "AKo": {"4bet": 100}, "AQs": {"4bet": 100}, "A5s": {"4bet": 100},
-      "TT": {"call": 100}, "99": {"call": 100}, "88": {"call": 100}, "77": {"call": 100},
-      "AJs": {"call": 100}, "ATs": {"call": 100}, "A9s": {"call": 100}, "A4s": {"call": 100}, "A3s": {"call": 100},
+      "AA": {"4bet": 70, "call": 30}, "KK": {"4bet": 81, "call": 19}, "QQ": {"4bet": 89, "call": 11}, "JJ": {"4bet": 84, "call": 16},
+      "AKs": {"4bet": 71, "call": 29}, "AKo": {"4bet": 87, "call": 13},
+      "AQs": {"4bet": 16, "call": 84}, "AQo": {"4bet": 14, "call": 86},
+      "AJs": {"call": 100}, "ATs": {"call": 100}, "A9s": {"call": 100}, "A8s": {"call": 100},
+      "A5s": {"4bet": 100}, "A4s": {"4bet": 23, "call": 77}, "A3s": {"call": 100}, "A2s": {"call": 100},
+      "TT": {"4bet": 37, "call": 63}, "99": {"call": 100}, "88": {"call": 100}, "77": {"call": 100}, "66": {"call": 100},
+      "KQs": {"call": 100}, "KQo": {"call": 100}, "KJs": {"call": 100}, "KTs": {"call": 100}, "K9s": {"call": 100},
+      "QJs": {"call": 100}, "QTs": {"call": 100}, "Q9s": {"call": 100},
+      "JTs": {"call": 100}, "J9s": {"call": 100}, "J8s": {"call": 100},
+      "T9s": {"call": 100}, "T8s": {"call": 100},
+      "98s": {"call": 100}, "97s": {"call": 100},
+      "87s": {"call": 100}, "86s": {"call": 100},
+      "76s": {"call": 100}, "75s": {"call": 100},
+      "65s": {"call": 100}, "64s": {"call": 100},
+      "54s": {"call": 100}, "53s": {"call": 100}
+    },
+    "stats": {
+      "note": "CO vs BTN 3bet: GTOWizard frequencies. Mixed 4bet/call strategies."
+    }
+  },
+  "CO_vs_SB": {
+    "frequencies": {
+      "AA": {"4bet": 66, "call": 34}, "KK": {"4bet": 79, "call": 21}, "QQ": {"4bet": 96, "call": 4},
+      "AKs": {"4bet": 58, "call": 42}, "AKo": {"4bet": 86, "call": 14},
+      "AQs": {"4bet": 4, "call": 96}, "AQo": {"call": 100},
+      "AJs": {"call": 100}, "ATs": {"call": 100}, "A9s": {"call": 100},
+      "A5s": {"4bet": 100}, "A4s": {"4bet": 8, "call": 92},
+      "JJ": {"4bet": 60, "call": 40}, "TT": {"4bet": 14, "call": 86}, "99": {"call": 100}, "88": {"call": 100},
+      "KQs": {"call": 100}, "KJs": {"call": 100}, "KTs": {"call": 100},
+      "QJs": {"call": 100}, "QTs": {"call": 100},
+      "JTs": {"call": 100}, "J9s": {"call": 100},
+      "T9s": {"call": 100}, "98s": {"call": 100}, "87s": {"call": 100}, "76s": {"call": 100}
+    },
+    "stats": {
+      "note": "CO vs SB 3bet: GTOWizard frequencies."
+    }
+  },
+  "CO_vs_BB": {
+    "frequencies": {
+      "AA": {"4bet": 66, "call": 34}, "KK": {"4bet": 80, "call": 20}, "QQ": {"4bet": 100},
+      "AKs": {"4bet": 58, "call": 42}, "AKo": {"4bet": 91, "call": 9},
+      "AQs": {"4bet": 9, "call": 91}, "AQo": {"call": 100},
+      "AJs": {"call": 100}, "ATs": {"call": 100}, "A9s": {"call": 100},
+      "A5s": {"4bet": 100}, "A4s": {"4bet": 9, "call": 91}, "A3s": {"call": 100},
+      "JJ": {"4bet": 77, "call": 23}, "TT": {"4bet": 14, "call": 86}, "99": {"call": 100}, "88": {"call": 100}, "77": {"call": 100},
       "KQs": {"call": 100}, "KJs": {"call": 100}, "KTs": {"call": 100}, "K9s": {"call": 100},
       "QJs": {"call": 100}, "QTs": {"call": 100}, "Q9s": {"call": 100},
       "JTs": {"call": 100}, "J9s": {"call": 100},
@@ -146,49 +187,19 @@
       "54s": {"call": 100}
     },
     "stats": {
-      "note": "CO vs BTN 3bet: Wide call range, BTN 3bets wide"
-    }
-  },
-  "CO_vs_SB": {
-    "frequencies": {
-      "AA": {"4bet": 100}, "KK": {"4bet": 100}, "QQ": {"4bet": 100},
-      "AKs": {"4bet": 100}, "AKo": {"4bet": 100}, "A5s": {"4bet": 100},
-      "JJ": {"call": 100}, "TT": {"call": 100}, "99": {"call": 100},
-      "AQs": {"call": 100}, "AJs": {"call": 100}, "ATs": {"call": 100},
-      "KQs": {"call": 100}, "KJs": {"call": 100}, "KTs": {"call": 100},
-      "QJs": {"call": 100}, "QTs": {"call": 100},
-      "JTs": {"call": 100}, "T9s": {"call": 100}
-    },
-    "stats": {
-      "note": "CO vs SB 3bet"
-    }
-  },
-  "CO_vs_BB": {
-    "frequencies": {
-      "AA": {"4bet": 100}, "KK": {"4bet": 100}, "QQ": {"4bet": 100}, "JJ": {"4bet": 100},
-      "AKs": {"4bet": 100}, "AKo": {"4bet": 100}, "AQs": {"4bet": 100}, "A5s": {"4bet": 100}, "A4s": {"4bet": 100},
-      "TT": {"call": 100}, "99": {"call": 100}, "88": {"call": 100},
-      "AJs": {"call": 100}, "ATs": {"call": 100}, "A9s": {"call": 100}, "A3s": {"call": 100},
-      "KQs": {"call": 100}, "KJs": {"call": 100}, "KTs": {"call": 100}, "K9s": {"call": 100},
-      "QJs": {"call": 100}, "QTs": {"call": 100}, "Q9s": {"call": 100},
-      "JTs": {"call": 100}, "J9s": {"call": 100},
-      "T9s": {"call": 100}, "T8s": {"call": 100},
-      "98s": {"call": 100}, "97s": {"call": 100},
-      "87s": {"call": 100}, "86s": {"call": 100},
-      "76s": {"call": 100}, "65s": {"call": 100}, "54s": {"call": 100}
-    },
-    "stats": {
-      "note": "CO vs BB 3bet"
+      "note": "CO vs BB 3bet: GTOWizard frequencies."
     }
   },
   "BTN_vs_SB": {
     "frequencies": {
-      "AA": {"4bet": 100}, "KK": {"4bet": 100}, "QQ": {"4bet": 100}, "JJ": {"4bet": 100}, "TT": {"4bet": 100},
-      "AKs": {"4bet": 100}, "AKo": {"4bet": 100}, "AQs": {"4bet": 100}, "AQo": {"4bet": 100}, "AJs": {"4bet": 100},
-      "A5s": {"4bet": 100}, "A4s": {"4bet": 100}, "A3s": {"4bet": 100},
-      "KQs": {"4bet": 100},
-      "99": {"call": 100}, "88": {"call": 100}, "77": {"call": 100}, "66": {"call": 100}, "55": {"call": 100},
-      "ATs": {"call": 100}, "A9s": {"call": 100}, "A8s": {"call": 100}, "A7s": {"call": 100}, "A6s": {"call": 100}, "A2s": {"call": 100},
+      "AA": {"4bet": 64, "call": 36}, "KK": {"4bet": 75, "call": 25}, "QQ": {"4bet": 96, "call": 4},
+      "AKs": {"4bet": 59, "call": 41}, "AKo": {"4bet": 80, "call": 20},
+      "AQs": {"4bet": 21, "call": 79}, "AQo": {"4bet": 14, "call": 86},
+      "AJs": {"4bet": 3, "call": 97}, "AJo": {"call": 100},
+      "ATs": {"call": 100}, "ATo": {"call": 100}, "A9s": {"call": 100}, "A8s": {"call": 100}, "A7s": {"call": 100}, "A6s": {"call": 100},
+      "A5s": {"4bet": 100}, "A4s": {"4bet": 1, "call": 99}, "A3s": {"call": 100}, "A2s": {"call": 100},
+      "JJ": {"4bet": 68, "call": 32}, "TT": {"4bet": 27, "call": 73}, "99": {"4bet": 3, "call": 97}, "88": {"call": 100}, "77": {"call": 100}, "66": {"call": 100}, "55": {"call": 100},
+      "KQs": {"4bet": 14, "call": 86}, "KQo": {"call": 100},
       "KJs": {"call": 100}, "KTs": {"call": 100}, "K9s": {"call": 100}, "K8s": {"call": 100},
       "QJs": {"call": 100}, "QTs": {"call": 100}, "Q9s": {"call": 100}, "Q8s": {"call": 100},
       "JTs": {"call": 100}, "J9s": {"call": 100}, "J8s": {"call": 100},
@@ -198,34 +209,34 @@
       "76s": {"call": 100}, "75s": {"call": 100},
       "65s": {"call": 100}, "64s": {"call": 100},
       "54s": {"call": 100}, "53s": {"call": 100}, "43s": {"call": 100},
-      "AJo": {"call": 100}, "ATo": {"call": 100}, "KQo": {"call": 100}, "KJo": {"call": 100}
+      "KJo": {"call": 100}
     },
     "stats": {
-      "note": "BTN vs SB 3bet: Wide ranges both ways"
+      "note": "BTN vs SB 3bet: GTOWizard frequencies. Wide call range."
     }
   },
   "BTN_vs_BB": {
     "frequencies": {
-      "AA": {"4bet": 100}, "KK": {"4bet": 100}, "QQ": {"4bet": 100}, "JJ": {"4bet": 100}, "TT": {"4bet": 100}, "99": {"4bet": 100},
-      "AKs": {"4bet": 100}, "AKo": {"4bet": 100}, "AQs": {"4bet": 100}, "AQo": {"4bet": 100}, "AJs": {"4bet": 100}, "ATs": {"4bet": 100}, "A9s": {"4bet": 100},
-      "A5s": {"4bet": 100}, "A4s": {"4bet": 100}, "A3s": {"4bet": 100},
-      "KQs": {"4bet": 100}, "KJs": {"4bet": 100},
-      "88": {"call": 100}, "77": {"call": 100}, "66": {"call": 100}, "55": {"call": 100}, "44": {"call": 100}, "33": {"call": 100}, "22": {"call": 100},
-      "A8s": {"call": 100}, "A7s": {"call": 100}, "A6s": {"call": 100}, "A2s": {"call": 100},
-      "KTs": {"call": 100}, "K9s": {"call": 100}, "K8s": {"call": 100}, "K7s": {"call": 100}, "K5s": {"call": 100},
-      "QJs": {"call": 100}, "QTs": {"call": 100}, "Q9s": {"call": 100}, "Q8s": {"call": 100},
+      "AA": {"4bet": 66, "call": 34}, "KK": {"4bet": 76, "call": 24}, "QQ": {"4bet": 100},
+      "AKs": {"4bet": 52, "call": 48}, "AKo": {"4bet": 87, "call": 13},
+      "AQs": {"4bet": 12, "call": 88}, "AQo": {"4bet": 3, "call": 97},
+      "AJs": {"call": 100}, "AJo": {"call": 100},
+      "ATs": {"call": 100}, "ATo": {"call": 100}, "A9s": {"call": 100}, "A9o": {"call": 100}, "A8s": {"call": 100}, "A7s": {"call": 100}, "A6s": {"call": 100},
+      "A5s": {"4bet": 100}, "A4s": {"4bet": 7, "call": 93}, "A3s": {"call": 100}, "A2s": {"call": 100},
+      "JJ": {"4bet": 71, "call": 29}, "TT": {"4bet": 8, "call": 92}, "99": {"call": 100}, "88": {"call": 100}, "77": {"call": 100}, "66": {"call": 100}, "55": {"call": 100}, "44": {"call": 100}, "33": {"call": 100}, "22": {"call": 100},
+      "KQs": {"call": 100}, "KQo": {"call": 100},
+      "KJs": {"call": 100}, "KJo": {"call": 100}, "KTs": {"call": 100}, "KTo": {"call": 100}, "K9s": {"call": 100}, "K8s": {"call": 100}, "K7s": {"call": 100}, "K5s": {"call": 100},
+      "QJs": {"call": 100}, "QJo": {"call": 100}, "QTs": {"call": 100}, "Q9s": {"call": 100}, "Q8s": {"call": 100},
       "JTs": {"call": 100}, "J9s": {"call": 100}, "J8s": {"call": 100},
       "T9s": {"call": 100}, "T8s": {"call": 100}, "T7s": {"call": 100},
       "98s": {"call": 100}, "97s": {"call": 100}, "96s": {"call": 100},
       "87s": {"call": 100}, "86s": {"call": 100}, "85s": {"call": 100},
       "76s": {"call": 100}, "75s": {"call": 100}, "74s": {"call": 100},
       "65s": {"call": 100}, "64s": {"call": 100},
-      "54s": {"call": 100}, "53s": {"call": 100}, "43s": {"call": 100},
-      "AJo": {"call": 100}, "ATo": {"call": 100}, "A9o": {"call": 100},
-      "KQo": {"call": 100}, "KJo": {"call": 100}, "KTo": {"call": 100}, "QJo": {"call": 100}
+      "54s": {"call": 100}, "53s": {"call": 100}, "43s": {"call": 100}
     },
     "stats": {
-      "note": "BTN vs BB 3bet: Very wide 4bet and call ranges"
+      "note": "BTN vs BB 3bet: GTOWizard frequencies. Very wide call range."
     }
   },
   "SB_vs_BB": {
