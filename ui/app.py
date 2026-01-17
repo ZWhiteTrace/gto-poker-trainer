@@ -22,7 +22,7 @@ from trainer.session import TrainingSession, ProgressTracker
 from ui.components.range_grid import display_range_grid
 from ui.components.table_visual import display_table, display_postflop_table
 from ui.components.card_display import display_hand_cards
-from ui.components.action_flow import display_action_flow
+from ui.components.action_flow import display_action_flow, RAISE_SIZES
 from ui.components.storage import save_progress_to_storage, load_progress_from_storage, init_storage_sync
 from ui.components.rfi_chart import display_rfi_charts
 # Achievements system removed for simplification
@@ -794,16 +794,18 @@ def drill_page():
         folded_positions = []
 
         if spot.scenario.action_type == ActionType.VS_RFI:
-            villain_action = "Raises 2.5bb"
-            bets = {spot.scenario.villain_position: "2.5bb"}
+            villain_size = RAISE_SIZES.get(spot.scenario.villain_position.value, 2.5)
+            villain_action = f"Raises {villain_size}bb"
+            bets = {spot.scenario.villain_position: f"{villain_size}bb"}
             # In VS_RFI: show as heads-up (everyone except hero and villain has folded)
             # SB/BB should be gray when folded, not blue
             for pos in [Position.UTG, Position.HJ, Position.CO, Position.BTN, Position.SB, Position.BB]:
                 if pos != spot.scenario.hero_position and pos != spot.scenario.villain_position:
                     folded_positions.append(pos)
         elif spot.scenario.action_type == ActionType.VS_3BET:
+            hero_size = RAISE_SIZES.get(spot.scenario.hero_position.value, 2.5)
             villain_action = "3-Bets"
-            bets = {spot.scenario.hero_position: "2.5bb", spot.scenario.villain_position: "8bb"}
+            bets = {spot.scenario.hero_position: f"{hero_size}bb", spot.scenario.villain_position: "8bb"}
             # In 3bet pots, everyone except hero and villain has folded (including SB/BB)
             for pos in [Position.UTG, Position.HJ, Position.CO, Position.BTN, Position.SB, Position.BB]:
                 if pos != spot.scenario.hero_position and pos != spot.scenario.villain_position:
@@ -1063,9 +1065,9 @@ def viewer_page():
 
     # Compact header (full width)
     if lang == "zh":
-        context_info = "📊 NL25 · 100bb · 開池 2.5bb (SB 3.5bb)"
+        context_info = "📊 NL50 · 100bb · 開池 2-2.5bb (SB 3bb)"
     else:
-        context_info = "📊 NL25 · 100bb · Open 2.5bb (SB 3.5bb)"
+        context_info = "📊 NL50 · 100bb · Open 2-2.5bb (SB 3bb)"
 
     st.markdown(f"""
     <div style="display: flex; justify-content: space-between; align-items: center; padding: 6px 0; margin-bottom: 4px;">
@@ -1153,14 +1155,16 @@ def viewer_page():
         all_positions = [Position.UTG, Position.UTG1, Position.UTG2, Position.MP, Position.HJ, Position.CO, Position.BTN, Position.SB, Position.BB]
 
     if action_type == "vs Open" and villain_position:
+        villain_size = RAISE_SIZES.get(villain_position.value, 2.5)
         show_action = "Raises"
-        bets = {villain_position: "2.5bb"}
+        bets = {villain_position: f"{villain_size}bb"}
         for pos in all_positions:
             if pos != hero_position and pos != villain_position:
                 folded_positions.append(pos)
     elif action_type == "vs 3-Bet" and villain_position:
+        hero_size = RAISE_SIZES.get(hero_position.value, 2.5)
         show_action = "3-Bets"
-        bets = {hero_position: "2.5bb", villain_position: "8bb"}
+        bets = {hero_position: f"{hero_size}bb", villain_position: "8bb"}
         for pos in all_positions:
             if pos != hero_position and pos != villain_position:
                 folded_positions.append(pos)
@@ -1663,11 +1667,13 @@ def stats_page():
                     bets = None
                     villain_action = None
                     if m.spot.scenario.action_type == ActionType.VS_RFI:
+                        villain_size = RAISE_SIZES.get(m.spot.scenario.villain_position.value, 2.5)
                         villain_action = "Raises"
-                        bets = {m.spot.scenario.villain_position: "2.5bb"}
+                        bets = {m.spot.scenario.villain_position: f"{villain_size}bb"}
                     elif m.spot.scenario.action_type == ActionType.VS_3BET:
+                        hero_size = RAISE_SIZES.get(m.spot.scenario.hero_position.value, 2.5)
                         villain_action = "3-Bets"
-                        bets = {m.spot.scenario.hero_position: "2.5bb", m.spot.scenario.villain_position: "8bb"}
+                        bets = {m.spot.scenario.hero_position: f"{hero_size}bb", m.spot.scenario.villain_position: "8bb"}
                     elif m.spot.scenario.action_type == ActionType.VS_4BET:
                         villain_action = "4-Bets"
                         bets = {m.spot.scenario.hero_position: "8bb", m.spot.scenario.villain_position: "20bb"}

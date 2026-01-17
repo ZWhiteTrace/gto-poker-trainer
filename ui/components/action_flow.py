@@ -7,6 +7,15 @@ import streamlit.components.v1 as components
 from core.position import Position
 from core.scenario import ActionType
 
+# Position-specific raise sizes (in bb)
+RAISE_SIZES = {
+    "UTG": 2.0,
+    "HJ": 2.0,
+    "CO": 2.3,
+    "BTN": 2.5,
+    "SB": 3.0,
+}
+
 
 def _render_chips(bb_amount: float, color: str = "#ef4444") -> str:
     """
@@ -87,9 +96,10 @@ def _display_rfi_flow(hero_position: Position, language: str):
 
 def _display_vs_rfi_flow(hero_position: Position, villain_position: Position, language: str):
     """Display vs RFI (facing open raise) action flow."""
-    # Simplified: "UTG 2.5bb → CO ?"
+    # Use position-specific raise size
+    open_size = RAISE_SIZES.get(villain_position.value, 2.5)
     steps = [
-        {"pos": villain_position.value, "bb": 2.5, "color": "#ef4444"},
+        {"pos": villain_position.value, "bb": open_size, "color": "#ef4444"},
         {"pos": hero_position.value, "action": "?", "color": "#fbbf24"},
     ]
     _render_flow_steps(steps)
