@@ -886,20 +886,38 @@ def drill_page():
                 st.session_state.show_result = False
                 st.rerun()
 
-            # Then show feedback
+            # Then show feedback with prominent GTO frequency display
+            # Build frequency badge
+            freq_badge = ""
+            if result.frequency > 0 or result.player_action_frequency > 0:
+                freq_parts = []
+                if result.correct_action.lower() in ['raise', '3bet', '4bet', '5bet']:
+                    action_name = result.correct_action.upper()
+                    freq_parts.append(f"{action_name}: {result.frequency}%")
+                elif result.correct_action.lower() == 'call':
+                    freq_parts.append(f"CALL: {result.frequency}%")
+                elif result.correct_action.lower() == 'fold':
+                    freq_parts.append(f"FOLD: {result.frequency}%")
+
+                if result.player_action.lower() != result.correct_action.lower() and result.player_action_frequency > 0:
+                    player_action_name = result.player_action.upper()
+                    freq_parts.append(f"{player_action_name}: {result.player_action_frequency}%")
+
+                freq_badge = f'<div style="background: #1e3a5f; padding: 6px 10px; border-radius: 6px; margin-top: 6px; font-size: 0.9rem;"><span style="color: #60a5fa; font-weight: bold;">📊 GTO:</span> <span style="color: #fbbf24;">{" | ".join(freq_parts)}</span></div>'
+
             if result.is_correct:
                 st.markdown(f"""
                 <div style="background: #065f46; padding: 8px 10px; border-radius: 8px; border-left: 4px solid #10b981; margin: 6px 0;">
                     <span style="color: #10b981; font-weight: bold; font-size: 0.95rem;">✅ {t('correct_answer')}</span>
-                    <div style="font-size: 0.8rem; color: #94a3b8; margin-top: 3px;">{explanation}</div>
+                    {freq_badge}
                 </div>
                 """, unsafe_allow_html=True)
             else:
                 st.markdown(f"""
                 <div style="background: #7f1d1d; padding: 8px 10px; border-radius: 8px; border-left: 4px solid #ef4444; margin: 6px 0;">
                     <span style="color: #ef4444; font-weight: bold; font-size: 0.95rem;">❌ {t('incorrect')}</span>
-                    <div style="font-size: 0.8rem; margin-top: 3px;">{t('your_action')}: <b>{result.player_action.upper()}</b> → {t('correct_action')}: <b>{result.correct_action.upper()}</b></div>
-                    <div style="font-size: 0.75rem; color: #94a3b8; margin-top: 3px;">{explanation}</div>
+                    <div style="font-size: 0.85rem; margin-top: 3px;">{t('your_action')}: <b>{result.player_action.upper()}</b> → {t('correct_action')}: <b>{result.correct_action.upper()}</b></div>
+                    {freq_badge}
                 </div>
                 """, unsafe_allow_html=True)
 
