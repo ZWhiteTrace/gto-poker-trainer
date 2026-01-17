@@ -309,7 +309,7 @@ def _generate_grid_html(grid_data: List[List[Dict]], highlight_hand: str = None)
                         stops.append(f"{COLOR_FOLD} {current_pos}%")
                         stops.append(f"{COLOR_FOLD} 100%")
 
-                    bg_style = f"background:linear-gradient(to bottom,{','.join(stops)});"
+                    bg_style = f"background:linear-gradient(to right,{','.join(stops)});"
 
             # Build tooltip with frequency info
             tooltip_parts = []
@@ -333,10 +333,10 @@ def _display_legend(show_mixed: bool = False, show_drillable: bool = False, show
     drillable_html = '<span style="margin-right: 10px;"><span style="background: #374151; color: #9ca3af; padding: 2px 8px; border-radius: 3px; opacity: 0.35;">dim</span> 非出題範圍</span>' if show_drillable else ""
     call_html = '<span style="margin-right: 10px;"><span style="background: #22c55e; color: white; padding: 2px 8px; border-radius: 3px;">C</span> Call</span>' if show_call else ""
 
-    # Mixed legend - GTOWizard style vertical gradient (R:70% F:30% example)
+    # Mixed legend - GTOWizard style horizontal gradient (R:70% F:30% example)
     mixed_html = ""
     if show_mixed or show_frequency:
-        mixed_html = '<span style="margin-right: 10px;"><span style="background: linear-gradient(to bottom, #ef4444 0%, #ef4444 70%, #3b82f6 70%, #3b82f6 100%); color: white; padding: 2px 8px; border-radius: 3px; text-shadow: 0 1px 2px rgba(0,0,0,0.5);">M</span> Mixed</span>'
+        mixed_html = '<span style="margin-right: 10px;"><span style="background: linear-gradient(to right, #ef4444 0%, #ef4444 70%, #3b82f6 70%, #3b82f6 100%); color: white; padding: 2px 8px; border-radius: 3px; text-shadow: 0 1px 2px rgba(0,0,0,0.5);">M</span> Mixed</span>'
 
     # GTOWizard style: Red=Raise, Green=Call, Blue=Fold
     html = f'<div style="display: flex; gap: 15px; justify-content: center; margin: 10px 0; flex-wrap: wrap;"><span style="margin-right: 10px;"><span style="background: #ef4444; color: white; padding: 2px 8px; border-radius: 3px;">R</span> Raise</span>{call_html}<span style="margin-right: 10px;"><span style="background: #3b82f6; color: white; padding: 2px 8px; border-radius: 3px;">F</span> Fold</span>{mixed_html}<span><span style="background: #f59e0b; color: black; padding: 2px 8px; border-radius: 3px;">H</span> Current</span>{drillable_html}</div>'
