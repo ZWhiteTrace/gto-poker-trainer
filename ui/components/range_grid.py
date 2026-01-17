@@ -182,6 +182,8 @@ def display_range_grid(
                 "highlight": is_highlight,
                 "drillable": is_drillable,
                 "freq": freq,
+                "raise_freq": raise_freq if frequencies else (100 if action == "raise" else 0),
+                "call_freq": call_freq if frequencies else (100 if action == "call" else 0),
             })
         grid_data.append(row_data)
 
@@ -209,7 +211,7 @@ def display_range_grid(
 
 
 def _generate_grid_html(grid_data: List[List[Dict]], highlight_hand: str = None) -> str:
-    """Generate HTML for the range grid with mixed frequency support."""
+    """Generate HTML for the range grid with GTOWizard-style proportional gradients."""
     css = """
     <style>
     .range-grid {
@@ -221,7 +223,6 @@ def _generate_grid_html(grid_data: List[List[Dict]], highlight_hand: str = None)
         margin: 8px auto;
         overflow: hidden;
     }
-    /* Wider on larger screens */
     @media (min-width: 768px) {
         .range-grid {
             max-width: min(100%, 520px);
@@ -240,58 +241,8 @@ def _generate_grid_html(grid_data: List[List[Dict]], highlight_hand: str = None)
         min-height: 0;
         position: relative;
         overflow: hidden;
-    }
-    /* GTOWizard Style: Red=Raise, Green=Call, Blue=Fold */
-    .range-cell.raise {
-        background-color: #ef4444;
         color: white;
-    }
-    .range-cell.call {
-        background-color: #22c55e;
-        color: white;
-    }
-    .range-cell.fold {
-        background-color: #3b82f6;
-        color: white;
-    }
-    /* Mixed raise/fold: Red with blue stripes */
-    .range-cell.raise-mixed {
-        background: linear-gradient(135deg, #ef4444 50%, #3b82f6 50%);
-        color: white;
-        text-shadow: 0 1px 2px rgba(0,0,0,0.5);
-    }
-    .range-cell.fold-mixed {
-        background: linear-gradient(135deg, #3b82f6 50%, #ef4444 50%);
-        color: white;
-        text-shadow: 0 1px 2px rgba(0,0,0,0.5);
-    }
-    /* Mixed call/fold: Green with blue stripes */
-    .range-cell.call-mixed {
-        background: linear-gradient(135deg, #22c55e 50%, #3b82f6 50%);
-        color: white;
-        text-shadow: 0 1px 2px rgba(0,0,0,0.5);
-    }
-    .range-cell.fold-mixed-call {
-        background: linear-gradient(135deg, #3b82f6 50%, #22c55e 50%);
-        color: white;
-        text-shadow: 0 1px 2px rgba(0,0,0,0.5);
-    }
-    /* Mixed raise/call: Red with green stripes */
-    .range-cell.mixed-raise-call {
-        background: linear-gradient(135deg, #ef4444 50%, #22c55e 50%);
-        color: white;
-        text-shadow: 0 1px 2px rgba(0,0,0,0.5);
-    }
-    /* Legacy mixed classes */
-    .range-cell.mixed-raise {
-        background: linear-gradient(135deg, #ef4444 50%, #3b82f6 50%);
-        color: white;
-        text-shadow: 0 1px 2px rgba(0,0,0,0.5);
-    }
-    .range-cell.mixed-call {
-        background: linear-gradient(135deg, #22c55e 50%, #3b82f6 50%);
-        color: white;
-        text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+        text-shadow: 0 1px 2px rgba(0,0,0,0.3);
     }
     .range-cell.highlight {
         background: #f59e0b !important;
@@ -299,35 +250,6 @@ def _generate_grid_html(grid_data: List[List[Dict]], highlight_hand: str = None)
         box-shadow: 0 0 0 3px #fbbf24;
         text-shadow: none;
     }
-    .range-cell.pair {
-        font-style: normal;
-    }
-    .range-cell.suited {
-        font-style: normal;
-    }
-    .range-cell.offsuit {
-        font-style: normal;
-    }
-    /* Tooltip for mixed/frequency hands */
-    .range-cell.mixed-raise:hover::after,
-    .range-cell.mixed-call:hover::after,
-    .range-cell.raise-high:hover::after,
-    .range-cell.raise-medium:hover::after,
-    .range-cell.raise-low:hover::after {
-        content: attr(data-freq);
-        position: absolute;
-        bottom: -20px;
-        left: 50%;
-        transform: translateX(-50%);
-        background: rgba(0,0,0,0.8);
-        color: white;
-        padding: 2px 6px;
-        border-radius: 4px;
-        font-size: 9px;
-        white-space: nowrap;
-        z-index: 10;
-    }
-    /* Dimmed hands (not in drilling focus) */
     .range-cell.dimmed {
         opacity: 0.35;
         filter: grayscale(30%);
@@ -338,19 +260,69 @@ def _generate_grid_html(grid_data: List[List[Dict]], highlight_hand: str = None)
     </style>
     """
 
+    # GTOWizard colors: Red=Raise, Green=Call, Blue=Fold
+    COLOR_RAISE = "#ef4444"
+    COLOR_CALL = "#22c55e"
+    COLOR_FOLD = "#3b82f6"
+
     html = css + '<div style="width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch;"><div class="range-grid">'
 
     for row in grid_data:
         for cell in row:
-            classes = f"range-cell {cell['action']} {cell['type']}"
+            raise_freq = cell.get('raise_freq', 0)
+            call_freq = cell.get('call_freq', 0)
+            fold_freq = 100 - raise_freq - call_freq
+
+            # Build inline background style based on frequencies
             if cell['highlight']:
-                classes += " highlight"
-            if not cell.get('drillable', True):
-                classes += " dimmed"
-            # Add frequency data attribute for tooltip
-            freq = cell.get('freq', 0)
-            freq_attr = f' data-freq="Raise {freq}%"' if freq > 0 and freq < 100 else ''
-            html += f'<div class="{classes}"{freq_attr}>{cell["hand"]}</div>'
+                bg_style = ""  # Let CSS handle highlight
+                classes = f"range-cell {cell['type']} highlight"
+            else:
+                classes = f"range-cell {cell['type']}"
+                if not cell.get('drillable', True):
+                    classes += " dimmed"
+
+                # Generate GTOWizard-style proportional gradient (top to bottom)
+                if raise_freq >= 100:
+                    bg_style = f"background:{COLOR_RAISE};"
+                elif call_freq >= 100:
+                    bg_style = f"background:{COLOR_CALL};"
+                elif raise_freq == 0 and call_freq == 0:
+                    bg_style = f"background:{COLOR_FOLD};"
+                else:
+                    # Mixed strategy: build gradient stops
+                    # Order: Raise (top/red) → Call (middle/green) → Fold (bottom/blue)
+                    stops = []
+                    current_pos = 0
+
+                    if raise_freq > 0:
+                        stops.append(f"{COLOR_RAISE} {current_pos}%")
+                        current_pos += raise_freq
+                        stops.append(f"{COLOR_RAISE} {current_pos}%")
+
+                    if call_freq > 0:
+                        stops.append(f"{COLOR_CALL} {current_pos}%")
+                        current_pos += call_freq
+                        stops.append(f"{COLOR_CALL} {current_pos}%")
+
+                    if fold_freq > 0:
+                        stops.append(f"{COLOR_FOLD} {current_pos}%")
+                        stops.append(f"{COLOR_FOLD} 100%")
+
+                    bg_style = f"background:linear-gradient(to bottom,{','.join(stops)});"
+
+            # Build tooltip with frequency info
+            tooltip_parts = []
+            if raise_freq > 0:
+                tooltip_parts.append(f"R:{raise_freq}%")
+            if call_freq > 0:
+                tooltip_parts.append(f"C:{call_freq}%")
+            if fold_freq > 0 and (raise_freq > 0 or call_freq > 0):
+                tooltip_parts.append(f"F:{fold_freq}%")
+            tooltip = ' '.join(tooltip_parts) if tooltip_parts and raise_freq < 100 and call_freq < 100 else ''
+            title_attr = f' title="{tooltip}"' if tooltip else ''
+
+            html += f'<div class="{classes}" style="{bg_style}"{title_attr}>{cell["hand"]}</div>'
 
     html += '</div></div>'
     return html
@@ -361,10 +333,10 @@ def _display_legend(show_mixed: bool = False, show_drillable: bool = False, show
     drillable_html = '<span style="margin-right: 10px;"><span style="background: #374151; color: #9ca3af; padding: 2px 8px; border-radius: 3px; opacity: 0.35;">dim</span> 非出題範圍</span>' if show_drillable else ""
     call_html = '<span style="margin-right: 10px;"><span style="background: #22c55e; color: white; padding: 2px 8px; border-radius: 3px;">C</span> Call</span>' if show_call else ""
 
-    # Mixed legend
+    # Mixed legend - GTOWizard style vertical gradient (R:70% F:30% example)
     mixed_html = ""
     if show_mixed or show_frequency:
-        mixed_html = '<span style="margin-right: 10px;"><span style="background: linear-gradient(135deg, #ef4444 50%, #3b82f6 50%); color: white; padding: 2px 8px; border-radius: 3px; text-shadow: 0 1px 2px rgba(0,0,0,0.5);">M</span> Mixed</span>'
+        mixed_html = '<span style="margin-right: 10px;"><span style="background: linear-gradient(to bottom, #ef4444 0%, #ef4444 70%, #3b82f6 70%, #3b82f6 100%); color: white; padding: 2px 8px; border-radius: 3px; text-shadow: 0 1px 2px rgba(0,0,0,0.5);">M</span> Mixed</span>'
 
     # GTOWizard style: Red=Raise, Green=Call, Blue=Fold
     html = f'<div style="display: flex; gap: 15px; justify-content: center; margin: 10px 0; flex-wrap: wrap;"><span style="margin-right: 10px;"><span style="background: #ef4444; color: white; padding: 2px 8px; border-radius: 3px;">R</span> Raise</span>{call_html}<span style="margin-right: 10px;"><span style="background: #3b82f6; color: white; padding: 2px 8px; border-radius: 3px;">F</span> Fold</span>{mixed_html}<span><span style="background: #f59e0b; color: black; padding: 2px 8px; border-radius: 3px;">H</span> Current</span>{drillable_html}</div>'
