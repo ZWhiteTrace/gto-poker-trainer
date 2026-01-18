@@ -50,16 +50,16 @@
         "raise": 100
       },
       "55": {
-        "raise": 70
+        "raise": 75
       },
       "44": {
-        "raise": 20
+        "raise": 25
       },
       "33": {
-        "raise": 15
+        "raise": 25
       },
       "22": {
-        "raise": 15
+        "raise": 25
       },
       "AKs": {
         "raise": 100
@@ -119,7 +119,7 @@
         "raise": 100
       },
       "K5s": {
-        "raise": 85
+        "raise": 75
       },
       "QJs": {
         "raise": 100
@@ -131,31 +131,31 @@
         "raise": 100
       },
       "Q8s": {
-        "raise": 90
+        "raise": 75
       },
       "JTs": {
         "raise": 100
       },
       "J9s": {
-        "raise": 80
+        "raise": 75
       },
       "T9s": {
-        "raise": 90
+        "raise": 75
       },
       "98s": {
-        "raise": 15
+        "raise": 25
       },
       "87s": {
-        "raise": 15
+        "raise": 25
       },
       "76s": {
-        "raise": 20
+        "raise": 25
       },
       "65s": {
         "raise": 25
       },
       "54s": {
-        "raise": 15
+        "raise": 25
       },
       "AKo": {
         "raise": 100
@@ -170,7 +170,7 @@
         "raise": 100
       },
       "A9o": {
-        "raise": 10
+        "raise": 25
       },
       "KQo": {
         "raise": 100
@@ -228,13 +228,13 @@
         "raise": 100
       },
       "44": {
-        "raise": 60
+        "raise": 50
       },
       "33": {
         "raise": 25
       },
       "22": {
-        "raise": 20
+        "raise": 25
       },
       "AKs": {
         "raise": 100
@@ -315,10 +315,10 @@
         "raise": 75
       },
       "Q6s": {
-        "raise": 90
+        "raise": 75
       },
       "Q5s": {
-        "raise": 15
+        "raise": 25
       },
       "JTs": {
         "raise": 100
@@ -339,16 +339,16 @@
         "raise": 50
       },
       "87s": {
-        "raise": 30
+        "raise": 25
       },
       "76s": {
-        "raise": 20
+        "raise": 25
       },
       "65s": {
-        "raise": 20
+        "raise": 25
       },
       "54s": {
-        "raise": 15
+        "raise": 25
       },
       "AKo": {
         "raise": 100
@@ -366,10 +366,10 @@
         "raise": 100
       },
       "A8o": {
-        "raise": 30
+        "raise": 25
       },
       "A5o": {
-        "raise": 15
+        "raise": 25
       },
       "KQo": {
         "raise": 100
@@ -384,10 +384,10 @@
         "raise": 100
       },
       "QTo": {
-        "raise": 60
+        "raise": 50
       },
       "JTo": {
-        "raise": 55
+        "raise": 50
       }
     },
     "stats": {
@@ -436,7 +436,7 @@
         "raise": 25
       },
       "22": {
-        "raise": 20
+        "raise": 25
       },
       "AKs": {
         "raise": 100
@@ -529,7 +529,7 @@
         "raise": 100
       },
       "Q4s": {
-        "raise": 30
+        "raise": 25
       },
       "JTs": {
         "raise": 100
@@ -544,7 +544,7 @@
         "raise": 100
       },
       "J6s": {
-        "raise": 35
+        "raise": 25
       },
       "T9s": {
         "raise": 100
@@ -553,25 +553,25 @@
         "raise": 100
       },
       "T7s": {
-        "raise": 30
+        "raise": 25
       },
       "98s": {
         "raise": 100
       },
       "97s": {
-        "raise": 40
+        "raise": 50
       },
       "87s": {
-        "raise": 35
+        "raise": 25
       },
       "76s": {
-        "raise": 20
+        "raise": 25
       },
       "65s": {
         "raise": 25
       },
       "54s": {
-        "raise": 15
+        "raise": 25
       },
       "AKo": {
         "raise": 100
@@ -592,7 +592,7 @@
         "raise": 100
       },
       "A7o": {
-        "raise": 35
+        "raise": 25
       },
       "A5o": {
         "raise": 100
@@ -616,7 +616,7 @@
         "raise": 100
       },
       "J9o": {
-        "raise": 20
+        "raise": 25
       },
       "JTo": {
         "raise": 100
@@ -767,7 +767,7 @@
         "raise": 100
       },
       "Q2s": {
-        "raise": 80
+        "raise": 75
       },
       "JTs": {
         "raise": 100
@@ -788,7 +788,7 @@
         "raise": 100
       },
       "J4s": {
-        "raise": 80
+        "raise": 75
       },
       "T9s": {
         "raise": 100
@@ -803,7 +803,7 @@
         "raise": 100
       },
       "T5s": {
-        "raise": 35
+        "raise": 25
       },
       "98s": {
         "raise": 100
@@ -824,7 +824,7 @@
         "raise": 100
       },
       "75s": {
-        "raise": 55
+        "raise": 50
       },
       "65s": {
         "raise": 100
@@ -833,7 +833,7 @@
         "raise": 50
       },
       "43s": {
-        "raise": 10
+        "raise": 25
       },
       "AKo": {
         "raise": 100
@@ -902,13 +902,13 @@
         "raise": 100
       },
       "T8o": {
-        "raise": 80
+        "raise": 75
       },
       "98o": {
         "raise": 25
       },
       "A3o": {
-        "raise": 60
+        "raise": 50
       },
       "A4o": {
         "raise": 100
@@ -1128,7 +1128,7 @@
         "raise": 100
       },
       "53s": {
-        "raise": 60
+        "raise": 50
       },
       "AKo": {
         "raise": 100
@@ -1161,7 +1161,7 @@
         "raise": 100
       },
       "A3o": {
-        "raise": 15
+        "raise": 25
       },
       "KQo": {
         "raise": 100
@@ -1176,7 +1176,7 @@
         "raise": 100
       },
       "K8o": {
-        "raise": 55
+        "raise": 50
       },
       "QJo": {
         "raise": 100
@@ -1194,16 +1194,16 @@
         "raise": 100
       },
       "J8o": {
-        "raise": 10
+        "raise": 25
       },
       "T9o": {
         "raise": 100
       },
       "T8o": {
-        "raise": 60
+        "raise": 50
       },
       "98o": {
-        "raise": 80
+        "raise": 75
       },
       "87o": {
         "raise": 25
