@@ -284,6 +284,18 @@ def init_session_state():
     if 'timer_start' not in st.session_state:
         st.session_state.timer_start = None
 
+    # 認真模式 (Serious Mode) - comprehensive drill
+    if 'serious_mode' not in st.session_state:
+        st.session_state.serious_mode = False
+    if 'serious_spots' not in st.session_state:
+        st.session_state.serious_spots = []  # All spots to go through
+    if 'serious_index' not in st.session_state:
+        st.session_state.serious_index = 0  # Current position
+    if 'serious_wrong' not in st.session_state:
+        st.session_state.serious_wrong = []  # Wrong answers to review
+    if 'serious_phase' not in st.session_state:
+        st.session_state.serious_phase = "main"  # "main" or "review"
+
     # Difficulty settings
     if 'difficulty' not in st.session_state:
         st.session_state.difficulty = "medium"  # easy, medium, hard
@@ -726,6 +738,50 @@ def main():
             elif 'drill_villain_positions' in st.session_state:
                 st.session_state.drill.enabled_villain_positions = None
 
+            # 認真模式 toggle (only for RFI)
+            st.markdown("---")
+            if "RFI" in st.session_state.drill_action_types:
+                serious_label = "🎯 認真模式" if st.session_state.language == "zh" else "🎯 Serious Mode"
+                serious_help = "跑完所有位置的所有出題範圍，錯題重複直到全對" if st.session_state.language == "zh" else "Go through all drillable hands for all positions, repeat wrong answers until all correct"
+
+                new_serious = st.checkbox(serious_label, value=st.session_state.serious_mode, help=serious_help)
+
+                # If toggling serious mode
+                if new_serious != st.session_state.serious_mode:
+                    st.session_state.serious_mode = new_serious
+                    if new_serious:
+                        # Starting serious mode - generate all spots
+                        st.session_state.serious_spots = st.session_state.drill.generate_comprehensive_rfi_spots()
+                        st.session_state.serious_index = 0
+                        st.session_state.serious_wrong = []
+                        st.session_state.serious_phase = "main"
+                        st.session_state.current_spot = None
+                    else:
+                        # Exiting serious mode
+                        st.session_state.serious_spots = []
+                        st.session_state.serious_index = 0
+                        st.session_state.serious_wrong = []
+                        st.session_state.current_spot = None
+                    st.rerun()
+
+                # Show progress if in serious mode
+                if st.session_state.serious_mode and st.session_state.serious_spots:
+                    total = len(st.session_state.serious_spots)
+                    current = st.session_state.serious_index
+                    wrong_count = len(st.session_state.serious_wrong)
+                    phase = st.session_state.serious_phase
+
+                    if phase == "main":
+                        progress_text = f"進度：{current}/{total}" if st.session_state.language == "zh" else f"Progress: {current}/{total}"
+                        if wrong_count > 0:
+                            progress_text += f" (❌ {wrong_count})"
+                    else:
+                        review_total = len(st.session_state.serious_wrong)
+                        progress_text = f"複習錯題：{current}/{review_total}" if st.session_state.language == "zh" else f"Review: {current}/{review_total}"
+
+                    st.caption(progress_text)
+                    st.progress(current / total if total > 0 else 0)
+
         # Debug mode toggle (for checking clipping)
         debug_label = "🔧 調試模式" if st.session_state.language == "zh" else "🔧 Debug Mode"
         st.session_state.debug_mode = st.checkbox(debug_label, value=st.session_state.debug_mode, help="顯示邊框以檢查裁切" if st.session_state.language == "zh" else "Show borders to check clipping")
@@ -766,10 +822,68 @@ def drill_page():
 
     # Generate new spot if needed
     if st.session_state.current_spot is None:
-        st.session_state.current_spot = st.session_state.drill.generate_spot()
+        if st.session_state.serious_mode:
+            # 認真模式：從預生成的題庫中取題
+            spots = st.session_state.serious_spots
+            idx = st.session_state.serious_index
+            phase = st.session_state.serious_phase
+
+            if phase == "main":
+                if idx < len(spots):
+                    st.session_state.current_spot = spots[idx]
+                else:
+                    # 主階段完成，檢查是否有錯題
+                    if st.session_state.serious_wrong:
+                        # 進入複習階段
+                        st.session_state.serious_phase = "review"
+                        st.session_state.serious_spots = st.session_state.serious_wrong.copy()
+                        st.session_state.serious_wrong = []
+                        st.session_state.serious_index = 0
+                        import random
+                        random.shuffle(st.session_state.serious_spots)
+                        st.session_state.current_spot = st.session_state.serious_spots[0]
+                    else:
+                        # 全部完成！
+                        st.session_state.current_spot = None
+            elif phase == "review":
+                if idx < len(spots):
+                    st.session_state.current_spot = spots[idx]
+                else:
+                    # 複習階段完成，檢查是否還有錯題
+                    if st.session_state.serious_wrong:
+                        # 繼續複習
+                        st.session_state.serious_spots = st.session_state.serious_wrong.copy()
+                        st.session_state.serious_wrong = []
+                        st.session_state.serious_index = 0
+                        import random
+                        random.shuffle(st.session_state.serious_spots)
+                        st.session_state.current_spot = st.session_state.serious_spots[0]
+                    else:
+                        # 全部完成！
+                        st.session_state.current_spot = None
+        else:
+            # 一般模式：隨機生成
+            st.session_state.current_spot = st.session_state.drill.generate_spot()
         st.session_state.show_result = False
 
     spot = st.session_state.current_spot
+
+    # 認真模式完成提示
+    if st.session_state.serious_mode and spot is None:
+        st.balloons()
+        complete_msg = "🎉 認真模式完成！所有題目都答對了！" if lang == "zh" else "🎉 Serious Mode Complete! All questions answered correctly!"
+        st.success(complete_msg)
+
+        # Reset button
+        reset_label = "重新開始" if lang == "zh" else "Start Over"
+        if st.button(reset_label, type="primary"):
+            st.session_state.serious_spots = st.session_state.drill.generate_comprehensive_rfi_spots()
+            st.session_state.serious_index = 0
+            st.session_state.serious_wrong = []
+            st.session_state.serious_phase = "main"
+            st.session_state.current_spot = None
+            st.rerun()
+        return
 
     # Show current scenario type
     scenario_type_map = {
@@ -900,6 +1014,12 @@ def drill_page():
 
             # Next hand button FIRST (above feedback)
             if st.button(next_label, use_container_width=True, type="primary"):
+                # 認真模式：追蹤錯題並推進索引
+                if st.session_state.serious_mode:
+                    if not result.is_correct:
+                        st.session_state.serious_wrong.append(spot)
+                    st.session_state.serious_index += 1
+
                 st.session_state.current_spot = None
                 st.session_state.show_result = False
                 st.rerun()
@@ -1788,11 +1908,11 @@ def learning_page():
 
     # Tabs for different topics
     if lang == "zh":
-        tabs = ["RFI 速記表", "RFI 範圍提示", "權益對抗", "Outs 補牌", "賠率表", "起手牌", "SPR 法則", "翻後策略", "資金管理"]
+        tabs = ["RFI 速記表", "RFI 範圍提示", "權益對抗", "Outs 補牌", "賠率表", "起手牌", "SPR 法則", "翻後策略", "資金管理", "位置價值", "Blocker", "常見錯誤", "EV 計算"]
     else:
-        tabs = ["RFI Charts", "RFI Tips", "Equity", "Outs", "Pot Odds", "Starting Hands", "SPR", "Post-flop", "Bankroll"]
+        tabs = ["RFI Charts", "RFI Tips", "Equity", "Outs", "Pot Odds", "Starting Hands", "SPR", "Post-flop", "Bankroll", "Position", "Blockers", "Mistakes", "EV Calc"]
 
-    tab0, tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8 = st.tabs(tabs)
+    tab0, tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8, tab9, tab10, tab11, tab12 = st.tabs(tabs)
 
     with tab0:
         evaluator = Evaluator()
@@ -1821,6 +1941,18 @@ def learning_page():
 
     with tab8:
         _display_bankroll_learning(lang)
+
+    with tab9:
+        _display_position_value_learning(lang)
+
+    with tab10:
+        _display_blocker_learning(lang)
+
+    with tab11:
+        _display_common_mistakes_learning(lang)
+
+    with tab12:
+        _display_ev_calculation_learning(lang)
 
 
 def _display_rfi_tips_learning(lang: str):
@@ -2725,6 +2857,881 @@ def _display_bankroll_learning(lang: str):
         </div>
         '''
     st.markdown(mental_html, unsafe_allow_html=True)
+
+
+def _display_position_value_learning(lang: str):
+    """Display position value learning content."""
+    title = "🎯 位置價值解說" if lang == "zh" else "🎯 Position Value Guide"
+    st.markdown(f"### {title}")
+
+    # Why position matters
+    why_title = "為什麼位置重要？" if lang == "zh" else "Why Position Matters?"
+    st.markdown(f"**{why_title}**")
+
+    if lang == "zh":
+        intro_html = '''
+        <div style="background: linear-gradient(135deg, #1e3a5f 0%, #0f172a 100%); border-radius: 12px; padding: 16px; margin-bottom: 16px;">
+            <div style="color: #fbbf24; font-size: 1.1rem; font-weight: bold; margin-bottom: 10px;">💡 核心概念</div>
+            <div style="color: #e2e8f0; line-height: 1.7;">
+                位置是撲克中<span style="color: #22c55e; font-weight: bold;">最重要的因素之一</span>。
+                在後位（如 BTN）你可以看到對手的行動再做決定，這帶來巨大的<span style="color: #fbbf24;">資訊優勢</span>。
+            </div>
+        </div>
+        '''
+    else:
+        intro_html = '''
+        <div style="background: linear-gradient(135deg, #1e3a5f 0%, #0f172a 100%); border-radius: 12px; padding: 16px; margin-bottom: 16px;">
+            <div style="color: #fbbf24; font-size: 1.1rem; font-weight: bold; margin-bottom: 10px;">💡 Core Concept</div>
+            <div style="color: #e2e8f0; line-height: 1.7;">
+                Position is <span style="color: #22c55e; font-weight: bold;">one of the most important factors</span> in poker.
+                In late position (like BTN), you see opponents' actions before deciding, giving you a huge <span style="color: #fbbf24;">information advantage</span>.
+            </div>
+        </div>
+        '''
+    st.markdown(intro_html, unsafe_allow_html=True)
+
+    # Position value ranking
+    col1, col2 = st.columns(2)
+
+    with col1:
+        rank_title = "📊 位置價值排名" if lang == "zh" else "📊 Position Value Ranking"
+        st.markdown(f"**{rank_title}**")
+
+        if lang == "zh":
+            positions_html = '''
+            <div style="background: #1e293b; border-radius: 10px; padding: 12px;">
+                <div style="display: flex; align-items: center; padding: 8px; border-bottom: 1px solid #334155;">
+                    <span style="color: #fbbf24; font-size: 1.2rem; width: 30px;">🥇</span>
+                    <span style="color: #22c55e; font-weight: bold; width: 50px;">BTN</span>
+                    <span style="color: #94a3b8; font-size: 0.85rem;">最後行動，可以竊取盲注，翻後永遠有位置</span>
+                </div>
+                <div style="display: flex; align-items: center; padding: 8px; border-bottom: 1px solid #334155;">
+                    <span style="color: #c0c0c0; font-size: 1.2rem; width: 30px;">🥈</span>
+                    <span style="color: #3b82f6; font-weight: bold; width: 50px;">CO</span>
+                    <span style="color: #94a3b8; font-size: 0.85rem;">僅次於BTN，可以對BTN棄牌時獲得位置優勢</span>
+                </div>
+                <div style="display: flex; align-items: center; padding: 8px; border-bottom: 1px solid #334155;">
+                    <span style="color: #cd7f32; font-size: 1.2rem; width: 30px;">🥉</span>
+                    <span style="color: #8b5cf6; font-weight: bold; width: 50px;">HJ</span>
+                    <span style="color: #94a3b8; font-size: 0.85rem;">中位，仍有相對位置優勢</span>
+                </div>
+                <div style="display: flex; align-items: center; padding: 8px; border-bottom: 1px solid #334155;">
+                    <span style="color: #6b7280; font-size: 1rem; width: 30px;">4</span>
+                    <span style="color: #f59e0b; font-weight: bold; width: 50px;">UTG</span>
+                    <span style="color: #94a3b8; font-size: 0.85rem;">最早行動，需要最緊的範圍</span>
+                </div>
+                <div style="display: flex; align-items: center; padding: 8px; border-bottom: 1px solid #334155;">
+                    <span style="color: #6b7280; font-size: 1rem; width: 30px;">5</span>
+                    <span style="color: #ef4444; font-weight: bold; width: 50px;">SB</span>
+                    <span style="color: #94a3b8; font-size: 0.85rem;">翻後總是沒位置（對BB除外）</span>
+                </div>
+                <div style="display: flex; align-items: center; padding: 8px;">
+                    <span style="color: #6b7280; font-size: 1rem; width: 30px;">6</span>
+                    <span style="color: #64748b; font-weight: bold; width: 50px;">BB</span>
+                    <span style="color: #94a3b8; font-size: 0.85rem;">被強制投入盲注，但翻前最後行動</span>
+                </div>
+            </div>
+            '''
+        else:
+            positions_html = '''
+            <div style="background: #1e293b; border-radius: 10px; padding: 12px;">
+                <div style="display: flex; align-items: center; padding: 8px; border-bottom: 1px solid #334155;">
+                    <span style="color: #fbbf24; font-size: 1.2rem; width: 30px;">🥇</span>
+                    <span style="color: #22c55e; font-weight: bold; width: 50px;">BTN</span>
+                    <span style="color: #94a3b8; font-size: 0.85rem;">Acts last, can steal blinds, always has position postflop</span>
+                </div>
+                <div style="display: flex; align-items: center; padding: 8px; border-bottom: 1px solid #334155;">
+                    <span style="color: #c0c0c0; font-size: 1.2rem; width: 30px;">🥈</span>
+                    <span style="color: #3b82f6; font-weight: bold; width: 50px;">CO</span>
+                    <span style="color: #94a3b8; font-size: 0.85rem;">Second best, gains position when BTN folds</span>
+                </div>
+                <div style="display: flex; align-items: center; padding: 8px; border-bottom: 1px solid #334155;">
+                    <span style="color: #cd7f32; font-size: 1.2rem; width: 30px;">🥉</span>
+                    <span style="color: #8b5cf6; font-weight: bold; width: 50px;">HJ</span>
+                    <span style="color: #94a3b8; font-size: 0.85rem;">Middle position, still has relative advantage</span>
+                </div>
+                <div style="display: flex; align-items: center; padding: 8px; border-bottom: 1px solid #334155;">
+                    <span style="color: #6b7280; font-size: 1rem; width: 30px;">4</span>
+                    <span style="color: #f59e0b; font-weight: bold; width: 50px;">UTG</span>
+                    <span style="color: #94a3b8; font-size: 0.85rem;">First to act, needs tightest range</span>
+                </div>
+                <div style="display: flex; align-items: center; padding: 8px; border-bottom: 1px solid #334155;">
+                    <span style="color: #6b7280; font-size: 1rem; width: 30px;">5</span>
+                    <span style="color: #ef4444; font-weight: bold; width: 50px;">SB</span>
+                    <span style="color: #94a3b8; font-size: 0.85rem;">Always out of position postflop (except vs BB)</span>
+                </div>
+                <div style="display: flex; align-items: center; padding: 8px;">
+                    <span style="color: #6b7280; font-size: 1rem; width: 30px;">6</span>
+                    <span style="color: #64748b; font-weight: bold; width: 50px;">BB</span>
+                    <span style="color: #94a3b8; font-size: 0.85rem;">Forced to put in blind, but acts last preflop</span>
+                </div>
+            </div>
+            '''
+        st.markdown(positions_html, unsafe_allow_html=True)
+
+    with col2:
+        winrate_title = "💰 預期勝率 (bb/100)" if lang == "zh" else "💰 Expected Win Rate (bb/100)"
+        st.markdown(f"**{winrate_title}**")
+
+        if lang == "zh":
+            winrate_html = '''
+            <div style="background: #1e293b; border-radius: 10px; padding: 12px;">
+                <div style="margin-bottom: 12px;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                        <span style="color: #22c55e; font-weight: bold;">BTN</span>
+                        <span style="color: #22c55e;">+25 ~ +35 bb/100</span>
+                    </div>
+                    <div style="background: #334155; border-radius: 4px; height: 8px;">
+                        <div style="background: #22c55e; width: 90%; height: 100%; border-radius: 4px;"></div>
+                    </div>
+                </div>
+                <div style="margin-bottom: 12px;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                        <span style="color: #3b82f6; font-weight: bold;">CO</span>
+                        <span style="color: #3b82f6;">+15 ~ +25 bb/100</span>
+                    </div>
+                    <div style="background: #334155; border-radius: 4px; height: 8px;">
+                        <div style="background: #3b82f6; width: 70%; height: 100%; border-radius: 4px;"></div>
+                    </div>
+                </div>
+                <div style="margin-bottom: 12px;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                        <span style="color: #8b5cf6; font-weight: bold;">HJ</span>
+                        <span style="color: #8b5cf6;">+5 ~ +15 bb/100</span>
+                    </div>
+                    <div style="background: #334155; border-radius: 4px; height: 8px;">
+                        <div style="background: #8b5cf6; width: 50%; height: 100%; border-radius: 4px;"></div>
+                    </div>
+                </div>
+                <div style="margin-bottom: 12px;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                        <span style="color: #f59e0b; font-weight: bold;">UTG</span>
+                        <span style="color: #f59e0b;">0 ~ +10 bb/100</span>
+                    </div>
+                    <div style="background: #334155; border-radius: 4px; height: 8px;">
+                        <div style="background: #f59e0b; width: 35%; height: 100%; border-radius: 4px;"></div>
+                    </div>
+                </div>
+                <div style="margin-bottom: 12px;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                        <span style="color: #ef4444; font-weight: bold;">SB</span>
+                        <span style="color: #ef4444;">-15 ~ -25 bb/100</span>
+                    </div>
+                    <div style="background: #334155; border-radius: 4px; height: 8px;">
+                        <div style="background: #ef4444; width: 25%; height: 100%; border-radius: 4px;"></div>
+                    </div>
+                </div>
+                <div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                        <span style="color: #64748b; font-weight: bold;">BB</span>
+                        <span style="color: #64748b;">-20 ~ -35 bb/100</span>
+                    </div>
+                    <div style="background: #334155; border-radius: 4px; height: 8px;">
+                        <div style="background: #64748b; width: 15%; height: 100%; border-radius: 4px;"></div>
+                    </div>
+                </div>
+            </div>
+            <div style="color: #6b7280; font-size: 0.75rem; margin-top: 8px; text-align: center;">
+                * 數據為典型 NL50-NL200 玩家範圍
+            </div>
+            '''
+        else:
+            winrate_html = '''
+            <div style="background: #1e293b; border-radius: 10px; padding: 12px;">
+                <div style="margin-bottom: 12px;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                        <span style="color: #22c55e; font-weight: bold;">BTN</span>
+                        <span style="color: #22c55e;">+25 ~ +35 bb/100</span>
+                    </div>
+                    <div style="background: #334155; border-radius: 4px; height: 8px;">
+                        <div style="background: #22c55e; width: 90%; height: 100%; border-radius: 4px;"></div>
+                    </div>
+                </div>
+                <div style="margin-bottom: 12px;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                        <span style="color: #3b82f6; font-weight: bold;">CO</span>
+                        <span style="color: #3b82f6;">+15 ~ +25 bb/100</span>
+                    </div>
+                    <div style="background: #334155; border-radius: 4px; height: 8px;">
+                        <div style="background: #3b82f6; width: 70%; height: 100%; border-radius: 4px;"></div>
+                    </div>
+                </div>
+                <div style="margin-bottom: 12px;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                        <span style="color: #8b5cf6; font-weight: bold;">HJ</span>
+                        <span style="color: #8b5cf6;">+5 ~ +15 bb/100</span>
+                    </div>
+                    <div style="background: #334155; border-radius: 4px; height: 8px;">
+                        <div style="background: #8b5cf6; width: 50%; height: 100%; border-radius: 4px;"></div>
+                    </div>
+                </div>
+                <div style="margin-bottom: 12px;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                        <span style="color: #f59e0b; font-weight: bold;">UTG</span>
+                        <span style="color: #f59e0b;">0 ~ +10 bb/100</span>
+                    </div>
+                    <div style="background: #334155; border-radius: 4px; height: 8px;">
+                        <div style="background: #f59e0b; width: 35%; height: 100%; border-radius: 4px;"></div>
+                    </div>
+                </div>
+                <div style="margin-bottom: 12px;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                        <span style="color: #ef4444; font-weight: bold;">SB</span>
+                        <span style="color: #ef4444;">-15 ~ -25 bb/100</span>
+                    </div>
+                    <div style="background: #334155; border-radius: 4px; height: 8px;">
+                        <div style="background: #ef4444; width: 25%; height: 100%; border-radius: 4px;"></div>
+                    </div>
+                </div>
+                <div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                        <span style="color: #64748b; font-weight: bold;">BB</span>
+                        <span style="color: #64748b;">-20 ~ -35 bb/100</span>
+                    </div>
+                    <div style="background: #334155; border-radius: 4px; height: 8px;">
+                        <div style="background: #64748b; width: 15%; height: 100%; border-radius: 4px;"></div>
+                    </div>
+                </div>
+            </div>
+            <div style="color: #6b7280; font-size: 0.75rem; margin-top: 8px; text-align: center;">
+                * Data range for typical NL50-NL200 players
+            </div>
+            '''
+        st.markdown(winrate_html, unsafe_allow_html=True)
+
+    st.markdown("---")
+
+    # Practical tips
+    tips_title = "💡 實戰應用" if lang == "zh" else "💡 Practical Tips"
+    st.markdown(f"**{tips_title}**")
+
+    if lang == "zh":
+        tips_html = '''
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+            <div style="background: #1e293b; border-radius: 8px; padding: 12px; border-left: 4px solid #22c55e;">
+                <div style="color: #22c55e; font-weight: bold; margin-bottom: 6px;">🎯 BTN 策略</div>
+                <div style="color: #94a3b8; font-size: 0.85rem;">
+                    • 最寬的開池範圍 (40-50%)<br/>
+                    • 積極竊取盲注<br/>
+                    • 善用位置優勢打翻後
+                </div>
+            </div>
+            <div style="background: #1e293b; border-radius: 8px; padding: 12px; border-left: 4px solid #ef4444;">
+                <div style="color: #ef4444; font-weight: bold; margin-bottom: 6px;">⚠️ 盲注防守</div>
+                <div style="color: #94a3b8; font-size: 0.85rem;">
+                    • SB 防守要更緊（沒位置）<br/>
+                    • BB 可以寬一點（已投入1bb）<br/>
+                    • 小心被位置壓制
+                </div>
+            </div>
+            <div style="background: #1e293b; border-radius: 8px; padding: 12px; border-left: 4px solid #3b82f6;">
+                <div style="color: #3b82f6; font-weight: bold; margin-bottom: 6px;">📐 範圍調整</div>
+                <div style="color: #94a3b8; font-size: 0.85rem;">
+                    • 早位：只打強牌 (10-15%)<br/>
+                    • 中位：稍微放寬 (15-25%)<br/>
+                    • 晚位：積極參與 (25-50%)
+                </div>
+            </div>
+            <div style="background: #1e293b; border-radius: 8px; padding: 12px; border-left: 4px solid #fbbf24;">
+                <div style="color: #fbbf24; font-weight: bold; margin-bottom: 6px;">🎪 位置戰術</div>
+                <div style="color: #94a3b8; font-size: 0.85rem;">
+                    • 有位置時多打價值<br/>
+                    • 沒位置時控制底池<br/>
+                    • 注意對手的位置意識
+                </div>
+            </div>
+        </div>
+        '''
+    else:
+        tips_html = '''
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+            <div style="background: #1e293b; border-radius: 8px; padding: 12px; border-left: 4px solid #22c55e;">
+                <div style="color: #22c55e; font-weight: bold; margin-bottom: 6px;">🎯 BTN Strategy</div>
+                <div style="color: #94a3b8; font-size: 0.85rem;">
+                    • Widest open range (40-50%)<br/>
+                    • Actively steal blinds<br/>
+                    • Leverage position postflop
+                </div>
+            </div>
+            <div style="background: #1e293b; border-radius: 8px; padding: 12px; border-left: 4px solid #ef4444;">
+                <div style="color: #ef4444; font-weight: bold; margin-bottom: 6px;">⚠️ Blind Defense</div>
+                <div style="color: #94a3b8; font-size: 0.85rem;">
+                    • SB defend tighter (no position)<br/>
+                    • BB can be wider (already 1bb in)<br/>
+                    • Watch for positional pressure
+                </div>
+            </div>
+            <div style="background: #1e293b; border-radius: 8px; padding: 12px; border-left: 4px solid #3b82f6;">
+                <div style="color: #3b82f6; font-weight: bold; margin-bottom: 6px;">📐 Range Adjustment</div>
+                <div style="color: #94a3b8; font-size: 0.85rem;">
+                    • Early: Play strong only (10-15%)<br/>
+                    • Middle: Slightly wider (15-25%)<br/>
+                    • Late: Play aggressively (25-50%)
+                </div>
+            </div>
+            <div style="background: #1e293b; border-radius: 8px; padding: 12px; border-left: 4px solid #fbbf24;">
+                <div style="color: #fbbf24; font-weight: bold; margin-bottom: 6px;">🎪 Position Tactics</div>
+                <div style="color: #94a3b8; font-size: 0.85rem;">
+                    • In position: extract value<br/>
+                    • Out of position: control pot<br/>
+                    • Notice opponents' position awareness
+                </div>
+            </div>
+        </div>
+        '''
+    st.markdown(tips_html, unsafe_allow_html=True)
+
+
+def _display_blocker_learning(lang: str):
+    """Display blocker concept learning content."""
+    title = "🚫 Blocker 概念" if lang == "zh" else "🚫 Blocker Concept"
+    st.markdown(f"### {title}")
+
+    # What is a blocker
+    if lang == "zh":
+        intro_html = '''
+        <div style="background: linear-gradient(135deg, #1e3a5f 0%, #0f172a 100%); border-radius: 12px; padding: 16px; margin-bottom: 16px;">
+            <div style="color: #fbbf24; font-size: 1.1rem; font-weight: bold; margin-bottom: 10px;">💡 什麼是 Blocker？</div>
+            <div style="color: #e2e8f0; line-height: 1.7;">
+                <span style="color: #22c55e; font-weight: bold;">Blocker（阻擋牌）</span>是指你手中的牌<span style="color: #fbbf24;">降低了對手持有特定牌組的機率</span>。
+                例如：你拿著 A♠，對手就不可能有 AA 或 A♠X♠ 同花。
+            </div>
+        </div>
+        '''
+    else:
+        intro_html = '''
+        <div style="background: linear-gradient(135deg, #1e3a5f 0%, #0f172a 100%); border-radius: 12px; padding: 16px; margin-bottom: 16px;">
+            <div style="color: #fbbf24; font-size: 1.1rem; font-weight: bold; margin-bottom: 10px;">💡 What is a Blocker?</div>
+            <div style="color: #e2e8f0; line-height: 1.7;">
+                A <span style="color: #22c55e; font-weight: bold;">blocker</span> is a card in your hand that
+                <span style="color: #fbbf24;">reduces the probability</span> of your opponent holding certain hands.
+                Example: If you have A♠, opponent cannot have AA or A♠X♠ flush.
+            </div>
+        </div>
+        '''
+    st.markdown(intro_html, unsafe_allow_html=True)
+
+    col1, col2 = st.columns(2)
+
+    with col1:
+        bluff_title = "🎭 Blocker 用於詐唬" if lang == "zh" else "🎭 Blockers for Bluffing"
+        st.markdown(f"**{bluff_title}**")
+
+        if lang == "zh":
+            bluff_html = '''
+            <div style="background: #1e293b; border-radius: 10px; padding: 12px;">
+                <div style="border-bottom: 1px solid #334155; padding-bottom: 10px; margin-bottom: 10px;">
+                    <div style="color: #22c55e; font-weight: bold; margin-bottom: 6px;">✅ A5s 可以 3-Bet 詐唬</div>
+                    <div style="color: #94a3b8; font-size: 0.85rem; line-height: 1.6;">
+                        • 有 A 阻擋對手的 AA、AK<br/>
+                        • 降低對手 4-Bet 的可能<br/>
+                        • 同花有後門潛力<br/>
+                        • 5 可組成順子（A2345）
+                    </div>
+                </div>
+                <div style="border-bottom: 1px solid #334155; padding-bottom: 10px; margin-bottom: 10px;">
+                    <div style="color: #22c55e; font-weight: bold; margin-bottom: 6px;">✅ K 阻擋 AK/KK</div>
+                    <div style="color: #94a3b8; font-size: 0.85rem; line-height: 1.6;">
+                        • K 在你手上，對手 KK 機率減半<br/>
+                        • 對手 AKs/AKo 組合也減少<br/>
+                        • 有利於你的詐唬
+                    </div>
+                </div>
+                <div>
+                    <div style="color: #3b82f6; font-weight: bold; margin-bottom: 6px;">💡 詐唬選擇原則</div>
+                    <div style="color: #94a3b8; font-size: 0.85rem; line-height: 1.6;">
+                        • 優先選擇有 A/K 阻擋的牌<br/>
+                        • 沒有成牌價值的牌做詐唬<br/>
+                        • 阻擋對手的續戰範圍
+                    </div>
+                </div>
+            </div>
+            '''
+        else:
+            bluff_html = '''
+            <div style="background: #1e293b; border-radius: 10px; padding: 12px;">
+                <div style="border-bottom: 1px solid #334155; padding-bottom: 10px; margin-bottom: 10px;">
+                    <div style="color: #22c55e; font-weight: bold; margin-bottom: 6px;">✅ A5s as 3-Bet Bluff</div>
+                    <div style="color: #94a3b8; font-size: 0.85rem; line-height: 1.6;">
+                        • A blocks opponent's AA, AK<br/>
+                        • Reduces chance of 4-bet<br/>
+                        • Suited has backdoor potential<br/>
+                        • 5 can make wheel straight (A2345)
+                    </div>
+                </div>
+                <div style="border-bottom: 1px solid #334155; padding-bottom: 10px; margin-bottom: 10px;">
+                    <div style="color: #22c55e; font-weight: bold; margin-bottom: 6px;">✅ K Blocks AK/KK</div>
+                    <div style="color: #94a3b8; font-size: 0.85rem; line-height: 1.6;">
+                        • K in your hand halves KK combos<br/>
+                        • Reduces AKs/AKo combos too<br/>
+                        • Favorable for your bluffs
+                    </div>
+                </div>
+                <div>
+                    <div style="color: #3b82f6; font-weight: bold; margin-bottom: 6px;">💡 Bluff Selection</div>
+                    <div style="color: #94a3b8; font-size: 0.85rem; line-height: 1.6;">
+                        • Prefer hands with A/K blockers<br/>
+                        • Use hands with no showdown value<br/>
+                        • Block opponent's continuing range
+                    </div>
+                </div>
+            </div>
+            '''
+        st.markdown(bluff_html, unsafe_allow_html=True)
+
+    with col2:
+        call_title = "🛡️ Blocker 用於跟注" if lang == "zh" else "🛡️ Blockers for Calling"
+        st.markdown(f"**{call_title}**")
+
+        if lang == "zh":
+            call_html = '''
+            <div style="background: #1e293b; border-radius: 10px; padding: 12px;">
+                <div style="border-bottom: 1px solid #334155; padding-bottom: 10px; margin-bottom: 10px;">
+                    <div style="color: #ef4444; font-weight: bold; margin-bottom: 6px;">⚠️ 不阻擋對手詐唬範圍</div>
+                    <div style="color: #94a3b8; font-size: 0.85rem; line-height: 1.6;">
+                        • 你有 K♠K♥ 面對 all-in<br/>
+                        • 對手可能有 AA（你不阻擋）<br/>
+                        • 對手的 AK 被你阻擋<br/>
+                        • 這讓跟注變得更危險
+                    </div>
+                </div>
+                <div style="border-bottom: 1px solid #334155; padding-bottom: 10px; margin-bottom: 10px;">
+                    <div style="color: #22c55e; font-weight: bold; margin-bottom: 6px;">✅ 阻擋堅果範圍</div>
+                    <div style="color: #94a3b8; font-size: 0.85rem; line-height: 1.6;">
+                        • 牌面 A♠K♠5♠2♦7♣<br/>
+                        • 你有 Q♠（阻擋堅果同花）<br/>
+                        • 對手可能是詐唬<br/>
+                        • 可以考慮抓詐
+                    </div>
+                </div>
+                <div>
+                    <div style="color: #fbbf24; font-weight: bold; margin-bottom: 6px;">🎯 跟注決策</div>
+                    <div style="color: #94a3b8; font-size: 0.85rem; line-height: 1.6;">
+                        • 阻擋對手價值牌 → 利於跟注<br/>
+                        • 不阻擋對手詐唬 → 利於跟注<br/>
+                        • 反之則傾向棄牌
+                    </div>
+                </div>
+            </div>
+            '''
+        else:
+            call_html = '''
+            <div style="background: #1e293b; border-radius: 10px; padding: 12px;">
+                <div style="border-bottom: 1px solid #334155; padding-bottom: 10px; margin-bottom: 10px;">
+                    <div style="color: #ef4444; font-weight: bold; margin-bottom: 6px;">⚠️ Not Blocking Bluff Range</div>
+                    <div style="color: #94a3b8; font-size: 0.85rem; line-height: 1.6;">
+                        • You have K♠K♥ facing all-in<br/>
+                        • Opponent may have AA (not blocked)<br/>
+                        • You block their AK<br/>
+                        • This makes calling riskier
+                    </div>
+                </div>
+                <div style="border-bottom: 1px solid #334155; padding-bottom: 10px; margin-bottom: 10px;">
+                    <div style="color: #22c55e; font-weight: bold; margin-bottom: 6px;">✅ Blocking Nut Range</div>
+                    <div style="color: #94a3b8; font-size: 0.85rem; line-height: 1.6;">
+                        • Board: A♠K♠5♠2♦7♣<br/>
+                        • You have Q♠ (blocks nut flush)<br/>
+                        • Opponent may be bluffing<br/>
+                        • Consider hero call
+                    </div>
+                </div>
+                <div>
+                    <div style="color: #fbbf24; font-weight: bold; margin-bottom: 6px;">🎯 Calling Decision</div>
+                    <div style="color: #94a3b8; font-size: 0.85rem; line-height: 1.6;">
+                        • Block value hands → favor call<br/>
+                        • Don't block bluffs → favor call<br/>
+                        • Opposite → lean towards fold
+                    </div>
+                </div>
+            </div>
+            '''
+        st.markdown(call_html, unsafe_allow_html=True)
+
+    st.markdown("---")
+
+    # Common blocker examples
+    example_title = "📋 常見 Blocker 範例" if lang == "zh" else "📋 Common Blocker Examples"
+    st.markdown(f"**{example_title}**")
+
+    if lang == "zh":
+        example_html = '''
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;">
+            <div style="background: #1e293b; border-radius: 8px; padding: 10px; text-align: center;">
+                <div style="font-size: 1.5rem; margin-bottom: 6px;">🅰️</div>
+                <div style="color: #22c55e; font-weight: bold; margin-bottom: 4px;">持有 A</div>
+                <div style="color: #94a3b8; font-size: 0.8rem;">阻擋 AA, AK, AQ<br/>降低 75% AA 組合</div>
+            </div>
+            <div style="background: #1e293b; border-radius: 8px; padding: 10px; text-align: center;">
+                <div style="font-size: 1.5rem; margin-bottom: 6px;">👑</div>
+                <div style="color: #3b82f6; font-weight: bold; margin-bottom: 4px;">持有 K</div>
+                <div style="color: #94a3b8; font-size: 0.8rem;">阻擋 KK, AK, KQ<br/>影響對手頂對範圍</div>
+            </div>
+            <div style="background: #1e293b; border-radius: 8px; padding: 10px; text-align: center;">
+                <div style="font-size: 1.5rem; margin-bottom: 6px;">♠️</div>
+                <div style="color: #8b5cf6; font-weight: bold; margin-bottom: 4px;">持有同花關鍵牌</div>
+                <div style="color: #94a3b8; font-size: 0.8rem;">A♠/K♠ 阻擋堅果同花<br/>大幅降低對手同花機率</div>
+            </div>
+            <div style="background: #1e293b; border-radius: 8px; padding: 10px; text-align: center;">
+                <div style="font-size: 1.5rem; margin-bottom: 6px;">🔢</div>
+                <div style="color: #f59e0b; font-weight: bold; margin-bottom: 4px;">持有順子關鍵牌</div>
+                <div style="color: #94a3b8; font-size: 0.8rem;">如 8 在 567 牌面<br/>阻擋對手堅果順</div>
+            </div>
+            <div style="background: #1e293b; border-radius: 8px; padding: 10px; text-align: center;">
+                <div style="font-size: 1.5rem; margin-bottom: 6px;">🃏</div>
+                <div style="color: #ef4444; font-weight: bold; margin-bottom: 4px;">持有對子牌</div>
+                <div style="color: #94a3b8; font-size: 0.8rem;">如 77 阻擋 77/A7/K7<br/>減少對手暗三機率</div>
+            </div>
+            <div style="background: #1e293b; border-radius: 8px; padding: 10px; text-align: center;">
+                <div style="font-size: 1.5rem; margin-bottom: 6px;">🚫</div>
+                <div style="color: #64748b; font-weight: bold; margin-bottom: 4px;">無 Blocker 效果</div>
+                <div style="color: #94a3b8; font-size: 0.8rem;">如 72o 幾乎不阻擋<br/>任何強牌組合</div>
+            </div>
+        </div>
+        '''
+    else:
+        example_html = '''
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;">
+            <div style="background: #1e293b; border-radius: 8px; padding: 10px; text-align: center;">
+                <div style="font-size: 1.5rem; margin-bottom: 6px;">🅰️</div>
+                <div style="color: #22c55e; font-weight: bold; margin-bottom: 4px;">Holding A</div>
+                <div style="color: #94a3b8; font-size: 0.8rem;">Blocks AA, AK, AQ<br/>Reduces AA by 75%</div>
+            </div>
+            <div style="background: #1e293b; border-radius: 8px; padding: 10px; text-align: center;">
+                <div style="font-size: 1.5rem; margin-bottom: 6px;">👑</div>
+                <div style="color: #3b82f6; font-weight: bold; margin-bottom: 4px;">Holding K</div>
+                <div style="color: #94a3b8; font-size: 0.8rem;">Blocks KK, AK, KQ<br/>Affects top pair range</div>
+            </div>
+            <div style="background: #1e293b; border-radius: 8px; padding: 10px; text-align: center;">
+                <div style="font-size: 1.5rem; margin-bottom: 6px;">♠️</div>
+                <div style="color: #8b5cf6; font-weight: bold; margin-bottom: 4px;">Holding Nut Flush Card</div>
+                <div style="color: #94a3b8; font-size: 0.8rem;">A♠/K♠ blocks nut flush<br/>Greatly reduces flush combos</div>
+            </div>
+            <div style="background: #1e293b; border-radius: 8px; padding: 10px; text-align: center;">
+                <div style="font-size: 1.5rem; margin-bottom: 6px;">🔢</div>
+                <div style="color: #f59e0b; font-weight: bold; margin-bottom: 4px;">Holding Straight Card</div>
+                <div style="color: #94a3b8; font-size: 0.8rem;">Like 8 on 567 board<br/>Blocks opponent's nut straight</div>
+            </div>
+            <div style="background: #1e293b; border-radius: 8px; padding: 10px; text-align: center;">
+                <div style="font-size: 1.5rem; margin-bottom: 6px;">🃏</div>
+                <div style="color: #ef4444; font-weight: bold; margin-bottom: 4px;">Holding Pair Cards</div>
+                <div style="color: #94a3b8; font-size: 0.8rem;">Like 77 blocks 77/A7/K7<br/>Reduces set combos</div>
+            </div>
+            <div style="background: #1e293b; border-radius: 8px; padding: 10px; text-align: center;">
+                <div style="font-size: 1.5rem; margin-bottom: 6px;">🚫</div>
+                <div style="color: #64748b; font-weight: bold; margin-bottom: 4px;">No Blocker Effect</div>
+                <div style="color: #94a3b8; font-size: 0.8rem;">Like 72o blocks almost<br/>no strong combos</div>
+            </div>
+        </div>
+        '''
+    st.markdown(example_html, unsafe_allow_html=True)
+
+
+def _display_common_mistakes_learning(lang: str):
+    """Display common mistakes learning content."""
+    title = "❌ 常見錯誤 Top 10" if lang == "zh" else "❌ Top 10 Common Mistakes"
+    st.markdown(f"### {title}")
+
+    if lang == "zh":
+        mistakes = [
+            ("1", "翻前打太寬", "新手最常見的錯誤。UTG 只應該打 10-15% 的牌，不是每手都想看翻牌。", "#ef4444", "緊一點！記住各位置的正確範圍"),
+            ("2", "不考慮位置", "在早位玩 KJo、在晚位棄掉 A5s。位置決定了你應該玩的範圍。", "#f59e0b", "根據位置調整範圍，BTN 最寬，UTG 最緊"),
+            ("3", "跟注太多，加注太少", "「想看看翻牌」心態。好牌應該加注建池，而不是被動跟注。", "#fbbf24", "有好牌就加注，沒有就棄牌，少 limp"),
+            ("4", "不會棄掉頂對", "翻牌中了頂對就覺得無敵，面對大額加注還是跟。", "#22c55e", "學會讀牌面，頂對不是堅果"),
+            ("5", "詐唬時機錯誤", "對從不棄牌的魚詐唬、在乾燥牌面對頂對範圍詐唬。", "#3b82f6", "只對會棄牌的對手詐唬，講故事要合理"),
+            ("6", "忽視籌碼深度", "100bb 和 20bb 的策略完全不同，用深籌策略打短籌。", "#8b5cf6", "學習 SPR 概念，調整翻後策略"),
+            ("7", "情緒影響決策", "輸了想追回來，贏了覺得自己無敵。Tilt 是最大的敵人。", "#ec4899", "設定止損，覺得 tilt 就休息"),
+            ("8", "資金管理不當", "用全部身家打一個級別，一次 downswing 就出局。", "#06b6d4", "20-30 買入，有紀律地升降級"),
+            ("9", "不做筆記覆盤", "玩完就忘，不記錄對手特徵、不分析自己的錯誤。", "#84cc16", "記錄關鍵手牌，定期覆盤分析"),
+            ("10", "過度關注結果", "用結果判斷決策好壞。AA 輸給 72 不代表打錯了。", "#6366f1", "專注決策質量，接受短期波動"),
+        ]
+    else:
+        mistakes = [
+            ("1", "Playing Too Loose Preflop", "Most common beginner error. UTG should only play 10-15%, not every hand.", "#ef4444", "Tighten up! Memorize correct ranges per position"),
+            ("2", "Ignoring Position", "Playing KJo in early position, folding A5s in late position. Position defines your range.", "#f59e0b", "Adjust range by position. BTN widest, UTG tightest"),
+            ("3", "Calling Too Much, Raising Too Little", "'I want to see the flop' mentality. Good hands should raise for value.", "#fbbf24", "Raise with good hands, fold bad ones, stop limping"),
+            ("4", "Can't Fold Top Pair", "Hitting top pair feels unbeatable, still calling large raises.", "#22c55e", "Learn to read boards, top pair isn't the nuts"),
+            ("5", "Wrong Bluff Timing", "Bluffing calling stations, bluffing dry boards vs top pair range.", "#3b82f6", "Only bluff players who can fold, tell believable stories"),
+            ("6", "Ignoring Stack Depth", "100bb and 20bb strategies are completely different.", "#8b5cf6", "Learn SPR concept, adjust postflop accordingly"),
+            ("7", "Emotional Decision Making", "Chasing losses, feeling invincible after winning. Tilt is the enemy.", "#ec4899", "Set stop-loss limits, take breaks when tilting"),
+            ("8", "Poor Bankroll Management", "Playing one stake with entire bankroll, one downswing = busto.", "#06b6d4", "20-30 buy-ins, disciplined moving up/down"),
+            ("9", "No Notes or Review", "Play and forget, no opponent notes, no self-analysis.", "#84cc16", "Record key hands, review regularly"),
+            ("10", "Results-Oriented Thinking", "Judging decisions by results. AA losing to 72 doesn't mean bad play.", "#6366f1", "Focus on decision quality, accept variance"),
+        ]
+
+    for num, title_text, desc, color, solution in mistakes:
+        if lang == "zh":
+            st.markdown(f'''
+            <div style="background: #1e293b; border-radius: 10px; padding: 12px; margin-bottom: 10px; border-left: 4px solid {color};">
+                <div style="display: flex; align-items: flex-start; gap: 12px;">
+                    <div style="background: {color}; color: white; width: 28px; height: 28px; border-radius: 50%;
+                                display: flex; align-items: center; justify-content: center; font-weight: bold; flex-shrink: 0;">
+                        {num}
+                    </div>
+                    <div style="flex: 1;">
+                        <div style="color: {color}; font-weight: bold; font-size: 1rem; margin-bottom: 4px;">{title_text}</div>
+                        <div style="color: #94a3b8; font-size: 0.85rem; margin-bottom: 6px;">{desc}</div>
+                        <div style="color: #22c55e; font-size: 0.8rem;">💡 解決方案：{solution}</div>
+                    </div>
+                </div>
+            </div>
+            ''', unsafe_allow_html=True)
+        else:
+            st.markdown(f'''
+            <div style="background: #1e293b; border-radius: 10px; padding: 12px; margin-bottom: 10px; border-left: 4px solid {color};">
+                <div style="display: flex; align-items: flex-start; gap: 12px;">
+                    <div style="background: {color}; color: white; width: 28px; height: 28px; border-radius: 50%;
+                                display: flex; align-items: center; justify-content: center; font-weight: bold; flex-shrink: 0;">
+                        {num}
+                    </div>
+                    <div style="flex: 1;">
+                        <div style="color: {color}; font-weight: bold; font-size: 1rem; margin-bottom: 4px;">{title_text}</div>
+                        <div style="color: #94a3b8; font-size: 0.85rem; margin-bottom: 6px;">{desc}</div>
+                        <div style="color: #22c55e; font-size: 0.8rem;">💡 Solution: {solution}</div>
+                    </div>
+                </div>
+            </div>
+            ''', unsafe_allow_html=True)
+
+
+def _display_ev_calculation_learning(lang: str):
+    """Display EV calculation learning content."""
+    title = "📊 EV 計算入門" if lang == "zh" else "📊 EV Calculation Basics"
+    st.markdown(f"### {title}")
+
+    # What is EV
+    if lang == "zh":
+        intro_html = '''
+        <div style="background: linear-gradient(135deg, #1e3a5f 0%, #0f172a 100%); border-radius: 12px; padding: 16px; margin-bottom: 16px;">
+            <div style="color: #fbbf24; font-size: 1.1rem; font-weight: bold; margin-bottom: 10px;">💡 什麼是 EV（期望值）？</div>
+            <div style="color: #e2e8f0; line-height: 1.7;">
+                <span style="color: #22c55e; font-weight: bold;">EV（Expected Value）</span>是指在重複相同情境無數次後，
+                <span style="color: #fbbf24;">平均每次的盈虧</span>。<br/><br/>
+                <span style="color: #94a3b8;">公式：</span>
+                <span style="color: #3b82f6; font-weight: bold;">EV = (贏的機率 × 贏的金額) - (輸的機率 × 輸的金額)</span>
+            </div>
+        </div>
+        '''
+    else:
+        intro_html = '''
+        <div style="background: linear-gradient(135deg, #1e3a5f 0%, #0f172a 100%); border-radius: 12px; padding: 16px; margin-bottom: 16px;">
+            <div style="color: #fbbf24; font-size: 1.1rem; font-weight: bold; margin-bottom: 10px;">💡 What is EV (Expected Value)?</div>
+            <div style="color: #e2e8f0; line-height: 1.7;">
+                <span style="color: #22c55e; font-weight: bold;">EV (Expected Value)</span> is the
+                <span style="color: #fbbf24;">average profit or loss per decision</span> over infinite repetitions.<br/><br/>
+                <span style="color: #94a3b8;">Formula:</span>
+                <span style="color: #3b82f6; font-weight: bold;">EV = (Win% × Win Amount) - (Lose% × Lose Amount)</span>
+            </div>
+        </div>
+        '''
+    st.markdown(intro_html, unsafe_allow_html=True)
+
+    col1, col2 = st.columns(2)
+
+    with col1:
+        example_title = "📝 範例計算" if lang == "zh" else "📝 Example Calculation"
+        st.markdown(f"**{example_title}**")
+
+        if lang == "zh":
+            example_html = '''
+            <div style="background: #1e293b; border-radius: 10px; padding: 14px;">
+                <div style="color: #fbbf24; font-weight: bold; margin-bottom: 10px;">情境：河牌圈是否跟注？</div>
+                <div style="color: #94a3b8; font-size: 0.9rem; margin-bottom: 12px; line-height: 1.6;">
+                    底池：<span style="color: #22c55e;">$100</span><br/>
+                    對手下注：<span style="color: #ef4444;">$50</span><br/>
+                    你認為贏的機率：<span style="color: #3b82f6;">30%</span>
+                </div>
+
+                <div style="background: #0f172a; border-radius: 8px; padding: 12px; margin-bottom: 12px;">
+                    <div style="color: #94a3b8; font-size: 0.85rem; margin-bottom: 6px;">跟注時：</div>
+                    <div style="color: #e2e8f0; font-size: 0.9rem;">
+                        贏：獲得 $100 + $50 = <span style="color: #22c55e;">$150</span><br/>
+                        輸：損失 <span style="color: #ef4444;">$50</span>
+                    </div>
+                </div>
+
+                <div style="background: #0f172a; border-radius: 8px; padding: 12px; margin-bottom: 12px;">
+                    <div style="color: #94a3b8; font-size: 0.85rem; margin-bottom: 6px;">EV 計算：</div>
+                    <div style="color: #3b82f6; font-weight: bold;">
+                        EV = (30% × $150) - (70% × $50)<br/>
+                        EV = $45 - $35 = <span style="color: #22c55e;">+$10</span>
+                    </div>
+                </div>
+
+                <div style="color: #22c55e; font-weight: bold; text-align: center; padding: 8px; background: rgba(34, 197, 94, 0.1); border-radius: 6px;">
+                    ✅ EV 為正，應該跟注！
+                </div>
+            </div>
+            '''
+        else:
+            example_html = '''
+            <div style="background: #1e293b; border-radius: 10px; padding: 14px;">
+                <div style="color: #fbbf24; font-weight: bold; margin-bottom: 10px;">Scenario: River Call Decision</div>
+                <div style="color: #94a3b8; font-size: 0.9rem; margin-bottom: 12px; line-height: 1.6;">
+                    Pot: <span style="color: #22c55e;">$100</span><br/>
+                    Opponent bets: <span style="color: #ef4444;">$50</span><br/>
+                    Your estimated win rate: <span style="color: #3b82f6;">30%</span>
+                </div>
+
+                <div style="background: #0f172a; border-radius: 8px; padding: 12px; margin-bottom: 12px;">
+                    <div style="color: #94a3b8; font-size: 0.85rem; margin-bottom: 6px;">If you call:</div>
+                    <div style="color: #e2e8f0; font-size: 0.9rem;">
+                        Win: Gain $100 + $50 = <span style="color: #22c55e;">$150</span><br/>
+                        Lose: Lose <span style="color: #ef4444;">$50</span>
+                    </div>
+                </div>
+
+                <div style="background: #0f172a; border-radius: 8px; padding: 12px; margin-bottom: 12px;">
+                    <div style="color: #94a3b8; font-size: 0.85rem; margin-bottom: 6px;">EV Calculation:</div>
+                    <div style="color: #3b82f6; font-weight: bold;">
+                        EV = (30% × $150) - (70% × $50)<br/>
+                        EV = $45 - $35 = <span style="color: #22c55e;">+$10</span>
+                    </div>
+                </div>
+
+                <div style="color: #22c55e; font-weight: bold; text-align: center; padding: 8px; background: rgba(34, 197, 94, 0.1); border-radius: 6px;">
+                    ✅ EV is positive, you should call!
+                </div>
+            </div>
+            '''
+        st.markdown(example_html, unsafe_allow_html=True)
+
+    with col2:
+        odds_title = "🎯 底池賠率" if lang == "zh" else "🎯 Pot Odds"
+        st.markdown(f"**{odds_title}**")
+
+        if lang == "zh":
+            odds_html = '''
+            <div style="background: #1e293b; border-radius: 10px; padding: 14px;">
+                <div style="color: #fbbf24; font-weight: bold; margin-bottom: 10px;">快速計算法</div>
+                <div style="color: #94a3b8; font-size: 0.9rem; margin-bottom: 12px; line-height: 1.6;">
+                    底池賠率 = 需要跟注 ÷ (底池 + 對手下注 + 你的跟注)
+                </div>
+
+                <div style="background: #0f172a; border-radius: 8px; padding: 12px; margin-bottom: 12px;">
+                    <div style="color: #94a3b8; font-size: 0.85rem; margin-bottom: 6px;">上例計算：</div>
+                    <div style="color: #e2e8f0; font-size: 0.9rem;">
+                        $50 ÷ ($100 + $50 + $50) = $50 ÷ $200<br/>
+                        = <span style="color: #3b82f6; font-weight: bold;">25%</span>
+                    </div>
+                </div>
+
+                <div style="background: #0f172a; border-radius: 8px; padding: 12px; margin-bottom: 12px;">
+                    <div style="color: #94a3b8; font-size: 0.85rem; margin-bottom: 6px;">判斷標準：</div>
+                    <div style="color: #e2e8f0; font-size: 0.9rem;">
+                        贏率 <span style="color: #22c55e;">30%</span> > 需要賠率 <span style="color: #3b82f6;">25%</span><br/>
+                        → <span style="color: #22c55e; font-weight: bold;">有利可圖，應該跟注</span>
+                    </div>
+                </div>
+
+                <div style="border-top: 1px solid #334155; padding-top: 10px; margin-top: 10px;">
+                    <div style="color: #fbbf24; font-weight: bold; margin-bottom: 6px;">📊 常見下注的底池賠率</div>
+                    <div style="color: #94a3b8; font-size: 0.85rem; line-height: 1.5;">
+                        • 1/3 底池 → 需要 20% 勝率<br/>
+                        • 1/2 底池 → 需要 25% 勝率<br/>
+                        • 2/3 底池 → 需要 28.5% 勝率<br/>
+                        • 滿池 → 需要 33% 勝率
+                    </div>
+                </div>
+            </div>
+            '''
+        else:
+            odds_html = '''
+            <div style="background: #1e293b; border-radius: 10px; padding: 14px;">
+                <div style="color: #fbbf24; font-weight: bold; margin-bottom: 10px;">Quick Calculation Method</div>
+                <div style="color: #94a3b8; font-size: 0.9rem; margin-bottom: 12px; line-height: 1.6;">
+                    Pot Odds = Call Amount ÷ (Pot + Bet + Your Call)
+                </div>
+
+                <div style="background: #0f172a; border-radius: 8px; padding: 12px; margin-bottom: 12px;">
+                    <div style="color: #94a3b8; font-size: 0.85rem; margin-bottom: 6px;">Example calculation:</div>
+                    <div style="color: #e2e8f0; font-size: 0.9rem;">
+                        $50 ÷ ($100 + $50 + $50) = $50 ÷ $200<br/>
+                        = <span style="color: #3b82f6; font-weight: bold;">25%</span>
+                    </div>
+                </div>
+
+                <div style="background: #0f172a; border-radius: 8px; padding: 12px; margin-bottom: 12px;">
+                    <div style="color: #94a3b8; font-size: 0.85rem; margin-bottom: 6px;">Decision Rule:</div>
+                    <div style="color: #e2e8f0; font-size: 0.9rem;">
+                        Win rate <span style="color: #22c55e;">30%</span> > Required odds <span style="color: #3b82f6;">25%</span><br/>
+                        → <span style="color: #22c55e; font-weight: bold;">Profitable, should call</span>
+                    </div>
+                </div>
+
+                <div style="border-top: 1px solid #334155; padding-top: 10px; margin-top: 10px;">
+                    <div style="color: #fbbf24; font-weight: bold; margin-bottom: 6px;">📊 Common Bet Size Odds</div>
+                    <div style="color: #94a3b8; font-size: 0.85rem; line-height: 1.5;">
+                        • 1/3 pot → Need 20% equity<br/>
+                        • 1/2 pot → Need 25% equity<br/>
+                        • 2/3 pot → Need 28.5% equity<br/>
+                        • Full pot → Need 33% equity
+                    </div>
+                </div>
+            </div>
+            '''
+        st.markdown(odds_html, unsafe_allow_html=True)
+
+    st.markdown("---")
+
+    # Key concepts
+    key_title = "🔑 關鍵概念" if lang == "zh" else "🔑 Key Concepts"
+    st.markdown(f"**{key_title}**")
+
+    if lang == "zh":
+        key_html = '''
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;">
+            <div style="background: #1e293b; border-radius: 8px; padding: 12px; text-align: center;">
+                <div style="color: #22c55e; font-size: 2rem; margin-bottom: 6px;">+EV</div>
+                <div style="color: #22c55e; font-weight: bold; margin-bottom: 4px;">正期望值</div>
+                <div style="color: #94a3b8; font-size: 0.85rem;">長期會贏錢<br/>應該執行這個動作</div>
+            </div>
+            <div style="background: #1e293b; border-radius: 8px; padding: 12px; text-align: center;">
+                <div style="color: #ef4444; font-size: 2rem; margin-bottom: 6px;">-EV</div>
+                <div style="color: #ef4444; font-weight: bold; margin-bottom: 4px;">負期望值</div>
+                <div style="color: #94a3b8; font-size: 0.85rem;">長期會輸錢<br/>應該避免這個動作</div>
+            </div>
+            <div style="background: #1e293b; border-radius: 8px; padding: 12px; text-align: center;">
+                <div style="color: #fbbf24; font-size: 2rem; margin-bottom: 6px;">0 EV</div>
+                <div style="color: #fbbf24; font-weight: bold; margin-bottom: 4px;">零期望值</div>
+                <div style="color: #94a3b8; font-size: 0.85rem;">長期不賺不賠<br/>跟注或棄牌皆可</div>
+            </div>
+        </div>
+        <div style="background: #0f172a; border-radius: 8px; padding: 12px; margin-top: 12px; text-align: center;">
+            <div style="color: #94a3b8; font-size: 0.9rem;">
+                <span style="color: #fbbf24; font-weight: bold;">記住：</span>
+                撲克的目標是做出 +EV 決策，而不是贏每一手牌。<br/>
+                短期結果可能波動，但長期 +EV 決策一定賺錢。
+            </div>
+        </div>
+        '''
+    else:
+        key_html = '''
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;">
+            <div style="background: #1e293b; border-radius: 8px; padding: 12px; text-align: center;">
+                <div style="color: #22c55e; font-size: 2rem; margin-bottom: 6px;">+EV</div>
+                <div style="color: #22c55e; font-weight: bold; margin-bottom: 4px;">Positive EV</div>
+                <div style="color: #94a3b8; font-size: 0.85rem;">Profitable long-term<br/>Execute this action</div>
+            </div>
+            <div style="background: #1e293b; border-radius: 8px; padding: 12px; text-align: center;">
+                <div style="color: #ef4444; font-size: 2rem; margin-bottom: 6px;">-EV</div>
+                <div style="color: #ef4444; font-weight: bold; margin-bottom: 4px;">Negative EV</div>
+                <div style="color: #94a3b8; font-size: 0.85rem;">Losing long-term<br/>Avoid this action</div>
+            </div>
+            <div style="background: #1e293b; border-radius: 8px; padding: 12px; text-align: center;">
+                <div style="color: #fbbf24; font-size: 2rem; margin-bottom: 6px;">0 EV</div>
+                <div style="color: #fbbf24; font-weight: bold; margin-bottom: 4px;">Zero EV</div>
+                <div style="color: #94a3b8; font-size: 0.85rem;">Break-even long-term<br/>Call or fold equally fine</div>
+            </div>
+        </div>
+        <div style="background: #0f172a; border-radius: 8px; padding: 12px; margin-top: 12px; text-align: center;">
+            <div style="color: #94a3b8; font-size: 0.9rem;">
+                <span style="color: #fbbf24; font-weight: bold;">Remember:</span>
+                Poker's goal is to make +EV decisions, not win every hand.<br/>
+                Short-term results may vary, but +EV decisions always profit long-term.
+            </div>
+        </div>
+        '''
+    st.markdown(key_html, unsafe_allow_html=True)
 
 
 def equity_quiz_page():

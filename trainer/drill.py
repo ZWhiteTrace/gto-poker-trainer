@@ -115,8 +115,8 @@ POSITION_EXCLUDED_HANDS = {
         "T6s", "T5s", "T4s", "T3s",
         "96s", "95s",
         "85s", "84s",  # 84s 不考
-        "53s", "63s", "74s", "75s",
-        "64s",
+        "63s", "74s",
+        # 75s, 64s, 53s 移到可練習
         "32s", "42s", "52s",
         # === 離邊界太遠的 offsuit ===
         "A3o", "A2o",
@@ -154,7 +154,7 @@ POSITION_EXCLUDED_HANDS = {
         # === 離邊界太遠的 offsuit ===
         "A3o", "A2o",
         "K7o", "K6o", "K5o", "K4o", "K3o", "K2o",
-        "Q7o", "Q6o", "Q5o", "Q4o", "Q3o", "Q2o",
+        "Q8o", "Q7o", "Q6o", "Q5o", "Q4o", "Q3o", "Q2o",  # Q8o 不考
         # J8o 移到可練習
         "J7o", "J6o", "J5o", "J4o", "J3o", "J2o",
         "T8o", "T7o", "T6o", "T5o", "T4o", "T3o", "T2o",
@@ -649,3 +649,31 @@ class PreflopDrill:
         scenario_type = spot.scenario.action_type.value
         position = spot.scenario.hero_position.value
         return get_drillable_hands(range_data, scenario_type, position=position)
+
+    def generate_comprehensive_rfi_spots(self) -> List[Spot]:
+        """
+        Generate ALL drillable RFI spots for comprehensive practice.
+        Returns a shuffled list of all position+hand combinations.
+
+        認真模式：所有位置的所有可練習手牌，打散隨機排列。
+        """
+        all_spots = []
+
+        # RFI positions (exclude BB)
+        rfi_positions = [p for p in self.enabled_positions if p != Position.BB]
+
+        for pos in rfi_positions:
+            # Get drillable hands for this position
+            drillable = get_drillable_hands(position=pos.value)
+
+            for hand_str in drillable:
+                scenario = Scenario(
+                    hero_position=pos,
+                    action_type=ActionType.RFI,
+                )
+                spot = Spot(hand=Hand(hand_str), scenario=scenario)
+                all_spots.append(spot)
+
+        # Shuffle all spots
+        random.shuffle(all_spots)
+        return all_spots
