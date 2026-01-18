@@ -75,6 +75,43 @@ class Evaluator:
         self._frequencies_cache[format] = frequencies
         return frequencies
 
+    def get_rfi_frequencies(self, position: str, format: str = "6max") -> Dict[str, Dict]:
+        """Get RFI frequency data for a position. Returns {hand: {action: freq}}."""
+        frequencies = self.load_frequencies(format)
+        rfi_freq = frequencies.get("rfi", {})
+        position_data = rfi_freq.get(position.upper() if isinstance(position, str) else position.value, {})
+        return position_data.get("frequencies", {})
+
+    def get_vs_rfi_frequencies(self, hero_position: str, villain_position: str, format: str = "6max") -> Dict[str, Dict]:
+        """Get vs RFI frequency data for a position pair. Returns {hand: {action: freq}}."""
+        frequencies = self.load_frequencies(format)
+        vs_rfi_freq = frequencies.get("vs_rfi", {})
+        hero = hero_position.upper() if isinstance(hero_position, str) else hero_position.value
+        villain = villain_position.upper() if isinstance(villain_position, str) else villain_position.value
+        key = f"{hero}_vs_{villain}"
+        position_data = vs_rfi_freq.get(key, {})
+        return position_data.get("frequencies", {})
+
+    def get_vs_3bet_frequencies(self, hero_position: str, villain_position: str, format: str = "6max") -> Dict[str, Dict]:
+        """Get vs 3bet frequency data for a position pair. Returns {hand: {action: freq}}."""
+        frequencies = self.load_frequencies(format)
+        vs_3bet_freq = frequencies.get("vs_3bet", {})
+        hero = hero_position.upper() if isinstance(hero_position, str) else hero_position.value
+        villain = villain_position.upper() if isinstance(villain_position, str) else villain_position.value
+        key = f"{hero}_vs_{villain}"
+        position_data = vs_3bet_freq.get(key, {})
+        return position_data.get("frequencies", {})
+
+    def get_vs_4bet_frequencies(self, hero_position: str, villain_position: str, format: str = "6max") -> Dict[str, Dict]:
+        """Get vs 4bet frequency data for a position pair. Returns {hand: {action: freq}}."""
+        frequencies = self.load_frequencies(format)
+        vs_4bet_freq = frequencies.get("vs_4bet", {})
+        hero = hero_position.upper() if isinstance(hero_position, str) else hero_position.value
+        villain = villain_position.upper() if isinstance(villain_position, str) else villain_position.value
+        key = f"{hero}_vs_{villain}"
+        position_data = vs_4bet_freq.get(key, {})
+        return position_data.get("frequencies", {})
+
     def get_hand_frequencies(self, hand: Hand, scenario: Scenario, format: str = "6max") -> Dict[str, int]:
         """
         Get frequencies for all actions for a hand in a scenario.

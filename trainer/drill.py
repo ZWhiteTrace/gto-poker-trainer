@@ -259,6 +259,141 @@ def get_drillable_hands(range_data: dict = None, scenario_type: str = "vs_rfi", 
     return [h for h in ALL_HANDS if h not in excluded]
 
 
+def get_drillable_hands_dynamic(frequency_data: dict, scenario_type: str = "rfi") -> List[str]:
+    """
+    動態計算出題範圍（方案 C）。
+
+    根據頻率數據自動識別「有趣」的手牌：
+    1. 排除 100% 動作牌（太簡單）
+    2. 排除 0% 垃圾牌（太遠）
+    3. 保留混合頻率牌（1-99%）
+    4. 保留接近邊界的牌
+
+    Args:
+        frequency_data: 頻率數據，格式為 {"hand": {"action": frequency}, ...}
+        scenario_type: 場景類型 ("rfi", "vs_rfi", "vs_3bet", "vs_4bet")
+
+    Returns:
+        List of interesting hand strings for drilling
+    """
+    if not frequency_data:
+        return ALL_HANDS
+
+    interesting_hands = []
+
+    # 定義各場景的主要動作
+    primary_actions = {
+        "rfi": ["raise"],
+        "vs_rfi": ["3bet", "call"],
+        "vs_3bet": ["4bet", "call"],
+        "vs_4bet": ["5bet", "call"],
+    }
+
+    actions_to_check = primary_actions.get(scenario_type, ["raise", "3bet", "4bet", "5bet", "call"])
+
+    for hand, actions in frequency_data.items():
+        if not isinstance(actions, dict):
+            continue
+
+        # 計算該手牌的最高動作頻率
+        max_action_freq = 0
+        has_mixed = False
+        total_action_freq = 0
+
+        for action in actions_to_check:
+            freq = actions.get(action, 0)
+            if freq > max_action_freq:
+                max_action_freq = freq
+            total_action_freq += freq
+
+            # 檢查是否為混合頻率 (1-99%)
+            if 1 <= freq <= 99:
+                has_mixed = True
+
+        # 決定是否為有趣的手牌
+        is_interesting = False
+
+        # 規則 1: 混合頻率牌一定有趣
+        if has_mixed:
+            is_interesting = True
+
+        # 規則 2: 邊界牌（有動作但不是 100%）
+        elif 1 <= max_action_freq <= 75:
+            is_interesting = True
+
+        # 規則 3: 接近邊界的 100% 牌也可能有趣（如果是中等牌力）
+        # 例如：JJ 100% 3bet vs UTG，但在 vs HJ 可能不同
+        elif max_action_freq == 100 and total_action_freq == 100:
+            # 100% 單一動作，可能是確定性決策
+            # 但我們排除頂級牌（AA, KK, AKs 等）
+            if hand not in PREMIUM_HANDS:
+                # 保留部分 100% 牌以測試基礎知識
+                # 但降低權重（不特別標記為 drillable）
+                pass
+
+        # 規則 4: 有任何正向動作的牌（總頻率 > 0）
+        elif total_action_freq > 0 and total_action_freq < 100:
+            is_interesting = True
+
+        if is_interesting:
+            interesting_hands.append(hand)
+
+    # 如果沒有找到有趣的牌，返回所有有動作的牌
+    if not interesting_hands:
+        for hand, actions in frequency_data.items():
+            if isinstance(actions, dict):
+                for action in actions_to_check:
+                    if actions.get(action, 0) > 0:
+                        interesting_hands.append(hand)
+                        break
+
+    return list(set(interesting_hands))
+
+
+def get_drillable_hands_for_scenario(
+    evaluator: 'Evaluator',
+    table_format: str,
+    scenario_type: str,
+    hero_position: str = None,
+    villain_position: str = None
+) -> List[str]:
+    """
+    取得特定場景的出題範圍。
+
+    整合靜態排除列表和動態頻率計算。
+
+    Args:
+        evaluator: Evaluator instance
+        table_format: "6max" or "9max"
+        scenario_type: "rfi", "vs_rfi", "vs_3bet", "vs_4bet"
+        hero_position: Hero position name
+        villain_position: Villain position name (for vs scenarios)
+
+    Returns:
+        List of drillable hand strings
+    """
+    # RFI 場景：使用靜態列表（因為大部分是 100% 動作，但仍需記憶）
+    if scenario_type == "rfi":
+        return get_drillable_hands(position=hero_position)
+
+    # vs 場景：使用動態計算（混合策略多，適合動態識別邊界牌）
+    freq_data = None
+
+    if scenario_type == "vs_rfi" and hero_position and villain_position:
+        freq_data = evaluator.get_vs_rfi_frequencies(hero_position, villain_position, table_format)
+    elif scenario_type == "vs_3bet" and hero_position and villain_position:
+        freq_data = evaluator.get_vs_3bet_frequencies(hero_position, villain_position, table_format)
+    elif scenario_type == "vs_4bet" and hero_position and villain_position:
+        freq_data = evaluator.get_vs_4bet_frequencies(hero_position, villain_position, table_format)
+
+    if freq_data:
+        # vs 場景用動態計算
+        return get_drillable_hands_dynamic(freq_data, scenario_type)
+    else:
+        # 回退到靜態列表
+        return get_drillable_hands(position=hero_position)
+
+
 def get_interesting_hand(range_data: dict, scenario_type: str = "vs_rfi", position: str = None) -> Hand:
     """
     Generate an 'interesting' hand for drilling.
@@ -644,11 +779,17 @@ class PreflopDrill:
         )
 
     def get_drillable_hands_for_spot(self, spot: Spot) -> List[str]:
-        """Get the list of drillable hands for a spot (position-specific)."""
-        range_data = self.get_range_for_spot(spot) or {}
-        scenario_type = spot.scenario.action_type.value
-        position = spot.scenario.hero_position.value
-        return get_drillable_hands(range_data, scenario_type, position=position)
+        """Get the list of drillable hands for a spot (動態計算)."""
+        # 使用動態計算取得出題範圍
+        action_type_map = {"rfi": "rfi", "vs_rfi": "vs_rfi", "vs_3bet": "vs_3bet", "vs_4bet": "vs_4bet"}
+        scenario_type = action_type_map.get(spot.scenario.action_type.value, "rfi")
+        hero_pos = spot.scenario.hero_position.value
+        villain_pos = spot.scenario.villain_position.value if spot.scenario.villain_position else None
+
+        return get_drillable_hands_for_scenario(
+            self.evaluator, self.format, scenario_type,
+            hero_position=hero_pos, villain_position=villain_pos
+        )
 
     def generate_comprehensive_rfi_spots(self) -> List[Spot]:
         """

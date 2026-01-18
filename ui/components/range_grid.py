@@ -134,22 +134,29 @@ def display_range_grid(
             # Support multiple action types: raise, 3bet, 4bet, 5bet
             raise_freq = hand_freq.get("raise", 0) or hand_freq.get("3bet", 0) or hand_freq.get("4bet", 0) or hand_freq.get("5bet", 0)
             call_freq = hand_freq.get("call", 0)
+            limp_freq = hand_freq.get("limp", 0)  # SB RFI limp
 
             # Determine action based on frequency or existing logic
             if frequencies:
-                # GTOWizard style: Red=Raise/3bet/4bet, Green=Call, Blue=Fold
+                # GTOWizard style: Red=Raise/3bet/4bet, Green=Call/Limp, Blue=Fold
                 if raise_freq >= 100:
                     action = "raise"
                     freq = 100
                 elif call_freq >= 100:
                     action = "call"
                     freq = 100
-                elif raise_freq >= 70 and call_freq == 0:
+                elif limp_freq >= 100:
+                    action = "limp"
+                    freq = 100
+                elif raise_freq >= 70 and call_freq == 0 and limp_freq == 0:
                     action = "raise"  # Solid raise
                     freq = raise_freq
                 elif call_freq >= 70 and raise_freq == 0:
                     action = "call"  # Solid call
                     freq = call_freq
+                elif limp_freq >= 70 and raise_freq == 0 and call_freq == 0:
+                    action = "limp"  # Solid limp
+                    freq = limp_freq
                 elif raise_freq > 0 and call_freq > 0:
                     # Mixed raise/call - show split based on dominant action
                     if raise_freq >= call_freq:
@@ -158,6 +165,10 @@ def display_range_grid(
                     else:
                         action = "mixed-call-raise"
                         freq = call_freq
+                elif raise_freq > 0 and limp_freq > 0:
+                    # Mixed raise/limp - show split
+                    action = "mixed-raise-limp"
+                    freq = raise_freq
                 elif raise_freq > 0:
                     # Mixed raise/fold
                     if raise_freq >= 50:
@@ -172,6 +183,13 @@ def display_range_grid(
                     else:
                         action = "fold-mixed-call"
                     freq = call_freq
+                elif limp_freq > 0:
+                    # Mixed limp/fold (SB RFI)
+                    if limp_freq >= 50:
+                        action = "limp-mixed"
+                    else:
+                        action = "fold-mixed-limp"
+                    freq = limp_freq
                 else:
                     action = "fold"
                     freq = 0
@@ -196,10 +214,11 @@ def display_range_grid(
             is_highlight = (highlight_hand == hand)
             is_drillable = drillable_set is None or hand in drillable_set
 
-            # Compute raise_freq and call_freq for legacy mode
+            # Compute raise_freq, call_freq, limp_freq for display
             if frequencies:
                 legacy_raise_freq = raise_freq
                 legacy_call_freq = call_freq
+                legacy_limp_freq = limp_freq
             else:
                 # Legacy: action determines freq
                 if action == "raise":
@@ -216,6 +235,8 @@ def display_range_grid(
                 else:
                     legacy_call_freq = 0
 
+                legacy_limp_freq = 0  # Legacy mode doesn't have limp
+
             row_data.append({
                 "hand": hand,
                 "type": hand_type,
@@ -225,6 +246,7 @@ def display_range_grid(
                 "freq": freq,
                 "raise_freq": legacy_raise_freq,
                 "call_freq": legacy_call_freq,
+                "limp_freq": legacy_limp_freq,
             })
         grid_data.append(row_data)
 
@@ -242,7 +264,9 @@ def display_range_grid(
             has_drillable = drillable_set is not None
             has_call = len(call_hands) > 0 or len(mixed_call) > 0
             has_frequency = bool(frequencies)
-            active_filter = _display_legend(show_mixed=has_mixed, show_drillable=has_drillable, show_call=has_call, show_frequency=has_frequency, key=key)
+            # Check if any hand has limp frequency
+            has_limp = any(hand_data.get('limp', 0) > 0 for hand_data in frequencies.values()) if frequencies else False
+            active_filter = _display_legend(show_mixed=has_mixed, show_drillable=has_drillable, show_call=has_call, show_frequency=has_frequency, show_limp=has_limp, key=key)
 
     # Step 2: Display grid with updated filter
     with grid_container:
@@ -430,15 +454,17 @@ def _generate_grid_html(grid_data: List[List[Dict]], highlight_hand: str = None,
         opacity: 1;
     }
     .tooltip .freq-raise { color: #f87171; font-weight: bold; }
-    .tooltip .freq-call { color: #b91c1c; font-weight: bold; }
+    .tooltip .freq-call { color: #4ade80; font-weight: bold; }
+    .tooltip .freq-limp { color: #4ade80; font-weight: bold; }
     .tooltip .freq-fold { color: #60a5fa; font-weight: bold; }
     .tooltip .hand-name { color: #fbbf24; font-weight: bold; margin-right: 6px; }
     </style>
     """
 
-    # GTOWizard colors: Red=Raise, Green=Call, Blue=Fold
+    # GTOWizard colors: Red=Raise, Green=Call/Limp, Blue=Fold
     COLOR_RAISE = "#ef4444"
     COLOR_CALL = "#22c55e"
+    COLOR_LIMP = "#22c55e"  # Same as call (green) - used for SB RFI
     COLOR_FOLD = "#3b82f6"
 
     html = css + '<div style="width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch;"><div class="range-grid">'
@@ -447,8 +473,9 @@ def _generate_grid_html(grid_data: List[List[Dict]], highlight_hand: str = None,
         for col_idx, cell in enumerate(row):
             raise_freq = cell.get('raise_freq', 0)
             call_freq = cell.get('call_freq', 0)
-            fold_freq = 100 - raise_freq - call_freq
-            is_mixed = raise_freq > 0 and raise_freq < 100
+            limp_freq = cell.get('limp_freq', 0)
+            fold_freq = 100 - raise_freq - call_freq - limp_freq
+            is_mixed = (raise_freq > 0 and raise_freq < 100) or (limp_freq > 0 and limp_freq < 100)
 
             # Determine if this cell matches the active filter
             matches_filter = True
@@ -457,6 +484,8 @@ def _generate_grid_html(grid_data: List[List[Dict]], highlight_hand: str = None,
                     matches_filter = raise_freq > 0
                 elif active_filter == "call":
                     matches_filter = call_freq > 0
+                elif active_filter == "limp":
+                    matches_filter = limp_freq > 0
                 elif active_filter == "fold":
                     matches_filter = fold_freq > 0  # 包含有 fold 成分的手牌
                 elif active_filter == "mixed":
@@ -507,11 +536,13 @@ def _generate_grid_html(grid_data: List[List[Dict]], highlight_hand: str = None,
                 bg_style = f"background:{COLOR_RAISE};"
             elif call_freq >= 100:
                 bg_style = f"background:{COLOR_CALL};"
-            elif raise_freq == 0 and call_freq == 0:
+            elif limp_freq >= 100:
+                bg_style = f"background:{COLOR_LIMP};"
+            elif raise_freq == 0 and call_freq == 0 and limp_freq == 0:
                 bg_style = f"background:{COLOR_FOLD};"
             else:
                 # Mixed strategy: build gradient stops
-                # Order: Raise (top/red) → Call (middle/green) → Fold (bottom/blue)
+                # Order: Raise (top/red) → Call/Limp (middle/green) → Fold (bottom/blue)
                 stops = []
                 current_pos = 0
 
@@ -525,6 +556,11 @@ def _generate_grid_html(grid_data: List[List[Dict]], highlight_hand: str = None,
                     current_pos += call_freq
                     stops.append(f"{COLOR_CALL} {current_pos}%")
 
+                if limp_freq > 0:
+                    stops.append(f"{COLOR_LIMP} {current_pos}%")
+                    current_pos += limp_freq
+                    stops.append(f"{COLOR_LIMP} {current_pos}%")
+
                 if fold_freq > 0:
                     stops.append(f"{COLOR_FOLD} {current_pos}%")
                     stops.append(f"{COLOR_FOLD} 100%")
@@ -533,13 +569,15 @@ def _generate_grid_html(grid_data: List[List[Dict]], highlight_hand: str = None,
 
             # Build styled tooltip with frequency info
             tooltip_html = ""
-            if raise_freq > 0 or call_freq > 0:
+            if raise_freq > 0 or call_freq > 0 or limp_freq > 0:
                 tooltip_parts = []
                 tooltip_parts.append(f'<span class="hand-name">{cell["hand"]}</span>')
                 if raise_freq > 0:
                     tooltip_parts.append(f'<span class="freq-raise">R:{raise_freq}%</span>')
                 if call_freq > 0:
                     tooltip_parts.append(f'<span class="freq-call">C:{call_freq}%</span>')
+                if limp_freq > 0:
+                    tooltip_parts.append(f'<span class="freq-limp">L:{limp_freq}%</span>')
                 if fold_freq > 0:
                     tooltip_parts.append(f'<span class="freq-fold">F:{fold_freq}%</span>')
                 tooltip_html = f'<span class="tooltip">{" ".join(tooltip_parts)}</span>'
@@ -552,7 +590,7 @@ def _generate_grid_html(grid_data: List[List[Dict]], highlight_hand: str = None,
     return html
 
 
-def _display_legend(show_mixed: bool = False, show_drillable: bool = False, show_call: bool = True, show_frequency: bool = False, key: str = "range_grid"):
+def _display_legend(show_mixed: bool = False, show_drillable: bool = False, show_call: bool = True, show_frequency: bool = False, show_limp: bool = False, key: str = "range_grid"):
     """Display colored legend with filter selection - GTOWizard style."""
 
     # Initialize filter state
@@ -563,17 +601,20 @@ def _display_legend(show_mixed: bool = False, show_drillable: bool = False, show
     # Build original colored HTML legend
     drillable_html = '<span style="margin-left: 10px;"><span style="background: #374151; color: white; padding: 2px 8px; border-radius: 3px; border-bottom: 3px solid white;">✦</span> 出題範圍</span>' if show_drillable else ""
     call_html = '<span style="margin-right: 10px;"><span style="background: #22c55e; color: white; padding: 2px 8px; border-radius: 3px;">C</span> Call</span>' if show_call else ""
+    limp_html = '<span style="margin-right: 10px;"><span style="background: #22c55e; color: white; padding: 2px 8px; border-radius: 3px;">L</span> Limp</span>' if show_limp else ""
     mixed_html = ""
     if show_mixed or show_frequency:
         mixed_html = '<span style="margin-right: 10px;"><span style="background: linear-gradient(to right, #ef4444 0%, #ef4444 70%, #3b82f6 70%, #3b82f6 100%); color: white; padding: 2px 8px; border-radius: 3px; text-shadow: 0 1px 2px rgba(0,0,0,0.5);">M</span> Mixed</span>'
 
-    html = f'<div style="display: flex; gap: 15px; justify-content: center; margin: 8px 0; flex-wrap: wrap; font-size: 14px;"><span style="margin-right: 10px;"><span style="background: #ef4444; color: white; padding: 2px 8px; border-radius: 3px;">R</span> Raise</span>{call_html}<span style="margin-right: 10px;"><span style="background: #3b82f6; color: white; padding: 2px 8px; border-radius: 3px;">F</span> Fold</span>{mixed_html}{drillable_html}</div>'
+    html = f'<div style="display: flex; gap: 15px; justify-content: center; margin: 8px 0; flex-wrap: wrap; font-size: 14px;"><span style="margin-right: 10px;"><span style="background: #ef4444; color: white; padding: 2px 8px; border-radius: 3px;">R</span> Raise</span>{call_html}{limp_html}<span style="margin-right: 10px;"><span style="background: #3b82f6; color: white; padding: 2px 8px; border-radius: 3px;">F</span> Fold</span>{mixed_html}{drillable_html}</div>'
     st.markdown(html, unsafe_allow_html=True)
 
-    # Filter options - fixed order: 全部, Raise, Call, Fold, Mixed, 非出題
+    # Filter options - fixed order: 全部, Raise, Call, Limp, Fold, Mixed, 出題範圍
     filter_options = ["全部", "🔴 Raise"]
     if show_call:
         filter_options.append("🟢 Call")
+    if show_limp:
+        filter_options.append("🟢 Limp")
     filter_options.append("🔵 Fold")
     if show_mixed or show_frequency:
         filter_options.append("🟣 Mixed")
@@ -598,6 +639,7 @@ def _display_legend(show_mixed: bool = False, show_drillable: bool = False, show
         "全部": None,
         "🔴 Raise": "raise",
         "🟢 Call": "call",
+        "🟢 Limp": "limp",
         "🔵 Fold": "fold",
         "🟣 Mixed": "mixed",
         "✦ 出題範圍": "drillable",

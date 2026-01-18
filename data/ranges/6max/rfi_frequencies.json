@@ -1216,13 +1216,104 @@
       },
       "K7o": {
         "raise": 25
+      },
+      "32s": {
+        "limp": 25
+      },
+      "42s": {
+        "limp": 25
+      },
+      "52s": {
+        "limp": 25
+      },
+      "63s": {
+        "limp": 25
+      },
+      "74s": {
+        "limp": 25
+      },
+      "84s": {
+        "limp": 25
+      },
+      "94s": {
+        "limp": 25
+      },
+      "95s": {
+        "limp": 25
+      },
+      "T2s": {
+        "limp": 25
+      },
+      "T3s": {
+        "limp": 25
+      },
+      "T4s": {
+        "limp": 25
+      },
+      "J2s": {
+        "limp": 25
+      },
+      "J3s": {
+        "limp": 25
+      },
+      "A2o": {
+        "limp": 25
+      },
+      "K4o": {
+        "limp": 25
+      },
+      "K5o": {
+        "limp": 25
+      },
+      "K6o": {
+        "limp": 25
+      },
+      "Q5o": {
+        "limp": 25
+      },
+      "Q6o": {
+        "limp": 25
+      },
+      "Q7o": {
+        "limp": 25
+      },
+      "Q8o": {
+        "limp": 25
+      },
+      "J7o": {
+        "limp": 25
+      },
+      "T7o": {
+        "limp": 25
+      },
+      "97o": {
+        "limp": 25
+      },
+      "86o": {
+        "limp": 25
+      },
+      "76o": {
+        "limp": 25
+      },
+      "75o": {
+        "limp": 25
+      },
+      "65o": {
+        "limp": 25
+      },
+      "64o": {
+        "limp": 25
+      },
+      "54o": {
+        "limp": 25
       }
     },
     "stats": {
       "total_hands": 169,
       "raise_hands": 95,
+      "limp_hands": 30,
       "estimated_vpip_contribution": 7.5,
-      "note": "SB: TT+, 99-22混合, A2s+, K2s+, Q3s混合, J3s混合, 同花連張混合, A3o混合, K8o混合"
+      "note": "SB: Raise-or-Limp策略, 100%R主力範圍, 邊緣牌25%Limp"
     }
   }
 }
