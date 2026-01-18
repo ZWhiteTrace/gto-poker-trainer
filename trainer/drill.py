@@ -12,6 +12,24 @@ from core.scenario import Scenario, ActionType
 from core.evaluator import Evaluator, EvalResult
 
 
+# Hands to EXCLUDE from drilling (obvious folds, waste of practice time)
+EXCLUDED_HANDS = {
+    # Suited junk: T2s~42s (2-kicker from T-high down)
+    "T2s", "92s", "82s", "72s", "62s", "52s", "42s",
+    # Suited junk: J3s~73s (3-kicker), 94s
+    "J3s", "T3s", "93s", "83s", "73s", "94s",
+    # Offsuit junk
+    "K3o", "K2o",
+    "Q6o", "Q5o", "Q4o", "Q3o", "Q2o",
+    "J6o", "J5o", "J4o", "J3o", "J2o",
+    "T6o", "T5o", "T4o", "T3o", "T2o",
+    "96o", "95o", "94o", "93o", "92o",
+    "85o", "84o", "83o", "82o",
+    "75o", "74o", "73o", "72o",
+    "64o", "63o", "62o",
+    "53o", "42o",
+}
+
 # Borderline hands - hands near decision boundaries that are more educational
 # Expanded to cover essentially ALL hands that could be playable from any position
 # This ensures late position (BTN, SB) scenarios have comprehensive drillable coverage
@@ -66,6 +84,7 @@ def get_drillable_hands(range_data: dict, scenario_type: str = "vs_rfi") -> List
     These are hands where the decision is meaningful:
     - Hands in the action ranges (raise, call, 3bet, etc.)
     - All playable hands from any position
+    - Excludes EXCLUDED_HANDS (obvious junk)
 
     Returns:
         List of hand strings that should be highlighted in drilling
@@ -81,8 +100,8 @@ def get_drillable_hands(range_data: dict, scenario_type: str = "vs_rfi") -> List
     for category in BORDERLINE_HANDS.values():
         candidates.extend(category)
 
-    # Remove duplicates
-    return list(set(candidates))
+    # Remove duplicates and filter out excluded hands
+    return [h for h in set(candidates) if h not in EXCLUDED_HANDS]
 
 
 def get_interesting_hand(range_data: dict, scenario_type: str = "vs_rfi") -> Hand:
@@ -92,14 +111,22 @@ def get_interesting_hand(range_data: dict, scenario_type: str = "vs_rfi") -> Han
     Instead of random hands like Q2o (obvious fold), focus on hands where
     the decision actually matters: borderline 3bet/call/fold hands.
 
-    70% of time: Pick from action ranges or borderline hands
-    30% of time: Pick random (to occasionally test obvious cases)
+    80% of time: Pick from action ranges or borderline hands
+    20% of time: Pick random (but still exclude junk hands)
     """
-    if random.random() < 0.3:
-        # 30% chance: random hand (test obvious cases occasionally)
+    if random.random() < 0.2:
+        # 20% chance: random hand (but avoid excluded junk)
+        for _ in range(10):  # Try up to 10 times
+            hand = random_hand()
+            if hand.name not in EXCLUDED_HANDS:
+                return hand
+        # Fallback to drillable hands
+        candidates = get_drillable_hands(range_data, scenario_type)
+        if candidates:
+            return Hand(random.choice(candidates))
         return random_hand()
 
-    # 70% chance: pick an interesting hand
+    # 80% chance: pick an interesting hand
     candidates = get_drillable_hands(range_data, scenario_type)
 
     if candidates:
