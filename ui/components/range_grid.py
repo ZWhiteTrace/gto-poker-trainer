@@ -394,6 +394,32 @@ def _generate_grid_html(grid_data: List[List[Dict]], highlight_hand: str = None,
         border-top-color: transparent;
         border-bottom-color: rgba(15, 23, 42, 0.95);
     }
+    /* Left columns: shift tooltip right */
+    .range-cell.left-col .tooltip {
+        left: 0;
+        transform: translateX(0);
+    }
+    .range-cell.left-col .tooltip::after {
+        left: 12px;
+        transform: translateX(0);
+    }
+    /* Right columns: shift tooltip left */
+    .range-cell.right-col .tooltip {
+        left: auto;
+        right: 0;
+        transform: translateX(0);
+    }
+    .range-cell.right-col .tooltip::after {
+        left: auto;
+        right: 12px;
+        transform: translateX(0);
+    }
+    /* Bottom rows: ensure tooltip shows above (default behavior, but add margin) */
+    .range-cell.bottom-row .tooltip {
+        bottom: 100%;
+        top: auto;
+        margin-bottom: 6px;
+    }
     .range-cell:hover .tooltip {
         visibility: visible;
         opacity: 1;
@@ -413,7 +439,7 @@ def _generate_grid_html(grid_data: List[List[Dict]], highlight_hand: str = None,
     html = css + '<div style="width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch;"><div class="range-grid">'
 
     for row_idx, row in enumerate(grid_data):
-        for cell in row:
+        for col_idx, cell in enumerate(row):
             raise_freq = cell.get('raise_freq', 0)
             call_freq = cell.get('call_freq', 0)
             fold_freq = 100 - raise_freq - call_freq
@@ -458,9 +484,15 @@ def _generate_grid_html(grid_data: List[List[Dict]], highlight_hand: str = None,
             elif premium_tier == 1:
                 classes += " premium-t3"
 
-            # Add top-row class for first 2 rows (tooltip shows below)
+            # Add edge classes for smart tooltip positioning
             if row_idx < 2:
                 classes += " top-row"
+            if row_idx >= 11:
+                classes += " bottom-row"
+            if col_idx < 2:
+                classes += " left-col"
+            if col_idx >= 11:
+                classes += " right-col"
 
             # Generate GTOWizard-style proportional gradient (top to bottom)
             if raise_freq >= 100:
