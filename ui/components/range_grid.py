@@ -180,6 +180,26 @@ def display_range_grid(
             is_highlight = (highlight_hand == hand)
             is_drillable = drillable_set is None or hand in drillable_set
 
+            # Compute raise_freq and call_freq for legacy mode
+            if frequencies:
+                legacy_raise_freq = raise_freq
+                legacy_call_freq = call_freq
+            else:
+                # Legacy: action determines freq
+                if action == "raise":
+                    legacy_raise_freq = 100
+                elif action in ("mixed-raise", "raise-mixed"):
+                    legacy_raise_freq = 50
+                else:
+                    legacy_raise_freq = 0
+
+                if action == "call":
+                    legacy_call_freq = 100
+                elif action in ("mixed-call", "call-mixed"):
+                    legacy_call_freq = 50
+                else:
+                    legacy_call_freq = 0
+
             row_data.append({
                 "hand": hand,
                 "type": hand_type,
@@ -187,21 +207,31 @@ def display_range_grid(
                 "highlight": is_highlight,
                 "drillable": is_drillable,
                 "freq": freq,
-                "raise_freq": raise_freq if frequencies else (100 if action == "raise" else 0),
-                "call_freq": call_freq if frequencies else (100 if action == "call" else 0),
+                "raise_freq": legacy_raise_freq,
+                "call_freq": legacy_call_freq,
             })
         grid_data.append(row_data)
 
-    # Display using custom HTML/CSS for better visualization
-    html = _generate_grid_html(grid_data, highlight_hand)
-    st.markdown(html, unsafe_allow_html=True)
+    # Use containers to control display order:
+    # - Legend (radio) runs FIRST to update session state
+    # - Grid displays AFTER with updated filter value
+    grid_container = st.container()
+    legend_container = st.container()
 
+    # Step 1: Display legend FIRST (to update session state)
+    active_filter = None
     if show_legend:
-        has_mixed = len(mixed_raise) > 0 or len(mixed_call) > 0
-        has_drillable = drillable_set is not None
-        has_call = len(call_hands) > 0 or len(mixed_call) > 0
-        has_frequency = bool(frequencies)
-        _display_legend(show_mixed=has_mixed, show_drillable=has_drillable, show_call=has_call, show_frequency=has_frequency)
+        with legend_container:
+            has_mixed = len(mixed_raise) > 0 or len(mixed_call) > 0
+            has_drillable = drillable_set is not None
+            has_call = len(call_hands) > 0 or len(mixed_call) > 0
+            has_frequency = bool(frequencies)
+            active_filter = _display_legend(show_mixed=has_mixed, show_drillable=has_drillable, show_call=has_call, show_frequency=has_frequency, key=key)
+
+    # Step 2: Display grid with updated filter
+    with grid_container:
+        html = _generate_grid_html(grid_data, highlight_hand, active_filter)
+        st.markdown(html, unsafe_allow_html=True)
 
     # Show stats (optional)
     if show_stats:
@@ -215,8 +245,13 @@ def display_range_grid(
         st.caption(stats_text)
 
 
-def _generate_grid_html(grid_data: List[List[Dict]], highlight_hand: str = None) -> str:
-    """Generate HTML for the range grid with GTOWizard-style proportional gradients."""
+def _generate_grid_html(grid_data: List[List[Dict]], highlight_hand: str = None, active_filter: str = None) -> str:
+    """Generate HTML for the range grid with GTOWizard-style proportional gradients.
+
+    Args:
+        active_filter: If set, only hands matching this filter are shown brightly.
+                      Options: "raise", "call", "fold", "mixed", "highlight", "non_drillable"
+    """
     css = """
     <style>
     .range-grid {
@@ -261,6 +296,10 @@ def _generate_grid_html(grid_data: List[List[Dict]], highlight_hand: str = None)
     }
     .range-cell.dimmed {
         opacity: 0.80;
+    }
+    .range-cell.filtered-out {
+        opacity: 0.5 !important;
+        filter: grayscale(50%);
     }
     /* Custom tooltip - default shows above */
     .range-cell .tooltip {
@@ -329,6 +368,23 @@ def _generate_grid_html(grid_data: List[List[Dict]], highlight_hand: str = None)
             raise_freq = cell.get('raise_freq', 0)
             call_freq = cell.get('call_freq', 0)
             fold_freq = 100 - raise_freq - call_freq
+            is_mixed = raise_freq > 0 and raise_freq < 100
+
+            # Determine if this cell matches the active filter
+            matches_filter = True
+            if active_filter:
+                if active_filter == "raise":
+                    matches_filter = raise_freq > 0
+                elif active_filter == "call":
+                    matches_filter = call_freq > 0
+                elif active_filter == "fold":
+                    matches_filter = fold_freq > 0  # 包含有 fold 成分的手牌
+                elif active_filter == "mixed":
+                    matches_filter = is_mixed or (call_freq > 0 and call_freq < 100)
+                elif active_filter == "highlight":
+                    matches_filter = cell.get('highlight', False)
+                elif active_filter == "non_drillable":
+                    matches_filter = not cell.get('drillable', True)
 
             # Build inline background style based on frequencies
             if cell['highlight']:
@@ -337,6 +393,10 @@ def _generate_grid_html(grid_data: List[List[Dict]], highlight_hand: str = None)
                 classes = f"range-cell {cell['type']}"
                 if not cell.get('drillable', True):
                     classes += " dimmed"
+
+            # Apply filter dimming (stronger than drillable dimming)
+            if active_filter and not matches_filter:
+                classes += " filtered-out"
 
             # Add top-row class for first 2 rows (tooltip shows below)
             if row_idx < 2:
@@ -392,19 +452,57 @@ def _generate_grid_html(grid_data: List[List[Dict]], highlight_hand: str = None)
     return html
 
 
-def _display_legend(show_mixed: bool = False, show_drillable: bool = False, show_call: bool = True, show_frequency: bool = False):
-    """Display the color legend - GTOWizard style (Red=Raise, Green=Call, Blue=Fold)."""
-    drillable_html = '<span style="margin-right: 10px;"><span style="background: #374151; color: #9ca3af; padding: 2px 8px; border-radius: 3px; opacity: 0.80;">dim</span> 非出題範圍</span>' if show_drillable else ""
-    call_html = '<span style="margin-right: 10px;"><span style="background: #22c55e; color: white; padding: 2px 8px; border-radius: 3px;">C</span> Call</span>' if show_call else ""
+def _display_legend(show_mixed: bool = False, show_drillable: bool = False, show_call: bool = True, show_frequency: bool = False, key: str = "range_grid"):
+    """Display colored legend with filter selection - GTOWizard style."""
 
-    # Mixed legend - GTOWizard style horizontal gradient (R:70% F:30% example)
+    # Initialize filter state
+    filter_key = f"{key}_filter"
+    if filter_key not in st.session_state:
+        st.session_state[filter_key] = "全部"
+
+    # Build original colored HTML legend
+    drillable_html = '<span style="margin-left: 10px;"><span style="background: #374151; color: #9ca3af; padding: 2px 8px; border-radius: 3px; opacity: 0.80;">⬛</span> 非出題範圍</span>' if show_drillable else ""
+    call_html = '<span style="margin-right: 10px;"><span style="background: #22c55e; color: white; padding: 2px 8px; border-radius: 3px;">C</span> Call</span>' if show_call else ""
     mixed_html = ""
     if show_mixed or show_frequency:
         mixed_html = '<span style="margin-right: 10px;"><span style="background: linear-gradient(to right, #ef4444 0%, #ef4444 70%, #3b82f6 70%, #3b82f6 100%); color: white; padding: 2px 8px; border-radius: 3px; text-shadow: 0 1px 2px rgba(0,0,0,0.5);">M</span> Mixed</span>'
 
-    # GTOWizard style: Red=Raise, Green=Call, Blue=Fold
-    html = f'<div style="display: flex; gap: 15px; justify-content: center; margin: 10px 0; flex-wrap: wrap;"><span style="margin-right: 10px;"><span style="background: #ef4444; color: white; padding: 2px 8px; border-radius: 3px;">R</span> Raise</span>{call_html}<span style="margin-right: 10px;"><span style="background: #3b82f6; color: white; padding: 2px 8px; border-radius: 3px;">F</span> Fold</span>{mixed_html}<span><span style="background: #f59e0b; color: black; padding: 2px 8px; border-radius: 3px;">H</span> Current</span>{drillable_html}</div>'
+    html = f'<div style="display: flex; gap: 15px; justify-content: center; margin: 8px 0; flex-wrap: wrap; font-size: 14px;"><span style="margin-right: 10px;"><span style="background: #ef4444; color: white; padding: 2px 8px; border-radius: 3px;">R</span> Raise</span>{call_html}<span style="margin-right: 10px;"><span style="background: #3b82f6; color: white; padding: 2px 8px; border-radius: 3px;">F</span> Fold</span>{mixed_html}{drillable_html}</div>'
     st.markdown(html, unsafe_allow_html=True)
+
+    # Filter options - fixed order: 全部, Raise, Call, Fold, Mixed, 非出題
+    filter_options = ["全部", "🔴 Raise"]
+    if show_call:
+        filter_options.append("🟢 Call")
+    filter_options.append("🔵 Fold")
+    if show_mixed or show_frequency:
+        filter_options.append("🟣 Mixed")
+    if show_drillable:
+        filter_options.append("⬛ 非出題")
+
+    # Center the radio using columns
+    col1, col2, col3 = st.columns([1, 6, 1])
+    with col2:
+        selected = st.radio(
+            "篩選顯示",
+            filter_options,
+            index=filter_options.index(st.session_state[filter_key]) if st.session_state[filter_key] in filter_options else 0,
+            key=f"{key}_filter_radio",
+            horizontal=True,
+            label_visibility="collapsed"
+        )
+    st.session_state[filter_key] = selected
+
+    # Convert selection to filter name
+    filter_map = {
+        "全部": None,
+        "🔴 Raise": "raise",
+        "🟢 Call": "call",
+        "🔵 Fold": "fold",
+        "🟣 Mixed": "mixed",
+        "⬛ 非出題": "non_drillable",
+    }
+    return filter_map.get(selected, None)
 
 
 def display_simple_grid(hands_in_range: Set[str], title: str = "Range"):

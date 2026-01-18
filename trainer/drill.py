@@ -13,13 +13,14 @@ from core.evaluator import Evaluator, EvalResult
 
 
 # Hands to EXCLUDE from drilling (obvious folds, waste of practice time)
+# 只維護這一個列表：169 手牌 - EXCLUDED_HANDS = 可練習範圍
 EXCLUDED_HANDS = {
-    # Suited junk: T2s~42s (2-kicker from T-high down)
-    "T2s", "92s", "82s", "72s", "62s", "52s", "42s",
-    # Suited junk: J3s~73s (3-kicker), 94s
-    "J3s", "T3s", "93s", "83s", "73s", "94s",
-    # Offsuit junk
-    "K3o", "K2o",
+    # Suited junk: T2s~72s (2-kicker)
+    "T2s", "92s", "82s", "72s", "62s",
+    # Suited junk: T3s~73s (3-kicker), 94s
+    "T3s", "93s", "83s", "73s", "94s",
+    # Offsuit junk: 低端不成順的牌
+    "K2o",
     "Q6o", "Q5o", "Q4o", "Q3o", "Q2o",
     "J6o", "J5o", "J4o", "J3o", "J2o",
     "T6o", "T5o", "T4o", "T3o", "T2o",
@@ -27,112 +28,44 @@ EXCLUDED_HANDS = {
     "85o", "84o", "83o", "82o",
     "75o", "74o", "73o", "72o",
     "64o", "63o", "62o",
-    "53o", "42o",
+    "53o", "52o", "42o",
 }
 
-# Borderline hands - hands near decision boundaries that are more educational
-# Expanded to cover essentially ALL hands that could be playable from any position
-# This ensures late position (BTN, SB) scenarios have comprehensive drillable coverage
-BORDERLINE_HANDS = {
-    # Premium - always play
-    "premium": ["AA", "KK", "QQ", "JJ", "TT", "AKs", "AKo", "AQs", "AQo"],
-
-    # Strong - play from most positions
-    "strong": ["99", "88", "77", "66", "55", "44", "33", "22",
-               "AJs", "ATs", "A9s", "A8s", "A7s", "A6s", "A5s", "A4s", "A3s", "A2s",
-               "AJo", "ATo", "KQs", "KQo", "KJs", "KJo", "QJs", "QJo"],
-
-    # Medium suited - all suited hands that could be played
-    "medium_suited": [
-        "KTs", "K9s", "K8s", "K7s", "K6s", "K5s", "K4s", "K3s", "K2s",
-        "QTs", "Q9s", "Q8s", "Q7s", "Q6s", "Q5s", "Q4s", "Q3s", "Q2s",
-        "JTs", "J9s", "J8s", "J7s", "J6s", "J5s", "J4s",
-        "T9s", "T8s", "T7s", "T6s", "T5s",
-        "98s", "97s", "96s", "95s",
-        "87s", "86s", "85s", "84s",
-        "76s", "75s", "74s",
-        "65s", "64s",
-        "54s", "53s",
-        "43s",
-        "32s"
-    ],
-
-    # Medium offsuit - playable hands from late position
-    "medium_offsuit": [
-        "A9o", "A8o", "A7o", "A6o", "A5o", "A4o", "A3o", "A2o",
-        "KTo", "K9o", "K8o", "K7o",
-        "QTo", "Q9o", "Q8o",
-        "JTo", "J9o", "J8o",
-        "T9o", "T8o",
-        "98o", "97o",
-        "87o",
-        "76o",
-        "65o",
-        "54o",
-        "43o",
-        "32o"
-    ],
-
-    # Trap hands - look playable but should fold (test range boundaries)
-    "trap": []
-}
-
-def get_drillable_hands(range_data: dict, scenario_type: str = "vs_rfi") -> List[str]:
+def get_drillable_hands(range_data: dict = None, scenario_type: str = "vs_rfi") -> List[str]:
     """
-    Get all hands that are in the drilling focus for a scenario.
+    Get all hands that are in the drilling focus.
 
-    These are hands where the decision is meaningful:
-    - Hands in the action ranges (raise, call, 3bet, etc.)
-    - All playable hands from any position
-    - Excludes EXCLUDED_HANDS (obvious junk)
+    簡化邏輯：169 手牌 - EXCLUDED_HANDS = 可練習範圍
 
     Returns:
         List of hand strings that should be highlighted in drilling
     """
-    candidates = []
-
-    # Add hands from the ranges (these are the correct actions)
-    for action in ["raise", "3bet", "4bet", "5bet", "call"]:
-        if action in range_data:
-            candidates.extend(range_data[action])
-
-    # Add all borderline/playable hands
-    for category in BORDERLINE_HANDS.values():
-        candidates.extend(category)
-
-    # Remove duplicates and filter out excluded hands
-    return [h for h in set(candidates) if h not in EXCLUDED_HANDS]
+    return [h for h in ALL_HANDS if h not in EXCLUDED_HANDS]
 
 
 def get_interesting_hand(range_data: dict, scenario_type: str = "vs_rfi") -> Hand:
     """
-    Generate an 'interesting' hand for drilling - one near decision boundaries.
+    Generate an 'interesting' hand for drilling.
 
-    Instead of random hands like Q2o (obvious fold), focus on hands where
-    the decision actually matters: borderline 3bet/call/fold hands.
-
-    80% of time: Pick from action ranges or borderline hands
-    20% of time: Pick random (but still exclude junk hands)
+    80%: 從 action ranges 選（有實際決策的手牌：raise/call/3bet/4bet/5bet）
+    20%: 從 drillable hands 隨機選（練習 fold 決策）
     """
-    if random.random() < 0.2:
-        # 20% chance: random hand (but avoid excluded junk)
-        for _ in range(10):  # Try up to 10 times
-            hand = random_hand()
-            if hand.name not in EXCLUDED_HANDS:
-                return hand
-        # Fallback to drillable hands
-        candidates = get_drillable_hands(range_data, scenario_type)
-        if candidates:
-            return Hand(random.choice(candidates))
-        return random_hand()
+    # 收集有動作的手牌（非 fold）
+    action_hands = []
+    for action in ["raise", "3bet", "4bet", "5bet", "call"]:
+        if action in range_data:
+            action_hands.extend(range_data[action])
+    action_hands = list(set(action_hands))
 
-    # 80% chance: pick an interesting hand
-    candidates = get_drillable_hands(range_data, scenario_type)
-
-    if candidates:
-        hand_str = random.choice(candidates)
+    if random.random() < 0.8 and action_hands:
+        # 80%: 從有動作的手牌選
+        hand_str = random.choice(action_hands)
         return Hand(hand_str)
     else:
+        # 20%: 從所有可練習手牌選（包含 fold 邊緣牌）
+        drillable = get_drillable_hands()
+        if drillable:
+            return Hand(random.choice(drillable))
         return random_hand()
 
 

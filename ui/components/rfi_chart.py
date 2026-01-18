@@ -9,43 +9,14 @@ from typing import Dict, List
 from core.evaluator import Evaluator
 from core.position import Position
 from core.scenario import Scenario, ActionType
+from trainer.drill import get_drillable_hands
 
 RANKS = ['A', 'K', 'Q', 'J', 'T', '9', '8', '7', '6', '5', '4', '3', '2']
 
-# Drillable hands (from trainer/drill.py BORDERLINE_HANDS)
-DRILLABLE_HANDS = {
-    # Premium
-    "AA", "KK", "QQ", "JJ", "TT", "AKs", "AKo", "AQs", "AQo",
-    # Strong
-    "99", "88", "77", "66", "55", "44", "33", "22",
-    "AJs", "ATs", "A9s", "A8s", "A7s", "A6s", "A5s", "A4s", "A3s", "A2s",
-    "AJo", "ATo", "KQs", "KQo", "KJs", "KJo", "QJs", "QJo",
-    # Medium suited
-    "KTs", "K9s", "K8s", "K7s", "K6s", "K5s", "K4s", "K3s", "K2s",
-    "QTs", "Q9s", "Q8s", "Q7s", "Q6s", "Q5s", "Q4s", "Q3s", "Q2s",
-    "JTs", "J9s", "J8s", "J7s", "J6s", "J5s", "J4s",
-    "T9s", "T8s", "T7s", "T6s", "T5s",
-    "98s", "97s", "96s", "95s",
-    "87s", "86s", "85s", "84s",
-    "76s", "75s", "74s",
-    "65s", "64s",
-    "54s", "53s",
-    "43s",
-    "32s",
-    # Medium offsuit
-    "A9o", "A8o", "A7o", "A6o", "A5o", "A4o", "A3o", "A2o",
-    "KTo", "K9o", "K8o", "K7o",
-    "QTo", "Q9o", "Q8o",
-    "JTo", "J9o", "J8o",
-    "T9o", "T8o",
-    "98o", "97o",
-    "87o",
-    "76o",
-    "65o",
-    "54o",
-    "43o",
-    "32o",
-}
+
+def get_drillable_set():
+    """動態取得 drillable hands，避免快取問題"""
+    return set(get_drillable_hands())
 
 # Position colors (warm gradient: smooth transition from tight to loose)
 POSITION_COLORS = {
@@ -205,7 +176,7 @@ def display_rfi_chart_overlay(evaluator: Evaluator, lang: str = "zh"):
                 bars_html += '</div>'
                 bg_style = ""
                 text_style = ""
-            elif hand in DRILLABLE_HANDS:
+            elif hand in get_drillable_set():
                 bars_html = ""
                 bg_style = "background: #374151;"
                 text_style = ""
@@ -306,7 +277,7 @@ def display_rfi_chart_earliest(evaluator: Evaluator, lang: str = "zh"):
                     border_style = ""
 
                 html += f'<div class="rfi-earliest-cell" style="background: {rgba_color}; {border_style}">{hand}</div>'
-            elif hand in DRILLABLE_HANDS:
+            elif hand in get_drillable_set():
                 html += f'<div class="rfi-earliest-cell fold">{hand}</div>'
             else:
                 html += f'<div class="rfi-earliest-cell garbage">{hand}</div>'
