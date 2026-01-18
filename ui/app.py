@@ -3532,67 +3532,57 @@ def _display_ev_calculation_learning(lang: str):
         st.markdown(f"**{example_title}**")
 
         if lang == "zh":
-            example_html = '''
-            <div style="background: #1e293b; border-radius: 10px; padding: 14px;">
-                <div style="color: #fbbf24; font-weight: bold; margin-bottom: 10px;">情境：河牌圈是否跟注？</div>
-                <div style="color: #94a3b8; font-size: 0.9rem; margin-bottom: 12px; line-height: 1.6;">
-                    底池：<span style="color: #22c55e;">$100</span><br/>
-                    對手下注：<span style="color: #ef4444;">$50</span><br/>
-                    你認為贏的機率：<span style="color: #3b82f6;">30%</span>
-                </div>
-
-                <div style="background: #0f172a; border-radius: 8px; padding: 12px; margin-bottom: 12px;">
-                    <div style="color: #94a3b8; font-size: 0.85rem; margin-bottom: 6px;">跟注時：</div>
-                    <div style="color: #e2e8f0; font-size: 0.9rem;">
-                        贏：獲得 $100 + $50 = <span style="color: #22c55e;">$150</span><br/>
-                        輸：損失 <span style="color: #ef4444;">$50</span>
-                    </div>
-                </div>
-
-                <div style="background: #0f172a; border-radius: 8px; padding: 12px; margin-bottom: 12px;">
-                    <div style="color: #94a3b8; font-size: 0.85rem; margin-bottom: 6px;">EV 計算：</div>
-                    <div style="color: #3b82f6; font-weight: bold;">
-                        EV = (30% × $150) - (70% × $50)<br/>
-                        EV = $45 - $35 = <span style="color: #22c55e;">+$10</span>
-                    </div>
-                </div>
-
-                <div style="color: #22c55e; font-weight: bold; text-align: center; padding: 8px; background: rgba(34, 197, 94, 0.1); border-radius: 6px;">
-                    ✅ EV 為正，應該跟注！
-                </div>
-            </div>
-            '''
+            example_html = '''<div style="background: #1e293b; border-radius: 10px; padding: 14px;">
+<div style="color: #fbbf24; font-weight: bold; margin-bottom: 10px;">情境：河牌圈是否跟注？</div>
+<div style="color: #94a3b8; font-size: 0.9rem; margin-bottom: 12px; line-height: 1.6;">
+底池：<span style="color: #22c55e;">$100</span><br/>
+對手下注：<span style="color: #ef4444;">$50</span><br/>
+你認為贏的機率：<span style="color: #3b82f6;">30%</span>
+</div>
+<div style="background: #0f172a; border-radius: 8px; padding: 12px; margin-bottom: 12px;">
+<div style="color: #94a3b8; font-size: 0.85rem; margin-bottom: 6px;">跟注時：</div>
+<div style="color: #e2e8f0; font-size: 0.9rem;">
+贏：獲得 $100 + $50 = <span style="color: #22c55e;">$150</span><br/>
+輸：損失 <span style="color: #ef4444;">$50</span>
+</div>
+</div>
+<div style="background: #0f172a; border-radius: 8px; padding: 12px; margin-bottom: 12px;">
+<div style="color: #94a3b8; font-size: 0.85rem; margin-bottom: 6px;">EV 計算：</div>
+<div style="color: #3b82f6; font-weight: bold;">
+EV = (30% × $150) - (70% × $50)<br/>
+EV = $45 - $35 = <span style="color: #22c55e;">+$10</span>
+</div>
+</div>
+<div style="color: #22c55e; font-weight: bold; text-align: center; padding: 8px; background: rgba(34, 197, 94, 0.1); border-radius: 6px;">
+✅ EV 為正，應該跟注！
+</div>
+</div>'''
         else:
-            example_html = '''
-            <div style="background: #1e293b; border-radius: 10px; padding: 14px;">
-                <div style="color: #fbbf24; font-weight: bold; margin-bottom: 10px;">Scenario: River Call Decision</div>
-                <div style="color: #94a3b8; font-size: 0.9rem; margin-bottom: 12px; line-height: 1.6;">
-                    Pot: <span style="color: #22c55e;">$100</span><br/>
-                    Opponent bets: <span style="color: #ef4444;">$50</span><br/>
-                    Your estimated win rate: <span style="color: #3b82f6;">30%</span>
-                </div>
-
-                <div style="background: #0f172a; border-radius: 8px; padding: 12px; margin-bottom: 12px;">
-                    <div style="color: #94a3b8; font-size: 0.85rem; margin-bottom: 6px;">If you call:</div>
-                    <div style="color: #e2e8f0; font-size: 0.9rem;">
-                        Win: Gain $100 + $50 = <span style="color: #22c55e;">$150</span><br/>
-                        Lose: Lose <span style="color: #ef4444;">$50</span>
-                    </div>
-                </div>
-
-                <div style="background: #0f172a; border-radius: 8px; padding: 12px; margin-bottom: 12px;">
-                    <div style="color: #94a3b8; font-size: 0.85rem; margin-bottom: 6px;">EV Calculation:</div>
-                    <div style="color: #3b82f6; font-weight: bold;">
-                        EV = (30% × $150) - (70% × $50)<br/>
-                        EV = $45 - $35 = <span style="color: #22c55e;">+$10</span>
-                    </div>
-                </div>
-
-                <div style="color: #22c55e; font-weight: bold; text-align: center; padding: 8px; background: rgba(34, 197, 94, 0.1); border-radius: 6px;">
-                    ✅ EV is positive, you should call!
-                </div>
-            </div>
-            '''
+            example_html = '''<div style="background: #1e293b; border-radius: 10px; padding: 14px;">
+<div style="color: #fbbf24; font-weight: bold; margin-bottom: 10px;">Scenario: River Call Decision</div>
+<div style="color: #94a3b8; font-size: 0.9rem; margin-bottom: 12px; line-height: 1.6;">
+Pot: <span style="color: #22c55e;">$100</span><br/>
+Opponent bets: <span style="color: #ef4444;">$50</span><br/>
+Your estimated win rate: <span style="color: #3b82f6;">30%</span>
+</div>
+<div style="background: #0f172a; border-radius: 8px; padding: 12px; margin-bottom: 12px;">
+<div style="color: #94a3b8; font-size: 0.85rem; margin-bottom: 6px;">If you call:</div>
+<div style="color: #e2e8f0; font-size: 0.9rem;">
+Win: Gain $100 + $50 = <span style="color: #22c55e;">$150</span><br/>
+Lose: Lose <span style="color: #ef4444;">$50</span>
+</div>
+</div>
+<div style="background: #0f172a; border-radius: 8px; padding: 12px; margin-bottom: 12px;">
+<div style="color: #94a3b8; font-size: 0.85rem; margin-bottom: 6px;">EV Calculation:</div>
+<div style="color: #3b82f6; font-weight: bold;">
+EV = (30% × $150) - (70% × $50)<br/>
+EV = $45 - $35 = <span style="color: #22c55e;">+$10</span>
+</div>
+</div>
+<div style="color: #22c55e; font-weight: bold; text-align: center; padding: 8px; background: rgba(34, 197, 94, 0.1); border-radius: 6px;">
+✅ EV is positive, you should call!
+</div>
+</div>'''
         st.markdown(example_html, unsafe_allow_html=True)
 
     with col2:
@@ -3600,75 +3590,65 @@ def _display_ev_calculation_learning(lang: str):
         st.markdown(f"**{odds_title}**")
 
         if lang == "zh":
-            odds_html = '''
-            <div style="background: #1e293b; border-radius: 10px; padding: 14px;">
-                <div style="color: #fbbf24; font-weight: bold; margin-bottom: 10px;">快速計算法</div>
-                <div style="color: #94a3b8; font-size: 0.9rem; margin-bottom: 12px; line-height: 1.6;">
-                    底池賠率 = 需要跟注 ÷ (底池 + 對手下注 + 你的跟注)
-                </div>
-
-                <div style="background: #0f172a; border-radius: 8px; padding: 12px; margin-bottom: 12px;">
-                    <div style="color: #94a3b8; font-size: 0.85rem; margin-bottom: 6px;">上例計算：</div>
-                    <div style="color: #e2e8f0; font-size: 0.9rem;">
-                        $50 ÷ ($100 + $50 + $50) = $50 ÷ $200<br/>
-                        = <span style="color: #3b82f6; font-weight: bold;">25%</span>
-                    </div>
-                </div>
-
-                <div style="background: #0f172a; border-radius: 8px; padding: 12px; margin-bottom: 12px;">
-                    <div style="color: #94a3b8; font-size: 0.85rem; margin-bottom: 6px;">判斷標準：</div>
-                    <div style="color: #e2e8f0; font-size: 0.9rem;">
-                        贏率 <span style="color: #22c55e;">30%</span> > 需要賠率 <span style="color: #3b82f6;">25%</span><br/>
-                        → <span style="color: #22c55e; font-weight: bold;">有利可圖，應該跟注</span>
-                    </div>
-                </div>
-
-                <div style="border-top: 1px solid #334155; padding-top: 10px; margin-top: 10px;">
-                    <div style="color: #fbbf24; font-weight: bold; margin-bottom: 6px;">📊 常見下注的底池賠率</div>
-                    <div style="color: #94a3b8; font-size: 0.85rem; line-height: 1.5;">
-                        • 1/3 底池 → 需要 20% 勝率<br/>
-                        • 1/2 底池 → 需要 25% 勝率<br/>
-                        • 2/3 底池 → 需要 28.5% 勝率<br/>
-                        • 滿池 → 需要 33% 勝率
-                    </div>
-                </div>
-            </div>
-            '''
+            odds_html = '''<div style="background: #1e293b; border-radius: 10px; padding: 14px;">
+<div style="color: #fbbf24; font-weight: bold; margin-bottom: 10px;">快速計算法</div>
+<div style="color: #94a3b8; font-size: 0.9rem; margin-bottom: 12px; line-height: 1.6;">
+底池賠率 = 需要跟注 ÷ (底池 + 對手下注 + 你的跟注)
+</div>
+<div style="background: #0f172a; border-radius: 8px; padding: 12px; margin-bottom: 12px;">
+<div style="color: #94a3b8; font-size: 0.85rem; margin-bottom: 6px;">上例計算：</div>
+<div style="color: #e2e8f0; font-size: 0.9rem;">
+$50 ÷ ($100 + $50 + $50) = $50 ÷ $200<br/>
+= <span style="color: #3b82f6; font-weight: bold;">25%</span>
+</div>
+</div>
+<div style="background: #0f172a; border-radius: 8px; padding: 12px; margin-bottom: 12px;">
+<div style="color: #94a3b8; font-size: 0.85rem; margin-bottom: 6px;">判斷標準：</div>
+<div style="color: #e2e8f0; font-size: 0.9rem;">
+贏率 <span style="color: #22c55e;">30%</span> > 需要賠率 <span style="color: #3b82f6;">25%</span><br/>
+→ <span style="color: #22c55e; font-weight: bold;">有利可圖，應該跟注</span>
+</div>
+</div>
+<div style="border-top: 1px solid #334155; padding-top: 10px; margin-top: 10px;">
+<div style="color: #fbbf24; font-weight: bold; margin-bottom: 6px;">📊 常見下注的底池賠率</div>
+<div style="color: #94a3b8; font-size: 0.85rem; line-height: 1.5;">
+• 1/3 底池 → 需要 20% 勝率<br/>
+• 1/2 底池 → 需要 25% 勝率<br/>
+• 2/3 底池 → 需要 28.5% 勝率<br/>
+• 滿池 → 需要 33% 勝率
+</div>
+</div>
+</div>'''
         else:
-            odds_html = '''
-            <div style="background: #1e293b; border-radius: 10px; padding: 14px;">
-                <div style="color: #fbbf24; font-weight: bold; margin-bottom: 10px;">Quick Calculation Method</div>
-                <div style="color: #94a3b8; font-size: 0.9rem; margin-bottom: 12px; line-height: 1.6;">
-                    Pot Odds = Call Amount ÷ (Pot + Bet + Your Call)
-                </div>
-
-                <div style="background: #0f172a; border-radius: 8px; padding: 12px; margin-bottom: 12px;">
-                    <div style="color: #94a3b8; font-size: 0.85rem; margin-bottom: 6px;">Example calculation:</div>
-                    <div style="color: #e2e8f0; font-size: 0.9rem;">
-                        $50 ÷ ($100 + $50 + $50) = $50 ÷ $200<br/>
-                        = <span style="color: #3b82f6; font-weight: bold;">25%</span>
-                    </div>
-                </div>
-
-                <div style="background: #0f172a; border-radius: 8px; padding: 12px; margin-bottom: 12px;">
-                    <div style="color: #94a3b8; font-size: 0.85rem; margin-bottom: 6px;">Decision Rule:</div>
-                    <div style="color: #e2e8f0; font-size: 0.9rem;">
-                        Win rate <span style="color: #22c55e;">30%</span> > Required odds <span style="color: #3b82f6;">25%</span><br/>
-                        → <span style="color: #22c55e; font-weight: bold;">Profitable, should call</span>
-                    </div>
-                </div>
-
-                <div style="border-top: 1px solid #334155; padding-top: 10px; margin-top: 10px;">
-                    <div style="color: #fbbf24; font-weight: bold; margin-bottom: 6px;">📊 Common Bet Size Odds</div>
-                    <div style="color: #94a3b8; font-size: 0.85rem; line-height: 1.5;">
-                        • 1/3 pot → Need 20% equity<br/>
-                        • 1/2 pot → Need 25% equity<br/>
-                        • 2/3 pot → Need 28.5% equity<br/>
-                        • Full pot → Need 33% equity
-                    </div>
-                </div>
-            </div>
-            '''
+            odds_html = '''<div style="background: #1e293b; border-radius: 10px; padding: 14px;">
+<div style="color: #fbbf24; font-weight: bold; margin-bottom: 10px;">Quick Calculation Method</div>
+<div style="color: #94a3b8; font-size: 0.9rem; margin-bottom: 12px; line-height: 1.6;">
+Pot Odds = Call Amount ÷ (Pot + Bet + Your Call)
+</div>
+<div style="background: #0f172a; border-radius: 8px; padding: 12px; margin-bottom: 12px;">
+<div style="color: #94a3b8; font-size: 0.85rem; margin-bottom: 6px;">Example calculation:</div>
+<div style="color: #e2e8f0; font-size: 0.9rem;">
+$50 ÷ ($100 + $50 + $50) = $50 ÷ $200<br/>
+= <span style="color: #3b82f6; font-weight: bold;">25%</span>
+</div>
+</div>
+<div style="background: #0f172a; border-radius: 8px; padding: 12px; margin-bottom: 12px;">
+<div style="color: #94a3b8; font-size: 0.85rem; margin-bottom: 6px;">Decision Rule:</div>
+<div style="color: #e2e8f0; font-size: 0.9rem;">
+Win rate <span style="color: #22c55e;">30%</span> > Required odds <span style="color: #3b82f6;">25%</span><br/>
+→ <span style="color: #22c55e; font-weight: bold;">Profitable, should call</span>
+</div>
+</div>
+<div style="border-top: 1px solid #334155; padding-top: 10px; margin-top: 10px;">
+<div style="color: #fbbf24; font-weight: bold; margin-bottom: 6px;">📊 Common Bet Size Odds</div>
+<div style="color: #94a3b8; font-size: 0.85rem; line-height: 1.5;">
+• 1/3 pot → Need 20% equity<br/>
+• 1/2 pot → Need 25% equity<br/>
+• 2/3 pot → Need 28.5% equity<br/>
+• Full pot → Need 33% equity
+</div>
+</div>
+</div>'''
         st.markdown(odds_html, unsafe_allow_html=True)
 
     st.markdown("---")
@@ -3678,59 +3658,55 @@ def _display_ev_calculation_learning(lang: str):
     st.markdown(f"**{key_title}**")
 
     if lang == "zh":
-        key_html = '''
-        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;">
-            <div style="background: #1e293b; border-radius: 8px; padding: 12px; text-align: center;">
-                <div style="color: #22c55e; font-size: 2rem; margin-bottom: 6px;">+EV</div>
-                <div style="color: #22c55e; font-weight: bold; margin-bottom: 4px;">正期望值</div>
-                <div style="color: #94a3b8; font-size: 0.85rem;">長期會贏錢<br/>應該執行這個動作</div>
-            </div>
-            <div style="background: #1e293b; border-radius: 8px; padding: 12px; text-align: center;">
-                <div style="color: #ef4444; font-size: 2rem; margin-bottom: 6px;">-EV</div>
-                <div style="color: #ef4444; font-weight: bold; margin-bottom: 4px;">負期望值</div>
-                <div style="color: #94a3b8; font-size: 0.85rem;">長期會輸錢<br/>應該避免這個動作</div>
-            </div>
-            <div style="background: #1e293b; border-radius: 8px; padding: 12px; text-align: center;">
-                <div style="color: #fbbf24; font-size: 2rem; margin-bottom: 6px;">0 EV</div>
-                <div style="color: #fbbf24; font-weight: bold; margin-bottom: 4px;">零期望值</div>
-                <div style="color: #94a3b8; font-size: 0.85rem;">長期不賺不賠<br/>跟注或棄牌皆可</div>
-            </div>
-        </div>
-        <div style="background: #0f172a; border-radius: 8px; padding: 12px; margin-top: 12px; text-align: center;">
-            <div style="color: #94a3b8; font-size: 0.9rem;">
-                <span style="color: #fbbf24; font-weight: bold;">記住：</span>
-                撲克的目標是做出 +EV 決策，而不是贏每一手牌。<br/>
-                短期結果可能波動，但長期 +EV 決策一定賺錢。
-            </div>
-        </div>
-        '''
+        key_html = '''<div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;">
+<div style="background: #1e293b; border-radius: 8px; padding: 12px; text-align: center;">
+<div style="color: #22c55e; font-size: 2rem; margin-bottom: 6px;">+EV</div>
+<div style="color: #22c55e; font-weight: bold; margin-bottom: 4px;">正期望值</div>
+<div style="color: #94a3b8; font-size: 0.85rem;">長期會贏錢<br/>應該執行這個動作</div>
+</div>
+<div style="background: #1e293b; border-radius: 8px; padding: 12px; text-align: center;">
+<div style="color: #ef4444; font-size: 2rem; margin-bottom: 6px;">-EV</div>
+<div style="color: #ef4444; font-weight: bold; margin-bottom: 4px;">負期望值</div>
+<div style="color: #94a3b8; font-size: 0.85rem;">長期會輸錢<br/>應該避免這個動作</div>
+</div>
+<div style="background: #1e293b; border-radius: 8px; padding: 12px; text-align: center;">
+<div style="color: #fbbf24; font-size: 2rem; margin-bottom: 6px;">0 EV</div>
+<div style="color: #fbbf24; font-weight: bold; margin-bottom: 4px;">零期望值</div>
+<div style="color: #94a3b8; font-size: 0.85rem;">長期不賺不賠<br/>跟注或棄牌皆可</div>
+</div>
+</div>
+<div style="background: #0f172a; border-radius: 8px; padding: 12px; margin-top: 12px; text-align: center;">
+<div style="color: #94a3b8; font-size: 0.9rem;">
+<span style="color: #fbbf24; font-weight: bold;">記住：</span>
+撲克的目標是做出 +EV 決策，而不是贏每一手牌。<br/>
+短期結果可能波動，但長期 +EV 決策一定賺錢。
+</div>
+</div>'''
     else:
-        key_html = '''
-        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;">
-            <div style="background: #1e293b; border-radius: 8px; padding: 12px; text-align: center;">
-                <div style="color: #22c55e; font-size: 2rem; margin-bottom: 6px;">+EV</div>
-                <div style="color: #22c55e; font-weight: bold; margin-bottom: 4px;">Positive EV</div>
-                <div style="color: #94a3b8; font-size: 0.85rem;">Profitable long-term<br/>Execute this action</div>
-            </div>
-            <div style="background: #1e293b; border-radius: 8px; padding: 12px; text-align: center;">
-                <div style="color: #ef4444; font-size: 2rem; margin-bottom: 6px;">-EV</div>
-                <div style="color: #ef4444; font-weight: bold; margin-bottom: 4px;">Negative EV</div>
-                <div style="color: #94a3b8; font-size: 0.85rem;">Losing long-term<br/>Avoid this action</div>
-            </div>
-            <div style="background: #1e293b; border-radius: 8px; padding: 12px; text-align: center;">
-                <div style="color: #fbbf24; font-size: 2rem; margin-bottom: 6px;">0 EV</div>
-                <div style="color: #fbbf24; font-weight: bold; margin-bottom: 4px;">Zero EV</div>
-                <div style="color: #94a3b8; font-size: 0.85rem;">Break-even long-term<br/>Call or fold equally fine</div>
-            </div>
-        </div>
-        <div style="background: #0f172a; border-radius: 8px; padding: 12px; margin-top: 12px; text-align: center;">
-            <div style="color: #94a3b8; font-size: 0.9rem;">
-                <span style="color: #fbbf24; font-weight: bold;">Remember:</span>
-                Poker's goal is to make +EV decisions, not win every hand.<br/>
-                Short-term results may vary, but +EV decisions always profit long-term.
-            </div>
-        </div>
-        '''
+        key_html = '''<div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;">
+<div style="background: #1e293b; border-radius: 8px; padding: 12px; text-align: center;">
+<div style="color: #22c55e; font-size: 2rem; margin-bottom: 6px;">+EV</div>
+<div style="color: #22c55e; font-weight: bold; margin-bottom: 4px;">Positive EV</div>
+<div style="color: #94a3b8; font-size: 0.85rem;">Profitable long-term<br/>Execute this action</div>
+</div>
+<div style="background: #1e293b; border-radius: 8px; padding: 12px; text-align: center;">
+<div style="color: #ef4444; font-size: 2rem; margin-bottom: 6px;">-EV</div>
+<div style="color: #ef4444; font-weight: bold; margin-bottom: 4px;">Negative EV</div>
+<div style="color: #94a3b8; font-size: 0.85rem;">Losing long-term<br/>Avoid this action</div>
+</div>
+<div style="background: #1e293b; border-radius: 8px; padding: 12px; text-align: center;">
+<div style="color: #fbbf24; font-size: 2rem; margin-bottom: 6px;">0 EV</div>
+<div style="color: #fbbf24; font-weight: bold; margin-bottom: 4px;">Zero EV</div>
+<div style="color: #94a3b8; font-size: 0.85rem;">Break-even long-term<br/>Call or fold equally fine</div>
+</div>
+</div>
+<div style="background: #0f172a; border-radius: 8px; padding: 12px; margin-top: 12px; text-align: center;">
+<div style="color: #94a3b8; font-size: 0.9rem;">
+<span style="color: #fbbf24; font-weight: bold;">Remember:</span>
+Poker's goal is to make +EV decisions, not win every hand.<br/>
+Short-term results may vary, but +EV decisions always profit long-term.
+</div>
+</div>'''
     st.markdown(key_html, unsafe_allow_html=True)
 
 
