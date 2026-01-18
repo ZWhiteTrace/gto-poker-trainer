@@ -39,7 +39,7 @@ POSITION_OPACITY = {
 # Premium hands worth 3-betting (shown with white border in UTG range)
 PREMIUM_3BET_HANDS = {
     "AA", "KK", "QQ", "JJ", "TT",
-    "AKs", "AKo", "AQs", "AQo", "AJs",
+    "AKs", "AKo", "AQs", "AQo", "KQs",
 }
 
 POSITION_ORDER = ["UTG", "HJ", "CO", "BTN", "SB"]

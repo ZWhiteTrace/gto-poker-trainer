@@ -10,8 +10,8 @@ RANKS = ['A', 'K', 'Q', 'J', 'T', '9', '8', '7', '6', '5', '4', '3', '2']
 
 # Premium 手牌分級 - 用於 3bet/4bet/5bet 的強牌
 PREMIUM_T1 = {"AA", "KK", "QQ", "AKs", "AKo"}  # 5-bet all-in 可以
-PREMIUM_T2 = {"JJ", "TT", "AQs", "AQo", "AJs"}  # 4-bet / call 4-bet
-PREMIUM_T3 = {"99", "88", "KQs", "KJs", "QJs", "ATs", "A5s", "AJo", "KQo"}  # 3-bet 為主
+PREMIUM_T2 = {"JJ", "TT", "AQs", "AQo", "AJs", "KQs"}  # 4-bet / call 4-bet
+PREMIUM_T3 = {"99", "88", "KJs", "QJs", "ATs", "AJo", "KQo"}  # 3-bet 為主
 
 
 def get_premium_tier(hand: str) -> int:
@@ -312,7 +312,7 @@ def _generate_grid_html(grid_data: List[List[Dict]], highlight_hand: str = None,
     }
     /* Highlight + Premium 組合樣式 - 外框白色highlight + 內框premium */
     .range-cell.highlight.premium-t1 {
-        box-shadow: 0 0 0 3px white, 0 0 8px 2px rgba(255, 255, 255, 0.6), inset 0 0 0 2px #fbbf24, inset 0 0 6px 1px rgba(251, 191, 36, 0.6);
+        box-shadow: 0 0 0 3px white, 0 0 8px 2px rgba(255, 255, 255, 0.6), inset 0 0 0 3px #fbbf24, inset 0 0 6px 1px rgba(251, 191, 36, 0.6);
         z-index: 10;
     }
     .range-cell.highlight.premium-t2 {
@@ -320,7 +320,7 @@ def _generate_grid_html(grid_data: List[List[Dict]], highlight_hand: str = None,
         z-index: 10;
     }
     .range-cell.highlight.premium-t3 {
-        box-shadow: 0 0 0 3px white, 0 0 8px 2px rgba(255, 255, 255, 0.6), inset 0 0 0 3px #991b1b;
+        box-shadow: 0 0 0 3px white, 0 0 8px 2px rgba(255, 255, 255, 0.6), inset 0 0 0 3px #fca5a5;
         z-index: 10;
     }
     .range-cell.dimmed {
@@ -332,23 +332,23 @@ def _generate_grid_html(grid_data: List[List[Dict]], highlight_hand: str = None,
     }
     /* Premium 手牌邊框樣式 - 使用內框避免重疊遮擋 */
     .range-cell.premium-t1 {
-        box-shadow: inset 0 0 0 2px #fbbf24, inset 0 0 6px 1px rgba(251, 191, 36, 0.6);
+        box-shadow: inset 0 0 0 3px #fbbf24, inset 0 0 6px 1px rgba(251, 191, 36, 0.6);
     }
     .range-cell.premium-t2 {
         box-shadow: inset 0 0 0 3px #fecaca;
     }
     .range-cell.premium-t3 {
-        box-shadow: inset 0 0 0 3px #991b1b;
+        box-shadow: inset 0 0 0 3px #fca5a5;
     }
     /* Hover 時保持 premium 樣式 */
     .range-cell.premium-t1:hover {
-        box-shadow: inset 0 0 0 2px #fbbf24, inset 0 0 8px 2px rgba(251, 191, 36, 0.8), 0 4px 12px rgba(0,0,0,0.4);
+        box-shadow: inset 0 0 0 3px #fbbf24, inset 0 0 8px 2px rgba(251, 191, 36, 0.8), 0 4px 12px rgba(0,0,0,0.4);
     }
     .range-cell.premium-t2:hover {
         box-shadow: inset 0 0 0 3px #fecaca, 0 4px 12px rgba(0,0,0,0.4);
     }
     .range-cell.premium-t3:hover {
-        box-shadow: inset 0 0 0 3px #b91c1c, 0 4px 12px rgba(0,0,0,0.4);
+        box-shadow: inset 0 0 0 3px #fca5a5, 0 4px 12px rgba(0,0,0,0.4);
     }
     /* Custom tooltip - default shows above */
     .range-cell .tooltip {
