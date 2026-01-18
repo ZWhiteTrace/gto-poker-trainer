@@ -127,7 +127,7 @@ POSITION_EXCLUDED_HANDS = {
 # 向後相容：預設排除列表使用 SB（最寬範圍）
 EXCLUDED_HANDS = POSITION_EXCLUDED_HANDS["SB"]
 
-def get_drillable_hands(range_data: dict = None, scenario_type: str = "vs_rfi", position: str = None) -> List[str]:
+def get_drillable_hands(range_data: dict = None, scenario_type: str = "vs_rfi", position = None) -> List[str]:
     """
     Get all hands that are in the drilling focus.
 
@@ -136,12 +136,18 @@ def get_drillable_hands(range_data: dict = None, scenario_type: str = "vs_rfi", 
     Args:
         range_data: Optional range data (not used currently)
         scenario_type: Type of scenario (not used currently)
-        position: Position name (UTG, HJ, CO, BTN, SB). If None, uses SB (widest range).
+        position: Position name (UTG, HJ, CO, BTN, SB) or Position enum. If None, uses SB (widest range).
 
     Returns:
         List of hand strings that should be highlighted in drilling
     """
-    pos_upper = position.upper() if position else "SB"
+    # Handle Position enum or string
+    if position is None:
+        pos_upper = "SB"
+    elif hasattr(position, 'value'):
+        pos_upper = position.value.upper()
+    else:
+        pos_upper = str(position).upper()
     excluded = POSITION_EXCLUDED_HANDS.get(pos_upper, EXCLUDED_HANDS)
     return [h for h in ALL_HANDS if h not in excluded]
 
