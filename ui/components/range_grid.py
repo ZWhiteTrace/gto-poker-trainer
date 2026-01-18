@@ -262,7 +262,7 @@ def _generate_grid_html(grid_data: List[List[Dict]], highlight_hand: str = None)
     .range-cell.dimmed {
         opacity: 0.80;
     }
-    /* Custom tooltip */
+    /* Custom tooltip - default shows above */
     .range-cell .tooltip {
         visibility: hidden;
         opacity: 0;
@@ -293,6 +293,19 @@ def _generate_grid_html(grid_data: List[List[Dict]], highlight_hand: str = None)
         border: 6px solid transparent;
         border-top-color: rgba(15, 23, 42, 0.95);
     }
+    /* Top rows: show tooltip below instead */
+    .range-cell.top-row .tooltip {
+        bottom: auto;
+        top: 100%;
+        margin-bottom: 0;
+        margin-top: 6px;
+    }
+    .range-cell.top-row .tooltip::after {
+        top: auto;
+        bottom: 100%;
+        border-top-color: transparent;
+        border-bottom-color: rgba(15, 23, 42, 0.95);
+    }
     .range-cell:hover .tooltip {
         visibility: visible;
         opacity: 1;
@@ -311,7 +324,7 @@ def _generate_grid_html(grid_data: List[List[Dict]], highlight_hand: str = None)
 
     html = css + '<div style="width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch;"><div class="range-grid">'
 
-    for row in grid_data:
+    for row_idx, row in enumerate(grid_data):
         for cell in row:
             raise_freq = cell.get('raise_freq', 0)
             call_freq = cell.get('call_freq', 0)
@@ -324,6 +337,10 @@ def _generate_grid_html(grid_data: List[List[Dict]], highlight_hand: str = None)
                 classes = f"range-cell {cell['type']}"
                 if not cell.get('drillable', True):
                     classes += " dimmed"
+
+            # Add top-row class for first 2 rows (tooltip shows below)
+            if row_idx < 2:
+                classes += " top-row"
 
             # Generate GTOWizard-style proportional gradient (top to bottom)
             if raise_freq >= 100:
