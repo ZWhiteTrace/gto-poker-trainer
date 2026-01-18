@@ -18,22 +18,22 @@ def get_drillable_set():
     """動態取得 drillable hands，避免快取問題"""
     return set(get_drillable_hands())
 
-# Position colors (warm gradient: smooth transition from tight to loose)
+# Position colors (red gradient: dark red to light red)
 POSITION_COLORS = {
-    "UTG": "#ec4899",  # Pink/Magenta - tightest
-    "HJ": "#ef4444",   # Red
-    "CO": "#f97316",   # Orange
-    "BTN": "#eab308",  # Yellow
-    "SB": "#84cc16",   # Yellow-Green/Lime - loosest
+    "UTG": "#7f1d1d",  # Dark red - tightest
+    "HJ": "#b91c1c",   # Red
+    "CO": "#dc2626",   # Medium red
+    "BTN": "#ef4444",  # Light red
+    "SB": "#fca5a5",   # Lightest red/pink - loosest
 }
 
-# Position opacity (earlier = more opaque, later = more transparent)
+# Position opacity (all solid, no transparency)
 POSITION_OPACITY = {
-    "UTG": 1.0,    # 100% - tightest, most visible
-    "HJ": 0.9,     # 90%
-    "CO": 0.8,     # 80%
-    "BTN": 0.7,    # 70%
-    "SB": 0.6,     # 60% - loosest, most transparent
+    "UTG": 1.0,
+    "HJ": 1.0,
+    "CO": 1.0,
+    "BTN": 1.0,
+    "SB": 1.0,
 }
 
 # Premium hands worth 3-betting (shown with white border in UTG range)
@@ -106,54 +106,9 @@ def display_rfi_chart_overlay(evaluator: Evaluator, lang: str = "zh"):
     legend_html += '</div>'
     st.markdown(legend_html, unsafe_allow_html=True)
 
-    # Build grid HTML
-    css = """
-    <style>
-    .rfi-overlay-grid {
-        display: grid;
-        grid-template-columns: repeat(13, 1fr);
-        gap: 2px;
-        width: 100%;
-        max-width: min(600px, calc(100vw - 40px));
-        margin: 10px auto;
-        background: #1a1a2e;
-        padding: 8px;
-        border-radius: 8px;
-    }
-    .rfi-overlay-cell {
-        aspect-ratio: 1;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        font-size: clamp(10px, 3vw, 16px);
-        font-weight: bold;
-        border-radius: 3px;
-        position: relative;
-        overflow: hidden;
-        color: white;
-        text-shadow: 0 1px 2px rgba(0,0,0,0.5);
-    }
-    .rfi-overlay-cell .hand-name {
-        z-index: 2;
-        position: relative;
-    }
-    .rfi-overlay-cell .pos-bars {
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        display: flex;
-        height: 100%;
-    }
-    .rfi-overlay-cell .pos-bar {
-        flex: 1;
-        height: 100%;
-    }
-    </style>
-    """
-
-    html = css + '<div class="rfi-overlay-grid">'
+    # Build grid HTML - 使用 inline style 確保生效
+    html = '''<div style="width:100%; display:flex; flex-direction:column; align-items:center;">
+    <div style="display:grid; grid-template-columns:repeat(13,minmax(0,1fr)); gap:2px; width:100%; max-width:555px; background:#1a1a2e; padding:8px; border-radius:8px; box-sizing:border-box;">'''
 
     for i, r1 in enumerate(RANKS):
         for j, r2 in enumerate(RANKS):
@@ -166,33 +121,27 @@ def display_rfi_chart_overlay(evaluator: Evaluator, lang: str = "zh"):
 
             positions = get_hand_positions(hand, ranges)
 
+            # 基礎 cell 樣式 - min-width:0 確保可縮小
+            cell_base = "aspect-ratio:1; display:flex; align-items:center; justify-content:center; border-radius:3px; position:relative; overflow:hidden; color:white; text-shadow:0 1px 2px rgba(0,0,0,0.5); min-width:0;"
+            hand_style = "font-size:clamp(8px,2.5vw,14px); font-weight:bold; z-index:2; position:relative;"
+
             if positions:
                 # Create color bars for each position
-                bars_html = '<div class="pos-bars">'
+                bars_html = '<div style="position:absolute; bottom:0; left:0; right:0; display:flex; height:100%;">'
                 for pos in positions:
                     color = POSITION_COLORS[pos]
-                    bars_html += f'<div class="pos-bar" style="background: {color};"></div>'
+                    bars_html += f'<div style="flex:1; height:100%; background:{color};"></div>'
                 bars_html += '</div>'
-                bg_style = ""
-                text_style = ""
+                html += f'<div style="{cell_base}">{bars_html}<span style="{hand_style}">{hand}</span></div>'
             elif hand in get_drillable_set():
-                bars_html = ""
-                bg_style = "background: #374151;"
-                text_style = ""
+                html += f'<div style="{cell_base} background:#374151;"><span style="{hand_style}">{hand}</span></div>'
             else:
-                # Garbage hand - light gray text
-                bars_html = ""
-                bg_style = "background: #374151;"
-                text_style = "color: #6b7280; text-shadow: none;"
+                html += f'<div style="{cell_base} background:#374151; color:#6b7280; text-shadow:none;"><span style="{hand_style}">{hand}</span></div>'
 
-            html += f'<div class="rfi-overlay-cell" style="{bg_style}">{bars_html}<span class="hand-name" style="{text_style}">{hand}</span></div>'
-
-    html += '</div>'
-    st.markdown(html, unsafe_allow_html=True)
-
-    # Description
+    # Close grid and add caption inside container
     desc = "每格顯示所有可開池的位置（顏色條）。例如 AA 有5條顏色 = 所有位置都開。" if lang == "zh" else "Each cell shows all positions that can open (color bars). e.g., AA has 5 colors = all positions open."
-    st.caption(desc)
+    html += f'</div><p style="width:100%; text-align:center; color:#9ca3af; font-size:13px; margin-top:12px; max-width:555px; line-height:1.4;">{desc}</p></div>'
+    st.markdown(html, unsafe_allow_html=True)
 
 
 def display_rfi_chart_earliest(evaluator: Evaluator, lang: str = "zh"):
@@ -213,57 +162,9 @@ def display_rfi_chart_earliest(evaluator: Evaluator, lang: str = "zh"):
     legend_html += '</div>'
     st.markdown(legend_html, unsafe_allow_html=True)
 
-    # Build grid HTML
-    css = """
-    <style>
-    .rfi-earliest-grid {
-        display: grid;
-        grid-template-columns: repeat(13, 1fr);
-        gap: 2px;
-        width: 100%;
-        max-width: min(555px, calc(100vw - 40px));
-        margin: 10px auto;
-        background: #1a1a2e;
-        padding: 8px;
-        border-radius: 8px;
-    }
-    .rfi-earliest-cell {
-        aspect-ratio: 1;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: flex-start;
-        padding-top: 4px;
-        border-radius: 3px;
-        color: white;
-        text-shadow: 0 1px 2px rgba(0,0,0,0.5);
-        padding-left: 2px;
-        padding-right: 2px;
-        line-height: 1.1;
-    }
-    .rfi-earliest-cell .hand-name {
-        font-size: clamp(11px, 3vw, 16px);
-        font-weight: bold;
-    }
-    .rfi-earliest-cell .pos-name {
-        font-size: clamp(9px, 2.5vw, 14px);
-        font-weight: normal;
-        opacity: 0.9;
-    }
-    .rfi-earliest-cell.fold {
-        background: #374151;
-        color: white;
-        text-shadow: 0 1px 2px rgba(0,0,0,0.5);
-    }
-    .rfi-earliest-cell.garbage {
-        background: #374151;
-        color: #6b7280;
-        text-shadow: none;
-    }
-    </style>
-    """
-
-    html = css + '<div class="rfi-earliest-grid">'
+    # Build grid HTML - 使用 inline style 確保生效
+    html = '''<div style="width:100%; display:flex; flex-direction:column; align-items:center;">
+    <div style="display:grid; grid-template-columns:repeat(13,minmax(0,1fr)); gap:2px; width:100%; max-width:555px; background:#1a1a2e; padding:8px; border-radius:8px; box-sizing:border-box;">'''
 
     for i, r1 in enumerate(RANKS):
         for j, r2 in enumerate(RANKS):
@@ -276,29 +177,29 @@ def display_rfi_chart_earliest(evaluator: Evaluator, lang: str = "zh"):
 
             earliest = get_earliest_position(hand, ranges)
 
+            # 基礎 cell 樣式 - min-width:0 確保可縮小
+            cell_base = "aspect-ratio:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:0px; border-radius:3px; color:white; text-shadow:0 1px 2px rgba(0,0,0,0.5); line-height:1.15; overflow:hidden; min-width:0;"
+            hand_style = "font-size:clamp(11px,3.2vw,17px); font-weight:500; color:rgba(255,255,255,0.8);"
+            pos_style = "font-size:clamp(9px,2.8vw,14px); font-weight:500; color:rgba(255,255,255,0.9);"
+
             if earliest:
                 hex_color = POSITION_COLORS[earliest]
-                opacity = POSITION_OPACITY[earliest]
-                rgba_color = hex_to_rgba(hex_color, opacity)
 
-                # Add white border for premium 3-bet hands in UTG range
-                if earliest == "UTG" and hand in PREMIUM_3BET_HANDS:
-                    border_style = "border: 2px solid white;"
-                else:
-                    border_style = ""
+                # Adjust text opacity for readability on different backgrounds
+                text_opacity = {"UTG": 0.95, "HJ": 1.0, "CO": 1.0, "BTN": 1.0, "SB": 1.0}
+                opacity = text_opacity.get(earliest, 1.0)
+                text_color = f"color:rgba(255,255,255,{opacity});"
 
-                html += f'<div class="rfi-earliest-cell" style="background: {rgba_color}; {border_style}"><span class="hand-name">{hand}</span><span class="pos-name">{earliest}</span></div>'
+                html += f'<div style="{cell_base} background:{hex_color}; {text_color}"><span style="{hand_style}">{hand}</span><span style="{pos_style}">{earliest}</span></div>'
             elif hand in get_drillable_set():
-                html += f'<div class="rfi-earliest-cell fold"><span class="hand-name">{hand}</span></div>'
+                html += f'<div style="{cell_base} background:#374151;"><span style="{hand_style}">{hand}</span></div>'
             else:
-                html += f'<div class="rfi-earliest-cell garbage"><span class="hand-name">{hand}</span></div>'
+                html += f'<div style="{cell_base} background:#374151; color:#6b7280; text-shadow:none;"><span style="{hand_style}">{hand}</span></div>'
 
-    html += '</div>'
+    # Close grid and add caption inside container
+    desc = "每格顯示「最早可開池」的位置顏色。深紅=緊，淺紅=鬆。" if lang == "zh" else "Each cell shows the earliest position that can open. Dark red=tight, light red=loose."
+    html += f'</div><p style="width:100%; text-align:center; color:#9ca3af; font-size:13px; margin-top:12px; max-width:555px; line-height:1.4;">{desc}</p></div>'
     st.markdown(html, unsafe_allow_html=True)
-
-    # Description
-    desc = "每格顯示「最早可開池」的位置顏色。白框 = 適合3bet的強牌。透明度越低表示位置越後面。" if lang == "zh" else "Each cell shows the earliest position that can open. White border = premium 3-bet hands. Lower opacity = later position."
-    st.caption(desc)
 
 
 def display_rfi_charts(evaluator: Evaluator, lang: str = "zh"):

@@ -12,43 +12,151 @@ from core.scenario import Scenario, ActionType
 from core.evaluator import Evaluator, EvalResult
 
 
-# Hands to EXCLUDE from drilling (obvious folds, waste of practice time)
-# 只維護這一個列表：169 手牌 - EXCLUDED_HANDS = 可練習範圍
-EXCLUDED_HANDS = {
-    # Suited junk: T2s~72s (2-kicker)
-    "T2s", "92s", "82s", "72s", "62s",
-    # Suited junk: T3s~73s (3-kicker), 94s
-    "T3s", "93s", "83s", "73s", "94s",
-    # Offsuit junk: 低端不成順的牌
-    "K5o", "K4o", "K3o", "K2o",
-    "Q7o", "Q6o", "Q5o", "Q4o", "Q3o", "Q2o",
-    "J6o", "J5o", "J4o", "J3o", "J2o",
-    "T6o", "T5o", "T4o", "T3o", "T2o",
-    "96o", "95o", "94o", "93o", "92o",
-    "85o", "84o", "83o", "82o",
-    "75o", "74o", "73o", "72o",
-    "64o", "63o", "62o",
-    "53o", "52o", "42o",
+# 基礎排除列表：絕對垃圾牌（任何位置都不開）
+BASE_EXCLUDED_HANDS = {
+    # Suited junk: 2-kicker
+    "T2s", "92s", "82s", "72s", "62s", "52s", "42s", "32s",
+    # Suited junk: 3-kicker
+    "T3s", "93s", "83s", "73s", "63s",
+    # Suited junk: 4-kicker
+    "94s", "84s", "74s",
+    # Offsuit absolute junk
+    "72o", "62o", "52o", "42o", "32o",
 }
 
-def get_drillable_hands(range_data: dict = None, scenario_type: str = "vs_rfi") -> List[str]:
+# 位置專屬排除列表（基於 GTO 數據，排除該位置 0% 開池的手牌）
+POSITION_EXCLUDED_HANDS = {
+    "UTG": BASE_EXCLUDED_HANDS | {
+        # UTG 不開的 offsuit
+        "K6o", "K5o", "K4o", "K3o", "K2o",
+        "Q8o", "Q7o", "Q6o", "Q5o", "Q4o", "Q3o", "Q2o",
+        "J7o", "J6o", "J5o", "J4o", "J3o", "J2o",
+        "T7o", "T6o", "T5o", "T4o", "T3o", "T2o",
+        "97o", "96o", "95o", "94o", "93o", "92o",
+        "86o", "85o", "84o", "83o", "82o",
+        "76o", "75o", "74o", "73o",
+        "65o", "64o", "63o",
+        "54o", "53o",
+        "43o",
+        # UTG 不開的 suited
+        "K4s", "K3s", "K2s",
+        "Q7s", "Q6s", "Q5s", "Q4s", "Q3s", "Q2s",
+        "J8s", "J7s", "J6s", "J5s", "J4s", "J3s", "J2s",
+        "T8s", "T7s", "T6s", "T5s", "T4s",
+        "97s", "96s", "95s",
+        "86s", "85s",
+        "75s", "64s", "53s", "43s",
+    },
+    "HJ": BASE_EXCLUDED_HANDS | {
+        # HJ 不開的 offsuit
+        "K6o", "K5o", "K4o", "K3o", "K2o",
+        "Q8o", "Q7o", "Q6o", "Q5o", "Q4o", "Q3o", "Q2o",
+        "J7o", "J6o", "J5o", "J4o", "J3o", "J2o",
+        "T7o", "T6o", "T5o", "T4o", "T3o", "T2o",
+        "97o", "96o", "95o", "94o", "93o", "92o",
+        "86o", "85o", "84o", "83o", "82o",
+        "76o", "75o", "74o", "73o",
+        "65o", "64o", "63o",
+        "54o", "53o",
+        "43o",
+        # HJ 不開的 suited
+        "K3s", "K2s",
+        "Q4s", "Q3s", "Q2s",
+        "J7s", "J6s", "J5s", "J4s", "J3s", "J2s",
+        "T7s", "T6s", "T5s", "T4s",
+        "97s", "96s", "95s",
+        "86s", "85s",
+        "75s", "64s", "53s", "43s",
+    },
+    "CO": BASE_EXCLUDED_HANDS | {
+        # CO 不開的 offsuit
+        "K6o", "K5o", "K4o", "K3o", "K2o",
+        "Q8o", "Q7o", "Q6o", "Q5o", "Q4o", "Q3o", "Q2o",
+        "J8o", "J7o", "J6o", "J5o", "J4o", "J3o", "J2o",
+        "T7o", "T6o", "T5o", "T4o", "T3o", "T2o",
+        "97o", "96o", "95o", "94o", "93o", "92o",
+        "86o", "85o", "84o", "83o", "82o",
+        "76o", "75o", "74o", "73o",
+        "65o", "64o", "63o",
+        "54o", "53o",
+        "43o",
+        # CO 不開的 suited
+        "Q3s", "Q2s",
+        "J5s", "J4s", "J3s", "J2s",
+        "T6s", "T5s", "T4s",
+        "96s", "95s",
+        "85s",
+        "75s", "64s", "53s", "43s",
+    },
+    "BTN": BASE_EXCLUDED_HANDS | {
+        # BTN 不開的 offsuit
+        "K6o", "K5o", "K4o", "K3o", "K2o",
+        "Q8o", "Q7o", "Q6o", "Q5o", "Q4o", "Q3o", "Q2o",
+        "J7o", "J6o", "J5o", "J4o", "J3o", "J2o",
+        "T7o", "T6o", "T5o", "T4o", "T3o", "T2o",
+        "97o", "96o", "95o", "94o", "93o", "92o",
+        "87o", "86o", "85o", "84o", "83o", "82o",
+        "76o", "75o", "74o", "73o",
+        "65o", "64o", "63o",
+        "54o", "53o",
+        # BTN 不開的 suited
+        "J3s", "J2s",
+        "T4s",
+        "95s",
+        "85s",
+        "64s", "53s",
+    },
+    "SB": BASE_EXCLUDED_HANDS | {
+        # SB 不開的 offsuit (最少)
+        "K6o", "K5o", "K4o", "K3o", "K2o",
+        "Q8o", "Q7o", "Q6o", "Q5o", "Q4o", "Q3o", "Q2o",
+        "J7o", "J6o", "J5o", "J4o", "J3o", "J2o",
+        "T7o", "T6o", "T5o", "T4o", "T3o", "T2o",
+        "97o", "96o", "95o", "94o", "93o", "92o",
+        "86o", "85o", "84o", "83o", "82o",
+        "76o", "75o", "74o", "73o",
+        "65o", "64o", "63o",
+        "54o", "53o",
+        # SB 不開的 suited
+        "J3s", "J2s",
+        "T4s",
+        "95s",
+    },
+}
+
+# 向後相容：預設排除列表使用 SB（最寬範圍）
+EXCLUDED_HANDS = POSITION_EXCLUDED_HANDS["SB"]
+
+def get_drillable_hands(range_data: dict = None, scenario_type: str = "vs_rfi", position: str = None) -> List[str]:
     """
     Get all hands that are in the drilling focus.
 
-    簡化邏輯：169 手牌 - EXCLUDED_HANDS = 可練習範圍
+    位置專屬邏輯：169 手牌 - POSITION_EXCLUDED_HANDS[position] = 可練習範圍
+
+    Args:
+        range_data: Optional range data (not used currently)
+        scenario_type: Type of scenario (not used currently)
+        position: Position name (UTG, HJ, CO, BTN, SB). If None, uses SB (widest range).
 
     Returns:
         List of hand strings that should be highlighted in drilling
     """
-    return [h for h in ALL_HANDS if h not in EXCLUDED_HANDS]
+    pos_upper = position.upper() if position else "SB"
+    excluded = POSITION_EXCLUDED_HANDS.get(pos_upper, EXCLUDED_HANDS)
+    return [h for h in ALL_HANDS if h not in excluded]
 
 
-def get_interesting_hand(range_data: dict, scenario_type: str = "vs_rfi") -> Hand:
+def get_interesting_hand(range_data: dict, scenario_type: str = "vs_rfi", position: str = None) -> Hand:
     """
     Generate an 'interesting' hand for drilling.
 
     80%: 從 action ranges 選（有實際決策的手牌：raise/call/3bet/4bet/5bet）
     20%: 從 drillable hands 隨機選（練習 fold 決策）
+
+    Args:
+        range_data: Range data for the scenario
+        scenario_type: Type of scenario
+        position: Position name for position-specific drillable hands
     """
     # 收集有動作的手牌（非 fold）
     action_hands = []
@@ -63,7 +171,7 @@ def get_interesting_hand(range_data: dict, scenario_type: str = "vs_rfi") -> Han
         return Hand(hand_str)
     else:
         # 20%: 從所有可練習手牌選（包含 fold 邊緣牌）
-        drillable = get_drillable_hands()
+        drillable = get_drillable_hands(position=position)
         if drillable:
             return Hand(random.choice(drillable))
         return random_hand()
@@ -150,9 +258,9 @@ class PreflopDrill:
             action_type=ActionType.RFI,
         )
 
-        # Use interesting hands focused on borderline decisions
+        # Use interesting hands focused on borderline decisions (position-specific)
         range_data = self.evaluator.get_range_for_scenario(scenario, format=self.format) or {}
-        hand = get_interesting_hand(range_data, "rfi")
+        hand = get_interesting_hand(range_data, "rfi", position=hero_pos.value)
 
         return Spot(hand=hand, scenario=scenario)
 
@@ -418,7 +526,8 @@ class PreflopDrill:
         )
 
     def get_drillable_hands_for_spot(self, spot: Spot) -> List[str]:
-        """Get the list of drillable hands for a spot (borderline decisions)."""
+        """Get the list of drillable hands for a spot (position-specific)."""
         range_data = self.get_range_for_spot(spot) or {}
         scenario_type = spot.scenario.action_type.value
-        return get_drillable_hands(range_data, scenario_type)
+        position = spot.scenario.hero_position.value
+        return get_drillable_hands(range_data, scenario_type, position=position)

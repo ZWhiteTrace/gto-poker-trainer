@@ -316,11 +316,11 @@ def _generate_grid_html(grid_data: List[List[Dict]], highlight_hand: str = None,
         z-index: 10;
     }
     .range-cell.highlight.premium-t2 {
-        box-shadow: 0 0 0 3px white, 0 0 8px 2px rgba(255, 255, 255, 0.6), inset 0 0 0 3px #fecaca;
+        box-shadow: 0 0 0 3px white, 0 0 8px 2px rgba(255, 255, 255, 0.6), inset 0 0 0 3px rgba(255, 255, 255, 0.8);
         z-index: 10;
     }
     .range-cell.highlight.premium-t3 {
-        box-shadow: 0 0 0 3px white, 0 0 8px 2px rgba(255, 255, 255, 0.6), inset 0 0 0 3px #fca5a5;
+        box-shadow: 0 0 0 3px white, 0 0 8px 2px rgba(255, 255, 255, 0.6), inset 0 0 0 3px rgba(255, 255, 255, 0.45);
         z-index: 10;
     }
     .range-cell.dimmed {
@@ -335,20 +335,20 @@ def _generate_grid_html(grid_data: List[List[Dict]], highlight_hand: str = None,
         box-shadow: inset 0 0 0 3px #fbbf24, inset 0 0 6px 1px rgba(251, 191, 36, 0.6);
     }
     .range-cell.premium-t2 {
-        box-shadow: inset 0 0 0 3px #fecaca;
+        box-shadow: inset 0 0 0 3px rgba(255, 255, 255, 0.8);
     }
     .range-cell.premium-t3 {
-        box-shadow: inset 0 0 0 3px #fca5a5;
+        box-shadow: inset 0 0 0 3px rgba(255, 255, 255, 0.45);
     }
     /* Hover 時保持 premium 樣式 */
     .range-cell.premium-t1:hover {
         box-shadow: inset 0 0 0 3px #fbbf24, inset 0 0 8px 2px rgba(251, 191, 36, 0.8), 0 4px 12px rgba(0,0,0,0.4);
     }
     .range-cell.premium-t2:hover {
-        box-shadow: inset 0 0 0 3px #fecaca, 0 4px 12px rgba(0,0,0,0.4);
+        box-shadow: inset 0 0 0 3px rgba(255, 255, 255, 0.8), 0 4px 12px rgba(0,0,0,0.4);
     }
     .range-cell.premium-t3:hover {
-        box-shadow: inset 0 0 0 3px #fca5a5, 0 4px 12px rgba(0,0,0,0.4);
+        box-shadow: inset 0 0 0 3px rgba(255, 255, 255, 0.45), 0 4px 12px rgba(0,0,0,0.4);
     }
     /* Custom tooltip - default shows above */
     .range-cell .tooltip {

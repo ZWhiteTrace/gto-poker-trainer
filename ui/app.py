@@ -28,6 +28,10 @@ from ui.components.storage import save_progress_to_storage, load_progress_from_s
 from ui.components.rfi_chart import display_rfi_charts
 # Achievements system removed for simplification
 
+# Page URL mappings
+PAGE_KEYS = ["drill", "range", "postflop", "equity", "outs", "learning", "stats"]
+PAGE_NAMES = ["Drill Mode", "Range Viewer", "Postflop", "Equity Quiz", "Outs Quiz", "Learning", "Statistics"]
+
 # Equity breakdown data for vs 4-bet scenarios
 # Shows equity of common hands against typical 4-bet range hands
 EQUITY_VS_4BET_RANGE = {
@@ -244,6 +248,11 @@ def init_session_state():
     # Initialize localStorage sync
     init_storage_sync()
 
+    # Read page from URL query params
+    query_params = st.query_params
+    url_page = query_params.get("page", "drill")
+    initial_nav = PAGE_KEYS.index(url_page) if url_page in PAGE_KEYS else 0
+
     if 'table_format' not in st.session_state:
         st.session_state.table_format = "6max"
     if 'language' not in st.session_state:
@@ -260,6 +269,8 @@ def init_session_state():
         st.session_state.last_result = None
     if 'page' not in st.session_state:
         st.session_state.page = "drill"
+    if 'nav' not in st.session_state:
+        st.session_state.nav = initial_nav
 
     # Debug mode for checking clipping
     if 'debug_mode' not in st.session_state:
@@ -558,7 +569,13 @@ def main():
             key="nav",
             label_visibility="collapsed",
         )
-        page = ["Drill Mode", "Range Viewer", "Postflop", "Equity Quiz", "Outs Quiz", "Learning", "Statistics"][page_idx]
+        page = PAGE_NAMES[page_idx]
+
+        # Update URL when page changes
+        current_url_page = st.query_params.get("page", "drill")
+        new_url_page = PAGE_KEYS[page_idx]
+        if current_url_page != new_url_page:
+            st.query_params["page"] = new_url_page
 
         # Settings section (compact) - only show table format on Drill Mode and Range Viewer
         if page in ["Drill Mode", "Range Viewer"]:
@@ -1322,9 +1339,9 @@ def viewer_page():
         raise_hands = range_data.get(raise_key, []) if raise_key else []
         call_hands = range_data.get("call", [])
 
-        # Get drillable hands for visual distinction
+        # Get drillable hands for visual distinction (position-specific)
         scenario_type = action_type.lower().replace(" ", "_").replace("-", "_")
-        drillable_hands = get_drillable_hands(range_data, scenario_type)
+        drillable_hands = get_drillable_hands(range_data, scenario_type, position=hero_pos)
 
         # Get frequency data for all 6-max scenarios (RFI, vs Open, vs 3-Bet, vs 4-Bet)
         frequencies = {}
@@ -1738,7 +1755,8 @@ def stats_page():
                         raise_hands = range_data.get(raise_key, []) if raise_key else []
                         call_hands = range_data.get("call", [])
                         scenario_type = m.spot.scenario.action_type.value
-                        drillable_hands = get_drillable_hands(range_data, scenario_type)
+                        position = m.spot.scenario.hero_position.value
+                        drillable_hands = get_drillable_hands(range_data, scenario_type, position=position)
 
                         # Get frequency data for RFI scenarios
                         frequencies = {}
