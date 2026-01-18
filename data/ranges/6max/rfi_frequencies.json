@@ -902,10 +902,10 @@
         "raise": 100
       },
       "T8o": {
-        "raise": 75
+        "raise": 50
       },
       "98o": {
-        "raise": 25
+        "raise": 50
       },
       "A3o": {
         "raise": 50
@@ -1200,7 +1200,7 @@
         "raise": 100
       },
       "T8o": {
-        "raise": 50
+        "raise": 75
       },
       "98o": {
         "raise": 75
