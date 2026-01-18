@@ -40,7 +40,6 @@ POSITION_OPACITY = {
 PREMIUM_3BET_HANDS = {
     "AA", "KK", "QQ", "JJ", "TT",
     "AKs", "AKo", "AQs", "AQo", "AJs",
-    "KQs",
 }
 
 POSITION_ORDER = ["UTG", "HJ", "CO", "BTN", "SB"]
@@ -231,13 +230,25 @@ def display_rfi_chart_earliest(evaluator: Evaluator, lang: str = "zh"):
     .rfi-earliest-cell {
         aspect-ratio: 1;
         display: flex;
+        flex-direction: column;
         align-items: center;
-        justify-content: center;
-        font-size: clamp(10px, 3vw, 16px);
-        font-weight: bold;
+        justify-content: flex-start;
+        padding-top: 4px;
         border-radius: 3px;
         color: white;
         text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+        padding-left: 2px;
+        padding-right: 2px;
+        line-height: 1.1;
+    }
+    .rfi-earliest-cell .hand-name {
+        font-size: clamp(11px, 3vw, 16px);
+        font-weight: bold;
+    }
+    .rfi-earliest-cell .pos-name {
+        font-size: clamp(9px, 2.5vw, 14px);
+        font-weight: normal;
+        opacity: 0.9;
     }
     .rfi-earliest-cell.fold {
         background: #374151;
@@ -276,11 +287,11 @@ def display_rfi_chart_earliest(evaluator: Evaluator, lang: str = "zh"):
                 else:
                     border_style = ""
 
-                html += f'<div class="rfi-earliest-cell" style="background: {rgba_color}; {border_style}">{hand}</div>'
+                html += f'<div class="rfi-earliest-cell" style="background: {rgba_color}; {border_style}"><span class="hand-name">{hand}</span><span class="pos-name">{earliest}</span></div>'
             elif hand in get_drillable_set():
-                html += f'<div class="rfi-earliest-cell fold">{hand}</div>'
+                html += f'<div class="rfi-earliest-cell fold"><span class="hand-name">{hand}</span></div>'
             else:
-                html += f'<div class="rfi-earliest-cell garbage">{hand}</div>'
+                html += f'<div class="rfi-earliest-cell garbage"><span class="hand-name">{hand}</span></div>'
 
     html += '</div>'
     st.markdown(html, unsafe_allow_html=True)

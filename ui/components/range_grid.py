@@ -10,8 +10,8 @@ RANKS = ['A', 'K', 'Q', 'J', 'T', '9', '8', '7', '6', '5', '4', '3', '2']
 
 # Premium 手牌分級 - 用於 3bet/4bet/5bet 的強牌
 PREMIUM_T1 = {"AA", "KK", "QQ", "AKs", "AKo"}  # 5-bet all-in 可以
-PREMIUM_T2 = {"JJ", "TT", "AQs", "AQo", "KQs"}  # 4-bet / call 4-bet
-PREMIUM_T3 = {"99", "AJs", "KJs", "QJs", "ATs"}  # 3-bet 為主
+PREMIUM_T2 = {"JJ", "TT", "AQs", "AQo", "AJs"}  # 4-bet / call 4-bet
+PREMIUM_T3 = {"99", "88", "KQs", "KJs", "QJs", "ATs", "A5s", "AJo", "KQo"}  # 3-bet 為主
 
 
 def get_premium_tier(hand: str) -> int:
@@ -307,8 +307,21 @@ def _generate_grid_html(grid_data: List[List[Dict]], highlight_hand: str = None,
         box-shadow: 0 4px 12px rgba(0,0,0,0.4);
     }
     .range-cell.highlight {
-        box-shadow: 0 0 0 3px white;
-        z-index: 1;
+        box-shadow: 0 0 0 3px white, 0 0 8px 2px rgba(255, 255, 255, 0.6);
+        z-index: 10;
+    }
+    /* Highlight + Premium 組合樣式 - 外框白色highlight + 內框premium */
+    .range-cell.highlight.premium-t1 {
+        box-shadow: 0 0 0 3px white, 0 0 8px 2px rgba(255, 255, 255, 0.6), inset 0 0 0 2px #fbbf24, inset 0 0 6px 1px rgba(251, 191, 36, 0.6);
+        z-index: 10;
+    }
+    .range-cell.highlight.premium-t2 {
+        box-shadow: 0 0 0 3px white, 0 0 8px 2px rgba(255, 255, 255, 0.6), inset 0 0 0 3px #fecaca;
+        z-index: 10;
+    }
+    .range-cell.highlight.premium-t3 {
+        box-shadow: 0 0 0 3px white, 0 0 8px 2px rgba(255, 255, 255, 0.6), inset 0 0 0 3px #991b1b;
+        z-index: 10;
     }
     .range-cell.dimmed {
         opacity: 0.80;
@@ -317,27 +330,25 @@ def _generate_grid_html(grid_data: List[List[Dict]], highlight_hand: str = None,
         opacity: 0.5 !important;
         filter: grayscale(50%);
     }
-    /* Premium 手牌邊框樣式 */
+    /* Premium 手牌邊框樣式 - 使用內框避免重疊遮擋 */
     .range-cell.premium-t1 {
-        box-shadow: 0 0 0 3px #fbbf24, 0 0 8px 2px rgba(251, 191, 36, 0.6);
-        z-index: 2;
+        box-shadow: inset 0 0 0 2px #fbbf24, inset 0 0 6px 1px rgba(251, 191, 36, 0.6);
     }
     .range-cell.premium-t2 {
-        box-shadow: 0 0 0 2px white;
-        z-index: 1;
+        box-shadow: inset 0 0 0 3px #fecaca;
     }
     .range-cell.premium-t3 {
-        box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.7);
+        box-shadow: inset 0 0 0 3px #991b1b;
     }
     /* Hover 時保持 premium 樣式 */
     .range-cell.premium-t1:hover {
-        box-shadow: 0 0 0 3px #fbbf24, 0 0 12px 4px rgba(251, 191, 36, 0.8), 0 4px 12px rgba(0,0,0,0.4);
+        box-shadow: inset 0 0 0 2px #fbbf24, inset 0 0 8px 2px rgba(251, 191, 36, 0.8), 0 4px 12px rgba(0,0,0,0.4);
     }
     .range-cell.premium-t2:hover {
-        box-shadow: 0 0 0 2px white, 0 4px 12px rgba(0,0,0,0.4);
+        box-shadow: inset 0 0 0 3px #fecaca, 0 4px 12px rgba(0,0,0,0.4);
     }
     .range-cell.premium-t3:hover {
-        box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.7), 0 4px 12px rgba(0,0,0,0.4);
+        box-shadow: inset 0 0 0 3px #b91c1c, 0 4px 12px rgba(0,0,0,0.4);
     }
     /* Custom tooltip - default shows above */
     .range-cell .tooltip {
@@ -388,7 +399,7 @@ def _generate_grid_html(grid_data: List[List[Dict]], highlight_hand: str = None,
         opacity: 1;
     }
     .tooltip .freq-raise { color: #f87171; font-weight: bold; }
-    .tooltip .freq-call { color: #4ade80; font-weight: bold; }
+    .tooltip .freq-call { color: #b91c1c; font-weight: bold; }
     .tooltip .freq-fold { color: #60a5fa; font-weight: bold; }
     .tooltip .hand-name { color: #fbbf24; font-weight: bold; margin-right: 6px; }
     </style>
@@ -516,20 +527,16 @@ def _display_legend(show_mixed: bool = False, show_drillable: bool = False, show
     if show_mixed or show_frequency:
         mixed_html = '<span style="margin-right: 10px;"><span style="background: linear-gradient(to right, #ef4444 0%, #ef4444 70%, #3b82f6 70%, #3b82f6 100%); color: white; padding: 2px 8px; border-radius: 3px; text-shadow: 0 1px 2px rgba(0,0,0,0.5);">M</span> Mixed</span>'
 
-    # Premium 圖例
-    premium_html = '<span style="margin-left: 10px;"><span style="background: #1f2937; border: 2px solid #fbbf24; color: white; padding: 1px 6px; border-radius: 3px; box-shadow: 0 0 4px rgba(251,191,36,0.5);">T1</span> <span style="background: #1f2937; border: 2px solid white; color: white; padding: 1px 6px; border-radius: 3px;">T2</span> <span style="background: #1f2937; border: 1px solid rgba(255,255,255,0.7); color: white; padding: 1px 6px; border-radius: 3px;">T3</span> Premium</span>'
-
-    html = f'<div style="display: flex; gap: 15px; justify-content: center; margin: 8px 0; flex-wrap: wrap; font-size: 14px;"><span style="margin-right: 10px;"><span style="background: #ef4444; color: white; padding: 2px 8px; border-radius: 3px;">R</span> Raise</span>{call_html}<span style="margin-right: 10px;"><span style="background: #3b82f6; color: white; padding: 2px 8px; border-radius: 3px;">F</span> Fold</span>{mixed_html}{premium_html}{drillable_html}</div>'
+    html = f'<div style="display: flex; gap: 15px; justify-content: center; margin: 8px 0; flex-wrap: wrap; font-size: 14px;"><span style="margin-right: 10px;"><span style="background: #ef4444; color: white; padding: 2px 8px; border-radius: 3px;">R</span> Raise</span>{call_html}<span style="margin-right: 10px;"><span style="background: #3b82f6; color: white; padding: 2px 8px; border-radius: 3px;">F</span> Fold</span>{mixed_html}{drillable_html}</div>'
     st.markdown(html, unsafe_allow_html=True)
 
-    # Filter options - fixed order: 全部, Raise, Call, Fold, Mixed, Premium, 非出題
+    # Filter options - fixed order: 全部, Raise, Call, Fold, Mixed, 非出題
     filter_options = ["全部", "🔴 Raise"]
     if show_call:
         filter_options.append("🟢 Call")
     filter_options.append("🔵 Fold")
     if show_mixed or show_frequency:
         filter_options.append("🟣 Mixed")
-    filter_options.append("⭐ Premium")
     if show_drillable:
         filter_options.append("⬛ 非出題")
 
@@ -553,7 +560,6 @@ def _display_legend(show_mixed: bool = False, show_drillable: bool = False, show
         "🟢 Call": "call",
         "🔵 Fold": "fold",
         "🟣 Mixed": "mixed",
-        "⭐ Premium": "premium",
         "⬛ 非出題": "non_drillable",
     }
     return filter_map.get(selected, None)

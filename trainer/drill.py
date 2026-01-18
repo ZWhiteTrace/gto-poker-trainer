@@ -20,8 +20,8 @@ EXCLUDED_HANDS = {
     # Suited junk: T3s~73s (3-kicker), 94s
     "T3s", "93s", "83s", "73s", "94s",
     # Offsuit junk: 低端不成順的牌
-    "K2o",
-    "Q6o", "Q5o", "Q4o", "Q3o", "Q2o",
+    "K5o", "K4o", "K3o", "K2o",
+    "Q7o", "Q6o", "Q5o", "Q4o", "Q3o", "Q2o",
     "J6o", "J5o", "J4o", "J3o", "J2o",
     "T6o", "T5o", "T4o", "T3o", "T2o",
     "96o", "95o", "94o", "93o", "92o",

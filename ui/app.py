@@ -15,6 +15,7 @@ from core.position import Position, POSITIONS_6MAX
 from core.scenario import Scenario, ActionType
 from core.evaluator import Evaluator
 from trainer.drill import PreflopDrill, Spot, get_drillable_hands
+from trainer.tips import format_relevant_range_tip, get_hand_category_tip
 from core.equity import EquityQuiz, EquityQuestion
 from core.outs import OutsQuiz, OutsQuestion, Card
 from core.postflop import PostflopDrill, PostflopSpot, PostflopAction, PostflopResult, TEXTURE_NAMES, HeroCard
@@ -920,6 +921,30 @@ def drill_page():
                     {freq_badge}
                 </div>
                 """, unsafe_allow_html=True)
+
+                # Show RFI position tip on error
+                if spot.scenario.action_type == ActionType.RFI:
+                    position_name = spot.scenario.hero_position.value
+                    hand_str = str(spot.hand)
+
+                    # Get hand-specific tip
+                    hand_tip = get_hand_category_tip(
+                        hand_str,
+                        position_name,
+                        result.correct_action,
+                        st.session_state.language
+                    )
+
+                    # Get relevant range tip (only the category for this hand)
+                    range_tip = format_relevant_range_tip(hand_str, position_name, st.session_state.language)
+
+                    if hand_tip or range_tip:
+                        st.markdown(f"""
+                        <div style="background: #1e3a5f; padding: 10px 12px; border-radius: 8px; border-left: 4px solid #3b82f6; margin: 8px 0; font-size: 0.85rem; line-height: 1.5;">
+                            <div style="color: #93c5fd; margin-bottom: 6px;">🎯 {hand_tip}</div>
+                            <div style="color: #cbd5e1;">{range_tip}</div>
+                        </div>
+                        """, unsafe_allow_html=True)
 
             # Show equity breakdown for vs 4-bet scenarios
             if spot.scenario.action_type == ActionType.VS_4BET:
