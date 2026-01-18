@@ -54,18 +54,24 @@ def hex_to_rgba(hex_color: str, opacity: float) -> str:
     return f"rgba({r}, {g}, {b}, {opacity})"
 
 
-def get_all_rfi_ranges(evaluator: Evaluator, format: str = "6max") -> Dict[str, List[str]]:
-    """Get RFI ranges for all positions."""
+def get_all_rfi_ranges(evaluator: Evaluator, format: str = "6max", min_freq: int = 50) -> Dict[str, List[str]]:
+    """Get RFI ranges for all positions.
+
+    Args:
+        evaluator: The evaluator instance
+        format: Table format (6max/9max)
+        min_freq: Minimum raise frequency (%) to be considered opening. Default 50%.
+    """
     ranges = {}
     for pos_name in POSITION_ORDER:
         pos = Position(pos_name)
         scenario = Scenario(hero_position=pos, action_type=ActionType.RFI)
         range_data = evaluator.get_range_for_scenario(scenario, format=format)
-        # Get hands with raise frequency > 0
+        # Get hands with raise frequency >= min_freq
         freq_data = evaluator.get_frequencies_for_scenario(scenario, format=format)
         raise_hands = []
         for hand, freq in freq_data.items():
-            if freq.get("raise", 0) > 0:
+            if freq.get("raise", 0) >= min_freq:
                 raise_hands.append(hand)
         ranges[pos_name] = raise_hands
     return ranges
