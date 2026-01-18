@@ -98,13 +98,14 @@ def display_rfi_chart_overlay(evaluator: Evaluator, lang: str = "zh"):
     """
     Display RFI chart with multi-position overlay.
     Each cell shows colored bars for all positions that can open that hand.
+    With position filter to highlight specific position ranges.
     """
     ranges = get_all_rfi_ranges(evaluator)
 
     title = "RFI 速記表 - 所有可開池位置" if lang == "zh" else "RFI Chart - All Opening Positions"
     st.subheader(title)
 
-    # Legend
+    # Legend with colored position indicators
     legend_html = '<div style="display: flex; gap: 15px; justify-content: center; margin: 10px 0; flex-wrap: wrap;">'
     for pos, color in POSITION_COLORS.items():
         legend_html += f'<span style="display: flex; align-items: center; gap: 4px;"><span style="background: {color}; width: 20px; height: 14px; border-radius: 2px; display: inline-block;"></span> {pos}</span>'
@@ -112,7 +113,25 @@ def display_rfi_chart_overlay(evaluator: Evaluator, lang: str = "zh"):
     legend_html += '</div>'
     st.markdown(legend_html, unsafe_allow_html=True)
 
-    # Build grid HTML - 使用 inline style 確保生效
+    # Position filter radio buttons
+    filter_key = "rfi_overlay_filter"
+    if filter_key not in st.session_state:
+        st.session_state[filter_key] = "全部"
+
+    filter_options = ["全部", "UTG", "HJ", "CO", "BTN", "SB"]
+    col1, col2, col3 = st.columns([1, 6, 1])
+    with col2:
+        selected_filter = st.radio(
+            "篩選位置" if lang == "zh" else "Filter Position",
+            filter_options,
+            index=filter_options.index(st.session_state[filter_key]) if st.session_state[filter_key] in filter_options else 0,
+            key=f"{filter_key}_radio",
+            horizontal=True,
+            label_visibility="collapsed"
+        )
+    st.session_state[filter_key] = selected_filter
+
+    # Build grid HTML
     html = '''<div style="width:100%; display:flex; flex-direction:column; align-items:center;">
     <div style="display:grid; grid-template-columns:repeat(13,minmax(0,1fr)); gap:2px; width:100%; max-width:555px; background:#1a1a2e; padding:8px; border-radius:8px; box-sizing:border-box;">'''
 
@@ -127,8 +146,17 @@ def display_rfi_chart_overlay(evaluator: Evaluator, lang: str = "zh"):
 
             positions = get_hand_positions(hand, ranges)
 
-            # 基礎 cell 樣式 - min-width:0 確保可縮小
-            cell_base = "aspect-ratio:1; display:flex; align-items:center; justify-content:center; border-radius:3px; position:relative; overflow:hidden; color:white; text-shadow:0 1px 2px rgba(0,0,0,0.5); min-width:0;"
+            # Determine if this cell matches the filter
+            if selected_filter == "全部":
+                matches_filter = True
+            else:
+                matches_filter = selected_filter in positions
+
+            # Opacity based on filter match
+            filter_opacity = "1.0" if matches_filter else "0.35"
+
+            # 基礎 cell 樣式
+            cell_base = f"aspect-ratio:1; display:flex; align-items:center; justify-content:center; border-radius:3px; position:relative; overflow:hidden; color:white; text-shadow:0 1px 2px rgba(0,0,0,0.5); min-width:0; opacity:{filter_opacity}; transition:opacity 0.2s ease;"
             hand_style = "font-size:clamp(8px,2.5vw,14px); font-weight:bold; z-index:2; position:relative;"
 
             if positions:
@@ -144,8 +172,13 @@ def display_rfi_chart_overlay(evaluator: Evaluator, lang: str = "zh"):
             else:
                 html += f'<div style="{cell_base} background:#374151; color:#6b7280; text-shadow:none;"><span style="{hand_style}">{hand}</span></div>'
 
-    # Close grid and add caption inside container
-    desc = "每格顯示所有可開池的位置（顏色條）。例如 AA 有5條顏色 = 所有位置都開。" if lang == "zh" else "Each cell shows all positions that can open (color bars). e.g., AA has 5 colors = all positions open."
+    # Close grid and add caption
+    if selected_filter == "全部":
+        desc = "每格顯示所有可開池的位置（顏色條）。例如 AA 有5條顏色 = 所有位置都開。" if lang == "zh" else "Each cell shows all positions that can open (color bars). e.g., AA has 5 colors = all positions open."
+    else:
+        count = len(ranges.get(selected_filter, []))
+        desc = f"{selected_filter} 開池範圍：{count} 手牌" if lang == "zh" else f"{selected_filter} opening range: {count} hands"
+
     html += f'</div><p style="width:100%; text-align:center; color:#9ca3af; font-size:13px; margin-top:12px; max-width:555px; line-height:1.4;">{desc}</p></div>'
     st.markdown(html, unsafe_allow_html=True)
 
@@ -154,13 +187,14 @@ def display_rfi_chart_earliest(evaluator: Evaluator, lang: str = "zh"):
     """
     Display RFI chart showing earliest opening position.
     Each cell shows only the color of the earliest position that can open.
+    With position filter to highlight specific position ranges.
     """
     ranges = get_all_rfi_ranges(evaluator)
 
     title = "RFI 速記表 - 最早可開池位置" if lang == "zh" else "RFI Chart - Earliest Opening Position"
     st.subheader(title)
 
-    # Legend
+    # Legend with colored position indicators
     legend_html = '<div style="display: flex; gap: 15px; justify-content: center; margin: 10px 0; flex-wrap: wrap;">'
     for pos, color in POSITION_COLORS.items():
         legend_html += f'<span style="display: flex; align-items: center; gap: 4px;"><span style="background: {color}; width: 20px; height: 14px; border-radius: 2px; display: inline-block;"></span> {pos}</span>'
@@ -168,7 +202,13 @@ def display_rfi_chart_earliest(evaluator: Evaluator, lang: str = "zh"):
     legend_html += '</div>'
     st.markdown(legend_html, unsafe_allow_html=True)
 
-    # Build grid HTML - 使用 inline style 確保生效
+    # Position filter - get value first (will render after grid)
+    filter_key = "rfi_earliest_filter"
+    if filter_key not in st.session_state:
+        st.session_state[filter_key] = "全部"
+    selected_filter = st.session_state[filter_key]
+
+    # Build grid HTML
     html = '''<div style="width:100%; display:flex; flex-direction:column; align-items:center;">
     <div style="display:grid; grid-template-columns:repeat(13,minmax(0,1fr)); gap:2px; width:100%; max-width:555px; background:#1a1a2e; padding:8px; border-radius:8px; box-sizing:border-box;">'''
 
@@ -182,9 +222,21 @@ def display_rfi_chart_earliest(evaluator: Evaluator, lang: str = "zh"):
                 hand = f"{r2}{r1}o"
 
             earliest = get_earliest_position(hand, ranges)
+            positions = get_hand_positions(hand, ranges)
 
-            # 基礎 cell 樣式 - min-width:0 確保可縮小
-            cell_base = "aspect-ratio:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:0px; border-radius:3px; color:white; text-shadow:0 1px 2px rgba(0,0,0,0.5); line-height:1.15; overflow:hidden; min-width:0;"
+            # Determine if this cell matches the filter
+            if selected_filter == "全部":
+                matches_filter = True
+            else:
+                # Hand matches only if this position is the EARLIEST opener
+                # This highlights the "new" hands for each position
+                matches_filter = earliest == selected_filter
+
+            # Opacity based on filter match
+            filter_opacity = "1.0" if matches_filter else "0.35"
+
+            # 基礎 cell 樣式
+            cell_base = f"aspect-ratio:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:0px; border-radius:3px; color:white; text-shadow:0 1px 2px rgba(0,0,0,0.5); line-height:1.15; overflow:hidden; min-width:0; opacity:{filter_opacity}; transition:opacity 0.2s ease;"
             hand_style = "font-size:clamp(11px,3.2vw,17px); font-weight:500; color:rgba(255,255,255,0.8);"
             pos_style = "font-size:clamp(9px,2.8vw,14px); font-weight:500; color:rgba(255,255,255,0.9);"
 
@@ -202,20 +254,38 @@ def display_rfi_chart_earliest(evaluator: Evaluator, lang: str = "zh"):
             else:
                 html += f'<div style="{cell_base} background:#374151; color:#6b7280; text-shadow:none;"><span style="{hand_style}">{hand}</span></div>'
 
-    # Close grid and add caption inside container
-    desc = "每格顯示「最早可開池」的位置顏色。深紅=緊，淺紅=鬆。" if lang == "zh" else "Each cell shows the earliest position that can open. Dark red=tight, light red=loose."
+    # Close grid and add caption
+    if selected_filter == "全部":
+        desc = "每格顯示「最早可開池」的位置顏色。深紅=緊，淺紅=鬆。" if lang == "zh" else "Each cell shows the earliest position that can open. Dark red=tight, light red=loose."
+    else:
+        # Count hands where this position is the earliest opener
+        earliest_count = sum(1 for h in ranges.get(selected_filter, []) if get_earliest_position(h, ranges) == selected_filter)
+        total_count = len(ranges.get(selected_filter, []))
+        desc = f"{selected_filter} 新增開池：{earliest_count} 手牌（總共 {total_count} 手）" if lang == "zh" else f"{selected_filter} new opens: {earliest_count} hands (total {total_count})"
+
     html += f'</div><p style="width:100%; text-align:center; color:#9ca3af; font-size:13px; margin-top:12px; max-width:555px; line-height:1.4;">{desc}</p></div>'
     st.markdown(html, unsafe_allow_html=True)
 
+    # Position filter radio buttons - centered using columns
+    filter_options = ["全部", "UTG", "HJ", "CO", "BTN", "SB"]
+
+    # Use columns to center: empty | radio | empty
+    _, center_col, _ = st.columns([1, 4, 1])
+    with center_col:
+        new_filter = st.radio(
+            "篩選位置" if lang == "zh" else "Filter Position",
+            filter_options,
+            index=filter_options.index(selected_filter) if selected_filter in filter_options else 0,
+            key=f"{filter_key}_radio",
+            horizontal=True,
+            label_visibility="collapsed"
+        )
+    if new_filter != selected_filter:
+        st.session_state[filter_key] = new_filter
+        st.rerun()
+
 
 def display_rfi_charts(evaluator: Evaluator, lang: str = "zh"):
-    """Display both RFI chart styles."""
-    tab_labels = ["📍 最早可開位置", "🎨 所有位置疊加"] if lang == "zh" else ["📍 Earliest Position", "🎨 All Positions"]
-
-    tab1, tab2 = st.tabs(tab_labels)
-
-    with tab1:
-        display_rfi_chart_earliest(evaluator, lang)
-
-    with tab2:
-        display_rfi_chart_overlay(evaluator, lang)
+    """Display RFI chart - earliest opening position only."""
+    # 直接顯示最早可開位置表，移除了「所有位置疊加」TAB
+    display_rfi_chart_earliest(evaluator, lang)

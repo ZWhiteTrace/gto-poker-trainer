@@ -13,16 +13,18 @@ from core.evaluator import Evaluator, EvalResult
 
 
 # ============================================================================
-# 出題範圍設計邏輯：專注練習「邊緣牌」
+# 出題範圍設計邏輯：專注練習「邊界區域」的牌
 #
-# 排除兩類牌：
-#   1. 頂級牌 (100% raise) - AA, KK, QQ, AKs 等，答案太明顯
-#   2. 垃圾牌 (0% raise) - 離邊緣太遠，不需要記
+# 設計原則：
+#   1. 排除 100% 開的牌（太明顯）
+#   2. 保留 25-75% 邊緣牌（核心練習）
+#   3. 保留「接近邊界」的 0% 牌（練習 fold 決策）
+#   4. 排除遠離邊界的垃圾牌（不需要記）
 #
-# 保留：邊緣決策牌 - 這才是需要記憶的位置邊界
+# 每個位置的邊界不同，專注在該位置的決策邊界
 # ============================================================================
 
-# 頂級牌：任何位置都 100% 開，不需要練習
+# 頂級牌：所有位置都 100% 開，不需要練習
 PREMIUM_HANDS = {
     "AA", "KK", "QQ",      # 頂級對子
     "AKs", "AKo",          # 大 AK
@@ -30,12 +32,12 @@ PREMIUM_HANDS = {
 
 # 絕對垃圾牌：任何位置都 0% 開，離邊緣太遠
 TRASH_HANDS = {
-    # Suited junk
-    "T2s", "92s", "82s", "72s", "62s", "52s", "42s", "32s",
-    "T3s", "93s", "83s", "73s", "63s",
-    "94s", "84s", "74s",
-    # Offsuit junk
-    "72o", "62o", "52o", "42o", "32o",
+    # Suited junk - 最爛的同花牌
+    "T2s", "92s", "82s", "72s", "62s",
+    "93s", "83s", "73s",
+    "94s",  # 84s 移除 - SB 可能開
+    # Offsuit junk - 最爛的不同花
+    "72o", "62o",
 }
 
 # 基礎排除 = 頂級 + 垃圾
@@ -44,127 +46,188 @@ BASE_EXCLUDED_HANDS = PREMIUM_HANDS | TRASH_HANDS
 # ============================================================================
 # 位置專屬排除列表
 #
-# 設計原則：排除「距離該位置邊緣太遠」的牌
-# - 該位置 100% 開的牌 → 排除（太簡單）
-# - 該位置 0% 開且離邊緣很遠的牌 → 排除（不用記）
-# - 保留：邊緣牌（需要記憶「這個位置開不開」）
+# UTG 出題範圍 (保留的牌)：
+#   - 對子: 55(75%), 44/33/22(25%)
+#   - K: K5s(75%), K4s(0%邊界)
+#   - Q: Q8s(75%), Q7s(0%邊界)
+#   - J: J9s(75%), J8s(0%邊界)
+#   - T: T9s(75%), T8s(0%邊界)
+#   - 9: 98s(25%), 97s(0%邊界)
+#   - 8: 87s(25%), 86s(0%邊界)
+#   - 低同花連張: 76s/65s/54s(25%), 43s/53s/64s/75s(0%邊界)
+#   - Offsuit: A9o/KTo/QTo(25%)
 # ============================================================================
 
 POSITION_EXCLUDED_HANDS = {
     "UTG": BASE_EXCLUDED_HANDS | {
         # === 100% 開的牌（不用練）===
-        "JJ", "TT",
-        "AQs", "AQo",
-        # === 離邊緣太遠的 offsuit ===
-        "A7o", "A6o", "A5o", "A4o", "A3o", "A2o",
-        "K7o", "K6o", "K5o", "K4o", "K3o", "K2o",
-        "Q8o", "Q7o", "Q6o", "Q5o", "Q4o", "Q3o", "Q2o",
-        "J8o", "J7o", "J6o", "J5o", "J4o", "J3o", "J2o",
-        "T7o", "T6o", "T5o", "T4o", "T3o", "T2o",
-        "97o", "96o", "95o", "94o", "93o", "92o",
-        "86o", "85o", "84o", "83o", "82o",
-        "76o", "75o", "74o", "73o",
-        "65o", "64o", "63o",
-        "54o", "53o", "43o",
-        # === 離邊緣太遠的 suited ===
-        "K4s", "K3s", "K2s",
+        "JJ", "TT", "99", "88", "77",
+        # 66, A8o, K9o, Q9o 移到可練習
+        "AQs", "AJs", "ATs", "A9s", "A8s", "A7s", "A6s", "A5s", "A4s", "A3s",
+        "KQs", "KJs", "KTs", "K9s", "K8s", "K7s", "K6s",
+        "QJs", "QTs", "Q9s",
+        "JTs",  # JTs 不考
+        "AQo", "AJo",
+        "KQo",
+        # === 離邊界太遠的 suited ===
+        "K3s", "K2s",
         "Q6s", "Q5s", "Q4s", "Q3s", "Q2s",
         "J7s", "J6s", "J5s", "J4s", "J3s", "J2s",
-        "T7s", "T6s", "T5s", "T4s",
+        "T7s", "T6s", "T5s", "T4s", "T3s",
         "96s", "95s",
-        "85s",
-        "75s", "64s", "53s", "43s",
-        # === 離邊緣太遠的小對子 ===
-        "44", "33", "22",
+        "85s", "84s",  # 84s 不考
+        "63s", "74s",
+        "32s", "42s", "52s",
+        # === 離邊界太遠的 offsuit ===
+        "A7o", "A6o", "A5o", "A4o", "A3o", "A2o",
+        # A8o 移到可練習
+        "K8o", "K7o", "K6o", "K5o", "K4o", "K3o", "K2o",
+        # K9o 移到可練習
+        "Q8o", "Q7o", "Q6o", "Q5o", "Q4o", "Q3o", "Q2o",
+        # Q9o 移到可練習
+        "J9o", "J8o", "J7o", "J6o", "J5o", "J4o", "J3o", "J2o",
+        "T8o", "T7o", "T6o", "T5o", "T4o", "T3o", "T2o",
+        "97o", "96o", "95o", "94o", "93o", "92o",
+        "87o",
+        "86o", "85o", "84o", "83o", "82o",
+        "76o", "75o", "74o", "73o",
+        "65o", "64o", "63o",
+        "54o", "53o", "43o", "32o", "42o", "52o",
     },
     "HJ": BASE_EXCLUDED_HANDS | {
-        # === 100% 開的牌（不用練）===
-        "JJ", "TT",
-        "AQs",
-        # === 離邊緣太遠的 offsuit ===
-        "A6o", "A5o", "A4o", "A3o", "A2o",
-        "K7o", "K6o", "K5o", "K4o", "K3o", "K2o",
+        # === 100% 開的牌 ===
+        "JJ", "TT", "99", "88", "77", "66",
+        # 55 移到可練習
+        "AQs", "AJs", "ATs", "A9s", "A8s", "A7s", "A6s", "A5s", "A4s", "A3s",
+        "KQs", "KJs", "KTs", "K9s", "K8s", "K7s", "K6s", "K5s",
+        "QJs", "QTs", "Q9s",
+        # Q8s 移到可練習
+        "JTs", "J9s",
+        # Q5s, 87s, 65s, 86s 移到可練習
+        "AQo", "AJo", "ATo",
+        "KQo", "KJo",
+        # QJo 移到可練習
+        # A7o, A6o, A4o 移到可練習
+        # === 離邊界太遠的 suited ===
+        "K2s",
+        "Q3s", "Q2s",
+        "J6s", "J5s", "J4s", "J3s", "J2s",
+        "T6s", "T5s", "T4s", "T3s",
+        "96s", "95s",
+        "85s", "84s",  # 84s 不考
+        "53s", "63s", "74s", "75s",
+        "64s",
+        "32s", "42s", "52s",
+        # === 離邊界太遠的 offsuit ===
+        "A3o", "A2o",
+        # A7o, A6o, A4o 移到可練習
+        "K8o", "K7o", "K6o", "K5o", "K4o", "K3o", "K2o",
         "Q8o", "Q7o", "Q6o", "Q5o", "Q4o", "Q3o", "Q2o",
         "J8o", "J7o", "J6o", "J5o", "J4o", "J3o", "J2o",
-        "T7o", "T6o", "T5o", "T4o", "T3o", "T2o",
+        "T8o", "T7o", "T6o", "T5o", "T4o", "T3o", "T2o",
         "97o", "96o", "95o", "94o", "93o", "92o",
+        "87o",
         "86o", "85o", "84o", "83o", "82o",
         "76o", "75o", "74o", "73o",
         "65o", "64o", "63o",
-        "54o", "53o", "43o",
-        # === 離邊緣太遠的 suited ===
-        "K3s", "K2s",
-        "Q5s", "Q4s", "Q3s", "Q2s",
-        "J6s", "J5s", "J4s", "J3s", "J2s",
-        "T6s", "T5s", "T4s",
-        "96s", "95s",
-        "85s",
-        "75s", "64s", "53s", "43s",
-        # === 離邊緣太遠的小對子 ===
-        "33", "22",
+        "54o", "53o", "43o", "32o", "42o", "52o",
     },
     "CO": BASE_EXCLUDED_HANDS | {
-        # === 100% 開的牌（不用練）===
-        "JJ", "TT", "99",
-        "AQs", "AJs",
-        # === 離邊緣太遠的 offsuit ===
-        "A5o", "A4o", "A3o", "A2o",
+        # === 100% 開的牌 ===
+        "JJ", "TT", "99", "88", "77", "66",
+        "AQs", "AJs", "ATs", "A9s", "A8s", "A7s", "A6s", "A5s", "A4s", "A3s",
+        "KQs", "KJs", "KTs", "K9s", "K8s", "K7s", "K6s", "K5s", "K4s",
+        "QJs", "QTs", "Q9s", "Q8s", "Q7s", "Q6s",
+        "JTs", "J9s", "J8s",
+        "T9s",
+        # Q4s, J6s, Q9o, K8o, A6o, A4o, 32s, J8o 移到可練習
+        "AQo", "AJo", "ATo", "A9o",
+        "KQo", "KJo",
+        "QJo",
+        # === 離邊界太遠的 suited ===
+        "J4s", "J3s", "J2s",
+        "T5s", "T4s", "T3s",
+        "95s",
+        "85s", "84s",  # 84s 不考
+        "63s", "74s",
+        "42s", "52s",
+        # === 離邊界太遠的 offsuit ===
+        "A3o", "A2o",
         "K7o", "K6o", "K5o", "K4o", "K3o", "K2o",
-        "Q8o", "Q7o", "Q6o", "Q5o", "Q4o", "Q3o", "Q2o",
-        "J8o", "J7o", "J6o", "J5o", "J4o", "J3o", "J2o",
-        "T7o", "T6o", "T5o", "T4o", "T3o", "T2o",
+        "Q7o", "Q6o", "Q5o", "Q4o", "Q3o", "Q2o",
+        # J8o 移到可練習
+        "J7o", "J6o", "J5o", "J4o", "J3o", "J2o",
+        "T8o", "T7o", "T6o", "T5o", "T4o", "T3o", "T2o",
         "97o", "96o", "95o", "94o", "93o", "92o",
         "86o", "85o", "84o", "83o", "82o",
         "76o", "75o", "74o", "73o",
         "65o", "64o", "63o",
-        "54o", "53o", "43o",
-        # === 離邊緣太遠的 suited ===
-        "Q4s", "Q3s", "Q2s",
-        "J5s", "J4s", "J3s", "J2s",
-        "T5s", "T4s",
-        "95s",
-        "85s",
-        "64s", "53s", "43s",
-        # === 離邊緣太遠的小對子 ===
-        "22",
+        "54o", "53o", "43o", "32o", "42o", "52o",
     },
     "BTN": BASE_EXCLUDED_HANDS | {
-        # === 100% 開的牌（不用練）===
-        "JJ", "TT", "99", "88", "77",
-        "AQs", "AJs", "ATs",
-        "AQo",
-        # === 離邊緣太遠的 offsuit ===
-        "K6o", "K5o", "K4o", "K3o", "K2o",
+        # === 100% 開的牌 ===
+        "JJ", "TT", "99", "88", "77", "66", "55", "44",
+        "AQs", "AJs", "ATs", "A9s", "A8s", "A7s", "A6s", "A5s", "A4s", "A3s", "A2s",
+        "KQs", "KJs", "KTs", "K9s", "K8s", "K7s", "K6s", "K5s", "K4s", "K3s",
+        "QJs", "QTs", "Q9s", "Q8s", "Q7s", "Q6s", "Q5s", "Q4s",
+        "JTs", "J9s", "J8s", "J7s", "J6s",
+        "T9s", "T8s", "T7s",
+        "98s", "97s",
+        "87s",
+        # J4s, 32s, Q8o, T4s, 65s, 42s, 97o, T7o, J7o 移到可練習
+        "AQo", "AJo", "ATo", "A9o", "A8o", "A7o", "A6o", "A5o",
+        "KQo", "KJo", "KTo",
+        "QJo", "QTo",
+        "JTo",
+        # === 離邊界太遠的 suited ===
+        "T3s",
+        "63s",
+        "84s",  # 84s 不考
+        "52s",  # BTN 不考
+        # === 離邊界太遠的 offsuit ===
+        "K5o", "K4o", "K3o", "K2o",
         "Q7o", "Q6o", "Q5o", "Q4o", "Q3o", "Q2o",
-        "J7o", "J6o", "J5o", "J4o", "J3o", "J2o",
+        # J7o 移到可練習
+        "J6o", "J5o", "J4o", "J3o", "J2o",
+        # T7o 移到可練習
         "T6o", "T5o", "T4o", "T3o", "T2o",
+        # 97o 移到可練習
         "96o", "95o", "94o", "93o", "92o",
-        "85o", "84o", "83o", "82o",
-        "75o", "74o", "73o",
-        "64o", "63o",
-        "53o", "43o",
-        # === 離邊緣太遠的 suited ===
-        "J2s",
-        "T4s",
-        "53s",
+        "86o", "85o", "84o", "83o", "82o",
+        "76o", "75o", "74o", "73o",
+        "65o", "64o", "63o",
+        "54o", "53o", "43o", "32o", "42o", "52o",
     },
     "SB": BASE_EXCLUDED_HANDS | {
-        # === 100% 開的牌（不用練）===
-        "JJ", "TT", "99", "88", "77", "66",
-        "AQs", "AJs", "ATs", "A9s",
-        "AQo", "AJo",
-        # === 離邊緣太遠的 offsuit ===
-        "K6o", "K5o", "K4o", "K3o", "K2o",
+        # === 100% 開的牌 ===
+        "JJ", "TT", "99", "88", "77", "66", "55", "44", "33",
+        "AQs", "AJs", "ATs", "A9s", "A8s", "A7s", "A6s", "A5s", "A4s", "A3s", "A2s",
+        "KQs", "KJs", "KTs", "K9s", "K8s", "K7s", "K6s", "K5s", "K4s", "K3s", "K2s",
+        "QJs", "QTs", "Q9s", "Q8s", "Q7s", "Q6s", "Q5s", "Q4s",
+        "JTs", "J9s", "J8s", "J7s", "J6s", "J5s",
+        "T9s", "T8s", "T7s",
+        "98s", "97s",
+        "87s", "86s",
+        "76s",
+        "65s",
+        # J7o, T7o, 97o, 86o, 76o, 32s, 42s, 52s, 84s 移到可練習
+        "AQo", "AJo", "ATo", "A9o", "A8o", "A7o", "A6o", "A5o",
+        "KQo", "KJo", "KTo",
+        "QJo", "QTo",
+        "JTo",
+        # === 離邊界太遠的 suited ===
+        "T3s",
+        # === 離邊界太遠的 offsuit ===
+        "K5o", "K4o", "K3o", "K2o",
         "Q7o", "Q6o", "Q5o", "Q4o", "Q3o", "Q2o",
-        "J7o", "J6o", "J5o", "J4o", "J3o", "J2o",
+        "J6o", "J5o", "J4o", "J3o", "J2o",
         "T6o", "T5o", "T4o", "T3o", "T2o",
         "96o", "95o", "94o", "93o", "92o",
         "85o", "84o", "83o", "82o",
         "75o", "74o", "73o",
-        "64o", "63o",
-        "53o", "43o",
-        # === 離邊緣太遠的 suited ===
-        "T4s",
+        "65o", "64o", "63o",
+        "54o", "53o", "43o", "32o",
+        "42o", "52o",  # SB 不考
     },
 }
 
@@ -200,30 +263,35 @@ def get_interesting_hand(range_data: dict, scenario_type: str = "vs_rfi", positi
     """
     Generate an 'interesting' hand for drilling.
 
-    80%: 從 action ranges 選（有實際決策的手牌：raise/call/3bet/4bet/5bet）
-    20%: 從 drillable hands 隨機選（練習 fold 決策）
+    從 drillable hands 中選擇，確保只出現在練習範圍內的牌。
+    優先選擇有動作的牌（raise/call/3bet 等），但也會出 fold 邊緣牌。
 
     Args:
         range_data: Range data for the scenario
         scenario_type: Type of scenario
         position: Position name for position-specific drillable hands
     """
-    # 收集有動作的手牌（非 fold）
+    # 取得該位置的可練習手牌
+    drillable = set(get_drillable_hands(position=position))
+
+    # 收集有動作的手牌（非 fold），但必須在 drillable 範圍內
     action_hands = []
     for action in ["raise", "3bet", "4bet", "5bet", "call"]:
         if action in range_data:
-            action_hands.extend(range_data[action])
+            for h in range_data[action]:
+                if h in drillable:
+                    action_hands.append(h)
     action_hands = list(set(action_hands))
 
     if random.random() < 0.8 and action_hands:
-        # 80%: 從有動作的手牌選
+        # 80%: 從有動作且在 drillable 範圍的手牌選
         hand_str = random.choice(action_hands)
         return Hand(hand_str)
     else:
         # 20%: 從所有可練習手牌選（包含 fold 邊緣牌）
-        drillable = get_drillable_hands(position=position)
-        if drillable:
-            return Hand(random.choice(drillable))
+        drillable_list = list(drillable)
+        if drillable_list:
+            return Hand(random.choice(drillable_list))
         return random_hand()
 
 

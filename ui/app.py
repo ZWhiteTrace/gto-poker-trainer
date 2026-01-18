@@ -15,7 +15,7 @@ from core.position import Position, POSITIONS_6MAX
 from core.scenario import Scenario, ActionType
 from core.evaluator import Evaluator
 from trainer.drill import PreflopDrill, Spot, get_drillable_hands
-from trainer.tips import format_relevant_range_tip, get_hand_category_tip
+from trainer.tips import format_relevant_range_tip, get_hand_category_tip, RFI_RANGE_TIPS, format_rfi_tip
 from core.equity import EquityQuiz, EquityQuestion
 from core.outs import OutsQuiz, OutsQuestion, Card
 from core.postflop import PostflopDrill, PostflopSpot, PostflopAction, PostflopResult, TEXTURE_NAMES, HeroCard
@@ -1788,36 +1788,132 @@ def learning_page():
 
     # Tabs for different topics
     if lang == "zh":
-        tabs = ["RFI 速記表", "權益對抗", "Outs 補牌", "賠率表", "起手牌", "SPR 法則", "翻後策略", "資金管理"]
+        tabs = ["RFI 速記表", "RFI 範圍提示", "權益對抗", "Outs 補牌", "賠率表", "起手牌", "SPR 法則", "翻後策略", "資金管理"]
     else:
-        tabs = ["RFI Charts", "Equity", "Outs", "Pot Odds", "Starting Hands", "SPR", "Post-flop", "Bankroll"]
+        tabs = ["RFI Charts", "RFI Tips", "Equity", "Outs", "Pot Odds", "Starting Hands", "SPR", "Post-flop", "Bankroll"]
 
-    tab0, tab1, tab2, tab3, tab4, tab5, tab6, tab7 = st.tabs(tabs)
+    tab0, tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8 = st.tabs(tabs)
 
     with tab0:
         evaluator = Evaluator()
         display_rfi_charts(evaluator, lang)
 
     with tab1:
-        _display_equity_learning(lang)
+        _display_rfi_tips_learning(lang)
 
     with tab2:
-        _display_outs_learning(lang)
+        _display_equity_learning(lang)
 
     with tab3:
-        _display_pot_odds_learning(lang)
+        _display_outs_learning(lang)
 
     with tab4:
-        _display_starting_hands_learning(lang)
+        _display_pot_odds_learning(lang)
 
     with tab5:
-        _display_spr_learning(lang)
+        _display_starting_hands_learning(lang)
 
     with tab6:
-        _display_postflop_learning(lang)
+        _display_spr_learning(lang)
 
     with tab7:
+        _display_postflop_learning(lang)
+
+    with tab8:
         _display_bankroll_learning(lang)
+
+
+def _display_rfi_tips_learning(lang: str):
+    """Display RFI range tips from tips.py - same data source as error feedback."""
+
+    title = "📊 各位置 RFI 開池範圍提示" if lang == "zh" else "📊 RFI Opening Range Tips by Position"
+    subtitle = "這些提示也會在錯題時顯示，方便記憶邊界牌" if lang == "zh" else "These tips are also shown on incorrect answers to help memorize edge hands"
+
+    st.markdown(f"### {title}")
+    st.caption(subtitle)
+
+    # Position colors matching RFI chart
+    pos_colors = {
+        "UTG": "#7f1d1d",
+        "HJ": "#b91c1c",
+        "CO": "#dc2626",
+        "BTN": "#ef4444",
+        "SB": "#fca5a5",
+    }
+
+    for pos in ["UTG", "HJ", "CO", "BTN", "SB"]:
+        tip_data = RFI_RANGE_TIPS.get(pos, {})
+        if not tip_data:
+            continue
+
+        color = pos_colors.get(pos, "#3b82f6")
+        range_pct = tip_data.get("range_pct", "")
+
+        # Header with position and percentage
+        st.markdown(f"""
+        <div style="background: {color}; padding: 10px 15px; border-radius: 8px 8px 0 0; margin-top: 15px;">
+            <span style="color: white; font-weight: bold; font-size: 1.1rem;">{pos}</span>
+            <span style="color: rgba(255,255,255,0.8); margin-left: 10px;">{range_pct}</span>
+        </div>
+        """, unsafe_allow_html=True)
+
+        # Content box
+        content_html = '<div style="background: #1e293b; padding: 12px 15px; border-radius: 0 0 8px 8px; border: 1px solid #374151; border-top: none;">'
+
+        # Build content rows
+        rows = []
+
+        if lang == "zh":
+            field_labels = {
+                "pairs": "對子",
+                "suited_aces": "同花A",
+                "suited_kings": "同花K",
+                "suited_queens": "同花Q",
+                "suited_jacks": "同花J",
+                "suited_broadways": "同花百搭",
+                "suited_connectors": "同花連張",
+                "offsuit_aces": "不同花A",
+                "offsuit_broadways": "不同花百搭",
+            }
+        else:
+            field_labels = {
+                "pairs": "Pairs",
+                "suited_aces": "Suited Aces",
+                "suited_kings": "Suited Kings",
+                "suited_queens": "Suited Queens",
+                "suited_jacks": "Suited Jacks",
+                "suited_broadways": "Suited Broadways",
+                "suited_connectors": "Suited Connectors",
+                "offsuit_aces": "Offsuit Aces",
+                "offsuit_broadways": "Offsuit Broadways",
+            }
+
+        for field, label in field_labels.items():
+            if field in tip_data:
+                value = tip_data[field]
+                rows.append(f'<div style="display: flex; margin-bottom: 6px;"><span style="color: #94a3b8; min-width: 100px;">{label}:</span><span style="color: #e2e8f0;">{value}</span></div>')
+
+        content_html += "".join(rows)
+
+        # Edge hands highlight
+        if "edge_hands" in tip_data and tip_data["edge_hands"]:
+            edge_str = ", ".join(tip_data["edge_hands"])
+            edge_label = "⚠️ 邊緣牌" if lang == "zh" else "⚠️ Edge Hands"
+            content_html += f'<div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid #374151;"><span style="color: #fbbf24; font-weight: bold;">{edge_label}:</span><span style="color: #fbbf24; margin-left: 8px;">{edge_str}</span></div>'
+
+        # Memory tip
+        tip_key = "tip_zh" if lang == "zh" else "tip_en"
+        if tip_key in tip_data:
+            tip_label = "📝 記憶提示" if lang == "zh" else "📝 Memory Tip"
+            content_html += f'<div style="margin-top: 8px; padding: 8px; background: #0f172a; border-radius: 4px;"><span style="color: #60a5fa;">{tip_label}:</span><span style="color: #cbd5e1; margin-left: 8px;">{tip_data[tip_key]}</span></div>'
+
+        content_html += '</div>'
+        st.markdown(content_html, unsafe_allow_html=True)
+
+    # Data source note
+    st.markdown("---")
+    source_note = "💡 資料來源：`trainer/tips.py` - 修改此檔案可同時更新錯題提示和此頁面" if lang == "zh" else "💡 Data source: `trainer/tips.py` - Edit this file to update both error feedback and this page"
+    st.caption(source_note)
 
 
 def _display_equity_learning(lang: str):

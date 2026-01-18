@@ -323,8 +323,13 @@ def _generate_grid_html(grid_data: List[List[Dict]], highlight_hand: str = None,
         box-shadow: 0 0 0 3px white, 0 0 8px 2px rgba(255, 255, 255, 0.6), inset 0 0 0 3px rgba(255, 255, 255, 0.45);
         z-index: 10;
     }
-    .range-cell.dimmed {
-        opacity: 0.80;
+    /* 出題範圍：正常顯示 */
+    .range-cell.drillable-mark {
+        /* 無額外樣式，保持原樣 */
+    }
+    /* 非出題範圍：暗掉 */
+    .range-cell.non-drillable {
+        opacity: 0.5;
     }
     .range-cell.filtered-out {
         opacity: 0.5 !important;
@@ -458,8 +463,8 @@ def _generate_grid_html(grid_data: List[List[Dict]], highlight_hand: str = None,
                     matches_filter = is_mixed or (call_freq > 0 and call_freq < 100)
                 elif active_filter == "highlight":
                     matches_filter = cell.get('highlight', False)
-                elif active_filter == "non_drillable":
-                    matches_filter = not cell.get('drillable', True)
+                elif active_filter == "drillable":
+                    matches_filter = cell.get('drillable', True)
                 elif active_filter == "premium":
                     matches_filter = get_premium_tier(cell['hand']) > 0
 
@@ -468,8 +473,11 @@ def _generate_grid_html(grid_data: List[List[Dict]], highlight_hand: str = None,
                 classes = f"range-cell {cell['type']} highlight"
             else:
                 classes = f"range-cell {cell['type']}"
-                if not cell.get('drillable', True):
-                    classes += " dimmed"
+                # 出題範圍用閃動底線標示，非出題範圍輕微淡化
+                if cell.get('drillable', True):
+                    classes += " drillable-mark"
+                else:
+                    classes += " non-drillable"
 
             # Apply filter dimming (stronger than drillable dimming)
             if active_filter and not matches_filter:
@@ -553,7 +561,7 @@ def _display_legend(show_mixed: bool = False, show_drillable: bool = False, show
         st.session_state[filter_key] = "全部"
 
     # Build original colored HTML legend
-    drillable_html = '<span style="margin-left: 10px;"><span style="background: #374151; color: #9ca3af; padding: 2px 8px; border-radius: 3px; opacity: 0.80;">⬛</span> 非出題範圍</span>' if show_drillable else ""
+    drillable_html = '<span style="margin-left: 10px;"><span style="background: #374151; color: white; padding: 2px 8px; border-radius: 3px; border-bottom: 3px solid white;">✦</span> 出題範圍</span>' if show_drillable else ""
     call_html = '<span style="margin-right: 10px;"><span style="background: #22c55e; color: white; padding: 2px 8px; border-radius: 3px;">C</span> Call</span>' if show_call else ""
     mixed_html = ""
     if show_mixed or show_frequency:
@@ -570,7 +578,7 @@ def _display_legend(show_mixed: bool = False, show_drillable: bool = False, show
     if show_mixed or show_frequency:
         filter_options.append("🟣 Mixed")
     if show_drillable:
-        filter_options.append("⬛ 非出題")
+        filter_options.append("✦ 出題範圍")
 
     # Center the radio using columns
     col1, col2, col3 = st.columns([1, 6, 1])
@@ -592,7 +600,7 @@ def _display_legend(show_mixed: bool = False, show_drillable: bool = False, show
         "🟢 Call": "call",
         "🔵 Fold": "fold",
         "🟣 Mixed": "mixed",
-        "⬛ 非出題": "non_drillable",
+        "✦ 出題範圍": "drillable",
     }
     return filter_map.get(selected, None)
 
