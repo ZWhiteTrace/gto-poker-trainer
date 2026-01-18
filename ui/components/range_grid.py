@@ -8,6 +8,22 @@ from typing import List, Dict, Set, Optional
 
 RANKS = ['A', 'K', 'Q', 'J', 'T', '9', '8', '7', '6', '5', '4', '3', '2']
 
+# Premium 手牌分級 - 用於 3bet/4bet/5bet 的強牌
+PREMIUM_T1 = {"AA", "KK", "QQ", "AKs", "AKo"}  # 5-bet all-in 可以
+PREMIUM_T2 = {"JJ", "TT", "AQs", "AQo", "KQs"}  # 4-bet / call 4-bet
+PREMIUM_T3 = {"99", "AJs", "KJs", "QJs", "ATs"}  # 3-bet 為主
+
+
+def get_premium_tier(hand: str) -> int:
+    """取得手牌的 Premium 等級 (0=無, 1=T3, 2=T2, 3=T1)"""
+    if hand in PREMIUM_T1:
+        return 3
+    elif hand in PREMIUM_T2:
+        return 2
+    elif hand in PREMIUM_T3:
+        return 1
+    return 0
+
 
 def create_range_grid(
     raise_hands: List[str] = None,
@@ -301,6 +317,28 @@ def _generate_grid_html(grid_data: List[List[Dict]], highlight_hand: str = None,
         opacity: 0.5 !important;
         filter: grayscale(50%);
     }
+    /* Premium 手牌邊框樣式 */
+    .range-cell.premium-t1 {
+        box-shadow: 0 0 0 3px #fbbf24, 0 0 8px 2px rgba(251, 191, 36, 0.6);
+        z-index: 2;
+    }
+    .range-cell.premium-t2 {
+        box-shadow: 0 0 0 2px white;
+        z-index: 1;
+    }
+    .range-cell.premium-t3 {
+        box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.7);
+    }
+    /* Hover 時保持 premium 樣式 */
+    .range-cell.premium-t1:hover {
+        box-shadow: 0 0 0 3px #fbbf24, 0 0 12px 4px rgba(251, 191, 36, 0.8), 0 4px 12px rgba(0,0,0,0.4);
+    }
+    .range-cell.premium-t2:hover {
+        box-shadow: 0 0 0 2px white, 0 4px 12px rgba(0,0,0,0.4);
+    }
+    .range-cell.premium-t3:hover {
+        box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.7), 0 4px 12px rgba(0,0,0,0.4);
+    }
     /* Custom tooltip - default shows above */
     .range-cell .tooltip {
         visibility: hidden;
@@ -385,6 +423,8 @@ def _generate_grid_html(grid_data: List[List[Dict]], highlight_hand: str = None,
                     matches_filter = cell.get('highlight', False)
                 elif active_filter == "non_drillable":
                     matches_filter = not cell.get('drillable', True)
+                elif active_filter == "premium":
+                    matches_filter = get_premium_tier(cell['hand']) > 0
 
             # Build inline background style based on frequencies
             if cell['highlight']:
@@ -397,6 +437,15 @@ def _generate_grid_html(grid_data: List[List[Dict]], highlight_hand: str = None,
             # Apply filter dimming (stronger than drillable dimming)
             if active_filter and not matches_filter:
                 classes += " filtered-out"
+
+            # Add premium tier class (金框/白框)
+            premium_tier = get_premium_tier(cell['hand'])
+            if premium_tier == 3:
+                classes += " premium-t1"
+            elif premium_tier == 2:
+                classes += " premium-t2"
+            elif premium_tier == 1:
+                classes += " premium-t3"
 
             # Add top-row class for first 2 rows (tooltip shows below)
             if row_idx < 2:
@@ -467,16 +516,20 @@ def _display_legend(show_mixed: bool = False, show_drillable: bool = False, show
     if show_mixed or show_frequency:
         mixed_html = '<span style="margin-right: 10px;"><span style="background: linear-gradient(to right, #ef4444 0%, #ef4444 70%, #3b82f6 70%, #3b82f6 100%); color: white; padding: 2px 8px; border-radius: 3px; text-shadow: 0 1px 2px rgba(0,0,0,0.5);">M</span> Mixed</span>'
 
-    html = f'<div style="display: flex; gap: 15px; justify-content: center; margin: 8px 0; flex-wrap: wrap; font-size: 14px;"><span style="margin-right: 10px;"><span style="background: #ef4444; color: white; padding: 2px 8px; border-radius: 3px;">R</span> Raise</span>{call_html}<span style="margin-right: 10px;"><span style="background: #3b82f6; color: white; padding: 2px 8px; border-radius: 3px;">F</span> Fold</span>{mixed_html}{drillable_html}</div>'
+    # Premium 圖例
+    premium_html = '<span style="margin-left: 10px;"><span style="background: #1f2937; border: 2px solid #fbbf24; color: white; padding: 1px 6px; border-radius: 3px; box-shadow: 0 0 4px rgba(251,191,36,0.5);">T1</span> <span style="background: #1f2937; border: 2px solid white; color: white; padding: 1px 6px; border-radius: 3px;">T2</span> <span style="background: #1f2937; border: 1px solid rgba(255,255,255,0.7); color: white; padding: 1px 6px; border-radius: 3px;">T3</span> Premium</span>'
+
+    html = f'<div style="display: flex; gap: 15px; justify-content: center; margin: 8px 0; flex-wrap: wrap; font-size: 14px;"><span style="margin-right: 10px;"><span style="background: #ef4444; color: white; padding: 2px 8px; border-radius: 3px;">R</span> Raise</span>{call_html}<span style="margin-right: 10px;"><span style="background: #3b82f6; color: white; padding: 2px 8px; border-radius: 3px;">F</span> Fold</span>{mixed_html}{premium_html}{drillable_html}</div>'
     st.markdown(html, unsafe_allow_html=True)
 
-    # Filter options - fixed order: 全部, Raise, Call, Fold, Mixed, 非出題
+    # Filter options - fixed order: 全部, Raise, Call, Fold, Mixed, Premium, 非出題
     filter_options = ["全部", "🔴 Raise"]
     if show_call:
         filter_options.append("🟢 Call")
     filter_options.append("🔵 Fold")
     if show_mixed or show_frequency:
         filter_options.append("🟣 Mixed")
+    filter_options.append("⭐ Premium")
     if show_drillable:
         filter_options.append("⬛ 非出題")
 
@@ -500,6 +553,7 @@ def _display_legend(show_mixed: bool = False, show_drillable: bool = False, show
         "🟢 Call": "call",
         "🔵 Fold": "fold",
         "🟣 Mixed": "mixed",
+        "⭐ Premium": "premium",
         "⬛ 非出題": "non_drillable",
     }
     return filter_map.get(selected, None)
