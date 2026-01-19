@@ -27,7 +27,7 @@ from ui.components.card_display import display_hand_cards
 from ui.components.action_flow import display_action_flow, RAISE_SIZES
 from ui.components.storage import save_progress_to_storage, load_progress_from_storage, init_storage_sync
 from ui.components.rfi_chart import display_rfi_charts
-from ui.components.push_fold_chart import display_push_fold_chart, display_push_fold_comparison
+from ui.components.push_fold_chart import display_push_fold_chart, display_push_fold_comparison, display_push_fold_drill
 # Achievements system removed for simplification
 
 # Page URL mappings
@@ -325,6 +325,7 @@ TEXTS = {
         "title": "GTO 翻前訓練器",
         "drill_mode": "練習模式",
         "range_viewer": "範圍查看",
+        "push_fold": "MTT 短碼",
         "statistics": "統計分析",
         "settings": "設定",
         "table_format": "桌型",
@@ -427,6 +428,7 @@ TEXTS = {
         "title": "GTO Preflop Trainer",
         "drill_mode": "Drill Mode",
         "range_viewer": "Range Viewer",
+        "push_fold": "MTT Short Stack",
         "statistics": "Statistics",
         "settings": "Settings",
         "table_format": "Table Format",
@@ -599,7 +601,7 @@ def main():
         st.markdown("<div style='height: 5px;'></div>", unsafe_allow_html=True)
 
         # Navigation
-        nav_options = [t("drill_mode"), t("range_viewer"), t("postflop"), t("equity_quiz"), t("outs_quiz"), t("ev_quiz"), t("learning"), t("statistics")]
+        nav_options = [t("drill_mode"), t("range_viewer"), t("push_fold"), t("postflop"), t("equity_quiz"), t("outs_quiz"), t("ev_quiz"), t("learning"), t("statistics")]
         page_idx = st.radio(
             "Navigate",
             options=range(len(nav_options)),
@@ -1558,16 +1560,25 @@ def viewer_page():
 
 
 def push_fold_page():
-    """MTT Push/Fold chart page."""
+    """MTT Push/Fold chart page with practice mode."""
     lang = st.session_state.language
 
-    # Main chart
-    display_push_fold_chart(lang)
+    # Tabs for chart view and practice mode
+    tab_labels = ["📊 圖表", "🎯 練習"] if lang == "zh" else ["📊 Charts", "🎯 Practice"]
+    tab1, tab2 = st.tabs(tab_labels)
 
-    st.markdown("---")
+    with tab1:
+        # Main chart
+        display_push_fold_chart(lang)
 
-    # Position comparison
-    display_push_fold_comparison(lang)
+        st.markdown("---")
+
+        # Position comparison
+        display_push_fold_comparison(lang)
+
+    with tab2:
+        # Practice mode
+        display_push_fold_drill(lang)
 
 
 def postflop_page():

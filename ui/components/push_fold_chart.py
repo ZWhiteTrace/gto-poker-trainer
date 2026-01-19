@@ -6,6 +6,9 @@ import streamlit as st
 import json
 from pathlib import Path
 
+from trainer.push_fold_drill import get_push_fold_drill, PushFoldSpot, STACK_DEPTHS
+from ui.components.card_display import display_hand_cards
+
 RANKS = ['A', 'K', 'Q', 'J', 'T', '9', '8', '7', '6', '5', '4', '3', '2']
 POSITIONS = ["UTG", "HJ", "CO", "BTN", "SB"]
 
@@ -209,3 +212,137 @@ def display_push_fold_comparison(lang: str = "zh"):
         st.info("位置越靠後，Push 範圍越寬。SB 面對一個對手時範圍最寬。")
     else:
         st.info("Later positions have wider push ranges. SB is widest when facing only one opponent.")
+
+
+def display_push_fold_drill(lang: str = "zh"):
+    """Display Push/Fold drill mode for practice."""
+
+    # Initialize session state
+    if "pf_drill" not in st.session_state:
+        st.session_state.pf_drill = get_push_fold_drill()
+    if "pf_spot" not in st.session_state:
+        st.session_state.pf_spot = None
+    if "pf_result" not in st.session_state:
+        st.session_state.pf_result = None
+    if "pf_stats" not in st.session_state:
+        st.session_state.pf_stats = {"total": 0, "correct": 0, "streak": 0, "best_streak": 0}
+
+    drill = st.session_state.pf_drill
+
+    # Title
+    title = "Push/Fold 練習" if lang == "zh" else "Push/Fold Practice"
+    st.subheader(title)
+
+    # Settings in expander
+    with st.expander("⚙️ " + ("設定" if lang == "zh" else "Settings"), expanded=False):
+        col1, col2 = st.columns(2)
+
+        with col1:
+            stack_label = "籌碼深度" if lang == "zh" else "Stack Depth"
+            stack_options = ["10bb", "15bb", "20bb"]
+            selected_stacks = st.multiselect(
+                stack_label,
+                stack_options,
+                default=stack_options,
+                key="pf_stack_select"
+            )
+            if selected_stacks:
+                drill.set_enabled_stack_depths(selected_stacks)
+
+        with col2:
+            pos_label = "位置" if lang == "zh" else "Positions"
+            selected_positions = st.multiselect(
+                pos_label,
+                POSITIONS,
+                default=POSITIONS,
+                key="pf_pos_select"
+            )
+            if selected_positions:
+                drill.set_enabled_positions(selected_positions)
+
+    # Stats display
+    stats = st.session_state.pf_stats
+    stats_cols = st.columns(4)
+    with stats_cols[0]:
+        label = "總數" if lang == "zh" else "Total"
+        st.metric(label, stats["total"])
+    with stats_cols[1]:
+        label = "正確" if lang == "zh" else "Correct"
+        pct = (stats["correct"] / stats["total"] * 100) if stats["total"] > 0 else 0
+        st.metric(label, f"{stats['correct']} ({pct:.0f}%)")
+    with stats_cols[2]:
+        label = "連勝" if lang == "zh" else "Streak"
+        st.metric(label, stats["streak"])
+    with stats_cols[3]:
+        label = "最佳" if lang == "zh" else "Best"
+        st.metric(label, stats["best_streak"])
+
+    st.markdown("---")
+
+    # Generate new spot if needed
+    if st.session_state.pf_spot is None:
+        st.session_state.pf_spot = drill.generate_spot()
+        st.session_state.pf_result = None
+
+    spot = st.session_state.pf_spot
+
+    # Display scenario
+    scenario_text = f"**{spot.position}** | **{spot.stack_depth.upper()}**"
+    st.markdown(f"<div style='text-align:center; font-size:1.3em; margin-bottom:15px;'>{scenario_text}</div>", unsafe_allow_html=True)
+
+    # Display hand cards
+    display_hand_cards(str(spot.hand))
+
+    # Action buttons
+    if st.session_state.pf_result is None:
+        col1, col2 = st.columns(2)
+        with col1:
+            if st.button("🚀 Push", key="btn_push", use_container_width=True, type="primary"):
+                _handle_answer("push", lang)
+        with col2:
+            if st.button("🃏 Fold", key="btn_fold", use_container_width=True):
+                _handle_answer("fold", lang)
+    else:
+        # Show result
+        result = st.session_state.pf_result
+        if result.is_correct:
+            st.success("✅ " + ("正確！" if lang == "zh" else "Correct!"))
+        else:
+            correct_text = "Push" if result.correct_action == "push" else "Fold"
+            st.error("❌ " + (f"錯誤！正確答案: {correct_text}" if lang == "zh" else f"Wrong! Correct: {correct_text}"))
+
+        st.info(result.explanation)
+
+        # Show range info
+        range_info = f"該位置/深度 Push 範圍: {result.push_range_count} 手 ({result.push_range_pct:.1f}%)"
+        if lang == "en":
+            range_info = f"Push range at this spot: {result.push_range_count} hands ({result.push_range_pct:.1f}%)"
+        st.caption(range_info)
+
+        # Next button
+        if st.button("➡️ " + ("下一題" if lang == "zh" else "Next"), key="btn_next", use_container_width=True):
+            st.session_state.pf_spot = drill.generate_spot()
+            st.session_state.pf_result = None
+            st.rerun()
+
+
+def _handle_answer(action: str, lang: str):
+    """Handle player's answer."""
+    drill = st.session_state.pf_drill
+    spot = st.session_state.pf_spot
+    stats = st.session_state.pf_stats
+
+    result = drill.check_answer(spot, action)
+    st.session_state.pf_result = result
+
+    # Update stats
+    stats["total"] += 1
+    if result.is_correct:
+        stats["correct"] += 1
+        stats["streak"] += 1
+        if stats["streak"] > stats["best_streak"]:
+            stats["best_streak"] = stats["streak"]
+    else:
+        stats["streak"] = 0
+
+    st.rerun()
