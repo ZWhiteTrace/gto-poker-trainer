@@ -286,6 +286,15 @@ def _display_batch_results(result: BatchAnalysisResult, lang: str):
     # Summary metrics
     st.markdown("### " + ("總體統計" if lang == "zh" else "Overall Statistics"))
 
+    # Handle both old and new result format (for cached results)
+    hands_won = getattr(result, 'hands_won', None)
+    hands_lost = getattr(result, 'hands_lost', None)
+
+    # If old format, calculate from data
+    if hands_won is None:
+        hands_won = len([r for r in result.biggest_winners if r.profit > 0])
+        hands_lost = result.total_hands - hands_won
+
     col1, col2, col3, col4 = st.columns(4)
     with col1:
         st.metric(
@@ -301,11 +310,11 @@ def _display_batch_results(result: BatchAnalysisResult, lang: str):
     with col3:
         st.metric(
             "盈利手數" if lang == "zh" else "Hands Won",
-            f"{result.hands_won}",
-            delta=f"{result.hands_lost} 虧損" if lang == "zh" else f"{result.hands_lost} lost"
+            f"{hands_won}",
+            delta=f"{hands_lost} 虧損" if lang == "zh" else f"{hands_lost} lost"
         )
     with col4:
-        win_rate = (result.hands_won / result.total_hands * 100) if result.total_hands > 0 else 0
+        win_rate = (hands_won / result.total_hands * 100) if result.total_hands > 0 else 0
         st.metric(
             "盈利率" if lang == "zh" else "Win Rate",
             f"{win_rate:.1f}%"
