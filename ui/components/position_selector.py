@@ -13,16 +13,12 @@ def display_position_selector(
     selected_position: str,
     on_select_key: str = "selected_position",
     compact: bool = True,
-    table_format: str = "6max",
 ) -> str:
     """
     Display an interactive position selector as clickable buttons around a mini table.
     Returns the selected position.
     """
-    if table_format == "9max":
-        return _display_9max_selector(positions, selected_position, on_select_key, compact)
-    else:
-        return _display_6max_selector(positions, selected_position, on_select_key, compact)
+    return _display_6max_selector(positions, selected_position, on_select_key, compact)
 
 
 def _display_6max_selector(
@@ -107,47 +103,6 @@ def _display_6max_selector(
                 if st.button(pos, key=f"{on_select_key}_{pos}", use_container_width=True, type=btn_type):
                     st.session_state[on_select_key] = pos
                     st.rerun()
-
-    return st.session_state.get(on_select_key, selected_position)
-
-
-def _display_9max_selector(
-    positions: List[str],
-    selected_position: str,
-    on_select_key: str,
-    compact: bool,
-) -> str:
-    """9-max position selector - simpler button row layout."""
-    # For 9-max, use a simpler horizontal button layout due to space constraints
-    available = [p for p in positions if p in positions]
-
-    # Split into two rows for better display
-    row1 = ["UTG", "UTG+1", "UTG+2", "MP", "HJ"]
-    row2 = ["CO", "BTN", "SB", "BB"]
-
-    cols1 = st.columns(len([p for p in row1 if p in available]))
-    col_idx = 0
-    for pos in row1:
-        if pos in available:
-            with cols1[col_idx]:
-                is_selected = pos == selected_position
-                btn_type = "primary" if is_selected else "secondary"
-                if st.button(pos, key=f"{on_select_key}_{pos}", use_container_width=True, type=btn_type):
-                    st.session_state[on_select_key] = pos
-                    st.rerun()
-            col_idx += 1
-
-    cols2 = st.columns(len([p for p in row2 if p in available]))
-    col_idx = 0
-    for pos in row2:
-        if pos in available:
-            with cols2[col_idx]:
-                is_selected = pos == selected_position
-                btn_type = "primary" if is_selected else "secondary"
-                if st.button(pos, key=f"{on_select_key}_{pos}", use_container_width=True, type=btn_type):
-                    st.session_state[on_select_key] = pos
-                    st.rerun()
-            col_idx += 1
 
     return st.session_state.get(on_select_key, selected_position)
 

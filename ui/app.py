@@ -620,60 +620,20 @@ def main():
         if current_url_page != new_url_page:
             st.query_params["page"] = new_url_page
 
-        # Settings section (compact) - only show table format on Drill Mode and Range Viewer
-        if page in ["Drill Mode", "Range Viewer"]:
-            st.caption(f"⚙️ {t('settings')}")
-
-            # Table format toggle
-            table_format = st.radio(
-                t("table_format"),
-                options=["6-max", "9-max"],
-                index=0 if st.session_state.table_format == "6max" else 1,
-                horizontal=True,
-                label_visibility="collapsed",
-            )
-            new_format = "6max" if table_format == "6-max" else "9max"
-            if new_format != st.session_state.table_format:
-                st.session_state.table_format = new_format
-                st.session_state.drill = PreflopDrill(format=new_format)
-                st.session_state.current_spot = None
-                # Reset drill settings for new format (RFI only for beginners)
-                if new_format == "9max":
-                    st.session_state.drill_action_types = ["RFI"]
-                    st.session_state.drill_positions = ["UTG", "UTG+1", "UTG+2", "MP", "HJ", "CO", "BTN", "SB", "BB"]
-                else:
-                    st.session_state.drill_action_types = ["RFI"]
-                    st.session_state.drill_positions = ["UTG", "HJ", "CO", "BTN", "SB", "BB"]
-                st.rerun()
-
-        # Drill settings (collapsed by default for 6-max with complete data)
+        # Drill settings (collapsed by default)
         if page == "Drill Mode":
             # Initialize persistent drill settings in session state
-            # 9-max has RFI, vs Open, vs 3-Bet data (missing vs_4bet)
             if 'drill_action_types' not in st.session_state:
-                if st.session_state.table_format == "9max":
-                    st.session_state.drill_action_types = ["RFI"]  # Default to RFI only for beginners
-                else:
-                    st.session_state.drill_action_types = ["RFI"]  # Default to RFI only for beginners
+                st.session_state.drill_action_types = ["RFI"]  # Default to RFI only for beginners
             if 'drill_positions' not in st.session_state:
-                if st.session_state.table_format == "9max":
-                    st.session_state.drill_positions = ["UTG", "UTG+1", "UTG+2", "MP", "HJ", "CO", "BTN", "SB", "BB"]
-                else:
-                    st.session_state.drill_positions = ["UTG", "HJ", "CO", "BTN", "SB", "BB"]
+                st.session_state.drill_positions = ["UTG", "HJ", "CO", "BTN", "SB", "BB"]
 
             # Advanced settings in expander (collapsed by default)
             adv_label = "⚙️ 進階設定" if st.session_state.language == "zh" else "⚙️ Advanced Settings"
             with st.expander(adv_label, expanded=False):
-                # Action types - 9-max only has complete RFI data
-                if st.session_state.table_format == "9max":
-                    action_options = ["RFI"]  # Only RFI available for 9-max
-                    valid_action_types = ["RFI"]
-                    # Show warning about incomplete 9-max data
-                    warning_msg = "⚠️ 9-max 目前只有 RFI 資料完整，vs Open / vs 3-Bet / vs 4-Bet 資料建構中" if st.session_state.language == "zh" else "⚠️ 9-max only has complete RFI data. vs Open/3-Bet/4-Bet coming soon"
-                    st.warning(warning_msg)
-                else:
-                    action_options = ["RFI", "vs Open", "vs 3-Bet", "vs 4-Bet"]
-                    valid_action_types = st.session_state.drill_action_types
+                # Action types - all scenarios available for 6-max
+                action_options = ["RFI", "vs Open", "vs 3-Bet", "vs 4-Bet"]
+                valid_action_types = st.session_state.drill_action_types
 
                 action_types = st.multiselect(
                     t("practice_scenarios"),
@@ -695,13 +655,10 @@ def main():
                     action_map[a] for a in action_types
                 ]
 
-                # Positions based on table format
-                if st.session_state.table_format == "9max":
-                    pos_options = ["UTG", "UTG+1", "UTG+2", "MP", "HJ", "CO", "BTN", "SB", "BB"]
-                else:
-                    pos_options = ["UTG", "HJ", "CO", "BTN", "SB", "BB"]
+                # Positions for 6-max
+                pos_options = ["UTG", "HJ", "CO", "BTN", "SB", "BB"]
 
-                # Filter saved positions to valid ones for current format
+                # Filter saved positions to valid ones
                 valid_saved = [p for p in st.session_state.drill_positions if p in pos_options]
                 if not valid_saved:
                     valid_saved = pos_options
@@ -1220,14 +1177,13 @@ def drill_page():
         call_hands = range_data.get("call", [])
         drillable_hands = st.session_state.drill.get_drillable_hands_for_spot(spot)
 
-        # Get frequency data for RFI scenarios (6-max only currently)
+        # Get frequency data for current scenario
         frequencies = {}
-        if st.session_state.table_format == "6max" and spot.scenario.action_type == ActionType.RFI:
-            try:
-                evaluator = Evaluator()
-                frequencies = evaluator.get_frequencies_for_scenario(spot.scenario, format="6max")
-            except (AttributeError, Exception):
-                frequencies = {}
+        try:
+            evaluator = Evaluator()
+            frequencies = evaluator.get_frequencies_for_scenario(spot.scenario, format="6max")
+        except (AttributeError, Exception):
+            frequencies = {}
 
         display_range_grid(
             raise_hands=raise_hands,
@@ -1245,11 +1201,8 @@ def viewer_page():
     table_format = st.session_state.table_format
     lang = st.session_state.language
 
-    # Get positions based on table format
-    if table_format == "9max":
-        position_options = ["UTG", "UTG+1", "UTG+2", "MP", "HJ", "CO", "BTN", "SB", "BB"]
-    else:
-        position_options = ["UTG", "HJ", "CO", "BTN", "SB", "BB"]
+    # Get positions for 6-max
+    position_options = ["UTG", "HJ", "CO", "BTN", "SB", "BB"]
 
     # Initialize viewer session state
     if "viewer_action_type" not in st.session_state:
@@ -1294,11 +1247,8 @@ def viewer_page():
     </div>
     """, unsafe_allow_html=True)
 
-    # Scenario type selector (3-column layout)
-    if table_format == "9max":
-        action_types = ["RFI", "vs Open", "vs 3-Bet"]
-    else:
-        action_types = ["RFI", "vs Open", "vs 3-Bet", "vs 4-Bet"]
+    # Scenario type selector
+    action_types = ["RFI", "vs Open", "vs 3-Bet", "vs 4-Bet"]
 
     if "viewer_selected_tab" not in st.session_state:
         st.session_state.viewer_selected_tab = 0
@@ -1317,11 +1267,6 @@ def viewer_page():
     # Content based on selected tab
     i = st.session_state.viewer_selected_tab
     action_type = action_types[i]
-
-    # Show warning for 9-max non-RFI scenarios (incomplete data)
-    if table_format == "9max" and action_type != "RFI":
-        warning_msg = "⚠️ 9-max 的此場景資料不完整，僅供參考" if lang == "zh" else "⚠️ 9-max data for this scenario is incomplete"
-        st.warning(warning_msg)
 
     # Filter valid positions for this action type
     if action_type == "RFI":
@@ -1369,8 +1314,6 @@ def viewer_page():
     show_action = None
     folded_positions = []
     all_positions = [Position.UTG, Position.HJ, Position.CO, Position.BTN, Position.SB, Position.BB]
-    if table_format == "9max":
-        all_positions = [Position.UTG, Position.UTG1, Position.UTG2, Position.MP, Position.HJ, Position.CO, Position.BTN, Position.SB, Position.BB]
 
     if action_type == "vs Open" and villain_position:
         villain_size = RAISE_SIZES.get(villain_position.value, 2.5)
@@ -1404,54 +1347,29 @@ def viewer_page():
         folded_positions=folded_positions if folded_positions else None,
     )
 
-    # Position buttons below table - 5 or 6 columns
+    # Position buttons below table
     st.markdown(f"<div style='font-size: 0.85rem; color: #94a3b8; margin-top: 8px;'>{t('your_position')}</div>", unsafe_allow_html=True)
 
-    # Use 5 columns for 6-max (5 positions excl BB), 5 columns for 9-max row 1, remaining in row 2
-    num_cols = min(len(valid_positions), 6)
-    hero_cols = st.columns(num_cols)
-    for j, pos in enumerate(valid_positions[:num_cols]):
+    hero_cols = st.columns(len(valid_positions))
+    for j, pos in enumerate(valid_positions):
         with hero_cols[j]:
             is_selected = pos == hero_pos
             if st.button(pos, key=f"hero_{i}_{pos}", use_container_width=True, type="primary" if is_selected else "secondary"):
                 st.session_state[f"viewer_hero_{i}"] = pos
                 st.rerun()
 
-    # Second row if needed (9-max has more positions)
-    if len(valid_positions) > num_cols:
-        remaining = valid_positions[num_cols:]
-        hero_cols2 = st.columns(len(remaining))
-        for j, pos in enumerate(remaining):
-            with hero_cols2[j]:
-                is_selected = pos == hero_pos
-                if st.button(pos, key=f"hero_{i}_{pos}", use_container_width=True, type="primary" if is_selected else "secondary"):
-                    st.session_state[f"viewer_hero_{i}"] = pos
-                    st.rerun()
-
     # Villain position (if applicable)
     villain_pos_select = villain_pos
     if action_type != "RFI" and villains:
         st.markdown(f"<div style='font-size: 0.85rem; color: #94a3b8; margin-top: 6px;'>{t('opponent_position')}</div>", unsafe_allow_html=True)
 
-        num_villain_cols = min(len(villains), 6)
-        villain_cols = st.columns(num_villain_cols)
-        for j, pos in enumerate(villains[:num_villain_cols]):
+        villain_cols = st.columns(len(villains))
+        for j, pos in enumerate(villains):
             with villain_cols[j]:
                 is_selected = pos == villain_pos_select
                 if st.button(pos, key=f"villain_{i}_{pos}", use_container_width=True, type="primary" if is_selected else "secondary"):
                     st.session_state[f"viewer_villain_{i}"] = pos
                     st.rerun()
-
-        # Second row if needed
-        if len(villains) > num_villain_cols:
-            remaining_v = villains[num_villain_cols:]
-            villain_cols2 = st.columns(len(remaining_v))
-            for j, pos in enumerate(remaining_v):
-                with villain_cols2[j]:
-                    is_selected = pos == villain_pos_select
-                    if st.button(pos, key=f"villain_{i}_{pos}", use_container_width=True, type="primary" if is_selected else "secondary"):
-                        st.session_state[f"viewer_villain_{i}"] = pos
-                        st.rerun()
 
     # Build and display scenario
     action_map = {
@@ -1507,13 +1425,11 @@ def viewer_page():
             villain_position=final_villain_pos if action_type != "RFI" else None
         )
 
-        # Get frequency data for all 6-max scenarios (RFI, vs Open, vs 3-Bet, vs 4-Bet)
-        frequencies = {}
-        if table_format == "6max":
-            try:
-                frequencies = evaluator.get_frequencies_for_scenario(scenario, format=table_format)
-            except AttributeError:
-                frequencies = {}  # Fallback if method doesn't exist
+        # Get frequency data for scenarios
+        try:
+            frequencies = evaluator.get_frequencies_for_scenario(scenario, format=table_format)
+        except AttributeError:
+            frequencies = {}  # Fallback if method doesn't exist
 
         # Display range grid first
         display_range_grid(
@@ -1958,13 +1874,12 @@ def stats_page():
                             hero_position=hero_pos, villain_position=villain_pos
                         )
 
-                        # Get frequency data for RFI scenarios
+                        # Get frequency data for scenarios
                         frequencies = {}
-                        if st.session_state.table_format == "6max" and m.spot.scenario.action_type == ActionType.RFI:
-                            try:
-                                frequencies = evaluator.get_frequencies_for_scenario(m.spot.scenario, format="6max")
-                            except (AttributeError, Exception):
-                                frequencies = {}
+                        try:
+                            frequencies = evaluator.get_frequencies_for_scenario(m.spot.scenario, format="6max")
+                        except (AttributeError, Exception):
+                            frequencies = {}
 
                         display_range_grid(
                             raise_hands=raise_hands,

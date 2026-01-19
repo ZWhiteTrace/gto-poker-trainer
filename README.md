@@ -7,7 +7,7 @@ A free, open-source preflop GTO trainer for No-Limit Hold'em.
 - **Range Viewer**: Visualize GTO preflop ranges with 13x13 grid
 - **Drill Mode**: Practice with random hands and instant feedback
 - **Spaced Repetition**: Smart review system to strengthen weak spots
-- **Multi-format**: Support for 6-max and 9-max cash games
+- **Hand Review**: Analyze your hand history with detailed stats
 
 ## Quick Start
 
@@ -26,9 +26,6 @@ streamlit run ui/app.py
 - Facing Open Raise (3-bet or fold)
 - Facing 3-bet (4-bet, call, or fold)
 - Facing 4-bet (5-bet, call, or fold)
-
-### 9-max Cash (Coming Soon)
-- Full ring support
 
 ## Data Sources
 

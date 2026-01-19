@@ -6,7 +6,7 @@ from typing import List
 
 
 class Position(Enum):
-    """Table positions for 6-max and 9-max."""
+    """Table positions for 6-max games."""
     # 6-max positions
     UTG = "UTG"      # Under the Gun (first to act preflop)
     HJ = "HJ"        # Hijack
@@ -15,7 +15,7 @@ class Position(Enum):
     SB = "SB"        # Small Blind
     BB = "BB"        # Big Blind
 
-    # Additional 9-max positions
+    # Additional positions (reserved for future use)
     UTG1 = "UTG+1"   # UTG+1 (also: EP2)
     UTG2 = "UTG+2"   # UTG+2 (also: EP3)
     MP = "MP"        # Middle Position (also: LJ - Lojack)
@@ -63,27 +63,9 @@ POSITIONS_6MAX: List[Position] = [
     Position.BB,
 ]
 
-POSITIONS_9MAX: List[Position] = [
-    Position.UTG,
-    Position.UTG1,
-    Position.UTG2,
-    Position.MP,
-    Position.HJ,
-    Position.CO,
-    Position.BTN,
-    Position.SB,
-    Position.BB,
-]
-
-
 def get_positions(format: str = "6max") -> List[Position]:
-    """Get positions for given format."""
-    if format == "6max":
-        return POSITIONS_6MAX
-    elif format == "9max":
-        return POSITIONS_9MAX
-    else:
-        raise ValueError(f"Unknown format: {format}")
+    """Get positions for 6-max format."""
+    return POSITIONS_6MAX
 
 
 def positions_after(pos: Position, format: str = "6max") -> List[Position]:

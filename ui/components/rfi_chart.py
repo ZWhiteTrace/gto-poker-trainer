@@ -106,7 +106,7 @@ def get_all_rfi_ranges(evaluator: Evaluator, format: str = "6max", min_freq: int
 
     Args:
         evaluator: The evaluator instance
-        format: Table format (6max/9max)
+        format: Table format (6max)
         min_freq: Minimum raise frequency (%) to be considered opening. Default 50%.
     """
     ranges = {}

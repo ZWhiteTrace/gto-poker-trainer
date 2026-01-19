@@ -242,27 +242,20 @@ def test_language_switch(page):
     return True
 
 def test_table_format_switch(page):
-    """Test 8: 6-max/9-max switch works."""
-    print("\n[Test 8] Table format switch...")
+    """Test 8: Verify 6-max table is displayed."""
+    print("\n[Test 8] Table format (6-max only)...")
 
     try:
-        # Look for 9-max button
-        nine_max_btn = page.locator("text=9-max").first
-        if nine_max_btn.is_visible():
-            nine_max_btn.click()
-            page.wait_for_timeout(2000)
-            save_screenshot(page, "08_9max_mode")
-
-            content = page.content()
-            # 9-max should show UTG+1, UTG+2, etc.
-            passed = "UTG" in content
-            status = "PASS" if passed else "FAIL"
-            print(f"  [{status}] 9-max mode works")
-            return passed
+        content = page.content()
+        # 6-max should show UTG, HJ, CO, BTN, SB, BB
+        passed = "6-max" in content.lower() or "6max" in content.lower() or "UTG" in content
+        status = "PASS" if passed else "FAIL"
+        print(f"  [{status}] 6-max table displayed")
+        return passed
     except:
         pass
 
-    print("  [SKIP] Table format toggle not found")
+    print("  [SKIP] Table check not available")
     return True
 
 def test_mobile_viewport(page):

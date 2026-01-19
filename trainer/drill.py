@@ -7,7 +7,7 @@ from typing import List, Optional, Tuple
 from datetime import datetime
 
 from core.hand import Hand, random_hand, ALL_HANDS, RANKS
-from core.position import Position, POSITIONS_6MAX, POSITIONS_9MAX, positions_before
+from core.position import Position, POSITIONS_6MAX, positions_before
 from core.scenario import Scenario, ActionType
 from core.evaluator import Evaluator, EvalResult
 
@@ -376,7 +376,7 @@ def get_drillable_hands_for_scenario(
 
     Args:
         evaluator: Evaluator instance
-        table_format: "6max" or "9max"
+        table_format: "6max"
         scenario_type: "rfi", "vs_rfi", "vs_3bet", "vs_4bet"
         hero_position: Hero position name
         villain_position: Villain position name (for vs scenarios)
@@ -473,7 +473,7 @@ class PreflopDrill:
     def __init__(self, format: str = "6max"):
         self.format = format
         self.evaluator = Evaluator()
-        self._positions = POSITIONS_6MAX if format == "6max" else POSITIONS_9MAX
+        self._positions = POSITIONS_6MAX
 
         # Drill configuration
         self.enabled_action_types: List[ActionType] = [ActionType.RFI]
