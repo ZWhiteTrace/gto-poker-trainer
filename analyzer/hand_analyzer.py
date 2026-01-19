@@ -260,6 +260,268 @@ class HandAnalyzer:
         return results
 
 
+@dataclass
+class HandResult:
+    """Result summary for a single hand."""
+    hand: HandHistory
+    profit: float  # Positive = won, negative = lost
+    position: str
+    hole_cards: str
+    went_to_showdown: bool
+    pot_size: float
+
+
+@dataclass
+class PositionStats:
+    """Statistics for a position."""
+    position: str
+    hands_played: int
+    hands_won: int
+    total_profit: float
+    vpip_hands: int  # Voluntarily put money in pot
+    avg_pot: float
+
+
+@dataclass
+class BatchAnalysisResult:
+    """Result of batch analysis."""
+    total_hands: int
+    total_profit: float
+    hands_won: int  # Total hands with profit > 0
+    hands_lost: int  # Total hands with profit < 0
+    biggest_winners: List[HandResult]
+    biggest_losers: List[HandResult]
+    position_stats: Dict[str, PositionStats]
+    ai_leak_report: Optional[str] = None
+
+
+class BatchAnalyzer:
+    """Batch analyzer for multiple hands."""
+
+    def __init__(self, ai_client: Optional[BaseAIClient] = None):
+        self.ai_client = ai_client
+
+    def set_ai_client(self, client: BaseAIClient):
+        """Set the AI client for analysis."""
+        self.ai_client = client
+
+    def calculate_hand_result(self, hand: HandHistory) -> Optional[HandResult]:
+        """Calculate the result (profit/loss) for a single hand."""
+        if not hand.hero:
+            return None
+
+        hero_name = hand.hero.name
+        hero_position = hand.hero.position or "Unknown"
+        hero_cards = hand.hero.hole_cards or "??"
+
+        # Calculate money invested by hero - track per street
+        total_invested = 0
+
+        for street_actions in [hand.preflop_actions, hand.flop_actions, hand.turn_actions, hand.river_actions]:
+            street_invested = 0
+            for action in street_actions:
+                if action.player == hero_name:
+                    if action.to_amount is not None:
+                        # Raises: to_amount is the TOTAL bet for this street
+                        # This replaces any previous amount in this street
+                        street_invested = action.to_amount
+                    elif action.amount is not None:
+                        # Calls, bets, blinds: add to street investment
+                        street_invested += action.amount
+            total_invested += street_invested
+
+        # Calculate winnings
+        won = hand.winners.get(hero_name, 0)
+
+        # Profit = won - invested (if won, profit is winnings minus investment)
+        # If lost, profit is negative (lost the investment)
+        if won > 0:
+            profit = won - total_invested
+        else:
+            profit = -total_invested
+
+        # Check if went to showdown (has river and hero was still in the hand)
+        went_to_showdown = hand.river is not None and len(hand.river_actions) > 0
+
+        return HandResult(
+            hand=hand,
+            profit=profit,
+            position=hero_position,
+            hole_cards=hero_cards,
+            went_to_showdown=went_to_showdown,
+            pot_size=hand.pot,
+        )
+
+    def analyze_batch(
+        self,
+        hands: List[HandHistory],
+        top_n: int = 10,
+        generate_ai_report: bool = True,
+    ) -> BatchAnalysisResult:
+        """
+        Analyze a batch of hands.
+
+        Args:
+            hands: List of hand histories
+            top_n: Number of top winners/losers to return
+            generate_ai_report: Whether to generate AI leak report
+
+        Returns:
+            BatchAnalysisResult with statistics and AI analysis
+        """
+        # Filter to hero hands and calculate results
+        results = []
+        for hand in hands:
+            result = self.calculate_hand_result(hand)
+            if result:
+                results.append(result)
+
+        if not results:
+            return BatchAnalysisResult(
+                total_hands=0,
+                total_profit=0,
+                hands_won=0,
+                hands_lost=0,
+                biggest_winners=[],
+                biggest_losers=[],
+                position_stats={},
+            )
+
+        # Sort by profit
+        sorted_by_profit = sorted(results, key=lambda r: r.profit)
+
+        # Biggest losers (most negative first)
+        biggest_losers = sorted_by_profit[:top_n]
+
+        # Biggest winners (most positive first)
+        biggest_winners = sorted(results, key=lambda r: r.profit, reverse=True)[:top_n]
+
+        # Calculate position stats
+        position_stats = self._calculate_position_stats(results)
+
+        # Total profit and win/loss counts
+        total_profit = sum(r.profit for r in results)
+        hands_won = sum(1 for r in results if r.profit > 0)
+        hands_lost = sum(1 for r in results if r.profit < 0)
+
+        # Generate AI leak report
+        ai_report = None
+        if generate_ai_report and self.ai_client:
+            ai_report = self._generate_leak_report(results, position_stats, biggest_losers)
+
+        return BatchAnalysisResult(
+            total_hands=len(results),
+            total_profit=total_profit,
+            hands_won=hands_won,
+            hands_lost=hands_lost,
+            biggest_winners=biggest_winners,
+            biggest_losers=biggest_losers,
+            position_stats=position_stats,
+            ai_leak_report=ai_report,
+        )
+
+    def _calculate_position_stats(self, results: List[HandResult]) -> Dict[str, PositionStats]:
+        """Calculate statistics by position."""
+        stats = {}
+
+        for r in results:
+            pos = r.position
+            if pos not in stats:
+                stats[pos] = {
+                    "hands_played": 0,
+                    "hands_won": 0,
+                    "total_profit": 0,
+                    "vpip_hands": 0,
+                    "total_pot": 0,
+                }
+
+            stats[pos]["hands_played"] += 1
+            stats[pos]["total_profit"] += r.profit
+            stats[pos]["total_pot"] += r.pot_size
+
+            if r.profit > 0:
+                stats[pos]["hands_won"] += 1
+
+            # VPIP = voluntarily put money in pot (not just posting blinds)
+            if r.pot_size > 0:
+                stats[pos]["vpip_hands"] += 1
+
+        # Convert to PositionStats objects
+        result = {}
+        for pos, s in stats.items():
+            result[pos] = PositionStats(
+                position=pos,
+                hands_played=s["hands_played"],
+                hands_won=s["hands_won"],
+                total_profit=s["total_profit"],
+                vpip_hands=s["vpip_hands"],
+                avg_pot=s["total_pot"] / s["hands_played"] if s["hands_played"] > 0 else 0,
+            )
+
+        return result
+
+    def _generate_leak_report(
+        self,
+        results: List[HandResult],
+        position_stats: Dict[str, PositionStats],
+        biggest_losers: List[HandResult],
+    ) -> Optional[str]:
+        """Generate AI leak report."""
+        if not self.ai_client:
+            return None
+
+        # Build summary for AI
+        total_hands = len(results)
+        total_profit = sum(r.profit for r in results)
+
+        # Position summary
+        pos_summary = []
+        for pos in ["UTG", "HJ", "CO", "BTN", "SB", "BB"]:
+            if pos in position_stats:
+                s = position_stats[pos]
+                win_rate = (s.hands_won / s.hands_played * 100) if s.hands_played > 0 else 0
+                pos_summary.append(
+                    f"  {pos}: {s.hands_played} 手, 盈虧 ${s.total_profit:.2f}, 勝率 {win_rate:.1f}%"
+                )
+
+        # Biggest losers summary
+        loser_summary = []
+        for i, r in enumerate(biggest_losers[:5], 1):
+            loser_summary.append(
+                f"  {i}. {r.position} {r.hole_cards}: 虧損 ${abs(r.profit):.2f} (底池 ${r.pot_size:.2f})"
+            )
+
+        prompt = f"""請分析這位玩家的撲克數據，找出主要的 leak（漏洞）並給出改進建議。
+
+## 總體統計
+- 總手數: {total_hands}
+- 總盈虧: ${total_profit:.2f}
+- 平均每手: ${total_profit/total_hands:.4f}
+
+## 位置統計
+{chr(10).join(pos_summary)}
+
+## 虧損最大的 5 手牌
+{chr(10).join(loser_summary)}
+
+請：
+1. 指出最大的 3 個 leak
+2. 分析位置數據異常（例如某位置虧損過多）
+3. 給出具體的改進建議
+4. 建議優先練習的場景
+
+用繁體中文回答，簡潔有力。"""
+
+        try:
+            messages = [
+                {"role": "system", "content": "你是專業撲克教練，擅長分析玩家數據找出漏洞。"},
+                {"role": "user", "content": prompt}
+            ]
+            return self.ai_client.chat(messages)
+        except Exception as e:
+            return f"AI 分析失敗: {str(e)}"
+
+
 def create_analyzer(
     provider: str = "deepseek",
     api_key: Optional[str] = None,
@@ -277,6 +539,31 @@ def create_analyzer(
         HandAnalyzer instance
     """
     analyzer = HandAnalyzer()
+
+    if api_key:
+        client = create_ai_client(provider, api_key=api_key, **kwargs)
+        analyzer.set_ai_client(client)
+
+    return analyzer
+
+
+def create_batch_analyzer(
+    provider: str = "deepseek",
+    api_key: Optional[str] = None,
+    **kwargs
+) -> BatchAnalyzer:
+    """
+    Create a batch analyzer with AI support.
+
+    Args:
+        provider: AI provider ("deepseek", "openai", "anthropic")
+        api_key: API key for the provider
+        **kwargs: Additional arguments for AI client
+
+    Returns:
+        BatchAnalyzer instance
+    """
+    analyzer = BatchAnalyzer()
 
     if api_key:
         client = create_ai_client(provider, api_key=api_key, **kwargs)

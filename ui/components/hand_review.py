@@ -1,6 +1,7 @@
 """
 Hand Review UI Component
 For reviewing and analyzing GGPoker hand histories.
+Supports single hand review and batch analysis.
 """
 import streamlit as st
 import os
@@ -9,11 +10,19 @@ from typing import List, Optional
 
 from analyzer.hand_parser import GGPokerParser, HandHistory, format_hand_summary
 from analyzer.ai_client import create_ai_client, AIProvider
-from analyzer.hand_analyzer import HandAnalyzer, create_analyzer
+from analyzer.hand_analyzer import (
+    HandAnalyzer,
+    create_analyzer,
+    BatchAnalyzer,
+    create_batch_analyzer,
+    BatchAnalysisResult,
+    HandResult,
+    PositionStats,
+)
 
 
 def display_hand_review_page(lang: str = "zh"):
-    """Display the hand review page."""
+    """Display the hand review page with tabs for single and batch analysis."""
 
     # Initialize session state
     if "hr_hands" not in st.session_state:
@@ -26,12 +35,14 @@ def display_hand_review_page(lang: str = "zh"):
         st.session_state.hr_api_key = ""
     if "hr_provider" not in st.session_state:
         st.session_state.hr_provider = "deepseek"
+    if "hr_batch_result" not in st.session_state:
+        st.session_state.hr_batch_result = None
 
     # Title
     title = "手牌回顧分析" if lang == "zh" else "Hand Review Analysis"
     st.subheader(f"📊 {title}")
 
-    desc = "上傳 GGPoker 手牌歷史，AI 幫你分析每一手的決策" if lang == "zh" else "Upload GGPoker hand history for AI analysis"
+    desc = "上傳 GGPoker 手牌歷史，AI 幫你分析決策與找出漏洞" if lang == "zh" else "Upload GGPoker hand history for AI analysis"
     st.caption(desc)
 
     # Settings expander
@@ -69,6 +80,10 @@ def display_hand_review_page(lang: str = "zh"):
 
         if st.session_state.hr_api_key:
             st.success("✅ API Key 已設定" if lang == "zh" else "✅ API Key configured")
+            if lang == "zh":
+                st.caption("🔒 Key 僅存於當前會話，關閉頁面後自動清除。建議使用有額度限制的 API Key。")
+            else:
+                st.caption("🔒 Key is stored in session only, cleared when you close the page. Use a rate-limited API key.")
         else:
             st.warning("⚠️ 請輸入 API Key 以啟用 AI 分析" if lang == "zh" else "⚠️ Enter API Key to enable AI analysis")
 
@@ -101,6 +116,7 @@ def display_hand_review_page(lang: str = "zh"):
             st.session_state.hr_hands = all_hands
             st.session_state.hr_selected_idx = 0
             st.session_state.hr_analyses = {}
+            st.session_state.hr_batch_result = None
             progress.empty()
             st.rerun()
 
@@ -116,11 +132,27 @@ def display_hand_review_page(lang: str = "zh"):
 
     st.markdown(f"**{len(hero_hands)}** " + ("手牌已載入" if lang == "zh" else "hands loaded"))
 
+    # Tabs for single vs batch analysis
+    tab_single = "單手分析" if lang == "zh" else "Single Hand"
+    tab_batch = "批量分析" if lang == "zh" else "Batch Analysis"
+
+    tab1, tab2 = st.tabs([f"🔍 {tab_single}", f"📈 {tab_batch}"])
+
+    with tab1:
+        _display_single_hand_analysis(hero_hands, lang)
+
+    with tab2:
+        _display_batch_analysis(hero_hands, lang)
+
+
+def _display_single_hand_analysis(hero_hands: List[HandHistory], lang: str):
+    """Display single hand analysis interface."""
+
     # Hand selector
     col1, col2, col3 = st.columns([1, 3, 1])
 
     with col1:
-        if st.button("◀ " + ("上一手" if lang == "zh" else "Prev"), disabled=st.session_state.hr_selected_idx == 0):
+        if st.button("◀ " + ("上一手" if lang == "zh" else "Prev"), disabled=st.session_state.hr_selected_idx == 0, key="prev_hand"):
             st.session_state.hr_selected_idx -= 1
             st.rerun()
 
@@ -135,7 +167,7 @@ def display_hand_review_page(lang: str = "zh"):
         )
 
     with col3:
-        if st.button(("下一手" if lang == "zh" else "Next") + " ▶", disabled=st.session_state.hr_selected_idx >= len(hero_hands) - 1):
+        if st.button(("下一手" if lang == "zh" else "Next") + " ▶", disabled=st.session_state.hr_selected_idx >= len(hero_hands) - 1, key="next_hand"):
             st.session_state.hr_selected_idx += 1
             st.rerun()
 
@@ -178,6 +210,194 @@ def display_hand_review_page(lang: str = "zh"):
     # Raw hand history (collapsible)
     with st.expander("📜 " + ("原始手牌記錄" if lang == "zh" else "Raw Hand History")):
         st.code(hand.raw_text, language=None)
+
+
+def _display_batch_analysis(hero_hands: List[HandHistory], lang: str):
+    """Display batch analysis interface."""
+
+    st.markdown("### " + ("批量分析" if lang == "zh" else "Batch Analysis"))
+
+    # Explain what batch analysis does
+    if lang == "zh":
+        st.info(f"""
+        📊 **分析說明**
+        - 將自動計算 **全部 {len(hero_hands)} 手** 的盈虧（本地計算，無 API 費用）
+        - 按盈虧排序，找出最大虧損和盈利的手牌
+        - AI 報告只呼叫 **1 次 API**（分析統計摘要，非逐手分析）
+        """)
+    else:
+        st.info(f"""
+        📊 **How it works**
+        - Calculates P/L for **all {len(hero_hands)} hands** locally (no API cost)
+        - Sorts by profit to find biggest losers/winners
+        - AI report uses **1 API call** (analyzes summary, not each hand)
+        """)
+
+    # Analysis settings
+    col1, col2 = st.columns(2)
+    with col1:
+        top_n = st.slider(
+            "顯示前 N 手（虧損/盈利排行）" if lang == "zh" else "Show top N (losers/winners)",
+            min_value=5,
+            max_value=20,
+            value=10,
+            key="batch_top_n",
+            help="控制排行榜顯示幾手，不影響分析範圍" if lang == "zh" else "Controls how many hands to display, doesn't affect analysis"
+        )
+    with col2:
+        generate_ai = st.checkbox(
+            "生成 AI Leak 報告" if lang == "zh" else "Generate AI Leak Report",
+            value=True,
+            disabled=not st.session_state.hr_api_key,
+            key="batch_ai_report"
+        )
+
+    # Run batch analysis
+    if st.button("🚀 " + ("開始批量分析" if lang == "zh" else "Run Batch Analysis"), key="run_batch", type="primary"):
+        with st.spinner("分析中，請稍候..." if lang == "zh" else "Analyzing, please wait..."):
+            try:
+                batch_analyzer = create_batch_analyzer(
+                    provider=st.session_state.hr_provider,
+                    api_key=st.session_state.hr_api_key if generate_ai else None,
+                )
+                result = batch_analyzer.analyze_batch(
+                    hero_hands,
+                    top_n=top_n,
+                    generate_ai_report=generate_ai and st.session_state.hr_api_key,
+                )
+                st.session_state.hr_batch_result = result
+                st.rerun()
+            except Exception as e:
+                st.error(f"分析失敗: {str(e)}" if lang == "zh" else f"Analysis failed: {str(e)}")
+                return
+
+    # Display results
+    result = st.session_state.hr_batch_result
+    if not result:
+        st.info("💡 " + ("點擊上方按鈕開始分析" if lang == "zh" else "Click the button above to start analysis"))
+        return
+
+    _display_batch_results(result, lang)
+
+
+def _display_batch_results(result: BatchAnalysisResult, lang: str):
+    """Display batch analysis results."""
+
+    # Summary metrics
+    st.markdown("### " + ("總體統計" if lang == "zh" else "Overall Statistics"))
+
+    col1, col2, col3, col4 = st.columns(4)
+    with col1:
+        st.metric(
+            "總手數" if lang == "zh" else "Total Hands",
+            result.total_hands
+        )
+    with col2:
+        st.metric(
+            "總盈虧" if lang == "zh" else "Total P/L",
+            f"${result.total_profit:.2f}",
+            delta=f"${result.total_profit/result.total_hands:.4f}/手" if result.total_hands > 0 else "N/A"
+        )
+    with col3:
+        st.metric(
+            "盈利手數" if lang == "zh" else "Hands Won",
+            f"{result.hands_won}",
+            delta=f"{result.hands_lost} 虧損" if lang == "zh" else f"{result.hands_lost} lost"
+        )
+    with col4:
+        win_rate = (result.hands_won / result.total_hands * 100) if result.total_hands > 0 else 0
+        st.metric(
+            "盈利率" if lang == "zh" else "Win Rate",
+            f"{win_rate:.1f}%"
+        )
+
+    st.markdown("---")
+
+    # Position stats
+    st.markdown("### " + ("位置統計" if lang == "zh" else "Position Statistics"))
+    _display_position_stats(result.position_stats, lang)
+
+    st.markdown("---")
+
+    # Biggest losers / winners
+    col_losers, col_winners = st.columns(2)
+
+    with col_losers:
+        st.markdown("### " + ("❌ 虧損最大" if lang == "zh" else "❌ Biggest Losers"))
+        _display_hand_list(result.biggest_losers, lang, is_loser=True)
+
+    with col_winners:
+        st.markdown("### " + ("✅ 盈利最大" if lang == "zh" else "✅ Biggest Winners"))
+        _display_hand_list(result.biggest_winners, lang, is_loser=False)
+
+    # AI Leak Report
+    if result.ai_leak_report:
+        st.markdown("---")
+        st.markdown("### 🤖 AI Leak 報告" if lang == "zh" else "### 🤖 AI Leak Report")
+        st.markdown(result.ai_leak_report)
+
+
+def _display_position_stats(position_stats: dict, lang: str):
+    """Display position statistics."""
+
+    # Sort by profit (lowest first to highlight problems)
+    sorted_positions = sorted(
+        position_stats.items(),
+        key=lambda x: x[1].total_profit
+    )
+
+    # Create columns for each position
+    num_positions = len(sorted_positions)
+    if num_positions == 0:
+        st.info("沒有位置數據" if lang == "zh" else "No position data")
+        return
+
+    cols = st.columns(min(num_positions, 6))
+
+    for i, (pos, stats) in enumerate(sorted_positions):
+        with cols[i % 6]:
+            win_rate = (stats.hands_won / stats.hands_played * 100) if stats.hands_played > 0 else 0
+            profit_color = "🔴" if stats.total_profit < 0 else "🟢"
+
+            st.markdown(f"**{pos}** {profit_color}")
+            st.markdown(f"手數: {stats.hands_played}")
+            st.markdown(f"勝率: {win_rate:.1f}%" if lang == "zh" else f"Win: {win_rate:.1f}%")
+            st.markdown(f"盈虧: ${stats.total_profit:.2f}" if lang == "zh" else f"P/L: ${stats.total_profit:.2f}")
+            st.markdown(f"平均底池: ${stats.avg_pot:.2f}" if lang == "zh" else f"Avg Pot: ${stats.avg_pot:.2f}")
+            st.markdown("---")
+
+
+def _display_hand_list(hands: List[HandResult], lang: str, is_loser: bool = True):
+    """Display a list of hands (losers or winners)."""
+
+    if not hands:
+        st.info("沒有數據" if lang == "zh" else "No data")
+        return
+
+    for i, hr in enumerate(hands[:10], 1):
+        profit_str = f"${abs(hr.profit):.2f}"
+        if is_loser:
+            profit_display = f":red[-{profit_str}]"
+        else:
+            profit_display = f":green[+{profit_str}]"
+
+        with st.expander(f"{i}. {hr.position} {hr.hole_cards} | {profit_display}"):
+            col1, col2 = st.columns(2)
+            with col1:
+                st.markdown(f"**位置:** {hr.position}" if lang == "zh" else f"**Position:** {hr.position}")
+                st.markdown(f"**手牌:** `{hr.hole_cards}`" if lang == "zh" else f"**Hand:** `{hr.hole_cards}`")
+            with col2:
+                st.markdown(f"**底池:** ${hr.pot_size:.2f}" if lang == "zh" else f"**Pot:** ${hr.pot_size:.2f}")
+                showdown = "是" if hr.went_to_showdown else "否"
+                showdown_en = "Yes" if hr.went_to_showdown else "No"
+                st.markdown(f"**到攤牌:** {showdown}" if lang == "zh" else f"**Showdown:** {showdown_en}")
+
+            # Show raw hand button
+            if st.button(
+                "查看原始記錄" if lang == "zh" else "View Raw",
+                key=f"view_raw_{is_loser}_{i}"
+            ):
+                st.code(hr.hand.raw_text, language=None)
 
 
 def _display_hand_info(hand: HandHistory, lang: str):

@@ -291,7 +291,7 @@ def display_push_fold_drill(lang: str = "zh"):
     st.markdown(f"<div style='text-align:center; font-size:1.3em; margin-bottom:15px;'>{scenario_text}</div>", unsafe_allow_html=True)
 
     # Display hand cards
-    display_hand_cards(str(spot.hand))
+    display_hand_cards(spot.hand)
 
     # Action buttons
     if st.session_state.pf_result is None:
