@@ -14,9 +14,10 @@ from core.hand import Hand, random_hand, SUIT_SYMBOLS
 from core.position import Position, POSITIONS_6MAX
 from core.scenario import Scenario, ActionType
 from core.evaluator import Evaluator
-from trainer.drill import PreflopDrill, Spot, get_drillable_hands
-from trainer.tips import format_relevant_range_tip, get_hand_category_tip, RFI_RANGE_TIPS, format_rfi_tip
+from trainer.drill import PreflopDrill, Spot, get_drillable_hands, get_drillable_hands_for_scenario
+from trainer.tips import format_relevant_range_tip, get_hand_category_tip, RFI_RANGE_TIPS, format_rfi_tip, RANGE_MNEMONICS
 from core.equity import EquityQuiz, EquityQuestion
+from core.ev_quiz import EVQuiz, EVQuestion
 from core.outs import OutsQuiz, OutsQuestion, Card
 from core.postflop import PostflopDrill, PostflopSpot, PostflopAction, PostflopResult, TEXTURE_NAMES, HeroCard
 from trainer.session import TrainingSession, ProgressTracker
@@ -26,11 +27,12 @@ from ui.components.card_display import display_hand_cards
 from ui.components.action_flow import display_action_flow, RAISE_SIZES
 from ui.components.storage import save_progress_to_storage, load_progress_from_storage, init_storage_sync
 from ui.components.rfi_chart import display_rfi_charts
+from ui.components.push_fold_chart import display_push_fold_chart, display_push_fold_comparison
 # Achievements system removed for simplification
 
 # Page URL mappings
-PAGE_KEYS = ["drill", "range", "postflop", "equity", "outs", "learning", "stats"]
-PAGE_NAMES = ["Drill Mode", "Range Viewer", "Postflop", "Equity Quiz", "Outs Quiz", "Learning", "Statistics"]
+PAGE_KEYS = ["drill", "range", "pushfold", "postflop", "equity", "outs", "ev", "learning", "stats"]
+PAGE_NAMES = ["Drill Mode", "Range Viewer", "Push/Fold", "Postflop", "Equity Quiz", "Outs Quiz", "EV Quiz", "Learning", "Statistics"]
 
 # Equity breakdown data for vs 4-bet scenarios
 # Shows equity of common hands against typical 4-bet range hands
@@ -367,6 +369,18 @@ TEXTS = {
         "unlocked": "已解鎖",
         "locked": "未解鎖",
         "equity_quiz": "權益測驗",
+        "ev_quiz": "EV 測驗",
+        "ev_question": "河牌圈是否跟注？",
+        "ev_pot": "底池",
+        "ev_bet": "對手下注",
+        "ev_equity": "你的勝率",
+        "ev_call": "跟注",
+        "ev_fold": "棄牌",
+        "ev_correct": "正確！",
+        "ev_incorrect": "錯了",
+        "ev_explanation": "解析",
+        "ev_pot_odds": "底池賠率",
+        "ev_next": "下一題 →",
         "equity_question": "哪一手勝率較高？",
         "equity_vs": "vs",
         "equity_correct": "正確！",
@@ -457,6 +471,18 @@ TEXTS = {
         "unlocked": "Unlocked",
         "locked": "Locked",
         "equity_quiz": "Equity Quiz",
+        "ev_quiz": "EV Quiz",
+        "ev_question": "River: Call or Fold?",
+        "ev_pot": "Pot",
+        "ev_bet": "Opponent bets",
+        "ev_equity": "Your equity",
+        "ev_call": "Call",
+        "ev_fold": "Fold",
+        "ev_correct": "Correct!",
+        "ev_incorrect": "Wrong",
+        "ev_explanation": "Explanation",
+        "ev_pot_odds": "Pot Odds",
+        "ev_next": "Next →",
         "equity_question": "Which hand has higher equity?",
         "equity_vs": "vs",
         "equity_correct": "Correct!",
@@ -573,7 +599,7 @@ def main():
         st.markdown("<div style='height: 5px;'></div>", unsafe_allow_html=True)
 
         # Navigation
-        nav_options = [t("drill_mode"), t("range_viewer"), t("postflop"), t("equity_quiz"), t("outs_quiz"), t("learning"), t("statistics")]
+        nav_options = [t("drill_mode"), t("range_viewer"), t("postflop"), t("equity_quiz"), t("outs_quiz"), t("ev_quiz"), t("learning"), t("statistics")]
         page_idx = st.radio(
             "Navigate",
             options=range(len(nav_options)),
@@ -799,12 +825,16 @@ def main():
         drill_page()
     elif page == "Range Viewer":
         viewer_page()
+    elif page == "Push/Fold":
+        push_fold_page()
     elif page == "Postflop":
         postflop_page()
     elif page == "Equity Quiz":
         equity_quiz_page()
     elif page == "Outs Quiz":
         outs_quiz_page()
+    elif page == "EV Quiz":
+        ev_quiz_page()
     elif page == "Learning":
         learning_page()
     elif page == "Statistics":
@@ -1198,6 +1228,7 @@ def drill_page():
             highlight_hand=str(spot.hand),
             drillable_hands=drillable_hands,
             frequencies=frequencies,
+            key="drill_grid",
         )
 
 
@@ -1459,9 +1490,15 @@ def viewer_page():
         raise_hands = range_data.get(raise_key, []) if raise_key else []
         call_hands = range_data.get("call", [])
 
-        # Get drillable hands for visual distinction (position-specific)
-        scenario_type = action_type.lower().replace(" ", "_").replace("-", "_")
-        drillable_hands = get_drillable_hands(range_data, scenario_type, position=hero_pos)
+        # Get drillable hands for visual distinction (動態計算)
+        scenario_type_map = {"rfi": "rfi", "vs_open": "vs_rfi", "vs_3_bet": "vs_3bet", "vs_4_bet": "vs_4bet"}
+        scenario_type_key = action_type.lower().replace(" ", "_").replace("-", "_")
+        scenario_type = scenario_type_map.get(scenario_type_key, "rfi")
+        drillable_hands = get_drillable_hands_for_scenario(
+            evaluator, table_format, scenario_type,
+            hero_position=hero_pos,
+            villain_position=final_villain_pos if action_type != "RFI" else None
+        )
 
         # Get frequency data for all 6-max scenarios (RFI, vs Open, vs 3-Bet, vs 4-Bet)
         frequencies = {}
@@ -1478,6 +1515,7 @@ def viewer_page():
             show_stats=False,
             drillable_hands=drillable_hands,
             frequencies=frequencies,
+            key="viewer_grid",
         )
 
         # Range statistics (below grid, 2-column layout with custom HTML for mobile)
@@ -1517,6 +1555,19 @@ def viewer_page():
         """, unsafe_allow_html=True)
     else:
         st.warning(t("no_data"))
+
+
+def push_fold_page():
+    """MTT Push/Fold chart page."""
+    lang = st.session_state.language
+
+    # Main chart
+    display_push_fold_chart(lang)
+
+    st.markdown("---")
+
+    # Position comparison
+    display_push_fold_comparison(lang)
 
 
 def postflop_page():
@@ -1874,9 +1925,16 @@ def stats_page():
                         raise_key = next((k for k in ["raise", "3bet", "4bet", "5bet"] if k in range_data), None)
                         raise_hands = range_data.get(raise_key, []) if raise_key else []
                         call_hands = range_data.get("call", [])
-                        scenario_type = m.spot.scenario.action_type.value
-                        position = m.spot.scenario.hero_position.value
-                        drillable_hands = get_drillable_hands(range_data, scenario_type, position=position)
+
+                        # 動態計算出題範圍
+                        action_type_map = {"rfi": "rfi", "vs_rfi": "vs_rfi", "vs_3bet": "vs_3bet", "vs_4bet": "vs_4bet"}
+                        scenario_type = action_type_map.get(m.spot.scenario.action_type.value, "rfi")
+                        hero_pos = m.spot.scenario.hero_position.value
+                        villain_pos = m.spot.scenario.villain_position.value if m.spot.scenario.villain_position else None
+                        drillable_hands = get_drillable_hands_for_scenario(
+                            evaluator, st.session_state.table_format, scenario_type,
+                            hero_position=hero_pos, villain_position=villain_pos
+                        )
 
                         # Get frequency data for RFI scenarios
                         frequencies = {}
@@ -1908,11 +1966,11 @@ def learning_page():
 
     # Tabs for different topics
     if lang == "zh":
-        tabs = ["RFI 速記表", "RFI 範圍提示", "權益對抗", "Outs 補牌", "賠率表", "起手牌", "SPR 法則", "翻後策略", "資金管理", "位置價值", "Blocker", "常見錯誤", "EV 計算"]
+        tabs = ["RFI 速記表", "RFI 範圍提示", "📝 記憶訣竅", "權益對抗", "Outs 補牌", "賠率表", "起手牌", "SPR 法則", "翻後策略", "資金管理", "位置價值", "Blocker", "常見錯誤", "EV 計算"]
     else:
-        tabs = ["RFI Charts", "RFI Tips", "Equity", "Outs", "Pot Odds", "Starting Hands", "SPR", "Post-flop", "Bankroll", "Position", "Blockers", "Mistakes", "EV Calc"]
+        tabs = ["RFI Charts", "RFI Tips", "📝 Mnemonics", "Equity", "Outs", "Pot Odds", "Starting Hands", "SPR", "Post-flop", "Bankroll", "Position", "Blockers", "Mistakes", "EV Calc"]
 
-    tab0, tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8, tab9, tab10, tab11, tab12 = st.tabs(tabs)
+    tab0, tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8, tab9, tab10, tab11, tab12, tab13 = st.tabs(tabs)
 
     with tab0:
         evaluator = Evaluator()
@@ -1922,36 +1980,39 @@ def learning_page():
         _display_rfi_tips_learning(lang)
 
     with tab2:
-        _display_equity_learning(lang)
+        _display_range_mnemonics_learning(lang)
 
     with tab3:
-        _display_outs_learning(lang)
+        _display_equity_learning(lang)
 
     with tab4:
-        _display_pot_odds_learning(lang)
+        _display_outs_learning(lang)
 
     with tab5:
-        _display_starting_hands_learning(lang)
+        _display_pot_odds_learning(lang)
 
     with tab6:
-        _display_spr_learning(lang)
+        _display_starting_hands_learning(lang)
 
     with tab7:
-        _display_postflop_learning(lang)
+        _display_spr_learning(lang)
 
     with tab8:
-        _display_bankroll_learning(lang)
+        _display_postflop_learning(lang)
 
     with tab9:
-        _display_position_value_learning(lang)
+        _display_bankroll_learning(lang)
 
     with tab10:
-        _display_blocker_learning(lang)
+        _display_position_value_learning(lang)
 
     with tab11:
-        _display_common_mistakes_learning(lang)
+        _display_blocker_learning(lang)
 
     with tab12:
+        _display_common_mistakes_learning(lang)
+
+    with tab13:
         _display_ev_calculation_learning(lang)
 
 
@@ -2045,6 +2106,204 @@ def _display_rfi_tips_learning(lang: str):
     # Data source note
     st.markdown("---")
     source_note = "💡 資料來源：`trainer/tips.py` - 修改此檔案可同時更新錯題提示和此頁面" if lang == "zh" else "💡 Data source: `trainer/tips.py` - Edit this file to update both error feedback and this page"
+    st.caption(source_note)
+
+
+def _display_range_mnemonics_learning(lang: str):
+    """Display range memory mnemonics - quick patterns to remember when to play each hand type."""
+
+    title = "📝 範圍記憶訣竅" if lang == "zh" else "📝 Range Memory Mnemonics"
+    subtitle = "快速記住各類手牌從哪個位置開始開池" if lang == "zh" else "Quick patterns to remember when to open each hand type"
+
+    st.markdown(f"### {title}")
+    st.caption(subtitle)
+
+    # Hand type colors
+    type_colors = {
+        "suited_connectors": "#22c55e",
+        "suited_gappers": "#10b981",
+        "small_pairs": "#f59e0b",
+        "suited_aces": "#3b82f6",
+        "suited_kings": "#6366f1",
+        "suited_queens": "#8b5cf6",
+        "offsuit_aces": "#ef4444",
+        "offsuit_broadways": "#f97316",
+    }
+
+    # Display order
+    display_order = [
+        "small_pairs",
+        "suited_aces",
+        "suited_kings",
+        "suited_queens",
+        "suited_connectors",
+        "suited_gappers",
+        "offsuit_aces",
+        "offsuit_broadways",
+    ]
+
+    for hand_type in display_order:
+        if hand_type not in RANGE_MNEMONICS:
+            continue
+
+        data = RANGE_MNEMONICS[hand_type]
+        color = type_colors.get(hand_type, "#64748b")
+        title_key = "title_zh" if lang == "zh" else "title_en"
+        mnemonic_key = "mnemonic_zh" if lang == "zh" else "mnemonic_en"
+
+        title_text = data.get(title_key, data.get("title_zh", ""))
+        mnemonic = data.get(mnemonic_key, data.get("mnemonic_zh", ""))
+
+        # Header with hand type
+        st.markdown(f"""
+        <div style="background: {color}; padding: 10px 15px; border-radius: 8px 8px 0 0; margin-top: 15px;">
+            <span style="color: white; font-weight: bold; font-size: 1.1rem;">{title_text}</span>
+        </div>
+        """, unsafe_allow_html=True)
+
+        # Content box with mnemonic and patterns
+        content_html = '<div style="background: #1e293b; padding: 12px 15px; border-radius: 0 0 8px 8px; border: 1px solid #374151; border-top: none;">'
+
+        # Mnemonic summary
+        content_html += f'<div style="background: #0f172a; padding: 10px; border-radius: 6px; margin-bottom: 12px; border-left: 3px solid {color};"><span style="color: #fbbf24; font-weight: bold;">💡 {mnemonic}</span></div>'
+
+        # Pattern details
+        for p in data.get("patterns", []):
+            note_key = "note_zh" if lang == "zh" else "note_en"
+            note = p.get(note_key, p.get("note_zh", ""))
+            hands = p["hands"]
+            start_pos = p["start_pos"]
+
+            content_html += f'<div style="display: flex; align-items: baseline; padding: 6px 0; border-bottom: 1px solid #374151;"><span style="color: #fbbf24; font-weight: bold; min-width: 80px;">{hands}</span><span style="color: #22c55e; min-width: 120px;">{start_pos}</span><span style="color: #94a3b8; font-size: 0.9rem;">{note}</span></div>'
+
+        content_html += '</div>'
+        st.markdown(content_html, unsafe_allow_html=True)
+
+    # Summary section
+    st.markdown("---")
+
+    summary_title = "🎯 快速記憶總結" if lang == "zh" else "🎯 Quick Summary"
+    st.markdown(f"### {summary_title}")
+
+    if lang == "zh":
+        summary_html = '''
+<div style="background: #1e293b; padding: 15px; border-radius: 8px;">
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+        <div>
+            <div style="color: #fbbf24; font-weight: bold; margin-bottom: 8px;">🃏 對子</div>
+            <div style="color: #e2e8f0; font-size: 0.9rem;">
+                • 66+ 全場開<br/>
+                • 55 UTG 開<br/>
+                • 44 HJ 開<br/>
+                • 33 BTN 開<br/>
+                • 22 SB 開
+            </div>
+        </div>
+        <div>
+            <div style="color: #fbbf24; font-weight: bold; margin-bottom: 8px;">♠️ 同花 Ax</div>
+            <div style="color: #e2e8f0; font-size: 0.9rem;">
+                • A2s-AKs 全場開<br/>
+                • 同花 Ax 通吃！
+            </div>
+        </div>
+        <div>
+            <div style="color: #fbbf24; font-weight: bold; margin-bottom: 8px;">🔗 同花連張</div>
+            <div style="color: #e2e8f0; font-size: 0.9rem;">
+                • T9s UTG (75%)<br/>
+                • 98s HJ<br/>
+                • 87s CO<br/>
+                • 65s BTN
+            </div>
+        </div>
+        <div>
+            <div style="color: #fbbf24; font-weight: bold; margin-bottom: 8px;">↔️ 同花隔張</div>
+            <div style="color: #e2e8f0; font-size: 0.9rem;">
+                • 隔張比連張晚一位！<br/>
+                • T8s HJ、97s CO<br/>
+                • 53s+ SB 開始玩
+            </div>
+        </div>
+        <div>
+            <div style="color: #fbbf24; font-weight: bold; margin-bottom: 8px;">♦️ 同花 Kx</div>
+            <div style="color: #e2e8f0; font-size: 0.9rem;">
+                • K6 UTG、K4 HJ<br/>
+                • K3 CO、K2 BTN
+            </div>
+        </div>
+        <div>
+            <div style="color: #fbbf24; font-weight: bold; margin-bottom: 8px;">♣️ 不同花 Ax</div>
+            <div style="color: #e2e8f0; font-size: 0.9rem;">
+                • ATo UTG<br/>
+                • A9o HJ<br/>
+                • A8o/A5o CO<br/>
+                • A4o BTN
+            </div>
+        </div>
+    </div>
+</div>
+'''
+    else:
+        summary_html = '''
+<div style="background: #1e293b; padding: 15px; border-radius: 8px;">
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+        <div>
+            <div style="color: #fbbf24; font-weight: bold; margin-bottom: 8px;">🃏 Pairs</div>
+            <div style="color: #e2e8f0; font-size: 0.9rem;">
+                • 66+ always<br/>
+                • 55 UTG<br/>
+                • 44 HJ<br/>
+                • 33 BTN<br/>
+                • 22 SB
+            </div>
+        </div>
+        <div>
+            <div style="color: #fbbf24; font-weight: bold; margin-bottom: 8px;">♠️ Suited Ax</div>
+            <div style="color: #e2e8f0; font-size: 0.9rem;">
+                • A2s-AKs everywhere<br/>
+                • Suited Ax all positions!
+            </div>
+        </div>
+        <div>
+            <div style="color: #fbbf24; font-weight: bold; margin-bottom: 8px;">🔗 Suited Connectors</div>
+            <div style="color: #e2e8f0; font-size: 0.9rem;">
+                • T9s UTG (75%)<br/>
+                • 98s HJ<br/>
+                • 87s CO<br/>
+                • 65s BTN
+            </div>
+        </div>
+        <div>
+            <div style="color: #fbbf24; font-weight: bold; margin-bottom: 8px;">↔️ Suited Gappers</div>
+            <div style="color: #e2e8f0; font-size: 0.9rem;">
+                • Gappers one position later!<br/>
+                • T8s HJ, 97s CO<br/>
+                • 53s+ starts at SB
+            </div>
+        </div>
+        <div>
+            <div style="color: #fbbf24; font-weight: bold; margin-bottom: 8px;">♦️ Suited Kx</div>
+            <div style="color: #e2e8f0; font-size: 0.9rem;">
+                • K6 UTG, K4 HJ<br/>
+                • K3 CO, K2 BTN
+            </div>
+        </div>
+        <div>
+            <div style="color: #fbbf24; font-weight: bold; margin-bottom: 8px;">♣️ Offsuit Ax</div>
+            <div style="color: #e2e8f0; font-size: 0.9rem;">
+                • ATo UTG<br/>
+                • A9o HJ<br/>
+                • A8o/A5o CO<br/>
+                • A4o BTN
+            </div>
+        </div>
+    </div>
+</div>
+'''
+    st.markdown(summary_html, unsafe_allow_html=True)
+
+    # Data source note
+    st.markdown("---")
+    source_note = "💡 資料來源：`trainer/tips.py` - RANGE_MNEMONICS" if lang == "zh" else "💡 Data source: `trainer/tips.py` - RANGE_MNEMONICS"
     st.caption(source_note)
 
 
@@ -4340,6 +4599,223 @@ def outs_quiz_page():
                 st.session_state.outs_question = quiz.generate_question()
                 st.session_state.outs_choices = quiz.generate_choices(st.session_state.outs_question)
                 st.session_state.outs_show_result = False
+                st.rerun()
+
+
+def ev_quiz_page():
+    """EV Quiz page - practice pot odds and EV calculation decisions."""
+    lang = st.session_state.language
+
+    # Initialize EV quiz state
+    if 'ev_quiz' not in st.session_state:
+        st.session_state.ev_quiz = EVQuiz()
+    if 'ev_question' not in st.session_state:
+        st.session_state.ev_question = None
+    if 'ev_show_result' not in st.session_state:
+        st.session_state.ev_show_result = False
+    if 'ev_score' not in st.session_state:
+        st.session_state.ev_score = {"correct": 0, "total": 0}
+    if 'ev_answered_action' not in st.session_state:
+        st.session_state.ev_answered_action = None
+
+    quiz = st.session_state.ev_quiz
+
+    # Generate question if needed
+    if st.session_state.ev_question is None:
+        st.session_state.ev_question = quiz.generate_question()
+        st.session_state.ev_show_result = False
+        st.session_state.ev_answered_action = None
+
+    question = st.session_state.ev_question
+
+    # Header with score
+    score = st.session_state.ev_score
+    accuracy = (score["correct"] / score["total"] * 100) if score["total"] > 0 else 0
+    st.markdown(f"""
+    <div style="
+        background: linear-gradient(135deg, #1e3a5f 0%, #0f172a 100%);
+        padding: 6px 12px;
+        border-radius: 8px;
+        margin-bottom: 8px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    ">
+        <span style="font-size: 1.1rem; font-weight: bold;">💰 {t("ev_quiz")}</span>
+        <span style="color: #fbbf24; font-size: 0.9rem;">
+            {score["correct"]}/{score["total"]} ({accuracy:.0f}%)
+        </span>
+    </div>
+    """, unsafe_allow_html=True)
+
+    # Two-column layout
+    col_scenario, col_choices = st.columns([3, 2])
+
+    with col_scenario:
+        # Scenario description with visual
+        scenario_html = f'''
+<div style="
+    background: linear-gradient(145deg, #1a5f3c 0%, #0d3d25 100%);
+    border-radius: 15px;
+    border: 4px solid #8B4513;
+    padding: 20px;
+    margin: 10px 0;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+">
+    <div style="text-align: center; color: #fbbf24; font-size: 0.9rem; margin-bottom: 15px;">
+        🎴 {t("ev_question")}
+    </div>
+    <div style="display: flex; justify-content: space-around; align-items: center; margin-bottom: 15px;">
+        <div style="text-align: center;">
+            <div style="font-size: 0.8rem; color: #94a3b8;">{t("ev_pot")}</div>
+            <div style="font-size: 1.5rem; font-weight: bold; color: #22c55e;">
+                ${question.pot_size}
+            </div>
+        </div>
+        <div style="text-align: center;">
+            <div style="font-size: 0.8rem; color: #94a3b8;">{t("ev_bet")}</div>
+            <div style="font-size: 1.5rem; font-weight: bold; color: #ef4444;">
+                ${question.bet_size}
+            </div>
+        </div>
+        <div style="text-align: center;">
+            <div style="font-size: 0.8rem; color: #94a3b8;">{t("ev_equity")}</div>
+            <div style="font-size: 1.5rem; font-weight: bold; color: #3b82f6;">
+                {question.equity}%
+            </div>
+        </div>
+    </div>
+    <div style="
+        background: rgba(0,0,0,0.3);
+        border-radius: 8px;
+        padding: 10px;
+        text-align: center;
+        font-size: 0.85rem;
+        color: #e2e8f0;
+    ">
+        {"跟注需額外投入" if lang == "zh" else "To call, you need to put in"}: <span style="color:#fbbf24;font-weight:bold;">${question.bet_size}</span><br/>
+        {"贏得總底池" if lang == "zh" else "To win total pot"}: <span style="color:#22c55e;font-weight:bold;">${question.pot_size + question.bet_size}</span>
+    </div>
+</div>
+'''
+        st.markdown(scenario_html, unsafe_allow_html=True)
+
+    with col_choices:
+        if not st.session_state.ev_show_result:
+            # Question prompt
+            prompt_text = "應該跟注還是棄牌？" if lang == "zh" else "Should you call or fold?"
+            st.markdown(f"""
+            <div style="text-align: center; margin: 10px 0 15px 0; font-size: 1rem; color: #94a3b8;">
+                {prompt_text}
+            </div>
+            """, unsafe_allow_html=True)
+
+            # Call/Fold buttons
+            col_call, col_fold = st.columns(2)
+            with col_call:
+                if st.button(f"✅ {t('ev_call')}", key="ev_call_btn", use_container_width=True):
+                    st.session_state.ev_show_result = True
+                    st.session_state.ev_answered_action = "call"
+                    st.session_state.ev_score["total"] += 1
+                    is_correct, _ = quiz.check_answer(question, "call")
+                    if is_correct:
+                        st.session_state.ev_score["correct"] += 1
+                    st.rerun()
+            with col_fold:
+                if st.button(f"❌ {t('ev_fold')}", key="ev_fold_btn", use_container_width=True):
+                    st.session_state.ev_show_result = True
+                    st.session_state.ev_answered_action = "fold"
+                    st.session_state.ev_score["total"] += 1
+                    is_correct, _ = quiz.check_answer(question, "fold")
+                    if is_correct:
+                        st.session_state.ev_score["correct"] += 1
+                    st.rerun()
+
+            # Show hint about pot odds calculation
+            st.markdown(f"""
+            <div style="
+                background: #0f172a;
+                padding: 10px;
+                border-radius: 8px;
+                margin-top: 15px;
+                font-size: 0.85rem;
+                color: #94a3b8;
+            ">
+                <div style="font-weight: bold; color: #fbbf24; margin-bottom: 5px;">
+                    💡 {"提示" if lang == "zh" else "Hint"}
+                </div>
+                {"比較你的勝率和賠率" if lang == "zh" else "Compare your equity to pot odds"}<br/>
+                {"勝率 > 賠率 → 跟注" if lang == "zh" else "Equity > Pot Odds → Call"}<br/>
+                {"勝率 < 賠率 → 棄牌" if lang == "zh" else "Equity < Pot Odds → Fold"}
+            </div>
+            """, unsafe_allow_html=True)
+        else:
+            # Show result
+            answered = st.session_state.ev_answered_action
+            is_correct, explanation = quiz.check_answer(question, answered)
+
+            pot_odds = question.pot_odds
+            ev = question.ev
+            correct_action = "call" if question.is_profitable_call else "fold"
+
+            if is_correct:
+                result_icon = "✅"
+                result_text = "正確！" if lang == "zh" else "Correct!"
+                result_class = "correct-answer"
+            else:
+                result_icon = "❌"
+                result_text = "錯誤" if lang == "zh" else "Wrong"
+                result_class = "wrong-answer"
+
+            # Detailed explanation
+            st.markdown(f'''
+<div class="{result_class}">
+    <div style="font-size: 1.2rem; font-weight: bold; margin-bottom: 10px;">
+        {result_icon} {result_text}
+    </div>
+    <div style="background: #0f172a; padding: 10px; border-radius: 6px; margin: 8px 0;">
+        <div style="font-weight: bold; color: #e2e8f0; margin-bottom: 8px;">
+            📊 {"計算過程" if lang == "zh" else "Calculation"}
+        </div>
+        <div style="display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 1px solid #1e293b;">
+            <span>{"賠率 (Pot Odds)" if lang == "zh" else "Pot Odds"}</span>
+            <span style="color: #fbbf24; font-weight: bold;">
+                ${question.bet_size} ÷ (${question.pot_size} + ${question.bet_size} + ${question.bet_size}) = {pot_odds:.1f}%
+            </span>
+        </div>
+        <div style="display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 1px solid #1e293b;">
+            <span>{"你的勝率" if lang == "zh" else "Your Equity"}</span>
+            <span style="color: #3b82f6; font-weight: bold;">{question.equity}%</span>
+        </div>
+        <div style="display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 1px solid #1e293b;">
+            <span>{"比較" if lang == "zh" else "Compare"}</span>
+            <span style="color: {'#22c55e' if question.equity > pot_odds else '#ef4444'}; font-weight: bold;">
+                {question.equity}% {">" if question.equity > pot_odds else "<"} {pot_odds:.1f}%
+            </span>
+        </div>
+        <div style="display: flex; justify-content: space-between; padding: 4px 0; margin-top: 6px;">
+            <span>EV</span>
+            <span style="color: {'#22c55e' if ev > 0 else '#ef4444'}; font-weight: bold;">
+                {'+' if ev > 0 else ''}${ev:.1f}
+            </span>
+        </div>
+    </div>
+    <div style="background: #0f172a; padding: 8px; border-radius: 6px; font-size: 0.9rem;">
+        <span style="color: #94a3b8;">{"正確答案" if lang == "zh" else "Correct Answer"}:</span>
+        <span style="color: #22c55e; font-weight: bold; margin-left: 8px;">
+            {t('ev_call').upper() if correct_action == 'call' else t('ev_fold').upper()}
+        </span>
+    </div>
+</div>
+''', unsafe_allow_html=True)
+
+            # Next button
+            st.markdown("<div style='height: 10px;'></div>", unsafe_allow_html=True)
+            next_text = "下一題" if lang == "zh" else "Next Question"
+            if st.button(f"➡️ {next_text}", key="ev_next", use_container_width=True):
+                st.session_state.ev_question = quiz.generate_question()
+                st.session_state.ev_show_result = False
+                st.session_state.ev_answered_action = None
                 st.rerun()
 
 

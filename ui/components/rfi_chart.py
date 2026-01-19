@@ -18,6 +18,18 @@ def get_drillable_set():
     """動態取得 drillable hands，避免快取問題"""
     return set(get_drillable_hands())
 
+
+def get_sb_limp_hands(evaluator: Evaluator) -> set:
+    """取得 SB 的 limp 手牌列表"""
+    try:
+        from core.scenario import Scenario, ActionType
+        from core.position import Position
+        scenario = Scenario(hero_position=Position.SB, action_type=ActionType.RFI)
+        freq_data = evaluator.get_frequencies_for_scenario(scenario, "6max")
+        return {hand for hand, freq in freq_data.items() if freq.get("limp", 0) > 0}
+    except Exception:
+        return set()
+
 # Position colors (red gradient: dark red to light red)
 POSITION_COLORS = {
     "UTG": "#7f1d1d",  # Dark red - tightest
@@ -40,6 +52,39 @@ POSITION_OPACITY = {
 PREMIUM_3BET_HANDS = {
     "AA", "KK", "QQ", "JJ", "TT",
     "AKs", "AKo", "AQs", "AQo", "KQs",
+}
+
+# UTG key edge hands - gold border (基本可玩，需記憶)
+UTG_KEY_EDGES = {
+    "A2s", "K5s", "Q8s", "J9s", "T9s", "KJo", "QJo", "ATo", "55",
+}
+
+# BTN key edge hands - white border (邊緣可玩，需記憶)
+# These are hands where BTN is the earliest position to open
+BTN_KEY_EDGES = {
+    "K2s", "Q5s", "Q4s", "Q3s", "Q2s", "J6s", "J5s", "J4s", "J3s",
+    "T6s", "T5s", "96s", "95s", "85s", "84s", "74s", "73s", "63s", "53s", "52s", "43s", "42s",
+    "A4o", "A3o", "K8o", "Q8o", "J8o", "T8o", "98o",
+    "33", "22",
+}
+
+# SB hands that are obvious (fade to 50%)
+SB_OBVIOUS_HANDS = {"85s", "64s", "53s"}
+
+# "Obvious" hands that don't need memorization - fade these to highlight edge cases
+OBVIOUS_HANDS = {
+    # Pairs 66+
+    "AA", "KK", "QQ", "JJ", "TT", "99", "88", "77", "66",
+    # Suited Ax (A3s+)
+    "AKs", "AQs", "AJs", "ATs", "A9s", "A8s", "A7s", "A6s", "A5s", "A4s", "A3s",
+    # Suited Kx (K6s+)
+    "KQs", "KJs", "KTs", "K9s", "K8s", "K7s", "K6s",
+    # Suited Qx (Q9s+)
+    "QJs", "QTs", "Q9s",
+    # Suited connectors (JTs)
+    "JTs",
+    # Offsuit (AJo+, KQo)
+    "AKo", "AQo", "AJo", "KQo",
 }
 
 POSITION_ORDER = ["UTG", "HJ", "CO", "BTN", "SB"]
@@ -101,6 +146,7 @@ def display_rfi_chart_overlay(evaluator: Evaluator, lang: str = "zh"):
     With position filter to highlight specific position ranges.
     """
     ranges = get_all_rfi_ranges(evaluator)
+    sb_limp_hands = get_sb_limp_hands(evaluator)
 
     title = "RFI 速記表 - 所有可開池位置" if lang == "zh" else "RFI Chart - All Opening Positions"
     st.subheader(title)
@@ -166,11 +212,22 @@ def display_rfi_chart_overlay(evaluator: Evaluator, lang: str = "zh"):
                     color = POSITION_COLORS[pos]
                     bars_html += f'<div style="flex:1; height:100%; background:{color};"></div>'
                 bars_html += '</div>'
-                html += f'<div style="{cell_base}">{bars_html}<span style="{hand_style}">{hand}</span></div>'
+                # Fade "obvious" hands to highlight edge cases
+                if hand in OBVIOUS_HANDS:
+                    cell_opacity = float(filter_opacity) * 0.5
+                    html += f'<div style="{cell_base} opacity:{cell_opacity};">{bars_html}<span style="{hand_style}">{hand}</span></div>'
+                else:
+                    html += f'<div style="{cell_base}">{bars_html}<span style="{hand_style}">{hand}</span></div>'
+            elif hand in sb_limp_hands:
+                # Limp hands: 70% opacity
+                limp_opacity = float(filter_opacity) * 0.5
+                html += f'<div style="{cell_base} background:#374151; opacity:{limp_opacity};"><span style="{hand_style}">{hand}</span></div>'
             elif hand in get_drillable_set():
+                # Edge hands: 100% opacity
                 html += f'<div style="{cell_base} background:#374151;"><span style="{hand_style}">{hand}</span></div>'
             else:
-                html += f'<div style="{cell_base} background:#374151; color:#6b7280; text-shadow:none;"><span style="{hand_style}">{hand}</span></div>'
+                # Trash hands: 40% opacity
+                html += f'<div style="{cell_base} background:#2d3748; color:#4a5568; text-shadow:none; opacity:{float(filter_opacity) * 0.33};"><span style="{hand_style}">{hand}</span></div>'
 
     # Close grid and add caption
     if selected_filter == "全部":
@@ -190,12 +247,13 @@ def display_rfi_chart_earliest(evaluator: Evaluator, lang: str = "zh"):
     With position filter to highlight specific position ranges.
     """
     ranges = get_all_rfi_ranges(evaluator)
+    sb_limp_hands = get_sb_limp_hands(evaluator)  # Get SB limp hands
 
     title = "RFI 速記表 - 最早可開池位置" if lang == "zh" else "RFI Chart - Earliest Opening Position"
     st.subheader(title)
 
     # Legend with colored position indicators
-    legend_html = '<div style="display: flex; gap: 15px; justify-content: center; margin: 10px 0; flex-wrap: wrap;">'
+    legend_html = '<div style="display: flex; gap: 12px; justify-content: center; margin: 10px 0; flex-wrap: wrap;">'
     for pos, color in POSITION_COLORS.items():
         legend_html += f'<span style="display: flex; align-items: center; gap: 4px;"><span style="background: {color}; width: 20px; height: 14px; border-radius: 2px; display: inline-block;"></span> {pos}</span>'
     legend_html += '<span style="display: flex; align-items: center; gap: 4px;"><span style="background: #374151; width: 20px; height: 14px; border-radius: 2px; display: inline-block;"></span> Fold</span>'
@@ -248,11 +306,45 @@ def display_rfi_chart_earliest(evaluator: Evaluator, lang: str = "zh"):
                 opacity = text_opacity.get(earliest, 1.0)
                 text_color = f"color:rgba(255,255,255,{opacity});"
 
-                html += f'<div style="{cell_base} background:{hex_color}; {text_color}"><span style="{hand_style}">{hand}</span><span style="{pos_style}">{earliest}</span></div>'
+                # When filtering by position: show all matching hands at full opacity
+                # Edge hands get white inner border for emphasis
+                if selected_filter != "全部" and matches_filter:
+                    # Position filter active and this hand matches
+                    if hand in OBVIOUS_HANDS:
+                        # Obvious hand - no border, full opacity
+                        html += f'<div style="{cell_base} background:{hex_color}; {text_color}"><span style="{hand_style}">{hand}</span><span style="{pos_style}">{earliest}</span></div>'
+                    else:
+                        # Edge hand - white inner border to highlight
+                        html += f'<div style="{cell_base} background:{hex_color}; {text_color} box-shadow: inset 0 0 0 2px rgba(255,255,255,0.8);"><span style="{hand_style}">{hand}</span><span style="{pos_style}">{earliest}</span></div>'
+                else:
+                    # "全部" view - show key edges with gold/white borders
+                    if hand in UTG_KEY_EDGES and earliest == "UTG":
+                        # UTG key edge - gold border
+                        html += f'<div style="{cell_base} background:{hex_color}; {text_color} box-shadow: inset 0 0 0 2px #fbbf24;"><span style="{hand_style}">{hand}</span><span style="{pos_style}">{earliest}</span></div>'
+                    elif earliest == "BTN":
+                        # All BTN hands - white border
+                        html += f'<div style="{cell_base} background:{hex_color}; {text_color} box-shadow: inset 0 0 0 2px rgba(255,255,255,0.9);"><span style="{hand_style}">{hand}</span><span style="{pos_style}">{earliest}</span></div>'
+                    elif hand in SB_OBVIOUS_HANDS and earliest == "SB":
+                        # SB obvious hands - fade background only (not text)
+                        faded_bg = hex_to_rgba(hex_color, 0.5)
+                        html += f'<div style="{cell_base} background:{faded_bg}; {text_color}"><span style="{hand_style}">{hand}</span><span style="{pos_style}">{earliest}</span></div>'
+                    elif hand in OBVIOUS_HANDS:
+                        # Obvious hand - fade
+                        cell_opacity = float(filter_opacity) * 0.5
+                        html += f'<div style="{cell_base} background:{hex_color}; {text_color} opacity:{cell_opacity};"><span style="{hand_style}">{hand}</span><span style="{pos_style}">{earliest}</span></div>'
+                    else:
+                        # Other edge hands - full opacity, no border
+                        html += f'<div style="{cell_base} background:{hex_color}; {text_color}"><span style="{hand_style}">{hand}</span><span style="{pos_style}">{earliest}</span></div>'
+            elif hand in sb_limp_hands:
+                # Limp hands: 70% opacity
+                limp_opacity = float(filter_opacity) * 0.5
+                html += f'<div style="{cell_base} background:#374151; opacity:{limp_opacity};"><span style="{hand_style}">{hand}</span></div>'
             elif hand in get_drillable_set():
+                # Edge hands: 100% opacity
                 html += f'<div style="{cell_base} background:#374151;"><span style="{hand_style}">{hand}</span></div>'
             else:
-                html += f'<div style="{cell_base} background:#374151; color:#6b7280; text-shadow:none;"><span style="{hand_style}">{hand}</span></div>'
+                # Trash hands: 40% opacity
+                html += f'<div style="{cell_base} background:#2d3748; color:#4a5568; text-shadow:none; opacity:{float(filter_opacity) * 0.33};"><span style="{hand_style}">{hand}</span></div>'
 
     # Close grid and add caption
     if selected_filter == "全部":

@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>完整 RFI 測試</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 10mm;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 10px;
+            background: white;
+        }
+        h1 {
+            text-align: center;
+            font-size: 18px;
+            margin: 5px 0;
+        }
+        .subtitle {
+            text-align: center;
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 10px;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(13, 1fr);
+            gap: 2px;
+            max-width: 100%;
+            margin: 0 auto;
+        }
+        .cell {
+            aspect-ratio: 1;
+            border: 1px solid #ccc;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            background: white;
+        }
+        .cell.test {
+            border: 2px solid #333;
+            background: #f5f5f5;
+        }
+        .cell.test.utg { border-color: #fbbf24; }
+        .cell.test.btn { border-color: #ef4444; }
+        .hand {
+            font-weight: bold;
+            font-size: 11px;
+        }
+        .answer {
+            font-size: 9px;
+            color: #666;
+            margin-top: 2px;
+        }
+        .answer.show {
+            color: #dc2626;
+            font-weight: bold;
+        }
+        .legend {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 10px;
+            font-size: 11px;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .legend-color {
+            width: 16px;
+            height: 12px;
+            border-radius: 2px;
+        }
+        .fold { opacity: 0.4; }
+        @media print {
+            body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+        }
+    </style>
+</head>
+<body>
+    <h1>完整 RFI 測試</h1>
+    <p class="subtitle">填寫每張牌的最早開池位置</p>
+    <div class="grid">
+        <div class="cell test"><span class="hand">AA</span><span class="answer">___</span></div>
+        <div class="cell test"><span class="hand">AKs</span><span class="answer">___</span></div>
+        <div class="cell test"><span class="hand">AQs</span><span class="answer">___</span></div>
+        <div class="cell test"><span class="hand">AJs</span><span class="answer">___</span></div>
+        <div class="cell test"><span class="hand">ATs</span><span class="answer">___</span></div>
+        <div class="cell test"><span class="hand">A9s</span><span class="answer">___</span></div>
+        <div class="cell test"><span class="hand">A8s</span><span class="answer">___</span></div>
+        <div class="cell test"><span class="hand">A7s</span><span class="answer">___</span></div>
+        <div class="cell test"><span class="hand">A6s</span><span class="answer">___</span></div>
+        <div class="cell test"><span class="hand">A5s</span><span class="answer">___</span></div>
+        <div class="cell test"><span class="hand">A4s</span><span class="answer">___</span></div>
+        <div class="cell test"><span class="hand">A3s</span><span class="answer">___</span></div>
+        <div class="cell test"><span class="hand">A2s</span><span class="answer">___</span></div>
+        <div class="cell test"><span class="hand">AKo</span><span class="answer">___</span></div>
+        <div class="cell test"><span class="hand">KK</span><span class="answer">___</span></div>
+        <div class="cell test"><span class="hand">KQs</span><span class="answer">___</span></div>
+        <div class="cell test"><span class="hand">KJs</span><span class="answer">___</span></div>
+        <div class="cell test"><span class="hand">KTs</span><span class="answer">___</span></div>
+        <div class="cell test"><span class="hand">K9s</span><span class="answer">___</span></div>
+        <div class="cell test"><span class="hand">K8s</span><span class="answer">___</span></div>
+        <div class="cell test"><span class="hand">K7s</span><span class="answer">___</span></div>
+        <div class="cell test"><span class="hand">K6s</span><span class="answer">___</span></div>
+        <div class="cell test"><span class="hand">K5s</span><span class="answer">___</span></div>
+        <div class="cell test"><span class="hand">K4s</span><span class="answer">___</span></div>
+        <div class="cell test"><span class="hand">K3s</span><span class="answer">___</span></div>
+        <div class="cell test"><span class="hand">K2s</span><span class="answer">___</span></div>
+        <div class="cell test"><span class="hand">AQo</span><span class="answer">___</span></div>
+        <div class="cell test"><span class="hand">KQo</span><span class="answer">___</span></div>
+        <div class="cell test"><span class="hand">QQ</span><span class="answer">___</span></div>
+        <div class="cell test"><span class="hand">QJs</span><span class="answer">___</span></div>
+        <div class="cell test"><span class="hand">QTs</span><span class="answer">___</span></div>
+        <div class="cell test"><span class="hand">Q9s</span><span class="answer">___</span></div>
+        <div class="cell test"><span class="hand">Q8s</span><span class="answer">___</span></div>
+        <div class="cell test"><span class="hand">Q7s</span><span class="answer">___</span></div>
+        <div class="cell test"><span class="hand">Q6s</span><span class="answer">___</span></div>
+        <div class="cell test"><span class="hand">Q5s</span><span class="answer">___</span></div>
+        <div class="cell test"><span class="hand">Q4s</span><span class="answer">___</span></div>
+        <div class="cell test"><span class="hand">Q3s</span><span class="answer">___</span></div>
+        <div class="cell test"><span class="hand">Q2s</span><span class="answer">___</span></div>
+        <div class="cell test"><span class="hand">AJo</span><span class="answer">___</span></div>
+        <div class="cell test"><span class="hand">KJo</span><span class="answer">___</span></div>
+        <div class="cell test"><span class="hand">QJo</span><span class="answer">___</span></div>
+        <div class="cell test"><span class="hand">JJ</span><span class="answer">___</span></div>
+        <div class="cell test"><span class="hand">JTs</span><span class="answer">___</span></div>
+        <div class="cell test"><span class="hand">J9s</span><span class="answer">___</span></div>
+        <div class="cell test"><span class="hand">J8s</span><span class="answer">___</span></div>
+        <div class="cell test"><span class="hand">J7s</span><span class="answer">___</span></div>
+        <div class="cell test"><span class="hand">J6s</span><span class="answer">___</span></div>
+        <div class="cell test"><span class="hand">J5s</span><span class="answer">___</span></div>
+        <div class="cell test"><span class="hand">J4s</span><span class="answer">___</span></div>
+        <div class="cell fold"><span class="hand">J3s</span></div>
+        <div class="cell fold"><span class="hand">J2s</span></div>
+        <div class="cell test"><span class="hand">ATo</span><span class="answer">___</span></div>
+        <div class="cell test"><span class="hand">KTo</span><span class="answer">___</span></div>
+        <div class="cell test"><span class="hand">QTo</span><span class="answer">___</span></div>
+        <div class="cell test"><span class="hand">JTo</span><span class="answer">___</span></div>
+        <div class="cell test"><span class="hand">TT</span><span class="answer">___</span></div>
+        <div class="cell test"><span class="hand">T9s</span><span class="answer">___</span></div>
+        <div class="cell test"><span class="hand">T8s</span><span class="answer">___</span></div>
+        <div class="cell test"><span class="hand">T7s</span><span class="answer">___</span></div>
+        <div class="cell test"><span class="hand">T6s</span><span class="answer">___</span></div>
+        <div class="cell fold"><span class="hand">T5s</span></div>
+        <div class="cell fold"><span class="hand">T4s</span></div>
+        <div class="cell fold"><span class="hand">T3s</span></div>
+        <div class="cell fold"><span class="hand">T2s</span></div>
+        <div class="cell test"><span class="hand">A9o</span><span class="answer">___</span></div>
+        <div class="cell test"><span class="hand">K9o</span><span class="answer">___</span></div>
+        <div class="cell test"><span class="hand">Q9o</span><span class="answer">___</span></div>
+        <div class="cell test"><span class="hand">J9o</span><span class="answer">___</span></div>
+        <div class="cell test"><span class="hand">T9o</span><span class="answer">___</span></div>
+        <div class="cell test"><span class="hand">99</span><span class="answer">___</span></div>
+        <div class="cell test"><span class="hand">98s</span><span class="answer">___</span></div>
+        <div class="cell test"><span class="hand">97s</span><span class="answer">___</span></div>
+        <div class="cell test"><span class="hand">96s</span><span class="answer">___</span></div>
+        <div class="cell fold"><span class="hand">95s</span></div>
+        <div class="cell fold"><span class="hand">94s</span></div>
+        <div class="cell fold"><span class="hand">93s</span></div>
+        <div class="cell fold"><span class="hand">92s</span></div>
+        <div class="cell test"><span class="hand">A8o</span><span class="answer">___</span></div>
+        <div class="cell test"><span class="hand">K8o</span><span class="answer">___</span></div>
+        <div class="cell fold"><span class="hand">Q8o</span></div>
+        <div class="cell fold"><span class="hand">J8o</span></div>
+        <div class="cell test"><span class="hand">T8o</span><span class="answer">___</span></div>
+        <div class="cell test"><span class="hand">98o</span><span class="answer">___</span></div>
+        <div class="cell test"><span class="hand">88</span><span class="answer">___</span></div>
+        <div class="cell test"><span class="hand">87s</span><span class="answer">___</span></div>
+        <div class="cell test"><span class="hand">86s</span><span class="answer">___</span></div>
+        <div class="cell test"><span class="hand">85s</span><span class="answer">___</span></div>
+        <div class="cell fold"><span class="hand">84s</span></div>
+        <div class="cell fold"><span class="hand">83s</span></div>
+        <div class="cell fold"><span class="hand">82s</span></div>
+        <div class="cell test"><span class="hand">A7o</span><span class="answer">___</span></div>
+        <div class="cell fold"><span class="hand">K7o</span></div>
+        <div class="cell fold"><span class="hand">Q7o</span></div>
+        <div class="cell fold"><span class="hand">J7o</span></div>
+        <div class="cell fold"><span class="hand">T7o</span></div>
+        <div class="cell fold"><span class="hand">97o</span></div>
+        <div class="cell fold"><span class="hand">87o</span></div>
+        <div class="cell test"><span class="hand">77</span><span class="answer">___</span></div>
+        <div class="cell test"><span class="hand">76s</span><span class="answer">___</span></div>
+        <div class="cell test"><span class="hand">75s</span><span class="answer">___</span></div>
+        <div class="cell fold"><span class="hand">74s</span></div>
+        <div class="cell fold"><span class="hand">73s</span></div>
+        <div class="cell fold"><span class="hand">72s</span></div>
+        <div class="cell test"><span class="hand">A6o</span><span class="answer">___</span></div>
+        <div class="cell fold"><span class="hand">K6o</span></div>
+        <div class="cell fold"><span class="hand">Q6o</span></div>
+        <div class="cell fold"><span class="hand">J6o</span></div>
+        <div class="cell fold"><span class="hand">T6o</span></div>
+        <div class="cell fold"><span class="hand">96o</span></div>
+        <div class="cell fold"><span class="hand">86o</span></div>
+        <div class="cell fold"><span class="hand">76o</span></div>
+        <div class="cell test"><span class="hand">66</span><span class="answer">___</span></div>
+        <div class="cell test"><span class="hand">65s</span><span class="answer">___</span></div>
+        <div class="cell test"><span class="hand">64s</span><span class="answer">___</span></div>
+        <div class="cell fold"><span class="hand">63s</span></div>
+        <div class="cell fold"><span class="hand">62s</span></div>
+        <div class="cell test"><span class="hand">A5o</span><span class="answer">___</span></div>
+        <div class="cell fold"><span class="hand">K5o</span></div>
+        <div class="cell fold"><span class="hand">Q5o</span></div>
+        <div class="cell fold"><span class="hand">J5o</span></div>
+        <div class="cell fold"><span class="hand">T5o</span></div>
+        <div class="cell fold"><span class="hand">95o</span></div>
+        <div class="cell fold"><span class="hand">85o</span></div>
+        <div class="cell fold"><span class="hand">75o</span></div>
+        <div class="cell fold"><span class="hand">65o</span></div>
+        <div class="cell test"><span class="hand">55</span><span class="answer">___</span></div>
+        <div class="cell test"><span class="hand">54s</span><span class="answer">___</span></div>
+        <div class="cell test"><span class="hand">53s</span><span class="answer">___</span></div>
+        <div class="cell fold"><span class="hand">52s</span></div>
+        <div class="cell test"><span class="hand">A4o</span><span class="answer">___</span></div>
+        <div class="cell fold"><span class="hand">K4o</span></div>
+        <div class="cell fold"><span class="hand">Q4o</span></div>
+        <div class="cell fold"><span class="hand">J4o</span></div>
+        <div class="cell fold"><span class="hand">T4o</span></div>
+        <div class="cell fold"><span class="hand">94o</span></div>
+        <div class="cell fold"><span class="hand">84o</span></div>
+        <div class="cell fold"><span class="hand">74o</span></div>
+        <div class="cell fold"><span class="hand">64o</span></div>
+        <div class="cell fold"><span class="hand">54o</span></div>
+        <div class="cell test"><span class="hand">44</span><span class="answer">___</span></div>
+        <div class="cell fold"><span class="hand">43s</span></div>
+        <div class="cell fold"><span class="hand">42s</span></div>
+        <div class="cell test"><span class="hand">A3o</span><span class="answer">___</span></div>
+        <div class="cell fold"><span class="hand">K3o</span></div>
+        <div class="cell fold"><span class="hand">Q3o</span></div>
+        <div class="cell fold"><span class="hand">J3o</span></div>
+        <div class="cell fold"><span class="hand">T3o</span></div>
+        <div class="cell fold"><span class="hand">93o</span></div>
+        <div class="cell fold"><span class="hand">83o</span></div>
+        <div class="cell fold"><span class="hand">73o</span></div>
+        <div class="cell fold"><span class="hand">63o</span></div>
+        <div class="cell fold"><span class="hand">53o</span></div>
+        <div class="cell fold"><span class="hand">43o</span></div>
+        <div class="cell test"><span class="hand">33</span><span class="answer">___</span></div>
+        <div class="cell fold"><span class="hand">32s</span></div>
+        <div class="cell fold"><span class="hand">A2o</span></div>
+        <div class="cell fold"><span class="hand">K2o</span></div>
+        <div class="cell fold"><span class="hand">Q2o</span></div>
+        <div class="cell fold"><span class="hand">J2o</span></div>
+        <div class="cell fold"><span class="hand">T2o</span></div>
+        <div class="cell fold"><span class="hand">92o</span></div>
+        <div class="cell fold"><span class="hand">82o</span></div>
+        <div class="cell fold"><span class="hand">72o</span></div>
+        <div class="cell fold"><span class="hand">62o</span></div>
+        <div class="cell fold"><span class="hand">52o</span></div>
+        <div class="cell fold"><span class="hand">42o</span></div>
+        <div class="cell fold"><span class="hand">32o</span></div>
+        <div class="cell test"><span class="hand">22</span><span class="answer">___</span></div>
+    </div>
+    <div class="legend">
+        <span class="legend-item"><span class="legend-color" style="background:#7f1d1d;"></span> UTG</span>
+        <span class="legend-item"><span class="legend-color" style="background:#b91c1c;"></span> HJ</span>
+        <span class="legend-item"><span class="legend-color" style="background:#dc2626;"></span> CO</span>
+        <span class="legend-item"><span class="legend-color" style="background:#ef4444;"></span> BTN</span>
+        <span class="legend-item"><span class="legend-color" style="background:#fca5a5;"></span> SB</span>
+    </div>
+</body>
+</html>

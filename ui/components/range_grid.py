@@ -356,8 +356,8 @@ def _generate_grid_html(grid_data: List[List[Dict]], highlight_hand: str = None,
         opacity: 0.5;
     }
     .range-cell.filtered-out {
-        opacity: 0.5 !important;
-        filter: grayscale(50%);
+        opacity: 0.3 !important;
+        filter: grayscale(70%);
     }
     /* Premium 手牌邊框樣式 - 使用內框避免重疊遮擋 */
     .range-cell.premium-t1 {
@@ -503,9 +503,11 @@ def _generate_grid_html(grid_data: List[List[Dict]], highlight_hand: str = None,
             else:
                 classes = f"range-cell {cell['type']}"
                 # 出題範圍用閃動底線標示，非出題範圍輕微淡化
+                # 但如果有篩選且匹配，則不暗化（篩選優先）
                 if cell.get('drillable', True):
                     classes += " drillable-mark"
-                else:
+                elif not (active_filter and matches_filter):
+                    # 只有當沒有篩選匹配時才加 non-drillable 暗化
                     classes += " non-drillable"
 
             # Apply filter dimming (stronger than drillable dimming)
