@@ -18,6 +18,7 @@ from analyzer.hand_analyzer import (
     BatchAnalysisResult,
     HandResult,
     PositionStats,
+    PlayerStats,
 )
 
 
@@ -289,11 +290,15 @@ def _display_batch_results(result: BatchAnalysisResult, lang: str):
     # Handle both old and new result format (for cached results)
     hands_won = getattr(result, 'hands_won', None)
     hands_lost = getattr(result, 'hands_lost', None)
+    bb_per_100 = getattr(result, 'bb_per_100', None)
+    player_stats = getattr(result, 'player_stats', None)
 
     # If old format, calculate from data
     if hands_won is None:
         hands_won = len([r for r in result.biggest_winners if r.profit > 0])
         hands_lost = result.total_hands - hands_won
+    if bb_per_100 is None:
+        bb_per_100 = 0
 
     col1, col2, col3, col4 = st.columns(4)
     with col1:
@@ -302,10 +307,11 @@ def _display_batch_results(result: BatchAnalysisResult, lang: str):
             result.total_hands
         )
     with col2:
+        bb_str = f"{bb_per_100:+.1f} BB/100" if bb_per_100 != 0 else "0 BB/100"
         st.metric(
             "總盈虧" if lang == "zh" else "Total P/L",
             f"${result.total_profit:.2f}",
-            delta=f"${result.total_profit/result.total_hands:.4f}/手" if result.total_hands > 0 else "N/A"
+            delta=bb_str
         )
     with col3:
         st.metric(
@@ -314,11 +320,25 @@ def _display_batch_results(result: BatchAnalysisResult, lang: str):
             delta=f"{hands_lost} 虧損" if lang == "zh" else f"{hands_lost} lost"
         )
     with col4:
-        win_rate = (hands_won / result.total_hands * 100) if result.total_hands > 0 else 0
-        st.metric(
-            "盈利率" if lang == "zh" else "Win Rate",
-            f"{win_rate:.1f}%"
-        )
+        # Show VPIP instead of simple win rate (more useful)
+        if player_stats and player_stats.vpip > 0:
+            st.metric(
+                "VPIP",
+                f"{player_stats.vpip:.1f}%",
+                delta="標準 22-28%" if lang == "zh" else "std 22-28%"
+            )
+        else:
+            win_rate = (hands_won / result.total_hands * 100) if result.total_hands > 0 else 0
+            st.metric(
+                "盈利率" if lang == "zh" else "Win Rate",
+                f"{win_rate:.1f}%"
+            )
+
+    # Player Stats (VPIP, PFR, 3-Bet, etc.)
+    if player_stats:
+        st.markdown("---")
+        st.markdown("### " + ("玩家風格數據" if lang == "zh" else "Player Stats"))
+        _display_player_stats(player_stats, lang)
 
     st.markdown("---")
 
@@ -376,6 +396,50 @@ def _display_position_stats(position_stats: dict, lang: str):
             st.markdown("---")
 
 
+def _display_player_stats(stats: PlayerStats, lang: str):
+    """Display player statistics (VPIP, PFR, 3-Bet, etc.) with color coding."""
+
+    def get_status(value: float, low: float, high: float) -> str:
+        """Return status indicator based on standard range."""
+        if value < low:
+            return "🔵"  # Too tight
+        elif value > high:
+            return "🔴"  # Too loose
+        return "🟢"  # Good
+
+    col1, col2, col3, col4, col5 = st.columns(5)
+
+    with col1:
+        status = get_status(stats.vpip, 22, 28)
+        st.markdown(f"**VPIP** {status}")
+        st.markdown(f"### {stats.vpip:.1f}%")
+        st.caption("標準: 22-28%" if lang == "zh" else "Std: 22-28%")
+
+    with col2:
+        status = get_status(stats.pfr, 18, 24)
+        st.markdown(f"**PFR** {status}")
+        st.markdown(f"### {stats.pfr:.1f}%")
+        st.caption("標準: 18-24%" if lang == "zh" else "Std: 18-24%")
+
+    with col3:
+        status = get_status(stats.three_bet, 7, 10)
+        st.markdown(f"**3-Bet** {status}")
+        st.markdown(f"### {stats.three_bet:.1f}%")
+        st.caption("標準: 7-10%" if lang == "zh" else "Std: 7-10%")
+
+    with col4:
+        status = get_status(stats.wtsd, 25, 30)
+        st.markdown(f"**WTSD** {status}")
+        st.markdown(f"### {stats.wtsd:.1f}%")
+        st.caption("標準: 25-30%" if lang == "zh" else "Std: 25-30%")
+
+    with col5:
+        status = get_status(stats.wsd, 50, 55)
+        st.markdown(f"**W$SD** {status}")
+        st.markdown(f"### {stats.wsd:.1f}%")
+        st.caption("標準: 50-55%" if lang == "zh" else "Std: 50-55%")
+
+
 def _display_hand_list(hands: List[HandResult], lang: str, is_loser: bool = True):
     """Display a list of hands (losers or winners)."""
 
@@ -384,22 +448,39 @@ def _display_hand_list(hands: List[HandResult], lang: str, is_loser: bool = True
         return
 
     for i, hr in enumerate(hands[:10], 1):
+        # Get profit in BB if available
+        profit_bb = getattr(hr, 'profit_bb', None)
+        if profit_bb is not None:
+            bb_str = f"{abs(profit_bb):.1f}BB"
+        else:
+            bb_str = ""
+
         profit_str = f"${abs(hr.profit):.2f}"
         if is_loser:
-            profit_display = f":red[-{profit_str}]"
+            profit_display = f":red[-{bb_str}]" if bb_str else f":red[-{profit_str}]"
+            title_suffix = f"-{bb_str} (${abs(hr.profit):.2f})" if bb_str else f"-{profit_str}"
         else:
-            profit_display = f":green[+{profit_str}]"
+            profit_display = f":green[+{bb_str}]" if bb_str else f":green[+{profit_str}]"
+            title_suffix = f"+{bb_str} (${hr.profit:.2f})" if bb_str else f"+{profit_str}"
 
-        with st.expander(f"{i}. {hr.position} {hr.hole_cards} | {profit_display}"):
+        with st.expander(f"{i}. {hr.position} {hr.hole_cards} | {title_suffix}"):
             col1, col2 = st.columns(2)
             with col1:
                 st.markdown(f"**位置:** {hr.position}" if lang == "zh" else f"**Position:** {hr.position}")
                 st.markdown(f"**手牌:** `{hr.hole_cards}`" if lang == "zh" else f"**Hand:** `{hr.hole_cards}`")
+                # Show if it was a VPIP hand
+                vpip = getattr(hr, 'vpip', None)
+                if vpip is not None:
+                    vpip_str = "是" if vpip else "否"
+                    vpip_str_en = "Yes" if vpip else "No"
+                    st.markdown(f"**主動入池:** {vpip_str}" if lang == "zh" else f"**VPIP:** {vpip_str_en}")
             with col2:
                 st.markdown(f"**底池:** ${hr.pot_size:.2f}" if lang == "zh" else f"**Pot:** ${hr.pot_size:.2f}")
                 showdown = "是" if hr.went_to_showdown else "否"
                 showdown_en = "Yes" if hr.went_to_showdown else "No"
                 st.markdown(f"**到攤牌:** {showdown}" if lang == "zh" else f"**Showdown:** {showdown_en}")
+                if profit_bb is not None:
+                    st.markdown(f"**虧損:** {abs(profit_bb):.1f} BB" if is_loser else f"**盈利:** {profit_bb:.1f} BB")
 
             # Show raw hand button
             if st.button(
