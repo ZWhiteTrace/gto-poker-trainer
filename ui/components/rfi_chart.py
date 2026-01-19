@@ -54,17 +54,19 @@ PREMIUM_3BET_HANDS = {
     "AKs", "AKo", "AQs", "AQo", "KQs",
 }
 
-# UTG key edge hands - gold border (基本可玩，需記憶)
+# UTG key edge hands - gold border (高抽水版：最後100%開池的邊緣牌)
 UTG_KEY_EDGES = {
-    "A2s", "K5s", "Q8s", "J9s", "T9s", "KJo", "QJo", "ATo", "55",
+    "A3s", "K6s", "Q8s", "J9s", "T9s", "KJo", "QJo", "ATo", "55",
 }
 
-# BTN key edge hands - white border (邊緣可玩，需記憶)
+# BTN key edge hands - white border (高抽水版：BTN 最早開池的邊緣牌)
 # These are hands where BTN is the earliest position to open
 BTN_KEY_EDGES = {
-    "K2s", "Q5s", "Q4s", "Q3s", "Q2s", "J6s", "J5s", "J4s", "J3s",
-    "T6s", "T5s", "96s", "95s", "85s", "84s", "74s", "73s", "63s", "53s", "52s", "43s", "42s",
-    "A4o", "A3o", "K8o", "Q8o", "J8o", "T8o", "98o",
+    # 同花 (BTN 最早開)
+    "K3s", "Q4s", "J6s", "T6s", "96s", "86s", "75s", "54s",
+    # 不同花
+    "A4o", "A3o", "K9o", "K8o", "Q9o", "J9o", "T9o", "T8o", "98o",
+    # 對子
     "33", "22",
 }
 

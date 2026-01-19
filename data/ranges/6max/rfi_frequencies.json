@@ -50,16 +50,7 @@
         "raise": 100
       },
       "55": {
-        "raise": 75
-      },
-      "44": {
-        "raise": 25
-      },
-      "33": {
-        "raise": 25
-      },
-      "22": {
-        "raise": 25
+        "raise": 50
       },
       "AKs": {
         "raise": 100
@@ -95,7 +86,7 @@
         "raise": 100
       },
       "A2s": {
-        "raise": 100
+        "raise": 25
       },
       "KQs": {
         "raise": 100
@@ -119,7 +110,7 @@
         "raise": 100
       },
       "K5s": {
-        "raise": 75
+        "raise": 25
       },
       "QJs": {
         "raise": 100
@@ -140,7 +131,7 @@
         "raise": 75
       },
       "T9s": {
-        "raise": 75
+        "raise": 50
       },
       "98s": {
         "raise": 25
@@ -149,12 +140,6 @@
         "raise": 25
       },
       "76s": {
-        "raise": 25
-      },
-      "65s": {
-        "raise": 25
-      },
-      "54s": {
         "raise": 25
       },
       "AKo": {
@@ -190,9 +175,9 @@
     },
     "stats": {
       "total_hands": 169,
-      "raise_hands": 50,
-      "estimated_vpip_contribution": 3.0,
-      "note": "UTG: TT+, 99-77 100%, 66-22混合, A2s+, K5s+, 同花連張混合"
+      "raise_hands": 40,
+      "estimated_vpip_contribution": 2.5,
+      "note": "UTG 高抽水調整: 55→50%, 44/33/22移除, A2s→25%, K5s→25%, T9s→50%, 65s/54s移除"
     }
   },
   "HJ": {
@@ -228,12 +213,6 @@
         "raise": 100
       },
       "44": {
-        "raise": 50
-      },
-      "33": {
-        "raise": 25
-      },
-      "22": {
         "raise": 25
       },
       "AKs": {
@@ -297,7 +276,7 @@
         "raise": 100
       },
       "K4s": {
-        "raise": 100
+        "raise": 25
       },
       "QJs": {
         "raise": 100
@@ -311,15 +290,6 @@
       "Q8s": {
         "raise": 100
       },
-      "Q7s": {
-        "raise": 75
-      },
-      "Q6s": {
-        "raise": 75
-      },
-      "Q5s": {
-        "raise": 25
-      },
       "JTs": {
         "raise": 100
       },
@@ -327,7 +297,7 @@
         "raise": 100
       },
       "J8s": {
-        "raise": 100
+        "raise": 50
       },
       "T9s": {
         "raise": 100
@@ -363,12 +333,6 @@
         "raise": 100
       },
       "A9o": {
-        "raise": 100
-      },
-      "A8o": {
-        "raise": 25
-      },
-      "A5o": {
         "raise": 25
       },
       "KQo": {
@@ -392,9 +356,9 @@
     },
     "stats": {
       "total_hands": 169,
-      "raise_hands": 55,
-      "estimated_vpip_contribution": 3.5,
-      "note": "HJ: TT+ 100%, 99-55混合(低頻), 44-22混合, A2s+, Q5s+混合, 同花連張混合"
+      "raise_hands": 45,
+      "estimated_vpip_contribution": 3.0,
+      "note": "HJ 高抽水調整: 44→25%, 33/22移除, K4s→25%, Q7s/Q6s/Q5s移除, J8s→50%, A9o→25%, A8o/A5o移除"
     }
   },
   "CO": {
@@ -435,9 +399,6 @@
       "33": {
         "raise": 25
       },
-      "22": {
-        "raise": 25
-      },
       "AKs": {
         "raise": 100
       },
@@ -501,12 +462,6 @@
       "K4s": {
         "raise": 100
       },
-      "K3s": {
-        "raise": 100
-      },
-      "K2s": {
-        "raise": 50
-      },
       "QJs": {
         "raise": 100
       },
@@ -526,9 +481,6 @@
         "raise": 100
       },
       "Q5s": {
-        "raise": 100
-      },
-      "Q4s": {
         "raise": 25
       },
       "JTs": {
@@ -541,9 +493,6 @@
         "raise": 100
       },
       "J7s": {
-        "raise": 100
-      },
-      "J6s": {
         "raise": 25
       },
       "T9s": {
@@ -589,7 +538,7 @@
         "raise": 100
       },
       "A8o": {
-        "raise": 100
+        "raise": 50
       },
       "A7o": {
         "raise": 25
@@ -624,9 +573,9 @@
     },
     "stats": {
       "total_hands": 169,
-      "raise_hands": 70,
-      "estimated_vpip_contribution": 4.5,
-      "note": "CO: JJ+, TT-22混合, A2s+, K2s混合, 同花連張混合"
+      "raise_hands": 60,
+      "estimated_vpip_contribution": 4.0,
+      "note": "CO 高抽水調整: 22移除, K3s/K2s移除, Q5s→25%, Q4s移除, J7s→25%, J6s移除, A8o→50%"
     }
   },
   "BTN": {
@@ -668,7 +617,7 @@
         "raise": 100
       },
       "22": {
-        "raise": 50
+        "raise": 25
       },
       "AKs": {
         "raise": 100
@@ -736,9 +685,6 @@
       "K3s": {
         "raise": 100
       },
-      "K2s": {
-        "raise": 100
-      },
       "QJs": {
         "raise": 100
       },
@@ -763,12 +709,6 @@
       "Q4s": {
         "raise": 100
       },
-      "Q3s": {
-        "raise": 100
-      },
-      "Q2s": {
-        "raise": 75
-      },
       "JTs": {
         "raise": 100
       },
@@ -784,12 +724,6 @@
       "J6s": {
         "raise": 100
       },
-      "J5s": {
-        "raise": 100
-      },
-      "J4s": {
-        "raise": 75
-      },
       "T9s": {
         "raise": 100
       },
@@ -801,9 +735,6 @@
       },
       "T6s": {
         "raise": 100
-      },
-      "T5s": {
-        "raise": 25
       },
       "98s": {
         "raise": 100
@@ -824,15 +755,12 @@
         "raise": 100
       },
       "75s": {
-        "raise": 50
+        "raise": 25
       },
       "65s": {
         "raise": 100
       },
       "54s": {
-        "raise": 50
-      },
-      "43s": {
         "raise": 25
       },
       "AKo": {
@@ -875,10 +803,7 @@
         "raise": 100
       },
       "K8o": {
-        "raise": 75
-      },
-      "K7o": {
-        "raise": 25
+        "raise": 50
       },
       "QJo": {
         "raise": 100
@@ -895,20 +820,17 @@
       "J9o": {
         "raise": 100
       },
-      "J8o": {
-        "raise": 25
-      },
       "T9o": {
         "raise": 100
       },
       "T8o": {
-        "raise": 50
+        "raise": 25
       },
       "98o": {
         "raise": 50
       },
       "A3o": {
-        "raise": 50
+        "raise": 25
       },
       "A4o": {
         "raise": 100
@@ -916,9 +838,9 @@
     },
     "stats": {
       "total_hands": 169,
-      "raise_hands": 85,
-      "estimated_vpip_contribution": 5.8,
-      "note": "BTN: TT+, 99-22混合, A2s+混合, K2s混合, 同花連張混合"
+      "raise_hands": 70,
+      "estimated_vpip_contribution": 4.8,
+      "note": "BTN 高抽水調整: 22→25%, K2s/Q3s/Q2s/J5s/J4s/T5s/43s/K7o/J8o移除, 75s/54s/T8o/A3o→25%, K8o→50%"
     }
   },
   "SB": {
@@ -1193,9 +1115,6 @@
       "J9o": {
         "raise": 100
       },
-      "J8o": {
-        "raise": 25
-      },
       "T9o": {
         "raise": 100
       },
@@ -1205,115 +1124,19 @@
       "98o": {
         "raise": 75
       },
-      "87o": {
-        "raise": 25
-      },
-      "T5s": {
-        "raise": 25
-      },
-      "43s": {
-        "raise": 25
-      },
-      "K7o": {
-        "raise": 25
-      },
-      "32s": {
-        "limp": 25
-      },
-      "42s": {
-        "limp": 25
-      },
-      "52s": {
-        "limp": 25
-      },
-      "63s": {
-        "limp": 25
-      },
-      "74s": {
-        "limp": 25
-      },
-      "84s": {
-        "limp": 25
-      },
-      "94s": {
-        "limp": 25
-      },
-      "95s": {
-        "limp": 25
-      },
-      "T2s": {
-        "limp": 25
-      },
-      "T3s": {
-        "limp": 25
-      },
-      "T4s": {
-        "limp": 25
-      },
-      "J2s": {
-        "limp": 25
-      },
-      "J3s": {
-        "limp": 25
-      },
       "A2o": {
         "limp": 25
       },
-      "K4o": {
-        "limp": 25
-      },
-      "K5o": {
-        "limp": 25
-      },
-      "K6o": {
-        "limp": 25
-      },
-      "Q5o": {
-        "limp": 25
-      },
-      "Q6o": {
-        "limp": 25
-      },
-      "Q7o": {
-        "limp": 25
-      },
-      "Q8o": {
-        "limp": 25
-      },
-      "J7o": {
-        "limp": 25
-      },
-      "T7o": {
-        "limp": 25
-      },
-      "97o": {
-        "limp": 25
-      },
-      "86o": {
-        "limp": 25
-      },
-      "76o": {
-        "limp": 25
-      },
-      "75o": {
-        "limp": 25
-      },
-      "65o": {
-        "limp": 25
-      },
-      "64o": {
-        "limp": 25
-      },
-      "54o": {
+      "K7o": {
         "limp": 25
       }
     },
     "stats": {
       "total_hands": 169,
-      "raise_hands": 95,
-      "limp_hands": 30,
-      "estimated_vpip_contribution": 7.5,
-      "note": "SB: Raise-or-Limp策略, 100%R主力範圍, 邊緣牌25%Limp"
+      "raise_hands": 85,
+      "limp_hands": 2,
+      "estimated_vpip_contribution": 6.5,
+      "note": "SB 高抽水調整: J8o/87o/T5s/43s/K6o移除, 僅保留K7o/A2o limp"
     }
   }
 }
