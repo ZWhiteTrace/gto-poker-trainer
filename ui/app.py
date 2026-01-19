@@ -28,11 +28,12 @@ from ui.components.action_flow import display_action_flow, RAISE_SIZES
 from ui.components.storage import save_progress_to_storage, load_progress_from_storage, init_storage_sync
 from ui.components.rfi_chart import display_rfi_charts
 from ui.components.push_fold_chart import display_push_fold_chart, display_push_fold_comparison, display_push_fold_drill
+from ui.components.hand_review import display_hand_review_page
 # Achievements system removed for simplification
 
 # Page URL mappings
-PAGE_KEYS = ["drill", "range", "pushfold", "postflop", "equity", "outs", "ev", "learning", "stats"]
-PAGE_NAMES = ["Drill Mode", "Range Viewer", "Push/Fold", "Postflop", "Equity Quiz", "Outs Quiz", "EV Quiz", "Learning", "Statistics"]
+PAGE_KEYS = ["drill", "range", "pushfold", "review", "postflop", "equity", "outs", "ev", "learning", "stats"]
+PAGE_NAMES = ["Drill Mode", "Range Viewer", "Push/Fold", "Hand Review", "Postflop", "Equity Quiz", "Outs Quiz", "EV Quiz", "Learning", "Statistics"]
 
 # Equity breakdown data for vs 4-bet scenarios
 # Shows equity of common hands against typical 4-bet range hands
@@ -326,6 +327,7 @@ TEXTS = {
         "drill_mode": "練習模式",
         "range_viewer": "範圍查看",
         "push_fold": "MTT 短碼",
+        "hand_review": "手牌回顧",
         "statistics": "統計分析",
         "settings": "設定",
         "table_format": "桌型",
@@ -429,6 +431,7 @@ TEXTS = {
         "drill_mode": "Drill Mode",
         "range_viewer": "Range Viewer",
         "push_fold": "MTT Short Stack",
+        "hand_review": "Hand Review",
         "statistics": "Statistics",
         "settings": "Settings",
         "table_format": "Table Format",
@@ -601,7 +604,7 @@ def main():
         st.markdown("<div style='height: 5px;'></div>", unsafe_allow_html=True)
 
         # Navigation
-        nav_options = [t("drill_mode"), t("range_viewer"), t("push_fold"), t("postflop"), t("equity_quiz"), t("outs_quiz"), t("ev_quiz"), t("learning"), t("statistics")]
+        nav_options = [t("drill_mode"), t("range_viewer"), t("push_fold"), t("hand_review"), t("postflop"), t("equity_quiz"), t("outs_quiz"), t("ev_quiz"), t("learning"), t("statistics")]
         page_idx = st.radio(
             "Navigate",
             options=range(len(nav_options)),
@@ -829,6 +832,8 @@ def main():
         viewer_page()
     elif page == "Push/Fold":
         push_fold_page()
+    elif page == "Hand Review":
+        hand_review_page()
     elif page == "Postflop":
         postflop_page()
     elif page == "Equity Quiz":
@@ -1579,6 +1584,12 @@ def push_fold_page():
     with tab2:
         # Practice mode
         display_push_fold_drill(lang)
+
+
+def hand_review_page():
+    """Hand history review and analysis page."""
+    lang = st.session_state.language
+    display_hand_review_page(lang)
 
 
 def postflop_page():
