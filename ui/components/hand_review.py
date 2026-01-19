@@ -19,6 +19,7 @@ from analyzer.hand_analyzer import (
     HandResult,
     PositionStats,
     PlayerStats,
+    PostflopStats,
 )
 
 
@@ -337,8 +338,21 @@ def _display_batch_results(result: BatchAnalysisResult, lang: str):
     # Player Stats (VPIP, PFR, 3-Bet, etc.)
     if player_stats:
         st.markdown("---")
-        st.markdown("### " + ("玩家風格數據" if lang == "zh" else "Player Stats"))
+        st.markdown("### " + ("翻前數據 (Preflop)" if lang == "zh" else "Preflop Stats"))
         _display_player_stats(player_stats, lang)
+
+    # Postflop Stats (C-Bet, Fold to C-Bet, Check-Raise by street)
+    postflop_stats = getattr(result, 'postflop_stats', None)
+    if postflop_stats:
+        st.markdown("---")
+        st.markdown("### " + ("翻後數據 (Postflop)" if lang == "zh" else "Postflop Stats"))
+        _display_postflop_stats(postflop_stats, lang)
+
+    # Result Stats (WTSD, W$SD, WWSF)
+    if player_stats:
+        st.markdown("---")
+        st.markdown("### " + ("結果數據 (Results)" if lang == "zh" else "Result Stats"))
+        _display_result_stats(player_stats, lang)
 
     st.markdown("---")
 
@@ -397,7 +411,7 @@ def _display_position_stats(position_stats: dict, lang: str):
 
 
 def _display_player_stats(stats: PlayerStats, lang: str):
-    """Display player statistics (VPIP, PFR, 3-Bet, etc.) with color coding."""
+    """Display preflop player statistics (VPIP, PFR, 3-Bet, Fold to 3-Bet, ATS) with color coding."""
 
     def get_status(value: float, low: float, high: float) -> str:
         """Return status indicator based on standard range."""
@@ -428,16 +442,137 @@ def _display_player_stats(stats: PlayerStats, lang: str):
         st.caption("標準: 7-10%" if lang == "zh" else "Std: 7-10%")
 
     with col4:
+        fold_to_3bet = getattr(stats, 'fold_to_3bet', 0)
+        status = get_status(fold_to_3bet, 55, 65)
+        st.markdown(f"**Fold to 3B** {status}")
+        st.markdown(f"### {fold_to_3bet:.1f}%")
+        st.caption("標準: 55-65%" if lang == "zh" else "Std: 55-65%")
+
+    with col5:
+        ats = getattr(stats, 'ats', 0)
+        status = get_status(ats, 25, 35)
+        st.markdown(f"**ATS** {status}")
+        st.markdown(f"### {ats:.1f}%")
+        st.caption("標準: 25-35%" if lang == "zh" else "Std: 25-35%")
+
+
+def _display_postflop_stats(stats: PostflopStats, lang: str):
+    """Display postflop statistics (C-Bet, Fold to C-Bet, Check-Raise by street)."""
+
+    def get_status(value: float, low: float, high: float) -> str:
+        if value < low:
+            return "🔵"
+        elif value > high:
+            return "🔴"
+        return "🟢"
+
+    def sample_warning(count: int) -> str:
+        if count < 10:
+            return " ⚠️"  # Low sample warning
+        return ""
+
+    # Flop Stats
+    st.markdown("#### Flop")
+    col1, col2, col3 = st.columns(3)
+
+    with col1:
+        status = get_status(stats.flop_cbet, 55, 70)
+        warning = sample_warning(stats.flop_cbet_opportunities)
+        st.markdown(f"**C-Bet** {status}{warning}")
+        st.markdown(f"### {stats.flop_cbet:.1f}%")
+        st.caption(f"標準: 55-70% [n={stats.flop_cbet_opportunities}]" if lang == "zh" else f"Std: 55-70% [n={stats.flop_cbet_opportunities}]")
+
+    with col2:
+        status = get_status(stats.fold_to_flop_cbet, 40, 50)
+        warning = sample_warning(stats.faced_flop_cbet_count)
+        st.markdown(f"**Fold to CB** {status}{warning}")
+        st.markdown(f"### {stats.fold_to_flop_cbet:.1f}%")
+        st.caption(f"標準: 40-50% [n={stats.faced_flop_cbet_count}]" if lang == "zh" else f"Std: 40-50% [n={stats.faced_flop_cbet_count}]")
+
+    with col3:
+        status = get_status(stats.flop_check_raise, 6, 10)
+        st.markdown(f"**Check-Raise** {status}")
+        st.markdown(f"### {stats.flop_check_raise:.1f}%")
+        st.caption("標準: 6-10%" if lang == "zh" else "Std: 6-10%")
+
+    # Turn Stats
+    st.markdown("#### Turn")
+    col1, col2, col3 = st.columns(3)
+
+    with col1:
+        status = get_status(stats.turn_cbet, 50, 65)
+        warning = sample_warning(stats.turn_cbet_opportunities)
+        st.markdown(f"**C-Bet** {status}{warning}")
+        st.markdown(f"### {stats.turn_cbet:.1f}%")
+        st.caption(f"標準: 50-65% [n={stats.turn_cbet_opportunities}]" if lang == "zh" else f"Std: 50-65% [n={stats.turn_cbet_opportunities}]")
+
+    with col2:
+        status = get_status(stats.fold_to_turn_cbet, 35, 45)
+        warning = sample_warning(stats.faced_turn_cbet_count)
+        st.markdown(f"**Fold to CB** {status}{warning}")
+        st.markdown(f"### {stats.fold_to_turn_cbet:.1f}%")
+        st.caption(f"標準: 35-45% [n={stats.faced_turn_cbet_count}]" if lang == "zh" else f"Std: 35-45% [n={stats.faced_turn_cbet_count}]")
+
+    with col3:
+        st.markdown(f"**Check-Raise**")
+        st.markdown(f"### {stats.turn_check_raise:.1f}%")
+        st.caption("標準: 5-8%" if lang == "zh" else "Std: 5-8%")
+
+    # River Stats
+    st.markdown("#### River")
+    col1, col2, col3 = st.columns(3)
+
+    with col1:
+        status = get_status(stats.river_cbet, 45, 60)
+        warning = sample_warning(stats.river_cbet_opportunities)
+        st.markdown(f"**C-Bet** {status}{warning}")
+        st.markdown(f"### {stats.river_cbet:.1f}%")
+        st.caption(f"標準: 45-60% [n={stats.river_cbet_opportunities}]" if lang == "zh" else f"Std: 45-60% [n={stats.river_cbet_opportunities}]")
+
+    with col2:
+        st.markdown("**—**")
+        st.markdown("### —")
+        st.caption("")
+
+    with col3:
+        st.markdown(f"**Check-Raise**")
+        st.markdown(f"### {stats.river_check_raise:.1f}%")
+        st.caption("標準: 4-7%" if lang == "zh" else "Std: 4-7%")
+
+
+def _display_result_stats(stats: PlayerStats, lang: str):
+    """Display result statistics (WTSD, W$SD, WWSF)."""
+
+    def get_status(value: float, low: float, high: float) -> str:
+        if value < low:
+            return "🔵"
+        elif value > high:
+            return "🔴"
+        return "🟢"
+
+    col1, col2, col3 = st.columns(3)
+
+    with col1:
         status = get_status(stats.wtsd, 25, 30)
         st.markdown(f"**WTSD** {status}")
         st.markdown(f"### {stats.wtsd:.1f}%")
         st.caption("標準: 25-30%" if lang == "zh" else "Std: 25-30%")
+        st.caption("Went To ShowDown" if lang == "en" else "到攤牌率")
 
-    with col5:
+    with col2:
         status = get_status(stats.wsd, 50, 55)
         st.markdown(f"**W$SD** {status}")
         st.markdown(f"### {stats.wsd:.1f}%")
         st.caption("標準: 50-55%" if lang == "zh" else "Std: 50-55%")
+        st.caption("Won $ at ShowDown" if lang == "en" else "攤牌勝率")
+
+    with col3:
+        wwsf = getattr(stats, 'wwsf', 0)
+        status = get_status(wwsf, 45, 52)
+        st.markdown(f"**WWSF** {status}")
+        st.markdown(f"### {wwsf:.1f}%")
+        st.caption("標準: 45-52%" if lang == "zh" else "Std: 45-52%")
+        st.caption("Won When Saw Flop" if lang == "en" else "看翻牌後勝率")
 
 
 def _display_hand_list(hands: List[HandResult], lang: str, is_loser: bool = True):

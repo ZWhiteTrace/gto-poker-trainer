@@ -270,10 +270,40 @@ class HandResult:
     hole_cards: str
     went_to_showdown: bool
     pot_size: float
+
+    # Preflop stats
     vpip: bool  # Did hero voluntarily put money in pot?
     pfr: bool   # Did hero raise preflop?
     three_bet: bool  # Did hero 3-bet?
-    faced_raise: bool  # Did hero face a raise preflop?
+    faced_raise: bool  # Did hero face a raise preflop? (any raise)
+    faced_open: bool  # Did hero face exactly 1 raise (an open)? For 3-bet % calculation
+    ats: bool  # Attempt To Steal (raised from CO/BTN/SB when folded to)
+    fold_to_3bet: bool  # Folded to 3-bet after opening
+    was_preflop_aggressor: bool  # Was hero the last raiser preflop?
+
+    # Postflop tracking
+    saw_flop: bool
+    saw_turn: bool
+    saw_river: bool
+
+    # C-Bet stats (only valid if was_preflop_aggressor and saw that street)
+    cbet_flop: Optional[bool] = None  # Did hero c-bet flop?
+    cbet_turn: Optional[bool] = None  # Did hero c-bet turn?
+    cbet_river: Optional[bool] = None  # Did hero c-bet river?
+
+    # Fold to C-Bet stats (only valid if faced c-bet)
+    faced_cbet_flop: bool = False
+    fold_to_cbet_flop: Optional[bool] = None
+    faced_cbet_turn: bool = False
+    fold_to_cbet_turn: Optional[bool] = None
+
+    # Check-raise stats
+    check_raise_flop: bool = False
+    check_raise_turn: bool = False
+    check_raise_river: bool = False
+
+    # Won when saw flop
+    won_at_showdown: bool = False
 
 
 @dataclass
@@ -289,14 +319,45 @@ class PositionStats:
 
 @dataclass
 class PlayerStats:
-    """Core poker statistics for a player."""
+    """Core poker statistics for a player - Preflop focused."""
     total_hands: int
     vpip: float  # Voluntarily Put money In Pot % (standard: 22-28%)
     pfr: float   # Pre-Flop Raise % (standard: 18-24%)
     three_bet: float  # 3-Bet % (standard: 7-10%)
+    fold_to_3bet: float  # Fold to 3-Bet % (standard: 55-65%)
+    ats: float  # Attempt To Steal % (standard: 25-35%)
     wtsd: float  # Went To ShowDown % (standard: 25-30%)
     wsd: float   # Won at ShowDown % (standard: 50-55%)
+    wwsf: float  # Won When Saw Flop % (standard: 45-52%)
     aggression_factor: float  # (Bet+Raise) / Call
+
+
+@dataclass
+class PostflopStats:
+    """Postflop statistics by street."""
+    # Flop stats
+    flop_cbet: float  # C-Bet % on flop (standard: 55-70%)
+    fold_to_flop_cbet: float  # Fold to flop C-Bet % (standard: 40-50%)
+    flop_check_raise: float  # Check-raise % on flop (standard: 6-10%)
+    flop_af: float  # Aggression factor on flop
+
+    # Turn stats
+    turn_cbet: float  # C-Bet % on turn (standard: 50-65%)
+    fold_to_turn_cbet: float  # Fold to turn C-Bet %
+    turn_check_raise: float  # Check-raise % on turn
+    turn_af: float  # Aggression factor on turn
+
+    # River stats
+    river_cbet: float  # C-Bet % on river (standard: 45-60%)
+    river_check_raise: float  # Check-raise % on river
+    river_af: float  # Aggression factor on river
+
+    # Sample sizes for reliability
+    flop_cbet_opportunities: int
+    turn_cbet_opportunities: int
+    river_cbet_opportunities: int
+    faced_flop_cbet_count: int
+    faced_turn_cbet_count: int
 
 
 @dataclass
@@ -309,6 +370,7 @@ class BatchAnalysisResult:
     hands_breakeven: int  # Hands with profit == 0 (folded preflop not in blinds)
     bb_per_100: float  # BB/100 win rate
     player_stats: Optional[PlayerStats]  # VPIP, PFR, 3-Bet%, etc.
+    postflop_stats: Optional[PostflopStats]  # C-Bet, Fold to C-Bet, Check-Raise by street
     biggest_winners: List[HandResult]
     biggest_losers: List[HandResult]
     position_stats: Dict[str, PositionStats]
@@ -326,7 +388,7 @@ class BatchAnalyzer:
         self.ai_client = client
 
     def calculate_hand_result(self, hand: HandHistory) -> Optional[HandResult]:
-        """Calculate the result (profit/loss) for a single hand."""
+        """Calculate the result (profit/loss) for a single hand with comprehensive stats."""
         if not hand.hero:
             return None
 
@@ -335,19 +397,45 @@ class BatchAnalyzer:
         hero_cards = hand.hero.hole_cards or "??"
         bb_size = hand.stakes[1]  # Big blind size
 
-        # Analyze preflop actions for VPIP, PFR, 3-bet
+        # ============================================
+        # PREFLOP STATS
+        # ============================================
         vpip = False  # Voluntarily put money in pot
         pfr = False   # Preflop raise
         three_bet = False
         faced_raise = False
+        faced_open = False  # Faced exactly 1 raise (an open) - for 3-bet % calculation
+        ats = False   # Attempt To Steal
+        fold_to_3bet = False
+        was_preflop_aggressor = False
+        hero_opened = False  # Did hero make the first raise?
         raise_count = 0
+        raises_before_hero = 0  # Track raises BEFORE hero acts
+        last_raiser = None
+        hero_folded_preflop = False
+
+        # Track if it was folded to hero (for ATS calculation)
+        folded_to_hero = True
+        hero_acted = False
 
         for action in hand.preflop_actions:
-            # Track if there's been a raise
+            # Track raises BEFORE hero acts (for faced_open calculation)
+            if action.action_type == ActionType.RAISE and not hero_acted:
+                raises_before_hero += 1
+
+            # Track total raise count (for 3-bet identification)
             if action.action_type == ActionType.RAISE:
                 raise_count += 1
+                last_raiser = action.player
+
+            # Track if someone called/raised before hero (not folded to hero)
+            if action.player != hero_name and not hero_acted:
+                if action.action_type in [ActionType.CALL, ActionType.RAISE, ActionType.BET]:
+                    folded_to_hero = False
 
             if action.player == hero_name:
+                hero_acted = True
+
                 # VPIP: any voluntary action (call, raise, bet) - NOT posting blinds
                 if action.action_type in [ActionType.CALL, ActionType.RAISE, ActionType.BET]:
                     vpip = True
@@ -355,15 +443,104 @@ class BatchAnalyzer:
                 # PFR: hero raised preflop
                 if action.action_type == ActionType.RAISE:
                     pfr = True
-                    # 3-bet: hero raised after someone else raised
-                    if raise_count >= 2:
+                    # First raise = open
+                    if raise_count == 1:
+                        hero_opened = True
+                    # 3-bet: hero raised after exactly one prior raise (the open)
+                    # raise_count includes hero's raise, so if raise_count == 2, hero is 3-betting
+                    if raise_count == 2:
                         three_bet = True
 
-            # Check if hero faced a raise before their action
+                # ATS: Attempt To Steal - raised from CO/BTN/SB when folded to
+                if action.action_type == ActionType.RAISE and hero_position in ["CO", "BTN", "SB"]:
+                    if folded_to_hero:
+                        ats = True
+
+                # Hero folded
+                if action.action_type == ActionType.FOLD:
+                    hero_folded_preflop = True
+
+            # Check if hero faced a raise before their action (any raise)
             if action.action_type == ActionType.RAISE and action.player != hero_name:
                 faced_raise = True
 
-        # Calculate money invested by hero - track per street
+        # faced_open: hero faced exactly 1 raise (an open) - opportunity to 3-bet
+        # This is for 3-bet % denominator
+        faced_open = (raises_before_hero == 1)
+
+        # Fold to 3-bet: hero opened, faced 3-bet, and folded
+        if hero_opened and raise_count >= 2 and hero_folded_preflop:
+            fold_to_3bet = True
+
+        # Was preflop aggressor: hero was the last raiser
+        was_preflop_aggressor = (last_raiser == hero_name)
+
+        # ============================================
+        # POSTFLOP TRACKING
+        # ============================================
+        saw_flop = hand.flop is not None and not hero_folded_preflop
+        saw_turn = hand.turn is not None and saw_flop
+        saw_river = hand.river is not None and saw_turn
+
+        # Check if hero folded on each street
+        for action in hand.flop_actions:
+            if action.player == hero_name and action.action_type == ActionType.FOLD:
+                saw_turn = False
+                saw_river = False
+                break
+
+        for action in hand.turn_actions:
+            if action.player == hero_name and action.action_type == ActionType.FOLD:
+                saw_river = False
+                break
+
+        # ============================================
+        # C-BET STATS (only if hero was preflop aggressor)
+        # ============================================
+        cbet_flop = None
+        cbet_turn = None
+        cbet_river = None
+
+        if was_preflop_aggressor and saw_flop:
+            cbet_flop = self._check_cbet(hand.flop_actions, hero_name)
+
+        if was_preflop_aggressor and saw_turn and cbet_flop:
+            cbet_turn = self._check_cbet(hand.turn_actions, hero_name)
+
+        if was_preflop_aggressor and saw_river and cbet_turn:
+            cbet_river = self._check_cbet(hand.river_actions, hero_name)
+
+        # ============================================
+        # FOLD TO C-BET STATS (only if hero faced c-bet)
+        # ============================================
+        faced_cbet_flop = False
+        fold_to_cbet_flop = None
+        faced_cbet_turn = False
+        fold_to_cbet_turn = None
+
+        # Find preflop aggressor (if not hero)
+        pf_aggressor = last_raiser if last_raiser != hero_name else None
+
+        if saw_flop and pf_aggressor:
+            faced_cbet_flop, fold_to_cbet_flop = self._check_faced_cbet(
+                hand.flop_actions, hero_name, pf_aggressor
+            )
+
+        if saw_turn and pf_aggressor:
+            faced_cbet_turn, fold_to_cbet_turn = self._check_faced_cbet(
+                hand.turn_actions, hero_name, pf_aggressor
+            )
+
+        # ============================================
+        # CHECK-RAISE STATS
+        # ============================================
+        check_raise_flop = self._check_check_raise(hand.flop_actions, hero_name) if saw_flop else False
+        check_raise_turn = self._check_check_raise(hand.turn_actions, hero_name) if saw_turn else False
+        check_raise_river = self._check_check_raise(hand.river_actions, hero_name) if saw_river else False
+
+        # ============================================
+        # PROFIT CALCULATION
+        # ============================================
         total_invested = 0
 
         for street_actions in [hand.preflop_actions, hand.flop_actions, hand.turn_actions, hand.river_actions]:
@@ -390,8 +567,9 @@ class BatchAnalyzer:
         # Profit in BB
         profit_bb = profit / bb_size if bb_size > 0 else 0
 
-        # Check if went to showdown
-        went_to_showdown = hand.river is not None and len(hand.river_actions) > 0
+        # Check if went to showdown and won
+        went_to_showdown = hand.river is not None and saw_river and len(hand.river_actions) > 0
+        won_at_showdown = went_to_showdown and won > 0
 
         return HandResult(
             hand=hand,
@@ -401,11 +579,87 @@ class BatchAnalyzer:
             hole_cards=hero_cards,
             went_to_showdown=went_to_showdown,
             pot_size=hand.pot,
+            # Preflop stats
             vpip=vpip,
             pfr=pfr,
             three_bet=three_bet,
             faced_raise=faced_raise,
+            faced_open=faced_open,
+            ats=ats,
+            fold_to_3bet=fold_to_3bet,
+            was_preflop_aggressor=was_preflop_aggressor,
+            # Postflop tracking
+            saw_flop=saw_flop,
+            saw_turn=saw_turn,
+            saw_river=saw_river,
+            # C-bet stats
+            cbet_flop=cbet_flop,
+            cbet_turn=cbet_turn,
+            cbet_river=cbet_river,
+            # Fold to C-bet stats
+            faced_cbet_flop=faced_cbet_flop,
+            fold_to_cbet_flop=fold_to_cbet_flop,
+            faced_cbet_turn=faced_cbet_turn,
+            fold_to_cbet_turn=fold_to_cbet_turn,
+            # Check-raise stats
+            check_raise_flop=check_raise_flop,
+            check_raise_turn=check_raise_turn,
+            check_raise_river=check_raise_river,
+            # Result
+            won_at_showdown=won_at_showdown,
         )
+
+    def _check_cbet(self, actions: List[Action], hero_name: str) -> bool:
+        """Check if hero continuation bet (bet first when was aggressor)."""
+        for action in actions:
+            if action.player == hero_name:
+                # Hero acted first - did they bet?
+                return action.action_type == ActionType.BET
+            elif action.action_type in [ActionType.BET, ActionType.RAISE]:
+                # Someone else bet first - hero didn't c-bet
+                return False
+        return False
+
+    def _check_faced_cbet(
+        self, actions: List[Action], hero_name: str, aggressor: str
+    ) -> tuple:
+        """
+        Check if hero faced a c-bet and how they responded.
+
+        Returns:
+            (faced_cbet: bool, folded_to_cbet: Optional[bool])
+        """
+        aggressor_bet = False
+
+        for action in actions:
+            # Check if aggressor bet
+            if action.player == aggressor and action.action_type == ActionType.BET:
+                aggressor_bet = True
+
+            # After aggressor bet, check hero's response
+            if aggressor_bet and action.player == hero_name:
+                if action.action_type == ActionType.FOLD:
+                    return True, True
+                elif action.action_type in [ActionType.CALL, ActionType.RAISE]:
+                    return True, False
+
+        return aggressor_bet, None
+
+    def _check_check_raise(self, actions: List[Action], hero_name: str) -> bool:
+        """Check if hero check-raised on this street."""
+        hero_checked = False
+
+        for action in actions:
+            if action.player == hero_name:
+                if action.action_type == ActionType.CHECK:
+                    hero_checked = True
+                elif action.action_type == ActionType.RAISE and hero_checked:
+                    return True
+                elif action.action_type in [ActionType.BET, ActionType.FOLD, ActionType.CALL]:
+                    # Hero did something else after checking
+                    hero_checked = False
+
+        return False
 
     def analyze_batch(
         self,
@@ -440,6 +694,7 @@ class BatchAnalyzer:
                 hands_breakeven=0,
                 bb_per_100=0,
                 player_stats=None,
+                postflop_stats=None,
                 biggest_winners=[],
                 biggest_losers=[],
                 position_stats={},
@@ -460,6 +715,9 @@ class BatchAnalyzer:
         # Calculate player stats (VPIP, PFR, 3-Bet%, etc.)
         player_stats = self._calculate_player_stats(results)
 
+        # Calculate postflop stats (C-Bet, Fold to C-Bet, Check-Raise by street)
+        postflop_stats = self._calculate_postflop_stats(results)
+
         # Total profit and win/loss counts
         total_profit = sum(r.profit for r in results)
         total_profit_bb = sum(r.profit_bb for r in results)
@@ -473,7 +731,7 @@ class BatchAnalyzer:
         # Generate AI leak report with improved prompt
         ai_report = None
         if generate_ai_report and self.ai_client:
-            ai_report = self._generate_leak_report(results, position_stats, biggest_losers, player_stats)
+            ai_report = self._generate_leak_report(results, position_stats, biggest_losers, player_stats, postflop_stats)
 
         return BatchAnalysisResult(
             total_hands=len(results),
@@ -483,6 +741,7 @@ class BatchAnalyzer:
             hands_breakeven=hands_breakeven,
             bb_per_100=bb_per_100,
             player_stats=player_stats,
+            postflop_stats=postflop_stats,
             biggest_winners=biggest_winners,
             biggest_losers=biggest_losers,
             position_stats=position_stats,
@@ -533,7 +792,10 @@ class BatchAnalyzer:
         """Calculate overall player statistics (VPIP, PFR, 3-Bet%, etc.)."""
         total = len(results)
         if total == 0:
-            return PlayerStats(0, 0, 0, 0, 0, 0, 0)
+            return PlayerStats(
+                total_hands=0, vpip=0, pfr=0, three_bet=0, fold_to_3bet=0,
+                ats=0, wtsd=0, wsd=0, wwsf=0, aggression_factor=0
+            )
 
         # VPIP: Voluntarily Put money In Pot
         vpip_count = sum(1 for r in results if r.vpip)
@@ -543,10 +805,21 @@ class BatchAnalyzer:
         pfr_count = sum(1 for r in results if r.pfr)
         pfr_pct = (pfr_count / total) * 100
 
-        # 3-Bet %: 3-bet when facing a raise
-        faced_raise_count = sum(1 for r in results if r.faced_raise)
+        # 3-Bet %: 3-bet when facing an open (exactly 1 raise before hero acts)
+        # Correct formula: 3-bet count / times hero faced an open (not 3-bet or higher)
+        faced_open_count = sum(1 for r in results if getattr(r, 'faced_open', r.faced_raise))
         three_bet_count = sum(1 for r in results if r.three_bet)
-        three_bet_pct = (three_bet_count / faced_raise_count * 100) if faced_raise_count > 0 else 0
+        three_bet_pct = (three_bet_count / faced_open_count * 100) if faced_open_count > 0 else 0
+
+        # Fold to 3-Bet %: folded when facing a 3-bet after opening
+        opened_hands = [r for r in results if r.pfr and r.faced_raise]  # Opened and faced raise
+        fold_to_3bet_count = sum(1 for r in results if getattr(r, 'fold_to_3bet', False))
+        fold_to_3bet_pct = (fold_to_3bet_count / len(opened_hands) * 100) if opened_hands else 0
+
+        # ATS: Attempt To Steal (raised from CO/BTN/SB when folded to)
+        steal_positions = [r for r in results if r.position in ["CO", "BTN", "SB"]]
+        ats_count = sum(1 for r in results if getattr(r, 'ats', False))
+        ats_pct = (ats_count / len(steal_positions) * 100) if steal_positions else 0
 
         # WTSD: Went To ShowDown (of VPIP hands)
         vpip_hands = [r for r in results if r.vpip]
@@ -555,8 +828,13 @@ class BatchAnalyzer:
 
         # WSD: Won at ShowDown
         showdown_hands = [r for r in results if r.went_to_showdown]
-        wsd_count = sum(1 for r in showdown_hands if r.profit > 0)
+        wsd_count = sum(1 for r in showdown_hands if getattr(r, 'won_at_showdown', r.profit > 0))
         wsd_pct = (wsd_count / len(showdown_hands) * 100) if showdown_hands else 0
+
+        # WWSF: Won When Saw Flop (profit > 0 when saw flop)
+        saw_flop_hands = [r for r in results if getattr(r, 'saw_flop', False)]
+        wwsf_count = sum(1 for r in saw_flop_hands if r.profit > 0)
+        wwsf_pct = (wwsf_count / len(saw_flop_hands) * 100) if saw_flop_hands else 0
 
         # Aggression Factor: Would need action-level data, estimate from PFR for now
         aggression = pfr_pct / (vpip_pct - pfr_pct) if (vpip_pct - pfr_pct) > 0 else 0
@@ -566,9 +844,87 @@ class BatchAnalyzer:
             vpip=vpip_pct,
             pfr=pfr_pct,
             three_bet=three_bet_pct,
+            fold_to_3bet=fold_to_3bet_pct,
+            ats=ats_pct,
             wtsd=wtsd_pct,
             wsd=wsd_pct,
+            wwsf=wwsf_pct,
             aggression_factor=aggression,
+        )
+
+    def _calculate_postflop_stats(self, results: List[HandResult]) -> PostflopStats:
+        """Calculate postflop statistics by street."""
+        # ============================================
+        # FLOP STATS
+        # ============================================
+        # C-Bet on Flop: hero was aggressor and bet flop
+        flop_cbet_opportunities = [r for r in results if getattr(r, 'was_preflop_aggressor', False) and getattr(r, 'saw_flop', False)]
+        flop_cbet_count = sum(1 for r in flop_cbet_opportunities if getattr(r, 'cbet_flop', False))
+        flop_cbet_pct = (flop_cbet_count / len(flop_cbet_opportunities) * 100) if flop_cbet_opportunities else 0
+
+        # Fold to Flop C-Bet
+        faced_flop_cbet = [r for r in results if getattr(r, 'faced_cbet_flop', False)]
+        fold_to_flop_cbet_count = sum(1 for r in faced_flop_cbet if getattr(r, 'fold_to_cbet_flop', False))
+        fold_to_flop_cbet_pct = (fold_to_flop_cbet_count / len(faced_flop_cbet) * 100) if faced_flop_cbet else 0
+
+        # Check-Raise on Flop
+        saw_flop = [r for r in results if getattr(r, 'saw_flop', False)]
+        flop_check_raise_count = sum(1 for r in saw_flop if getattr(r, 'check_raise_flop', False))
+        flop_check_raise_pct = (flop_check_raise_count / len(saw_flop) * 100) if saw_flop else 0
+
+        # ============================================
+        # TURN STATS
+        # ============================================
+        # C-Bet on Turn (only if c-bet flop)
+        turn_cbet_opportunities = [r for r in results if getattr(r, 'was_preflop_aggressor', False) and getattr(r, 'saw_turn', False) and getattr(r, 'cbet_flop', False)]
+        turn_cbet_count = sum(1 for r in turn_cbet_opportunities if getattr(r, 'cbet_turn', False))
+        turn_cbet_pct = (turn_cbet_count / len(turn_cbet_opportunities) * 100) if turn_cbet_opportunities else 0
+
+        # Fold to Turn C-Bet
+        faced_turn_cbet = [r for r in results if getattr(r, 'faced_cbet_turn', False)]
+        fold_to_turn_cbet_count = sum(1 for r in faced_turn_cbet if getattr(r, 'fold_to_cbet_turn', False))
+        fold_to_turn_cbet_pct = (fold_to_turn_cbet_count / len(faced_turn_cbet) * 100) if faced_turn_cbet else 0
+
+        # Check-Raise on Turn
+        saw_turn = [r for r in results if getattr(r, 'saw_turn', False)]
+        turn_check_raise_count = sum(1 for r in saw_turn if getattr(r, 'check_raise_turn', False))
+        turn_check_raise_pct = (turn_check_raise_count / len(saw_turn) * 100) if saw_turn else 0
+
+        # ============================================
+        # RIVER STATS
+        # ============================================
+        # C-Bet on River (only if c-bet turn)
+        river_cbet_opportunities = [r for r in results if getattr(r, 'was_preflop_aggressor', False) and getattr(r, 'saw_river', False) and getattr(r, 'cbet_turn', False)]
+        river_cbet_count = sum(1 for r in river_cbet_opportunities if getattr(r, 'cbet_river', False))
+        river_cbet_pct = (river_cbet_count / len(river_cbet_opportunities) * 100) if river_cbet_opportunities else 0
+
+        # Check-Raise on River
+        saw_river = [r for r in results if getattr(r, 'saw_river', False)]
+        river_check_raise_count = sum(1 for r in saw_river if getattr(r, 'check_raise_river', False))
+        river_check_raise_pct = (river_check_raise_count / len(saw_river) * 100) if saw_river else 0
+
+        # Aggression Factor by street (placeholder - would need action counts)
+        flop_af = 0  # Would need (bet+raise)/call count on flop
+        turn_af = 0  # Would need (bet+raise)/call count on turn
+        river_af = 0  # Would need (bet+raise)/call count on river
+
+        return PostflopStats(
+            flop_cbet=flop_cbet_pct,
+            fold_to_flop_cbet=fold_to_flop_cbet_pct,
+            flop_check_raise=flop_check_raise_pct,
+            flop_af=flop_af,
+            turn_cbet=turn_cbet_pct,
+            fold_to_turn_cbet=fold_to_turn_cbet_pct,
+            turn_check_raise=turn_check_raise_pct,
+            turn_af=turn_af,
+            river_cbet=river_cbet_pct,
+            river_check_raise=river_check_raise_pct,
+            river_af=river_af,
+            flop_cbet_opportunities=len(flop_cbet_opportunities),
+            turn_cbet_opportunities=len(turn_cbet_opportunities),
+            river_cbet_opportunities=len(river_cbet_opportunities),
+            faced_flop_cbet_count=len(faced_flop_cbet),
+            faced_turn_cbet_count=len(faced_turn_cbet),
         )
 
     def _generate_leak_report(
@@ -577,6 +933,7 @@ class BatchAnalyzer:
         position_stats: Dict[str, PositionStats],
         biggest_losers: List[HandResult],
         player_stats: Optional[PlayerStats] = None,
+        postflop_stats: Optional[PostflopStats] = None,
     ) -> Optional[str]:
         """Generate AI leak report with professional poker coach prompt."""
         if not self.ai_client:
@@ -588,15 +945,43 @@ class BatchAnalyzer:
         total_profit_bb = sum(r.profit_bb for r in results)
         bb_per_100 = (total_profit_bb / total_hands) * 100 if total_hands > 0 else 0
 
-        # Player stats summary
-        stats_summary = ""
+        # Player stats summary (Preflop)
+        preflop_summary = ""
         if player_stats:
-            stats_summary = f"""## 玩家風格數據
+            preflop_summary = f"""## 翻前數據 (Preflop)
 - VPIP: {player_stats.vpip:.1f}% (標準: 22-28%)
 - PFR: {player_stats.pfr:.1f}% (標準: 18-24%)
 - 3-Bet: {player_stats.three_bet:.1f}% (標準: 7-10%)
+- Fold to 3-Bet: {player_stats.fold_to_3bet:.1f}% (標準: 55-65%)
+- ATS (Attempt To Steal): {player_stats.ats:.1f}% (標準: 25-35%)
+"""
+
+        # Postflop stats summary
+        postflop_summary = ""
+        if postflop_stats:
+            postflop_summary = f"""## 翻後數據 (Postflop)
+### Flop
+- C-Bet: {postflop_stats.flop_cbet:.1f}% (標準: 55-70%) [樣本: {postflop_stats.flop_cbet_opportunities}]
+- Fold to C-Bet: {postflop_stats.fold_to_flop_cbet:.1f}% (標準: 40-50%) [樣本: {postflop_stats.faced_flop_cbet_count}]
+- Check-Raise: {postflop_stats.flop_check_raise:.1f}% (標準: 6-10%)
+
+### Turn
+- C-Bet: {postflop_stats.turn_cbet:.1f}% (標準: 50-65%) [樣本: {postflop_stats.turn_cbet_opportunities}]
+- Fold to C-Bet: {postflop_stats.fold_to_turn_cbet:.1f}% [樣本: {postflop_stats.faced_turn_cbet_count}]
+- Check-Raise: {postflop_stats.turn_check_raise:.1f}%
+
+### River
+- C-Bet: {postflop_stats.river_cbet:.1f}% (標準: 45-60%) [樣本: {postflop_stats.river_cbet_opportunities}]
+- Check-Raise: {postflop_stats.river_check_raise:.1f}%
+"""
+
+        # Result stats summary
+        result_summary = ""
+        if player_stats:
+            result_summary = f"""## 結果數據 (Results)
 - WTSD: {player_stats.wtsd:.1f}% (標準: 25-30%)
 - W$SD: {player_stats.wsd:.1f}% (標準: 50-55%)
+- WWSF: {player_stats.wwsf:.1f}% (標準: 45-52%)
 """
 
         # Position summary
@@ -627,7 +1012,8 @@ class BatchAnalyzer:
 3. 不做確定性診斷，只提出可能原因與建議驗證方向
 4. 區分翻前（Preflop）與翻後（Postflop）問題
 5. 優先指出「修正後可最快減少虧損」的行為
-6. 允許 exploitative 建議（如：對低級別玩家過度棄牌）"""
+6. 允許 exploitative 建議（如：對低級別玩家過度棄牌）
+7. 樣本量不足（<10）的統計指標標註 [樣本不足]"""
 
         prompt = f"""請分析這位玩家的撲克數據。
 
@@ -635,7 +1021,9 @@ class BatchAnalyzer:
 - 總手數: {total_hands} (注意：小樣本，結論需謹慎)
 - 總盈虧: ${total_profit:.2f} ({bb_per_100:+.1f} BB/100)
 
-{stats_summary}
+{preflop_summary}
+{postflop_summary}
+{result_summary}
 ## 位置統計
 {chr(10).join(pos_summary)}
 
@@ -644,19 +1032,26 @@ class BatchAnalyzer:
 
 請以以下結構輸出分析：
 
-1. **樣本限制提醒**（這個樣本量能得出什麼結論？）
+1. **樣本限制提醒**（這個樣本量能得出什麼結論？哪些指標樣本量不足？）
 
-2. **高可信度 Leak**（優先處理，標註 [高]）
-   - 根據 VPIP/PFR 判斷翻前問題
-   - 根據位置盈虧判斷位置意識
+2. **翻前 Leak 分析** [高/中/低可信度]
+   - VPIP/PFR 是否過寬或過緊？
+   - ATS 偷盲頻率是否合理？
+   - 3-Bet 頻率及 Fold to 3-Bet 是否平衡？
 
-3. **中低可信度觀察**（需更多樣本驗證，標註 [中]/[低]）
+3. **翻後 Leak 分析** [高/中/低可信度]
+   - C-Bet 頻率是否過高/過低？
+   - Fold to C-Bet 是否過於被動？
+   - Check-Raise 使用是否足夠？
+   - WTSD/W$SD/WWSF 是否反映價值流失？
 
-4. **翻前 vs 翻後 問題分類**
+4. **位置分析**
+   - 哪些位置虧損最嚴重？
+   - 盲注位置的防守是否過多/過少？
 
 5. **三條「立刻可執行」的修正建議**
    - 具體到可以練習的場景
-   - 不要給「玩得更好」這種空泛建議
+   - 優先處理「高可信度」的問題
 
 6. **建議優先訓練的場景**（對應本工具的練習模組）
 
