@@ -3,410 +3,259 @@
     "format": "6max",
     "stack_depth": "100bb",
     "betting_mode": "Simplified GTO",
-    "4bet_size": "20bb",
+    "4bet_size": "20-25bb",
     "5bet_size": "All-in",
     "source": "千算Poker 6MAX范围表 (Simplified GTO)",
-    "note": "You 3bet, villain 4bets. Green=5bet(All-in), Yellow=Call. Simplified, most hands fold.",
-    "version": "3.0",
+    "note": "You 3bet, villain 4bets. Green=5bet(All-in), Yellow=Call. Simplified: AA/KK always 5bet, most hands fold.",
+    "version": "4.0",
     "last_updated": "2026-01-20"
   },
   "HJ_vs_UTG": {
     "frequencies": {
-      "AA": {
-        "5bet": 100
-      },
-      "KK": {
-        "5bet": 100
-      },
-      "QQ": {
-        "call": 100
-      },
-      "AKs": {
-        "call": 100
-      },
-      "AKo": {
-        "call": 100
-      }
+      "AA": {"5bet": 100},
+      "KK": {"5bet": 100},
+      "QQ": {"call": 100},
+      "AKs": {"call": 100},
+      "AKo": {"call": 100}
     },
     "stats": {
+      "5bet_hands": 2,
+      "call_hands": 3,
       "note": "HJ vs UTG 4bet: Very tight (千算 simplified)"
-    }
+    },
+    "drillable": ["QQ", "AKs", "AKo", "JJ"]
   },
   "CO_vs_UTG": {
     "frequencies": {
-      "AA": {
-        "5bet": 100
-      },
-      "KK": {
-        "5bet": 100
-      },
-      "QQ": {
-        "call": 100
-      },
-      "AKs": {
-        "call": 100
-      },
-      "AKo": {
-        "call": 100
-      }
+      "AA": {"5bet": 100},
+      "KK": {"5bet": 100},
+      "QQ": {"call": 100},
+      "AKs": {"call": 100},
+      "AKo": {"call": 100}
     },
     "stats": {
+      "5bet_hands": 2,
+      "call_hands": 3,
       "note": "CO vs UTG 4bet: Very tight (千算 simplified)"
-    }
+    },
+    "drillable": ["QQ", "AKs", "AKo", "JJ"]
   },
   "CO_vs_HJ": {
     "frequencies": {
-      "AA": {
-        "5bet": 100
-      },
-      "KK": {
-        "5bet": 100
-      },
-      "QQ": {
-        "call": 100
-      },
-      "JJ": {
-        "call": 100
-      },
-      "AKs": {
-        "call": 100
-      },
-      "AKo": {
-        "call": 100
-      }
+      "AA": {"5bet": 100},
+      "KK": {"5bet": 100},
+      "QQ": {"call": 100},
+      "JJ": {"call": 100},
+      "AKs": {"call": 100},
+      "AKo": {"call": 100}
     },
     "stats": {
+      "5bet_hands": 2,
+      "call_hands": 4,
       "note": "CO vs HJ 4bet: Tight (千算 simplified)"
-    }
+    },
+    "drillable": ["QQ", "JJ", "AKs", "AKo", "TT", "AQs"]
   },
   "BTN_vs_UTG": {
     "frequencies": {
-      "AA": {
-        "5bet": 100
-      },
-      "KK": {
-        "5bet": 100
-      },
-      "QQ": {
-        "call": 100
-      },
-      "JJ": {
-        "call": 100
-      },
-      "AKs": {
-        "call": 100
-      },
-      "AKo": {
-        "call": 100
-      }
+      "AA": {"5bet": 100},
+      "KK": {"5bet": 100},
+      "QQ": {"call": 100},
+      "JJ": {"call": 100},
+      "AKs": {"call": 100},
+      "AKo": {"call": 100}
     },
     "stats": {
+      "5bet_hands": 2,
+      "call_hands": 4,
       "note": "BTN vs UTG 4bet: Tight (千算 simplified)"
-    }
+    },
+    "drillable": ["QQ", "JJ", "AKs", "AKo", "TT", "AQs"]
   },
   "BTN_vs_HJ": {
     "frequencies": {
-      "AA": {
-        "5bet": 100
-      },
-      "KK": {
-        "5bet": 100
-      },
-      "QQ": {
-        "call": 100
-      },
-      "JJ": {
-        "call": 100
-      },
-      "AKs": {
-        "call": 100
-      },
-      "AKo": {
-        "call": 100
-      }
+      "AA": {"5bet": 100},
+      "KK": {"5bet": 100},
+      "QQ": {"call": 100},
+      "JJ": {"call": 100},
+      "AKs": {"call": 100},
+      "AKo": {"call": 100}
     },
     "stats": {
+      "5bet_hands": 2,
+      "call_hands": 4,
       "note": "BTN vs HJ 4bet: Medium (千算 simplified)"
-    }
+    },
+    "drillable": ["QQ", "JJ", "AKs", "AKo", "TT", "AQs"]
   },
   "BTN_vs_CO": {
     "frequencies": {
-      "AA": {
-        "5bet": 100
-      },
-      "KK": {
-        "5bet": 100
-      },
-      "QQ": {
-        "call": 100
-      },
-      "JJ": {
-        "call": 100
-      },
-      "TT": {
-        "call": 100
-      },
-      "AKs": {
-        "call": 100
-      },
-      "AKo": {
-        "call": 100
-      },
-      "AQs": {
-        "call": 100
-      }
+      "AA": {"5bet": 100},
+      "KK": {"5bet": 100},
+      "QQ": {"call": 100},
+      "JJ": {"call": 100},
+      "TT": {"call": 100},
+      "AKs": {"call": 100},
+      "AKo": {"call": 100},
+      "AQs": {"call": 100}
     },
     "stats": {
+      "5bet_hands": 2,
+      "call_hands": 6,
       "note": "BTN vs CO 4bet: Medium (千算 simplified)"
-    }
+    },
+    "drillable": ["QQ", "JJ", "TT", "AKs", "AKo", "AQs", "99", "AQo"]
   },
   "SB_vs_UTG": {
     "frequencies": {
-      "AA": {
-        "5bet": 100
-      },
-      "KK": {
-        "5bet": 100
-      },
-      "QQ": {
-        "call": 100
-      },
-      "AKs": {
-        "call": 100
-      },
-      "AKo": {
-        "call": 100
-      }
+      "AA": {"5bet": 100},
+      "KK": {"5bet": 100},
+      "QQ": {"call": 100},
+      "AKs": {"call": 100},
+      "AKo": {"call": 100}
     },
     "stats": {
+      "5bet_hands": 2,
+      "call_hands": 3,
       "note": "SB vs UTG 4bet: Tight (千算 simplified)"
-    }
+    },
+    "drillable": ["QQ", "AKs", "AKo", "JJ"]
   },
   "SB_vs_HJ": {
     "frequencies": {
-      "AA": {
-        "5bet": 100
-      },
-      "KK": {
-        "5bet": 100
-      },
-      "QQ": {
-        "call": 100
-      },
-      "JJ": {
-        "call": 100
-      },
-      "AKs": {
-        "call": 100
-      },
-      "AKo": {
-        "call": 100
-      }
+      "AA": {"5bet": 100},
+      "KK": {"5bet": 100},
+      "QQ": {"call": 100},
+      "JJ": {"call": 100},
+      "AKs": {"call": 100},
+      "AKo": {"call": 100}
     },
     "stats": {
+      "5bet_hands": 2,
+      "call_hands": 4,
       "note": "SB vs HJ 4bet: Tight (千算 simplified)"
-    }
+    },
+    "drillable": ["QQ", "JJ", "AKs", "AKo", "TT", "AQs"]
   },
   "SB_vs_CO": {
     "frequencies": {
-      "AA": {
-        "5bet": 100
-      },
-      "KK": {
-        "5bet": 100
-      },
-      "QQ": {
-        "call": 100
-      },
-      "JJ": {
-        "call": 100
-      },
-      "AKs": {
-        "call": 100
-      },
-      "AKo": {
-        "call": 100
-      }
+      "AA": {"5bet": 100},
+      "KK": {"5bet": 100},
+      "QQ": {"call": 100},
+      "JJ": {"call": 100},
+      "AKs": {"call": 100},
+      "AKo": {"call": 100}
     },
     "stats": {
+      "5bet_hands": 2,
+      "call_hands": 4,
       "note": "SB vs CO 4bet: Medium (千算 simplified)"
-    }
+    },
+    "drillable": ["QQ", "JJ", "AKs", "AKo", "TT", "AQs"]
   },
   "SB_vs_BTN": {
     "frequencies": {
-      "AA": {
-        "5bet": 100
-      },
-      "KK": {
-        "5bet": 100
-      },
-      "QQ": {
-        "5bet": 100
-      },
-      "AKs": {
-        "5bet": 100
-      },
-      "JJ": {
-        "call": 100
-      },
-      "TT": {
-        "call": 100
-      },
-      "AKo": {
-        "call": 100
-      },
-      "AQs": {
-        "call": 100
-      }
+      "AA": {"5bet": 100},
+      "KK": {"5bet": 100},
+      "QQ": {"5bet": 100},
+      "AKs": {"5bet": 100},
+      "JJ": {"call": 100},
+      "TT": {"call": 100},
+      "AKo": {"call": 100},
+      "AQs": {"call": 100}
     },
     "stats": {
+      "5bet_hands": 4,
+      "call_hands": 4,
       "note": "SB vs BTN 4bet: Wide (千算 simplified)"
-    }
+    },
+    "drillable": ["QQ", "AKs", "JJ", "TT", "AKo", "AQs", "99", "AQo"]
   },
   "BB_vs_UTG": {
     "frequencies": {
-      "AA": {
-        "5bet": 100
-      },
-      "KK": {
-        "5bet": 100
-      },
-      "QQ": {
-        "call": 100
-      },
-      "AKs": {
-        "call": 100
-      },
-      "AKo": {
-        "call": 100
-      }
+      "AA": {"5bet": 100},
+      "KK": {"5bet": 100},
+      "QQ": {"call": 100},
+      "AKs": {"call": 100},
+      "AKo": {"call": 100}
     },
     "stats": {
+      "5bet_hands": 2,
+      "call_hands": 3,
       "note": "BB vs UTG 4bet: Tight (千算 simplified)"
-    }
+    },
+    "drillable": ["QQ", "AKs", "AKo", "JJ"]
   },
   "BB_vs_HJ": {
     "frequencies": {
-      "AA": {
-        "5bet": 100
-      },
-      "KK": {
-        "5bet": 100
-      },
-      "QQ": {
-        "call": 100
-      },
-      "JJ": {
-        "call": 100
-      },
-      "AKs": {
-        "call": 100
-      },
-      "AKo": {
-        "call": 100
-      }
+      "AA": {"5bet": 100},
+      "KK": {"5bet": 100},
+      "QQ": {"call": 100},
+      "JJ": {"call": 100},
+      "AKs": {"call": 100},
+      "AKo": {"call": 100}
     },
     "stats": {
+      "5bet_hands": 2,
+      "call_hands": 4,
       "note": "BB vs HJ 4bet: Tight (千算 simplified)"
-    }
+    },
+    "drillable": ["QQ", "JJ", "AKs", "AKo", "TT", "AQs"]
   },
   "BB_vs_CO": {
     "frequencies": {
-      "AA": {
-        "5bet": 100
-      },
-      "KK": {
-        "5bet": 100
-      },
-      "QQ": {
-        "call": 100
-      },
-      "JJ": {
-        "call": 100
-      },
-      "AKs": {
-        "call": 100
-      },
-      "AKo": {
-        "call": 100
-      }
+      "AA": {"5bet": 100},
+      "KK": {"5bet": 100},
+      "QQ": {"call": 100},
+      "JJ": {"call": 100},
+      "AKs": {"call": 100},
+      "AKo": {"call": 100}
     },
     "stats": {
+      "5bet_hands": 2,
+      "call_hands": 4,
       "note": "BB vs CO 4bet: Medium (千算 simplified)"
-    }
+    },
+    "drillable": ["QQ", "JJ", "AKs", "AKo", "TT", "AQs"]
   },
   "BB_vs_BTN": {
     "frequencies": {
-      "AA": {
-        "5bet": 100
-      },
-      "KK": {
-        "5bet": 100
-      },
-      "QQ": {
-        "5bet": 100
-      },
-      "AKs": {
-        "5bet": 100
-      },
-      "JJ": {
-        "call": 100
-      },
-      "TT": {
-        "call": 100
-      },
-      "AKo": {
-        "call": 100
-      },
-      "AQs": {
-        "call": 100
-      }
+      "AA": {"5bet": 100},
+      "KK": {"5bet": 100},
+      "QQ": {"5bet": 100},
+      "AKs": {"5bet": 100},
+      "JJ": {"call": 100},
+      "TT": {"call": 100},
+      "AKo": {"call": 100},
+      "AQs": {"call": 100}
     },
     "stats": {
+      "5bet_hands": 4,
+      "call_hands": 4,
       "note": "BB vs BTN 4bet: Wide (千算 simplified)"
-    }
+    },
+    "drillable": ["QQ", "AKs", "JJ", "TT", "AKo", "AQs", "99", "AQo"]
   },
   "BB_vs_SB": {
     "frequencies": {
-      "AA": {
-        "5bet": 100
-      },
-      "KK": {
-        "5bet": 100
-      },
-      "QQ": {
-        "5bet": 100
-      },
-      "JJ": {
-        "5bet": 100
-      },
-      "AKs": {
-        "5bet": 100
-      },
-      "AQs": {
-        "5bet": 100
-      },
-      "A5s": {
-        "5bet": 100
-      },
-      "TT": {
-        "call": 100
-      },
-      "99": {
-        "call": 100
-      },
-      "AKo": {
-        "call": 100
-      },
-      "AQo": {
-        "call": 100
-      },
-      "AJs": {
-        "call": 100
-      }
+      "AA": {"5bet": 100},
+      "KK": {"5bet": 100},
+      "QQ": {"5bet": 100},
+      "JJ": {"5bet": 100},
+      "AKs": {"5bet": 100},
+      "AQs": {"5bet": 100},
+      "A5s": {"5bet": 100},
+      "TT": {"call": 100},
+      "99": {"call": 100},
+      "AKo": {"call": 100},
+      "AQo": {"call": 100},
+      "AJs": {"call": 100}
     },
     "stats": {
-      "note": "BB vs SB 4bet: Blind war (千算 simplified)"
-    }
+      "5bet_hands": 7,
+      "call_hands": 5,
+      "note": "BB vs SB 4bet: Blind war, widest (千算 simplified)"
+    },
+    "drillable": ["QQ", "JJ", "AKs", "AQs", "A5s", "TT", "99", "AKo", "AQo", "AJs", "88", "KQs"]
   }
 }
