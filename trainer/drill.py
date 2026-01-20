@@ -431,6 +431,37 @@ def get_drillable_hands_dynamic(frequency_data: dict, scenario_type: str = "rfi"
         if is_interesting:
             interesting_hands.append(hand)
 
+    # 規則 5: 添加 fold 邊界牌（v9.0 新增）
+    # 對於 VS 場景，需要練習識別 fold 手牌
+    # 找出所有 100% fold 的牌中，「接近邊界」的牌
+
+    # 先找出所有有動作（非 fold）的手牌
+    all_action_hands = set()
+    for hand, actions in frequency_data.items():
+        if isinstance(actions, dict):
+            for action in actions_to_check:
+                if actions.get(action, 0) > 0:
+                    all_action_hands.add(hand)
+                    break
+
+    # 找出所有 fold-only 的手牌（沒有任何正向動作）
+    all_hands_in_data = set(frequency_data.keys())
+    fold_only_hands = all_hands_in_data - all_action_hands
+
+    # 計算 fold 邊界牌：與 action hands 相鄰的 fold 手牌
+    fold_boundary_hands = []
+    for fold_hand in fold_only_hands:
+        # 檢查是否接近邊界（相鄰的手牌有動作）
+        neighbors = _get_hand_neighbors(fold_hand)
+        for neighbor in neighbors:
+            if neighbor in all_action_hands:
+                fold_boundary_hands.append(fold_hand)
+                break
+
+    # 限制 fold 邊界牌數量（避免太多垃圾牌）
+    MAX_FOLD_BOUNDARY = 15
+    interesting_hands.extend(fold_boundary_hands[:MAX_FOLD_BOUNDARY])
+
     # 如果沒有找到有趣的牌，返回所有有動作的牌
     if not interesting_hands:
         for hand, actions in frequency_data.items():
@@ -441,6 +472,35 @@ def get_drillable_hands_dynamic(frequency_data: dict, scenario_type: str = "rfi"
                         break
 
     return list(set(interesting_hands))
+
+
+def _get_hand_neighbors(hand: str) -> List[str]:
+    """獲取手牌的相鄰手牌（用於識別邊界）"""
+    RANKS = "AKQJT98765432"
+    neighbors = []
+
+    if len(hand) == 2:  # 對子 (AA, KK, etc)
+        rank_idx = RANKS.index(hand[0])
+        if rank_idx > 0:
+            neighbors.append(RANKS[rank_idx - 1] * 2)  # 上一級對子
+        if rank_idx < len(RANKS) - 1:
+            neighbors.append(RANKS[rank_idx + 1] * 2)  # 下一級對子
+    elif len(hand) == 3:  # 非對子 (AKs, AKo, etc)
+        high_rank, low_rank, suit = hand[0], hand[1], hand[2]
+        high_idx = RANKS.index(high_rank)
+        low_idx = RANKS.index(low_rank)
+
+        # 同花/非同花互換
+        other_suit = 'o' if suit == 's' else 's'
+        neighbors.append(f"{high_rank}{low_rank}{other_suit}")
+
+        # 相鄰 rank 的牌
+        if low_idx < len(RANKS) - 1:
+            neighbors.append(f"{high_rank}{RANKS[low_idx + 1]}{suit}")
+        if high_idx > 0 and RANKS[high_idx - 1] != low_rank:
+            neighbors.append(f"{RANKS[high_idx - 1]}{low_rank}{suit}")
+
+    return neighbors
 
 
 def get_drillable_hands_for_scenario(
