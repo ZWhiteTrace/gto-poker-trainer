@@ -46,17 +46,30 @@ class TrainingSession:
 
     @property
     def correct_count(self) -> int:
+        """Count of perfectly correct answers (primary GTO action)."""
         return sum(1 for r in self.results if r.eval_result.is_correct)
 
     @property
+    def acceptable_count(self) -> int:
+        """Count of acceptable answers (mixed strategy, not primary but valid)."""
+        return sum(1 for r in self.results if r.eval_result.is_acceptable and not r.eval_result.is_correct)
+
+    @property
+    def not_wrong_count(self) -> int:
+        """Count of correct + acceptable answers."""
+        return sum(1 for r in self.results if r.eval_result.is_correct or r.eval_result.is_acceptable)
+
+    @property
     def incorrect_count(self) -> int:
-        return self.total_spots - self.correct_count
+        """Count of true errors (0% frequency actions)."""
+        return sum(1 for r in self.results if not r.eval_result.is_correct and not r.eval_result.is_acceptable)
 
     @property
     def accuracy(self) -> float:
+        """Accuracy based on not-wrong (correct + acceptable) answers."""
         if self.total_spots == 0:
             return 0.0
-        return self.correct_count / self.total_spots
+        return self.not_wrong_count / self.total_spots
 
     @property
     def accuracy_percent(self) -> str:
@@ -64,7 +77,8 @@ class TrainingSession:
 
     @property
     def mistakes(self) -> List[SpotResult]:
-        return [r for r in self.results if not r.eval_result.is_correct]
+        """Only true mistakes (0% frequency actions), not acceptable mixed strategies."""
+        return [r for r in self.results if not r.eval_result.is_correct and not r.eval_result.is_acceptable]
 
     def add_result(self, spot: Spot, player_action: str, eval_result: EvalResult,
                    response_time_ms: Optional[float] = None):

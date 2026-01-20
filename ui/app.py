@@ -340,6 +340,8 @@ TEXTS = {
         "your_hand": "我的手牌",
         "whats_your_action": "我的動作是？",
         "correct_answer": "正確！",
+        "acceptable": "可接受",
+        "acceptable_hint": "混合策略，這個選擇也是對的",
         "incorrect": "錯誤",
         "your_action": "我的選擇",
         "correct_action": "正確答案",
@@ -444,6 +446,8 @@ TEXTS = {
         "your_hand": "My Hand",
         "whats_your_action": "My action?",
         "correct_answer": "Correct!",
+        "acceptable": "Acceptable",
+        "acceptable_hint": "Mixed strategy, your choice is also valid",
         "incorrect": "Incorrect",
         "your_action": "My action",
         "correct_action": "Correct action",
@@ -1038,13 +1042,25 @@ def drill_page():
                 freq_badge = f'<div style="background: #1e3a5f; padding: 6px 10px; border-radius: 6px; margin-top: 6px; font-size: 0.9rem;"><span style="color: #60a5fa; font-weight: bold;">📊 GTO:</span> <span style="color: #fbbf24;">{" | ".join(freq_parts)}</span></div>'
 
             if result.is_correct:
+                # ✅ 完全正確 (100% 動作或主要動作)
                 st.markdown(f"""
                 <div style="background: #065f46; padding: 8px 10px; border-radius: 8px; border-left: 4px solid #10b981; margin: 6px 0;">
                     <span style="color: #10b981; font-weight: bold; font-size: 0.95rem;">✅ {t('correct_answer')}</span>
                     {freq_badge}
                 </div>
                 """, unsafe_allow_html=True)
+            elif result.is_acceptable:
+                # 🟡 可接受 (混合策略，你的選擇也有正頻率)
+                st.markdown(f"""
+                <div style="background: #854d0e; padding: 8px 10px; border-radius: 8px; border-left: 4px solid #fbbf24; margin: 6px 0;">
+                    <span style="color: #fbbf24; font-weight: bold; font-size: 0.95rem;">🟡 {t('acceptable')}</span>
+                    <div style="font-size: 0.85rem; margin-top: 3px; color: #fef3c7;">{t('acceptable_hint')}</div>
+                    <div style="font-size: 0.85rem; margin-top: 3px;">{t('your_action')}: <b>{result.player_action.upper()}</b> ({result.player_action_frequency}%) | 主要: <b>{result.correct_action.upper()}</b> ({result.frequency}%)</div>
+                    {freq_badge}
+                </div>
+                """, unsafe_allow_html=True)
             else:
+                # ❌ 錯誤 (0% 動作)
                 st.markdown(f"""
                 <div style="background: #7f1d1d; padding: 8px 10px; border-radius: 8px; border-left: 4px solid #ef4444; margin: 6px 0;">
                     <span style="color: #ef4444; font-weight: bold; font-size: 0.95rem;">❌ {t('incorrect')}</span>
@@ -1093,8 +1109,9 @@ def drill_page():
             st.session_state.last_result = result
             st.session_state.show_result = True
 
-            # Update streak
-            if result.is_correct:
+            # Update streak (correct OR acceptable = no break)
+            is_not_wrong = result.is_correct or result.is_acceptable
+            if is_not_wrong:
                 st.session_state.current_streak += 1
                 if st.session_state.current_streak > st.session_state.best_streak:
                     st.session_state.best_streak = st.session_state.current_streak
@@ -1102,10 +1119,12 @@ def drill_page():
                 st.session_state.current_streak = 0
 
             # Save progress to localStorage
+            # Track: correct (100%), acceptable (mixed), and total
             progress = {
                 'best_streak': st.session_state.best_streak,
                 'total_hands_all_time': st.session_state.get('total_hands_all_time', 0) + 1,
                 'total_correct_all_time': st.session_state.get('total_correct_all_time', 0) + (1 if result.is_correct else 0),
+                'total_acceptable_all_time': st.session_state.get('total_acceptable_all_time', 0) + (1 if result.is_acceptable and not result.is_correct else 0),
             }
             save_progress_to_storage(progress)
             st.rerun()

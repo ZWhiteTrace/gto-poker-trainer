@@ -29,7 +29,8 @@ class Evaluator:
     """
 
     # Threshold for "acceptable" actions in mixed strategies
-    ACCEPTABLE_THRESHOLD = 30  # Actions with >=30% frequency are acceptable
+    # Simplified learning mode: any action with >0% frequency is acceptable
+    ACCEPTABLE_THRESHOLD = 1  # Actions with >=1% frequency are acceptable (not wrong)
     PRIMARY_ACTION_THRESHOLD = 75  # Actions with >=75% frequency are "correct"
 
     def __init__(self, data_dir: Path = None):
