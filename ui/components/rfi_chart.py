@@ -77,19 +77,20 @@ BTN_KEY_EDGES = {
 SB_OBVIOUS_HANDS = set()
 
 # "Obvious" hands that don't need memorization - fade these to highlight edge cases
+# NOTE: Don't include UTG edge hands here! They need emphasis, not fading.
 OBVIOUS_HANDS = {
-    # Pairs 66+
+    # Pairs 66+ (55 is UTG edge - lowest pair UTG opens)
     "AA", "KK", "QQ", "JJ", "TT", "99", "88", "77", "66",
-    # Suited Ax (A3s+ now UTG opens A2s too)
+    # Suited Ax (A3s+ 明顯, but A2s is UTG edge)
     "AKs", "AQs", "AJs", "ATs", "A9s", "A8s", "A7s", "A6s", "A5s", "A4s", "A3s",
-    # Suited Kx (K8s+ only, K7s-K5s removed from UTG)
-    "KQs", "KJs", "KTs", "K9s", "K8s",
-    # Suited Qx (Q9s+)
-    "QJs", "QTs", "Q9s",
-    # Suited connectors (JTs)
+    # Suited Kx (K9s+ 明顯, K8s is UTG edge)
+    "KQs", "KJs", "KTs", "K9s",
+    # Suited Qx (QTs+ 明顯, Q9s is UTG edge)
+    "QJs", "QTs",
+    # Suited connectors (JTs 明顯, J9s/T9s are UTG edge)
     "JTs",
-    # Offsuit (AJo+, KQo, KJo - removed QJo)
-    "AKo", "AQo", "AJo", "KQo", "KJo",
+    # Offsuit (AJo+, KQo 明顯, KJo/ATo are UTG edge)
+    "AKo", "AQo", "AJo", "KQo",
 }
 
 POSITION_ORDER = ["UTG", "HJ", "CO", "BTN", "SB"]
@@ -326,8 +327,8 @@ def display_rfi_chart_earliest(evaluator: Evaluator, lang: str = "zh"):
                     if hand in UTG_KEY_EDGES and earliest == "UTG":
                         # UTG key edge - gold border
                         html += f'<div style="{cell_base} background:{hex_color}; {text_color} box-shadow: inset 0 0 0 2px #fbbf24;"><span style="{hand_style}">{hand}</span><span style="{pos_style}">{earliest}</span></div>'
-                    elif earliest == "BTN":
-                        # All BTN hands - white border
+                    elif hand in BTN_KEY_EDGES and earliest == "BTN":
+                        # BTN key edge - white border
                         html += f'<div style="{cell_base} background:{hex_color}; {text_color} box-shadow: inset 0 0 0 2px rgba(255,255,255,0.9);"><span style="{hand_style}">{hand}</span><span style="{pos_style}">{earliest}</span></div>'
                     elif hand in SB_OBVIOUS_HANDS and earliest == "SB":
                         # SB obvious hands - fade background only (not text)
