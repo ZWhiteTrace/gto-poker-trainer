@@ -181,8 +181,8 @@ RFI_RANGE_TIPS = {
         "offsuit_aces": "A4o+ (100%)",
         "offsuit_broadways": "K8o+ (100%), Q9o+ (100%), J9o+ (100%), T8o+ (100%), 98o (100%), J8o (50%)",
         "edge_hands": ["同 BTN", "J8o (50%)"],
-        "tip_zh": "SB vs BB：加注範圍同 BTN。Raise or fold，極少 limp",
-        "tip_en": "SB vs BB: Raise range same as BTN. Raise or fold, minimal limp",
+        "tip_zh": "SB vs BB：加注範圍同 BTN。Raise or fold，不 limp",
+        "tip_en": "SB vs BB: Raise range same as BTN. Raise or fold, never limp",
     },
 }
 

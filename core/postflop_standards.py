@@ -36,24 +36,24 @@ class StatRange:
 
 
 # ============================================
-# FLOP 翻牌圈標準
+# FLOP 翻牌圈標準 (based on GTO Wizard research)
 # ============================================
 FLOP_CB = StatRange(
-    low=55, high=70,
+    low=55, high=65,
     name_en="C-Bet", name_zh="持續下注",
-    description_zh="用範圍壓力、小尺寸偷鍋"
+    description_zh="IP位置、根據牌面質地調整"
 )
 
 FLOP_FCB = StatRange(
-    low=45, high=60,
+    low=35, high=50,
     name_en="Fold to C-Bet", name_zh="棄牌率",
-    description_zh="棄掉空氣、邊緣擊中、弱 backdoor"
+    description_zh="OOP防守，35%緊防、50%鬆防"
 )
 
 FLOP_CCB = StatRange(
-    low=25, high=40,
+    low=30, high=50,
     name_en="Call vs C-Bet", name_zh="跟注率",
-    description_zh="跟頂對、中對、聽牌、強 backdoor"
+    description_zh="OOP平衡策略，包含 check 後跟注"
 )
 
 FLOP_RCB = StatRange(
@@ -64,24 +64,24 @@ FLOP_RCB = StatRange(
 
 
 # ============================================
-# TURN 轉牌圈標準（比翻牌更嚴格）
+# TURN 轉牌圈標準 (真實牌力 + 路線承諾)
 # ============================================
 TURN_CB = StatRange(
-    low=40, high=55,
+    low=40, high=60,
     name_en="C-Bet", name_zh="持續下注",
-    description_zh="延續價值、延續強聽牌、承諾底池"
+    description_zh="有利 run out 時增加頻率"
 )
 
 TURN_FCB = StatRange(
-    low=55, high=70,
+    low=40, high=65,
     name_en="Fold to C-Bet", name_zh="棄牌率",
-    description_zh="轉牌不棄牌比翻牌更容易燒錢"
+    description_zh="已投入籌碼，40%緊防、65%鬆防"
 )
 
 TURN_CCB = StatRange(
-    low=20, high=30,
+    low=25, high=35,
     name_en="Call vs C-Bet", name_zh="跟注率",
-    description_zh="頂對以上、強聽牌、有計畫的 bluff catcher"
+    description_zh="更重視攤牌價值，更嚴格的範圍"
 )
 
 TURN_RCB = StatRange(
@@ -187,40 +187,46 @@ def analyze_postflop_stats(stats: dict) -> dict:
 
 def get_leak_diagnosis(stats: dict) -> list:
     """
-    根據統計數據診斷潛在漏洞
+    根據統計數據診斷潛在漏洞 (based on GTO Wizard standards)
 
     Returns:
         List of leak descriptions
     """
     leaks = []
 
-    # 翻牌圈漏洞
-    if stats.get("flop_ccb", 0) > 40:
-        leaks.append("翻牌 CCB 過高（>40%）：可能用垃圾牌硬撐")
-    if stats.get("flop_ccb", 100) < 20:
-        leaks.append("翻牌 CCB 過低（<20%）：太容易被 CB 掃掉")
+    # 翻牌圈漏洞 (Flop CCB: 30-50%)
+    if stats.get("flop_ccb", 0) > 50:
+        leaks.append("翻牌 CCB 過高（>50%）：可能用垃圾牌硬撐")
+    if stats.get("flop_ccb", 100) < 30:
+        leaks.append("翻牌 CCB 過低（<30%）：太容易被 CB 掃掉")
     if stats.get("flop_rcb", 0) < 5:
         leaks.append("翻牌 RCB 過低（<5%）：太老實，沒保護強牌")
     if stats.get("flop_rcb", 0) > 15:
         leaks.append("翻牌 RCB 過高（>15%）：可能亂推聽牌")
 
-    # 轉牌圈漏洞
-    if stats.get("turn_ccb", 0) > 30:
-        leaks.append("轉牌 CCB 過高（>30%）：轉牌大量跟注長期必輸")
-    if stats.get("turn_cbet", 0) > 55:
-        leaks.append("轉牌 CB 過高（>55%）：過度開火")
-    if stats.get("turn_fcb", 100) < 55:
-        leaks.append("轉牌 FCB 過低（<55%）：轉牌不夠敢棄")
+    # Flop FCB (35-50%)
+    if stats.get("flop_fcb", 0) > 50:
+        leaks.append("翻牌 FCB 過高（>50%）：棄牌太多，被 exploit")
+    if stats.get("flop_fcb", 100) < 35:
+        leaks.append("翻牌 FCB 過低（<35%）：跟太多垃圾牌")
+
+    # 轉牌圈漏洞 (Turn CCB: 25-35%, Turn CB: 40-60%, Turn FCB: 40-65%)
+    if stats.get("turn_ccb", 0) > 35:
+        leaks.append("轉牌 CCB 過高（>35%）：轉牌大量跟注長期必輸")
+    if stats.get("turn_cbet", 0) > 60:
+        leaks.append("轉牌 CB 過高（>60%）：過度開火")
+    if stats.get("turn_fcb", 100) < 40:
+        leaks.append("轉牌 FCB 過低（<40%）：轉牌跟太多垃圾")
 
     # 跨街比較
     flop_ccb = stats.get("flop_ccb", 0)
     turn_ccb = stats.get("turn_ccb", 0)
-    if turn_ccb > 0 and abs(flop_ccb - turn_ccb) < 5:
+    if turn_ccb > 0 and flop_ccb > 0 and abs(flop_ccb - turn_ccb) < 5:
         leaks.append(f"轉牌 CCB ({turn_ccb:.1f}%) ≈ 翻牌 CCB ({flop_ccb:.1f}%)：沒有在轉牌做真正決策")
 
     flop_cb = stats.get("flop_cbet", 0)
     turn_cb = stats.get("turn_cbet", 0)
-    if flop_cb > 65 and turn_cb > 65:
+    if flop_cb > 65 and turn_cb > 60:
         leaks.append(f"Flop CB {flop_cb:.1f}% + Turn CB {turn_cb:.1f}%：過度開火路線")
 
     return leaks
@@ -228,12 +234,13 @@ def get_leak_diagnosis(stats: dict) -> list:
 
 # ============================================
 # 總結表格（用於 UI 顯示）
+# Based on GTO Wizard research - 2024
 # ============================================
 SUMMARY_TABLE = """
 | 指標 | 翻牌健康值 | 轉牌健康值 | 重點解讀 |
 |------|-----------|-----------|----------|
-| CB   | 55-70%    | 40-55%    | 轉牌必須降 |
-| FCB  | 45-60%    | 55-70%    | 轉牌要更敢棄 |
-| CCB  | 25-40%    | 20-30%    | 轉牌跟注更嚴格 |
-| RCB  | 7-12%     | 3-8%      | 轉牌很少加 |
+| CB   | 55-65%    | 40-60%    | IP位置，根據牌面調整 |
+| FCB  | 35-50%    | 40-65%    | OOP防守，已投入籌碼 |
+| CCB  | 30-50%    | 25-35%    | 平衡策略，攤牌價值 |
+| RCB  | 7-12%     | 3-8%      | 極強價值 + 半詐唬 |
 """

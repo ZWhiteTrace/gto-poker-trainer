@@ -560,33 +560,33 @@ def _display_postflop_stats(stats: PostflopStats, lang: str):
 
     with col1:
         n = stats.flop_cbet_opportunities
-        status = get_status(stats.flop_cbet, 55, 70, n)
+        status = get_status(stats.flop_cbet, 55, 65, n)  # GTO: 55-65%
         st.markdown(f"**CB** {status}")
         st.markdown(f"### {format_value(stats.flop_cbet, n)}")
-        std_text = "標準: 55-70%" if lang == "zh" else "Std: 55-70%"
+        std_text = "標準: 55-65%" if lang == "zh" else "Std: 55-65%"
         st.caption(f"{std_text} {sample_info(n, lang)}")
 
     with col2:
         n = stats.faced_flop_cbet_count
-        status = get_status(stats.fold_to_flop_cbet, 45, 60, n)  # Updated: was 40-50
+        status = get_status(stats.fold_to_flop_cbet, 35, 50, n)  # GTO: 35-50%
         st.markdown(f"**FCB** {status}")
         st.markdown(f"### {format_value(stats.fold_to_flop_cbet, n)}")
-        std_text = "標準: 45-60%" if lang == "zh" else "Std: 45-60%"
+        std_text = "標準: 35-50%" if lang == "zh" else "Std: 35-50%"
         st.caption(f"{std_text} {sample_info(n, lang)}")
 
     with col3:
-        # CCB - Call vs C-Bet (NEW)
+        # CCB - Call vs C-Bet
         n = stats.faced_flop_cbet_count
         ccb = getattr(stats, 'flop_call_cbet', 0)
-        status = get_status(ccb, 25, 40, n)
+        status = get_status(ccb, 30, 50, n)  # GTO: 30-50%
         st.markdown(f"**CCB** {status}")
         st.markdown(f"### {format_value(ccb, n)}")
-        std_text = "標準: 25-40%" if lang == "zh" else "Std: 25-40%"
+        std_text = "標準: 30-50%" if lang == "zh" else "Std: 30-50%"
         st.caption(f"{std_text} {sample_info(n, lang)}")
 
     with col4:
         n = getattr(stats, 'flop_check_raise_opportunities', 0)
-        status = get_status(stats.flop_check_raise, 7, 12, n)  # Updated: was 6-10
+        status = get_status(stats.flop_check_raise, 7, 12, n)  # GTO: 7-12%
         st.markdown(f"**RCB** {status}")
         st.markdown(f"### {format_value(stats.flop_check_raise, n)}")
         std_text = "標準: 7-12%" if lang == "zh" else "Std: 7-12%"
@@ -598,33 +598,33 @@ def _display_postflop_stats(stats: PostflopStats, lang: str):
 
     with col1:
         n = stats.turn_cbet_opportunities
-        status = get_status(stats.turn_cbet, 40, 55, n)  # Updated: was 50-65
+        status = get_status(stats.turn_cbet, 40, 60, n)  # GTO: 40-60%
         st.markdown(f"**CB** {status}")
         st.markdown(f"### {format_value(stats.turn_cbet, n)}")
-        std_text = "標準: 40-55%" if lang == "zh" else "Std: 40-55%"
+        std_text = "標準: 40-60%" if lang == "zh" else "Std: 40-60%"
         st.caption(f"{std_text} {sample_info(n, lang)}")
 
     with col2:
         n = stats.faced_turn_cbet_count
-        status = get_status(stats.fold_to_turn_cbet, 55, 70, n)  # Updated: was 35-45
+        status = get_status(stats.fold_to_turn_cbet, 40, 65, n)  # GTO: 40-65%
         st.markdown(f"**FCB** {status}")
         st.markdown(f"### {format_value(stats.fold_to_turn_cbet, n)}")
-        std_text = "標準: 55-70%" if lang == "zh" else "Std: 55-70%"
+        std_text = "標準: 40-65%" if lang == "zh" else "Std: 40-65%"
         st.caption(f"{std_text} {sample_info(n, lang)}")
 
     with col3:
-        # CCB - Call vs C-Bet (NEW)
+        # CCB - Call vs C-Bet
         n = stats.faced_turn_cbet_count
         ccb = getattr(stats, 'turn_call_cbet', 0)
-        status = get_status(ccb, 20, 30, n)  # Turn CCB should be LOWER than flop
+        status = get_status(ccb, 25, 35, n)  # GTO: 25-35%
         st.markdown(f"**CCB** {status}")
         st.markdown(f"### {format_value(ccb, n)}")
-        std_text = "標準: 20-30%" if lang == "zh" else "Std: 20-30%"
+        std_text = "標準: 25-35%" if lang == "zh" else "Std: 25-35%"
         st.caption(f"{std_text} {sample_info(n, lang)}")
 
     with col4:
         n = getattr(stats, 'turn_check_raise_opportunities', 0)
-        status = get_status(stats.turn_check_raise, 3, 8, n)  # Updated: was 5-8
+        status = get_status(stats.turn_check_raise, 3, 8, n)  # GTO: 3-8%
         st.markdown(f"**RCB** {status}")
         st.markdown(f"### {format_value(stats.turn_check_raise, n)}")
         std_text = "標準: 3-8%" if lang == "zh" else "Std: 3-8%"

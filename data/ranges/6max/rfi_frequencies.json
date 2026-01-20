@@ -1242,18 +1242,18 @@
         "raise": 100
       },
       "A3o": {
-        "limp": 50
+        "fold": 100
       },
       "K7o": {
-        "limp": 50
+        "fold": 100
       }
     },
     "stats": {
       "total_hands": 169,
       "raise_hands": 90,
-      "limp_hands": 2,
-      "estimated_vpip_contribution": 6.2,
-      "note": "簡化版: 跟BTN一樣的raise範圍, 保留K7o/A3o limp 50%"
+      "limp_hands": 0,
+      "estimated_vpip_contribution": 6.0,
+      "note": "簡化版: 跟BTN一樣的raise範圍，無 limp - Raise or Fold"
     },
     "drillable": [
       "22",
