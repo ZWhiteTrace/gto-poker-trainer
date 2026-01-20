@@ -14,9 +14,22 @@ from trainer.drill import get_drillable_hands
 RANKS = ['A', 'K', 'Q', 'J', 'T', '9', '8', '7', '6', '5', '4', '3', '2']
 
 
-def get_drillable_set():
-    """動態取得 drillable hands，避免快取問題"""
-    return set(get_drillable_hands())
+def get_drillable_set(position: str = None) -> set:
+    """
+    動態取得 drillable hands。
+
+    Args:
+        position: 位置名稱 (UTG, HJ, CO, BTN, SB)。
+                  若為 None，返回所有位置的聯集。
+    """
+    if position:
+        return set(get_drillable_hands(position=position))
+
+    # 聯集：任何位置的 drillable 手牌
+    all_drillable = set()
+    for pos in ["UTG", "HJ", "CO", "BTN", "SB"]:
+        all_drillable |= set(get_drillable_hands(position=pos))
+    return all_drillable
 
 
 def get_sb_limp_hands(evaluator: Evaluator) -> set:
