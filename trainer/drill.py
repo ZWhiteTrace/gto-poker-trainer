@@ -195,8 +195,8 @@ POSITION_EXCLUDED_HANDS = {
         "T9s", "T8s", "T7s", "T6s",  # T6s+ 明顯
         "98s", "97s", "96s",  # 96s+ 明顯
         "87s", "86s",  # 86s+ 明顯
-        "76s", "75s",  # (但 75s 要考 - 有 85s 的對比)
-        "65s", "64s",  # (但 64s 要考)
+        "76s",  # 76s 明顯 (75s 要考)
+        "65s",  # 65s 明顯 (64s 要考)
         "54s",  # 54s 明顯
         "AQo", "AJo", "ATo", "A9o", "A8o", "A7o", "A6o", "A5o",  # (A4o 是邊緣)
         "KQo", "KJo", "KTo", "K9o",  # (K8o 是邊緣)
@@ -207,7 +207,7 @@ POSITION_EXCLUDED_HANDS = {
         "J2s",
         "T4s", "T3s",
         "95s",
-        "73s", "63s", "52s", "42s", "32s",
+        "73s", "52s", "42s", "32s",  # 63s 要考
         # === Offsuit 牌 ===
         "A3o", "A2o",  # 不考 (A4o 是邊緣)
         "K7o", "K6o", "K5o", "K4o", "K3o", "K2o",  # K7o 不考
@@ -238,8 +238,8 @@ POSITION_EXCLUDED_HANDS = {
         "T9s", "T8s", "T7s", "T6s",
         "98s", "97s", "96s",
         "87s", "86s",
-        "76s", "75s",
-        "65s", "64s",
+        "76s",  # 75s 要考
+        "65s",  # 64s 要考
         "54s",
         "AQo", "AJo", "ATo", "A9o", "A8o", "A7o", "A6o", "A5o",
         "KQo", "KJo", "KTo", "K9o",
@@ -250,7 +250,7 @@ POSITION_EXCLUDED_HANDS = {
         "J2s",
         "T4s", "T3s",
         "95s",
-        "73s", "63s", "52s", "42s", "32s",
+        "73s", "52s", "42s", "32s",  # 63s 要考
         # === Offsuit 牌 ===
         "A3o", "A2o",
         "K7o", "K6o", "K5o", "K4o", "K3o", "K2o",
