@@ -431,35 +431,11 @@ def get_drillable_hands_dynamic(frequency_data: dict, scenario_type: str = "rfi"
         if is_interesting:
             interesting_hands.append(hand)
 
-    # 規則 5: 添加邊界牌（v10.0 改進）
-    # 包含 call boundary（100% call 鄰近 fold）和 fold boundary（100% fold 鄰近 action）
+    # 規則 5: 添加 rank 邊界牌（v11.0 改進）
+    # 找同類型內（如 Axs, Axo, pairs）動作改變的邊界點
 
-    # 分類所有手牌
-    all_action_hands = set()  # 有動作的牌（3bet/call 等）
-    fold_only_hands = set()   # 100% fold 的牌
-    call_100_hands = set()    # 100% call 的牌
-
-    for hand, actions in frequency_data.items():
-        if not isinstance(actions, dict):
-            continue
-
-        has_action = False
-        for action in actions_to_check:
-            if actions.get(action, 0) > 0:
-                all_action_hands.add(hand)
-                has_action = True
-                break
-
-        if not has_action and actions.get("fold", 0) == 100:
-            fold_only_hands.add(hand)
-
-        # 識別 100% call 的牌
-        call_freq = actions.get("call", 0)
-        if call_freq == 100:
-            call_100_hands.add(hand)
-
-    # 按牌力排序函數
     RANKS = "AKQJT98765432"
+
     def hand_strength_key(hand: str) -> tuple:
         if len(hand) == 2:
             return (0, RANKS.index(hand[0]), 0)
@@ -469,40 +445,58 @@ def get_drillable_hands_dynamic(frequency_data: dict, scenario_type: str = "rfi"
             is_suited = 1 if hand[2] == 's' else 2
             return (is_suited, high_rank, low_rank)
 
-    # 計算 call boundary：100% call 但鄰近 fold 的牌
-    call_boundary_hands = []
-    for call_hand in call_100_hands:
-        neighbors = _get_hand_neighbors(call_hand)
-        for neighbor in neighbors:
-            # 鄰居是 fold（在數據中明確 fold，或不在數據中）
-            if neighbor in fold_only_hands or (neighbor not in frequency_data and neighbor not in all_action_hands):
-                call_boundary_hands.append(call_hand)
-                break
+    # 按 (high_card, suit_type) 分組
+    groups = {}
+    for hand, actions in frequency_data.items():
+        if not isinstance(actions, dict) or len(hand) < 2:
+            continue
 
-    # 計算 fold boundary：100% fold 但鄰近 action 的牌
-    fold_boundary_hands = []
-    for fold_hand in fold_only_hands:
-        neighbors = _get_hand_neighbors(fold_hand)
-        for neighbor in neighbors:
-            if neighbor in all_action_hands:
-                fold_boundary_hands.append(fold_hand)
-                break
+        if len(hand) == 2:  # Pair
+            key = "pairs"
+        else:
+            key = f"{hand[0]}x{hand[2]}"  # e.g., "Axs", "Axo"
 
-    # 如果沒有 fold hands 在數據中，檢查「不在數據中的鄰居」
-    if not fold_only_hands:
-        for action_hand in all_action_hands:
-            neighbors = _get_hand_neighbors(action_hand)
-            for neighbor in neighbors:
-                if neighbor not in frequency_data:
-                    fold_boundary_hands.append(neighbor)
+        if key not in groups:
+            groups[key] = []
+
+        # 判斷主要動作
+        action_freqs = {a: actions.get(a, 0) for a in actions_to_check}
+        fold_freq = actions.get("fold", 0)
+
+        if fold_freq == 100:
+            action = "fold"
+        elif any(f == 100 for f in action_freqs.values()):
+            action = max(action_freqs, key=action_freqs.get)
+        else:
+            action = "mix"
+
+        groups[key].append((hand, action))
+
+    # 在每組內找 rank 邊界
+    rank_boundary_hands = []
+    for key, hands in groups.items():
+        if key == "pairs":
+            hands.sort(key=lambda x: RANKS.index(x[0][0]))
+        else:
+            hands.sort(key=lambda x: RANKS.index(x[0][1]))
+
+        prev_action = None
+        prev_hand = None
+        for hand, action in hands:
+            if prev_action and prev_action != action:
+                # 邊界點！加入兩邊的牌
+                rank_boundary_hands.append(hand)
+                if prev_hand:
+                    rank_boundary_hands.append(prev_hand)
+            prev_action = action
+            prev_hand = hand
 
     # 排序並限制數量
-    call_boundary_hands.sort(key=hand_strength_key)
-    fold_boundary_hands.sort(key=hand_strength_key)
+    rank_boundary_hands = list(set(rank_boundary_hands))
+    rank_boundary_hands.sort(key=hand_strength_key)
 
-    MAX_BOUNDARY = 12
-    interesting_hands.extend(call_boundary_hands[:MAX_BOUNDARY])
-    interesting_hands.extend(fold_boundary_hands[:MAX_BOUNDARY])
+    MAX_BOUNDARY = 20
+    interesting_hands.extend(rank_boundary_hands[:MAX_BOUNDARY])
 
     # 如果沒有找到有趣的牌，返回所有有動作的牌
     if not interesting_hands:
