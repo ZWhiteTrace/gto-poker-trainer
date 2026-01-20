@@ -334,22 +334,32 @@ class PlayerStats:
 
 @dataclass
 class PostflopStats:
-    """Postflop statistics by street."""
-    # Flop stats
-    flop_cbet: float  # C-Bet % on flop (standard: 55-70%)
-    fold_to_flop_cbet: float  # Fold to flop C-Bet % (standard: 40-50%)
-    flop_check_raise: float  # Check-raise % on flop (standard: 6-10%)
+    """
+    Postflop statistics by street.
+
+    核心概念（GTO 標準）：
+    - 翻牌圈：範圍 + 權益（可以用空氣偷鍋）
+    - 轉牌圈：真實牌力 + 路線承諾（錢開始燒）
+
+    FCB + CCB + RCB = 100%（對 C-Bet 的回應）
+    """
+    # Flop stats (翻牌圈)
+    flop_cbet: float  # CB: C-Bet % on flop (標準: 55-70%)
+    fold_to_flop_cbet: float  # FCB: Fold to flop C-Bet % (標準: 45-60%)
+    flop_call_cbet: float  # CCB: Call vs C-Bet % (標準: 25-40%)
+    flop_check_raise: float  # RCB: Check-raise % on flop (標準: 7-12%)
     flop_af: float  # Aggression factor on flop
 
-    # Turn stats
-    turn_cbet: float  # C-Bet % on turn (standard: 50-65%)
-    fold_to_turn_cbet: float  # Fold to turn C-Bet %
-    turn_check_raise: float  # Check-raise % on turn
+    # Turn stats (轉牌圈 - 標準更嚴格)
+    turn_cbet: float  # CB: C-Bet % on turn (標準: 40-55%)
+    fold_to_turn_cbet: float  # FCB: Fold to turn C-Bet % (標準: 55-70%)
+    turn_call_cbet: float  # CCB: Call vs C-Bet % (標準: 20-30%)
+    turn_check_raise: float  # RCB: Check-raise % on turn (標準: 3-8%)
     turn_af: float  # Aggression factor on turn
 
-    # River stats
-    river_cbet: float  # C-Bet % on river (standard: 45-60%)
-    river_check_raise: float  # Check-raise % on river
+    # River stats (河牌圈)
+    river_cbet: float  # CB: C-Bet % on river (標準: 45-60%)
+    river_check_raise: float  # RCB: Check-raise % on river (標準: 4-7%)
     river_af: float  # Aggression factor on river
 
     # Sample sizes for reliability
@@ -358,6 +368,9 @@ class PostflopStats:
     river_cbet_opportunities: int
     faced_flop_cbet_count: int
     faced_turn_cbet_count: int
+    flop_check_raise_opportunities: int = 0
+    turn_check_raise_opportunities: int = 0
+    river_check_raise_opportunities: int = 0
 
 
 @dataclass
@@ -882,12 +895,16 @@ class BatchAnalyzer:
         flop_cbet_count = sum(1 for r in flop_cbet_opportunities if getattr(r, 'cbet_flop', False))
         flop_cbet_pct = (flop_cbet_count / len(flop_cbet_opportunities) * 100) if flop_cbet_opportunities else 0
 
-        # Fold to Flop C-Bet
+        # Fold to Flop C-Bet (FCB)
         faced_flop_cbet = [r for r in results if getattr(r, 'faced_cbet_flop', False)]
         fold_to_flop_cbet_count = sum(1 for r in faced_flop_cbet if getattr(r, 'fold_to_cbet_flop', False))
         fold_to_flop_cbet_pct = (fold_to_flop_cbet_count / len(faced_flop_cbet) * 100) if faced_flop_cbet else 0
 
-        # Check-Raise on Flop
+        # Call vs Flop C-Bet (CCB) - NEW
+        call_flop_cbet_count = sum(1 for r in faced_flop_cbet if getattr(r, 'call_cbet_flop', False))
+        call_flop_cbet_pct = (call_flop_cbet_count / len(faced_flop_cbet) * 100) if faced_flop_cbet else 0
+
+        # Check-Raise on Flop (RCB)
         saw_flop = [r for r in results if getattr(r, 'saw_flop', False)]
         flop_check_raise_count = sum(1 for r in saw_flop if getattr(r, 'check_raise_flop', False))
         flop_check_raise_pct = (flop_check_raise_count / len(saw_flop) * 100) if saw_flop else 0
@@ -900,12 +917,16 @@ class BatchAnalyzer:
         turn_cbet_count = sum(1 for r in turn_cbet_opportunities if getattr(r, 'cbet_turn', False))
         turn_cbet_pct = (turn_cbet_count / len(turn_cbet_opportunities) * 100) if turn_cbet_opportunities else 0
 
-        # Fold to Turn C-Bet
+        # Fold to Turn C-Bet (FCB)
         faced_turn_cbet = [r for r in results if getattr(r, 'faced_cbet_turn', False)]
         fold_to_turn_cbet_count = sum(1 for r in faced_turn_cbet if getattr(r, 'fold_to_cbet_turn', False))
         fold_to_turn_cbet_pct = (fold_to_turn_cbet_count / len(faced_turn_cbet) * 100) if faced_turn_cbet else 0
 
-        # Check-Raise on Turn
+        # Call vs Turn C-Bet (CCB) - NEW
+        call_turn_cbet_count = sum(1 for r in faced_turn_cbet if getattr(r, 'call_cbet_turn', False))
+        call_turn_cbet_pct = (call_turn_cbet_count / len(faced_turn_cbet) * 100) if faced_turn_cbet else 0
+
+        # Check-Raise on Turn (RCB)
         saw_turn = [r for r in results if getattr(r, 'saw_turn', False)]
         turn_check_raise_count = sum(1 for r in saw_turn if getattr(r, 'check_raise_turn', False))
         turn_check_raise_pct = (turn_check_raise_count / len(saw_turn) * 100) if saw_turn else 0
@@ -931,11 +952,13 @@ class BatchAnalyzer:
         return PostflopStats(
             flop_cbet=flop_cbet_pct,
             fold_to_flop_cbet=fold_to_flop_cbet_pct,
-            flop_check_raise=flop_check_raise_pct,
+            flop_call_cbet=call_flop_cbet_pct,  # CCB
+            flop_check_raise=flop_check_raise_pct,  # RCB
             flop_af=flop_af,
             turn_cbet=turn_cbet_pct,
             fold_to_turn_cbet=fold_to_turn_cbet_pct,
-            turn_check_raise=turn_check_raise_pct,
+            turn_call_cbet=call_turn_cbet_pct,  # CCB
+            turn_check_raise=turn_check_raise_pct,  # RCB
             turn_af=turn_af,
             river_cbet=river_cbet_pct,
             river_check_raise=river_check_raise_pct,
@@ -945,6 +968,9 @@ class BatchAnalyzer:
             river_cbet_opportunities=len(river_cbet_opportunities),
             faced_flop_cbet_count=len(faced_flop_cbet),
             faced_turn_cbet_count=len(faced_turn_cbet),
+            flop_check_raise_opportunities=len(saw_flop),
+            turn_check_raise_opportunities=len(saw_turn),
+            river_check_raise_opportunities=len(saw_river),
         )
 
     def _generate_leak_report(
