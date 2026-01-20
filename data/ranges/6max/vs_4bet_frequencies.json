@@ -2,163 +2,411 @@
   "meta": {
     "format": "6max",
     "stack_depth": "100bb",
-    "betting_mode": "Simple",
+    "betting_mode": "Simplified GTO",
     "4bet_size": "20bb",
     "5bet_size": "All-in",
-    "source": "GTOWizard NL25 100BB 2026",
-    "note": "You 3bet, villain 4bets, what do you do? Red=5bet(All-in), Green=Call, Blue=Fold.",
-    "version": "1.0",
-    "last_updated": "2026-01-17"
+    "source": "千算Poker 6MAX范围表 (Simplified GTO)",
+    "note": "You 3bet, villain 4bets. Green=5bet(All-in), Yellow=Call. Simplified, most hands fold.",
+    "version": "3.0",
+    "last_updated": "2026-01-20"
   },
   "HJ_vs_UTG": {
     "frequencies": {
-      "AA": {"5bet": 100}, "KK": {"5bet": 100},
-      "QQ": {"call": 100}, "AKs": {"call": 100}, "AKo": {"call": 100}
+      "AA": {
+        "5bet": 100
+      },
+      "KK": {
+        "5bet": 100
+      },
+      "QQ": {
+        "call": 100
+      },
+      "AKs": {
+        "call": 100
+      },
+      "AKo": {
+        "call": 100
+      }
     },
     "stats": {
-      "note": "HJ vs UTG 4bet: Very tight, UTG 4bet range is strong"
+      "note": "HJ vs UTG 4bet: Very tight (千算 simplified)"
     }
   },
   "CO_vs_UTG": {
     "frequencies": {
-      "AA": {"5bet": 100}, "KK": {"5bet": 100},
-      "QQ": {"call": 100}, "JJ": {"call": 100},
-      "AKs": {"call": 100}, "AKo": {"call": 100}
+      "AA": {
+        "5bet": 100
+      },
+      "KK": {
+        "5bet": 100
+      },
+      "QQ": {
+        "call": 100
+      },
+      "AKs": {
+        "call": 100
+      },
+      "AKo": {
+        "call": 100
+      }
     },
     "stats": {
-      "note": "CO vs UTG 4bet"
+      "note": "CO vs UTG 4bet: Very tight (千算 simplified)"
     }
   },
   "CO_vs_HJ": {
     "frequencies": {
-      "AA": {"5bet": 100}, "KK": {"5bet": 100},
-      "QQ": {"call": 100}, "JJ": {"call": 100},
-      "AKs": {"call": 100}, "AKo": {"call": 100}, "AQs": {"call": 100}
+      "AA": {
+        "5bet": 100
+      },
+      "KK": {
+        "5bet": 100
+      },
+      "QQ": {
+        "call": 100
+      },
+      "JJ": {
+        "call": 100
+      },
+      "AKs": {
+        "call": 100
+      },
+      "AKo": {
+        "call": 100
+      }
     },
     "stats": {
-      "note": "CO vs HJ 4bet"
+      "note": "CO vs HJ 4bet: Tight (千算 simplified)"
     }
   },
   "BTN_vs_UTG": {
     "frequencies": {
-      "AA": {"5bet": 100}, "KK": {"5bet": 100},
-      "QQ": {"call": 100}, "JJ": {"call": 100},
-      "AKs": {"call": 100}, "AKo": {"call": 100}
+      "AA": {
+        "5bet": 100
+      },
+      "KK": {
+        "5bet": 100
+      },
+      "QQ": {
+        "call": 100
+      },
+      "JJ": {
+        "call": 100
+      },
+      "AKs": {
+        "call": 100
+      },
+      "AKo": {
+        "call": 100
+      }
     },
     "stats": {
-      "note": "BTN vs UTG 4bet"
+      "note": "BTN vs UTG 4bet: Tight (千算 simplified)"
     }
   },
   "BTN_vs_HJ": {
     "frequencies": {
-      "AA": {"5bet": 100}, "KK": {"5bet": 100}, "AKs": {"5bet": 100},
-      "QQ": {"call": 100}, "JJ": {"call": 100}, "TT": {"call": 100},
-      "AKo": {"call": 100}, "AQs": {"call": 100}
+      "AA": {
+        "5bet": 100
+      },
+      "KK": {
+        "5bet": 100
+      },
+      "QQ": {
+        "call": 100
+      },
+      "JJ": {
+        "call": 100
+      },
+      "AKs": {
+        "call": 100
+      },
+      "AKo": {
+        "call": 100
+      }
     },
     "stats": {
-      "note": "BTN vs HJ 4bet"
+      "note": "BTN vs HJ 4bet: Medium (千算 simplified)"
     }
   },
   "BTN_vs_CO": {
     "frequencies": {
-      "AA": {"5bet": 100}, "KK": {"5bet": 100}, "AKs": {"5bet": 100}, "A5s": {"5bet": 100},
-      "QQ": {"call": 100}, "JJ": {"call": 100}, "TT": {"call": 100},
-      "AKo": {"call": 100}, "AQs": {"call": 100}, "AQo": {"call": 100}
+      "AA": {
+        "5bet": 100
+      },
+      "KK": {
+        "5bet": 100
+      },
+      "QQ": {
+        "call": 100
+      },
+      "JJ": {
+        "call": 100
+      },
+      "TT": {
+        "call": 100
+      },
+      "AKs": {
+        "call": 100
+      },
+      "AKo": {
+        "call": 100
+      },
+      "AQs": {
+        "call": 100
+      }
     },
     "stats": {
-      "note": "BTN vs CO 4bet: Wider 5bet range with blockers"
+      "note": "BTN vs CO 4bet: Medium (千算 simplified)"
     }
   },
   "SB_vs_UTG": {
     "frequencies": {
-      "AA": {"5bet": 100}, "KK": {"5bet": 100},
-      "QQ": {"call": 100}, "AKs": {"call": 100}, "AKo": {"call": 100}
+      "AA": {
+        "5bet": 100
+      },
+      "KK": {
+        "5bet": 100
+      },
+      "QQ": {
+        "call": 100
+      },
+      "AKs": {
+        "call": 100
+      },
+      "AKo": {
+        "call": 100
+      }
     },
     "stats": {
-      "note": "SB vs UTG 4bet"
+      "note": "SB vs UTG 4bet: Tight (千算 simplified)"
     }
   },
   "SB_vs_HJ": {
     "frequencies": {
-      "AA": {"5bet": 100}, "KK": {"5bet": 100},
-      "QQ": {"call": 100}, "JJ": {"call": 100},
-      "AKs": {"call": 100}, "AKo": {"call": 100}
+      "AA": {
+        "5bet": 100
+      },
+      "KK": {
+        "5bet": 100
+      },
+      "QQ": {
+        "call": 100
+      },
+      "JJ": {
+        "call": 100
+      },
+      "AKs": {
+        "call": 100
+      },
+      "AKo": {
+        "call": 100
+      }
     },
     "stats": {
-      "note": "SB vs HJ 4bet"
+      "note": "SB vs HJ 4bet: Tight (千算 simplified)"
     }
   },
   "SB_vs_CO": {
     "frequencies": {
-      "AA": {"5bet": 100}, "KK": {"5bet": 100}, "AKs": {"5bet": 100},
-      "QQ": {"call": 100}, "JJ": {"call": 100},
-      "AKo": {"call": 100}, "AQs": {"call": 100}
+      "AA": {
+        "5bet": 100
+      },
+      "KK": {
+        "5bet": 100
+      },
+      "QQ": {
+        "call": 100
+      },
+      "JJ": {
+        "call": 100
+      },
+      "AKs": {
+        "call": 100
+      },
+      "AKo": {
+        "call": 100
+      }
     },
     "stats": {
-      "note": "SB vs CO 4bet"
+      "note": "SB vs CO 4bet: Medium (千算 simplified)"
     }
   },
   "SB_vs_BTN": {
     "frequencies": {
-      "AA": {"5bet": 100}, "KK": {"5bet": 100}, "QQ": {"5bet": 100},
-      "AKs": {"5bet": 100}, "A5s": {"5bet": 100},
-      "JJ": {"call": 100}, "TT": {"call": 100},
-      "AKo": {"call": 100}, "AQs": {"call": 100}, "AQo": {"call": 100}, "AJs": {"call": 100}
+      "AA": {
+        "5bet": 100
+      },
+      "KK": {
+        "5bet": 100
+      },
+      "QQ": {
+        "5bet": 100
+      },
+      "AKs": {
+        "5bet": 100
+      },
+      "JJ": {
+        "call": 100
+      },
+      "TT": {
+        "call": 100
+      },
+      "AKo": {
+        "call": 100
+      },
+      "AQs": {
+        "call": 100
+      }
     },
     "stats": {
-      "note": "SB vs BTN 4bet: Wider due to BTN wide range"
+      "note": "SB vs BTN 4bet: Wide (千算 simplified)"
     }
   },
   "BB_vs_UTG": {
     "frequencies": {
-      "AA": {"5bet": 100}, "KK": {"5bet": 100},
-      "QQ": {"call": 100}, "AKs": {"call": 100}, "AKo": {"call": 100}
+      "AA": {
+        "5bet": 100
+      },
+      "KK": {
+        "5bet": 100
+      },
+      "QQ": {
+        "call": 100
+      },
+      "AKs": {
+        "call": 100
+      },
+      "AKo": {
+        "call": 100
+      }
     },
     "stats": {
-      "note": "BB vs UTG 4bet"
+      "note": "BB vs UTG 4bet: Tight (千算 simplified)"
     }
   },
   "BB_vs_HJ": {
     "frequencies": {
-      "AA": {"5bet": 100}, "KK": {"5bet": 100},
-      "QQ": {"call": 100}, "JJ": {"call": 100},
-      "AKs": {"call": 100}, "AKo": {"call": 100}
+      "AA": {
+        "5bet": 100
+      },
+      "KK": {
+        "5bet": 100
+      },
+      "QQ": {
+        "call": 100
+      },
+      "JJ": {
+        "call": 100
+      },
+      "AKs": {
+        "call": 100
+      },
+      "AKo": {
+        "call": 100
+      }
     },
     "stats": {
-      "note": "BB vs HJ 4bet"
+      "note": "BB vs HJ 4bet: Tight (千算 simplified)"
     }
   },
   "BB_vs_CO": {
     "frequencies": {
-      "AA": {"5bet": 100}, "KK": {"5bet": 100}, "AKs": {"5bet": 100},
-      "QQ": {"call": 100}, "JJ": {"call": 100},
-      "AKo": {"call": 100}, "AQs": {"call": 100}
+      "AA": {
+        "5bet": 100
+      },
+      "KK": {
+        "5bet": 100
+      },
+      "QQ": {
+        "call": 100
+      },
+      "JJ": {
+        "call": 100
+      },
+      "AKs": {
+        "call": 100
+      },
+      "AKo": {
+        "call": 100
+      }
     },
     "stats": {
-      "note": "BB vs CO 4bet"
+      "note": "BB vs CO 4bet: Medium (千算 simplified)"
     }
   },
   "BB_vs_BTN": {
     "frequencies": {
-      "AA": {"5bet": 100}, "KK": {"5bet": 100}, "QQ": {"5bet": 100},
-      "AKs": {"5bet": 100}, "A5s": {"5bet": 100}, "A4s": {"5bet": 100},
-      "JJ": {"call": 100}, "TT": {"call": 100},
-      "AKo": {"call": 100}, "AQs": {"call": 100}, "AQo": {"call": 100}, "AJs": {"call": 100}
+      "AA": {
+        "5bet": 100
+      },
+      "KK": {
+        "5bet": 100
+      },
+      "QQ": {
+        "5bet": 100
+      },
+      "AKs": {
+        "5bet": 100
+      },
+      "JJ": {
+        "call": 100
+      },
+      "TT": {
+        "call": 100
+      },
+      "AKo": {
+        "call": 100
+      },
+      "AQs": {
+        "call": 100
+      }
     },
     "stats": {
-      "note": "BB vs BTN 4bet: Wider 5bet with blockers"
+      "note": "BB vs BTN 4bet: Wide (千算 simplified)"
     }
   },
   "BB_vs_SB": {
     "frequencies": {
-      "AA": {"5bet": 100}, "KK": {"5bet": 100}, "QQ": {"5bet": 100}, "JJ": {"5bet": 100},
-      "AKs": {"5bet": 100}, "AQs": {"5bet": 100}, "A5s": {"5bet": 100}, "A4s": {"5bet": 100},
-      "TT": {"call": 100}, "99": {"call": 100},
-      "AKo": {"call": 100}, "AQo": {"call": 100}, "AJs": {"call": 100}, "ATs": {"call": 100},
-      "KQs": {"call": 100}
+      "AA": {
+        "5bet": 100
+      },
+      "KK": {
+        "5bet": 100
+      },
+      "QQ": {
+        "5bet": 100
+      },
+      "JJ": {
+        "5bet": 100
+      },
+      "AKs": {
+        "5bet": 100
+      },
+      "AQs": {
+        "5bet": 100
+      },
+      "A5s": {
+        "5bet": 100
+      },
+      "TT": {
+        "call": 100
+      },
+      "99": {
+        "call": 100
+      },
+      "AKo": {
+        "call": 100
+      },
+      "AQo": {
+        "call": 100
+      },
+      "AJs": {
+        "call": 100
+      }
     },
     "stats": {
-      "note": "BB vs SB 4bet: Blind war, widest ranges"
+      "note": "BB vs SB 4bet: Blind war (千算 simplified)"
     }
   }
 }
