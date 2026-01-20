@@ -367,17 +367,9 @@ def get_drillable_hands(position: str) -> List[str]:
     # For later positions (BTN, SB), also remove "obvious" hands
     # that all positions open at 100% - these are too easy at loose positions
     # But keep them for earlier positions (UTG, HJ, CO) where they define the range floor
+    # Note: Keep X2s hands (Q2s, K2s) as they define BTN/SB range floors
     if position.upper() in ("BTN", "SB"):
         drillable -= get_obvious_hands()
-
-        # Also remove "bottom of category" hands that have no fold edge below
-        # e.g., K2s if BTN opens all Kxs - no boundary to test
-        bottom_hands = {f"{r}2s" for r in RANKS}  # A2s, K2s, Q2s, etc.
-        for hand in list(drillable):
-            if hand in bottom_hands:
-                pos_freqs = pos_data.get(hand, {})
-                if pos_freqs.get("raise", 0) == 100:
-                    drillable.discard(hand)
 
     return sorted(list(drillable))
 
