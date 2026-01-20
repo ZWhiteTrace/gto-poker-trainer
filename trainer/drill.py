@@ -86,7 +86,7 @@ POSITION_EXCLUDED_HANDS = {
         # === Offsuit 牌（大部分不考）===
         "A9o", "A8o", "A7o", "A6o", "A5o", "A4o", "A3o", "A2o",  # A9o 不考
         "K9o", "K8o", "K7o", "K6o", "K5o", "K4o", "K3o", "K2o",  # 但 KTo 要考
-        "Q9o", "Q8o", "Q7o", "Q6o", "Q5o", "Q4o", "Q3o", "Q2o",  # QTo 不考
+        "QTo", "Q9o", "Q8o", "Q7o", "Q6o", "Q5o", "Q4o", "Q3o", "Q2o",  # QTo 不考
         "J9o", "J8o", "J7o", "J6o", "J5o", "J4o", "J3o", "J2o",  # 但 JTo 要考
         "T8o", "T7o", "T6o", "T5o", "T4o", "T3o", "T2o",
         "97o", "96o", "95o", "94o", "93o", "92o",
