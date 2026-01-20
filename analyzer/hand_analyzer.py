@@ -375,6 +375,10 @@ class BatchAnalysisResult:
     biggest_losers: List[HandResult]
     position_stats: Dict[str, PositionStats]
     ai_leak_report: Optional[str] = None
+    deep_hand_analysis: Optional[str] = None  # Detailed AI analysis of biggest losing hands
+    # AI Transparency - prompts used
+    leak_report_prompt: Optional[str] = None  # Prompt used for leak report
+    deep_analysis_prompt: Optional[str] = None  # Prompt used for deep analysis
 
 
 class BatchAnalyzer:
@@ -666,6 +670,8 @@ class BatchAnalyzer:
         hands: List[HandHistory],
         top_n: int = 10,
         generate_ai_report: bool = True,
+        deep_analysis: bool = False,
+        deep_analysis_count: int = 3,
     ) -> BatchAnalysisResult:
         """
         Analyze a batch of hands.
@@ -674,6 +680,8 @@ class BatchAnalyzer:
             hands: List of hand histories
             top_n: Number of top winners/losers to return
             generate_ai_report: Whether to generate AI leak report
+            deep_analysis: Whether to do deep analysis on biggest losers
+            deep_analysis_count: Number of hands for deep analysis (default 3)
 
         Returns:
             BatchAnalysisResult with statistics and AI analysis
@@ -730,8 +738,17 @@ class BatchAnalyzer:
 
         # Generate AI leak report with improved prompt
         ai_report = None
+        leak_report_prompt = None
         if generate_ai_report and self.ai_client:
-            ai_report = self._generate_leak_report(results, position_stats, biggest_losers, player_stats, postflop_stats)
+            ai_report, leak_report_prompt = self._generate_leak_report(results, position_stats, biggest_losers, player_stats, postflop_stats)
+
+        # Generate deep hand analysis for biggest losers
+        deep_analysis_report = None
+        deep_analysis_prompt = None
+        if deep_analysis and self.ai_client:
+            deep_analysis_report, deep_analysis_prompt = self._generate_deep_hand_analysis(
+                biggest_losers[:deep_analysis_count]
+            )
 
         return BatchAnalysisResult(
             total_hands=len(results),
@@ -746,6 +763,9 @@ class BatchAnalyzer:
             biggest_losers=biggest_losers,
             position_stats=position_stats,
             ai_leak_report=ai_report,
+            deep_hand_analysis=deep_analysis_report,
+            leak_report_prompt=leak_report_prompt,
+            deep_analysis_prompt=deep_analysis_prompt,
         )
 
     def _calculate_position_stats(self, results: List[HandResult]) -> Dict[str, PositionStats]:
@@ -934,10 +954,14 @@ class BatchAnalyzer:
         biggest_losers: List[HandResult],
         player_stats: Optional[PlayerStats] = None,
         postflop_stats: Optional[PostflopStats] = None,
-    ) -> Optional[str]:
-        """Generate AI leak report with professional poker coach prompt."""
+    ) -> tuple:
+        """Generate AI leak report with professional poker coach prompt.
+
+        Returns:
+            Tuple of (ai_response, full_prompt) for transparency
+        """
         if not self.ai_client:
-            return None
+            return None, None
 
         # Build summary for AI
         total_hands = len(results)
@@ -1057,14 +1081,141 @@ class BatchAnalyzer:
 
 用繁體中文回答。"""
 
+        # Build full prompt for transparency
+        full_prompt = f"""=== SYSTEM PROMPT ===
+{system_prompt}
+
+=== USER PROMPT ===
+{prompt}"""
+
         try:
             messages = [
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": prompt}
             ]
-            return self.ai_client.chat(messages)
+            result = self.ai_client.chat(messages)
+            return result, full_prompt
         except Exception as e:
-            return f"AI 分析失敗: {str(e)}"
+            return f"AI 分析失敗: {str(e)}", full_prompt
+
+    def _generate_deep_hand_analysis(
+        self,
+        losing_hands: List[HandResult],
+    ) -> tuple:
+        """Generate detailed AI analysis for the biggest losing hands.
+
+        Returns:
+            Tuple of (ai_response, full_prompt) for transparency
+        """
+        if not self.ai_client or not losing_hands:
+            return None, None
+
+        # Build detailed hand histories
+        hand_details = []
+        for i, hr in enumerate(losing_hands, 1):
+            hand = hr.hand
+            hand_info = f"""
+---
+### 手牌 {i}: {hr.position} {hr.hole_cards} (虧損 {hr.profit_bb:.1f}BB / ${abs(hr.profit):.2f})
+
+**基本資訊:**
+- Hand ID: {hand.hand_id}
+- 級別: ${hand.stakes[0]}/{hand.stakes[1]}
+- 底池: ${hand.pot:.2f}
+- Hero 位置: {hr.position}
+- Hero 手牌: {hr.hole_cards}
+- 是否到攤牌: {"是" if hr.went_to_showdown else "否"}
+"""
+            # Board
+            board = []
+            if hand.flop:
+                board.append(f"Flop: [{hand.flop}]")
+            if hand.turn:
+                board.append(f"Turn: [{hand.turn}]")
+            if hand.river:
+                board.append(f"River: [{hand.river}]")
+            if board:
+                hand_info += f"\n**牌面:** {' | '.join(board)}\n"
+
+            # Action summary
+            hand_info += "\n**行動流程:**\n"
+
+            def format_actions(actions, street_name):
+                if not actions:
+                    return ""
+                action_strs = []
+                for action in actions:
+                    if action.action_type.value in ["post_sb", "post_bb"]:
+                        continue
+                    player_pos = action.player
+                    for p in hand.players:
+                        if p.name == action.player:
+                            player_pos = p.position or action.player
+                            break
+                    action_str = action.action_type.value
+                    if action.to_amount:
+                        action_str = f"raise to ${action.to_amount:.2f}"
+                    elif action.amount:
+                        action_str += f" ${action.amount:.2f}"
+                    is_hero = action.player == "Hero"
+                    marker = "**" if is_hero else ""
+                    action_strs.append(f"{marker}{player_pos}: {action_str}{marker}")
+                return f"- {street_name}: {' → '.join(action_strs)}\n"
+
+            hand_info += format_actions(hand.preflop_actions, "Preflop")
+            if hand.flop:
+                hand_info += format_actions(hand.flop_actions, "Flop")
+            if hand.turn:
+                hand_info += format_actions(hand.turn_actions, "Turn")
+            if hand.river:
+                hand_info += format_actions(hand.river_actions, "River")
+
+            hand_details.append(hand_info)
+
+        system_prompt = """你是一位專業的撲克教練，專門分析具體手牌的決策錯誤。
+
+對於每一手牌，請分析：
+1. 翻前決策是否正確
+2. 翻後每條街的決策是否有問題
+3. 指出具體的錯誤點和正確的打法
+4. 簡短的改進建議
+
+請保持分析具體、可執行，避免泛泛而談。
+每手牌的分析控制在 150-200 字內。"""
+
+        prompt = f"""請分析以下 {len(losing_hands)} 手虧損最大的手牌，找出具體的決策錯誤：
+
+{chr(10).join(hand_details)}
+
+---
+
+對每手牌請用以下格式分析：
+
+**手牌 N 分析:**
+- 🎯 關鍵錯誤點: [具體指出哪一步決策有問題]
+- ✅ 正確打法: [應該怎麼做]
+- 💡 改進建議: [1-2 句話的實戰建議]
+
+最後總結這些手牌的共同問題模式（如果有的話）。
+
+用繁體中文回答。"""
+
+        # Build full prompt for transparency
+        full_prompt = f"""=== SYSTEM PROMPT ===
+{system_prompt}
+
+=== USER PROMPT ===
+{prompt}"""
+
+        try:
+            messages = [
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": prompt}
+            ]
+            result = self.ai_client.chat(messages)
+            return result, full_prompt
+        except Exception as e:
+            return f"深度分析失敗: {str(e)}", full_prompt
 
 
 def create_analyzer(

@@ -54,39 +54,42 @@ PREMIUM_3BET_HANDS = {
     "AKs", "AKo", "AQs", "AQo", "KQs",
 }
 
-# UTG key edge hands - gold border (高抽水版：最後100%開池的邊緣牌)
+# UTG key edge hands - gold border (簡化版：邊緣牌)
+# 100% 邊緣: K8s, Q9s, J9s, T9s, A2s, 55, KJo, ATo
+# 50% 混合: 98s, 87s, 76s, 65s
 UTG_KEY_EDGES = {
-    "A3s", "K6s", "Q8s", "J9s", "T9s", "KJo", "QJo", "ATo", "55",
+    "K8s", "Q9s", "J9s", "T9s", "A2s", "55",  # 100% 邊緣
+    "98s", "87s", "76s", "65s",                # 50% 混合
+    "KJo", "ATo",                               # offsuit 邊緣
 }
 
-# BTN key edge hands - white border (高抽水版：BTN 最早開池的邊緣牌)
-# These are hands where BTN is the earliest position to open
+# BTN key edge hands - white border (簡化版：BTN 最早開池的邊緣牌)
+# 只顯示每類別最邊緣的一張，避免太多白框
 BTN_KEY_EDGES = {
-    # 同花 (BTN 最早開)
-    "K3s", "Q4s", "J6s", "T6s", "96s", "86s", "75s", "54s",
+    # 同花 - 每類最低
+    "K2s", "Q2s", "J4s", "T6s", "96s", "85s", "75s", "64s",
     # 不同花
-    "A4o", "A3o", "K9o", "K8o", "Q9o", "J9o", "T9o", "T8o", "98o",
-    # 對子
-    "33", "22",
+    "A4o", "K8o", "Q9o", "J8o", "T8o", "98o",
 }
 
 # SB hands that are obvious (fade to 50%)
-SB_OBVIOUS_HANDS = {"85s", "64s", "53s"}
+# Note: SB now uses same range as BTN, so no SB-first hands
+SB_OBVIOUS_HANDS = set()
 
 # "Obvious" hands that don't need memorization - fade these to highlight edge cases
 OBVIOUS_HANDS = {
     # Pairs 66+
     "AA", "KK", "QQ", "JJ", "TT", "99", "88", "77", "66",
-    # Suited Ax (A3s+)
+    # Suited Ax (A3s+ now UTG opens A2s too)
     "AKs", "AQs", "AJs", "ATs", "A9s", "A8s", "A7s", "A6s", "A5s", "A4s", "A3s",
-    # Suited Kx (K6s+)
-    "KQs", "KJs", "KTs", "K9s", "K8s", "K7s", "K6s",
+    # Suited Kx (K8s+ only, K7s-K5s removed from UTG)
+    "KQs", "KJs", "KTs", "K9s", "K8s",
     # Suited Qx (Q9s+)
     "QJs", "QTs", "Q9s",
     # Suited connectors (JTs)
     "JTs",
-    # Offsuit (AJo+, KQo)
-    "AKo", "AQo", "AJo", "KQo",
+    # Offsuit (AJo+, KQo, KJo - removed QJo)
+    "AKo", "AQo", "AJo", "KQo", "KJo",
 }
 
 POSITION_ORDER = ["UTG", "HJ", "CO", "BTN", "SB"]
