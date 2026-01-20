@@ -3,10 +3,24 @@
     "format": "6max",
     "stack_depth": "100bb",
     "betting_mode": "Simplified GTO",
-    "source": "\u5343\u7b97Poker + GTO\u8abf\u6574",
+    "source": "GTO Wizard NL50 6-max Cash",
     "note": "Villain opens, what do you do? Based on \u5343\u7b97 PDF with corrections.",
-    "version": "3.1",
-    "last_updated": "2026-01-20"
+    "version": "2.1",
+    "last_updated": "2026-01-21",
+    "open_sizes": {
+      "UTG": "2.0bb",
+      "HJ": "2.2bb",
+      "CO": "2.3bb",
+      "BTN": "2.5bb",
+      "SB": "3.0bb"
+    },
+    "3bet_sizes": {
+      "BB_vs_UTG": "6.5bb",
+      "BB_vs_HJ": "6.5bb",
+      "BB_vs_CO": "6.5bb",
+      "BB_vs_BTN": "7.5bb",
+      "BB_vs_SB": "11.0bb"
+    }
   },
   "HJ_vs_UTG": {
     "frequencies": {
@@ -2974,7 +2988,7 @@
         "call": 100
       },
       "A4o": {
-        "fold": 100
+        "call": 100
       },
       "A3o": {
         "fold": 100
@@ -3036,7 +3050,7 @@
         "call": 50
       },
       "K6o": {
-        "fold": 100
+        "call": 100
       },
       "K5o": {
         "fold": 100
@@ -3169,8 +3183,7 @@
         "fold": 100
       },
       "T9s": {
-        "3bet": 50,
-        "call": 50
+        "call": 100
       },
       "T8s": {
         "call": 100
@@ -3194,8 +3207,7 @@
         "call": 100
       },
       "T9o": {
-        "3bet": 50,
-        "call": 50
+        "fold": 100
       },
       "T8o": {
         "fold": 100
