@@ -13,6 +13,7 @@ from core.hand import Hand, random_hand, ALL_HANDS, RANKS
 from core.position import Position, POSITIONS_6MAX, positions_before
 from core.scenario import Scenario, ActionType
 from core.evaluator import Evaluator, EvalResult
+from core.rfi_utils import get_drillable_hands as get_drillable_from_rfi_utils
 
 
 # ============================================================================
@@ -322,7 +323,7 @@ def get_drillable_hands(range_data: dict = None, scenario_type: str = "vs_rfi", 
     """
     Get all hands that are in the drilling focus.
 
-    v5.0: 優先從 JSON 讀取，若 JSON 無資料則使用靜態常數。
+    v6.0: 使用 rfi_utils 動態算法計算出題範圍。
 
     Args:
         range_data: Optional range data (not used currently)
@@ -340,11 +341,9 @@ def get_drillable_hands(range_data: dict = None, scenario_type: str = "vs_rfi", 
     else:
         pos_upper = str(position).upper()
 
-    # v5.0: 優先從 JSON 讀取
+    # v6.0: 使用動態算法
     try:
-        drillable = get_drillable_from_json(pos_upper)
-        if drillable:
-            return drillable
+        return get_drillable_from_rfi_utils(pos_upper)
     except Exception:
         pass  # 讀取失敗時使用靜態常數
 

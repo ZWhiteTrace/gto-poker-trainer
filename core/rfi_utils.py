@@ -254,104 +254,113 @@ def get_drillable_hands(position: str) -> List[str]:
     """
     Get hands that should be drilled for a position.
 
-    Drilling focuses on edge cases:
-    1. Mixed frequency hands (most important)
-    2. Boundary 100% hands (category edges)
-    3. Near-boundary 0% hands (fold edges)
+    New logic (v7.0):
+    1. Mixed frequency hands (1-99%)
+    2. Edge opening hands = lowest opening hand in each category
+    3. Edge fold hands = one step below the opening boundary
 
     Excludes:
-    - Premium hands (too obvious)
+    - Premium hands (AA, KK, QQ, AKs, AKo)
     - Trash hands (too far from boundary)
-    - "Obvious" 100% hands (everyone opens)
+    - "Middle" hands (clearly open or clearly fold, not at boundary)
 
     Returns:
         List of drillable hand strings
     """
     data = get_rfi_data()
     pos_data = data.get(position.upper(), {}).get("frequencies", {})
-
     opening = get_opening_hands(position)
-    obvious = get_obvious_hands()
 
     drillable = set()
 
-    # 1. All mixed frequency hands
+    # 1. All mixed frequency hands (most important to practice)
     for hand, freqs in pos_data.items():
         if 1 <= freqs.get("raise", 0) <= 99:
             drillable.add(hand)
 
-    # 2. Opening hands that are NOT obvious (edge opens)
-    edge_opens = opening - obvious - PREMIUM_HANDS
-    drillable |= edge_opens
+    # 2. Find edge opening hands (lowest in each category)
+    # Pairs: find lowest opening pair
+    opening_pairs = [h for h in opening if len(h) == 2]
+    if opening_pairs:
+        lowest_pair_rank = max(RANKS.index(h[0]) for h in opening_pairs)
+        lowest_pair = RANKS[lowest_pair_rank] * 2
+        drillable.add(lowest_pair)
+        # Also add the fold edge (one below)
+        if lowest_pair_rank < len(RANKS) - 1:
+            fold_pair = RANKS[lowest_pair_rank + 1] * 2
+            if fold_pair not in TRASH_HANDS:
+                drillable.add(fold_pair)
 
-    # 3. Fold-edge hands (one step below the opening boundary)
-    # Also check true connectors (gap ≤ 2) up to two steps
-    for hand in ALL_HANDS:
-        if hand in opening or hand in PREMIUM_HANDS or hand in TRASH_HANDS:
-            continue
+    # Suited: find lowest opening in each prefix (A, K, Q, J, T, etc.)
+    for prefix in RANKS:
+        prefix_suited = [h for h in opening if h.startswith(prefix) and h.endswith('s')]
+        if prefix_suited:
+            # Find lowest kicker that opens
+            lowest_kicker_idx = max(RANKS.index(h[1]) for h in prefix_suited)
+            lowest_hand = f"{prefix}{RANKS[lowest_kicker_idx]}s"
+            drillable.add(lowest_hand)
+            # Add fold edge (one below)
+            if lowest_kicker_idx < len(RANKS) - 1:
+                fold_hand = f"{prefix}{RANKS[lowest_kicker_idx + 1]}s"
+                if fold_hand not in TRASH_HANDS and fold_hand not in opening:
+                    drillable.add(fold_hand)
 
-        # Check if this is near the boundary
-        # Pairs: check if the next higher pair opens (1 step only)
-        if len(hand) == 2:
-            rank_idx = RANKS.index(hand[0])
-            if rank_idx >= 1:
-                higher_pair = RANKS[rank_idx - 1] * 2
-                if higher_pair in opening:
-                    drillable.add(hand)
+    # Offsuit: find lowest opening in each prefix
+    for prefix in RANKS:
+        prefix_offsuit = [h for h in opening if h.startswith(prefix) and h.endswith('o')]
+        if prefix_offsuit:
+            lowest_kicker_idx = max(RANKS.index(h[1]) for h in prefix_offsuit)
+            lowest_hand = f"{prefix}{RANKS[lowest_kicker_idx]}o"
+            drillable.add(lowest_hand)
+            # Add fold edge (one below)
+            if lowest_kicker_idx < len(RANKS) - 1:
+                fold_hand = f"{prefix}{RANKS[lowest_kicker_idx + 1]}o"
+                if fold_hand not in TRASH_HANDS and fold_hand not in opening:
+                    drillable.add(fold_hand)
 
-        # Suited: same-prefix (1 step) + true connectors (gap ≤ 2, up to 2 steps)
-        elif hand.endswith('s'):
-            prefix = hand[0]
-            kicker = hand[1]
-            prefix_idx = RANKS.index(prefix)
-            kicker_idx = RANKS.index(kicker)
-            gap = kicker_idx - prefix_idx  # gap between ranks
+    # 3. Connector edges (for suited connectors like 54s, 65s, etc.)
+    connectors_opening = [h for h in opening if h.endswith('s') and
+                         RANKS.index(h[1]) - RANKS.index(h[0]) <= 2]  # gap ≤ 2
+    if connectors_opening:
+        # Find lowest connector that opens
+        lowest_conn = max(connectors_opening, key=lambda h: RANKS.index(h[0]))
+        drillable.add(lowest_conn)
+        # Add fold edge connector
+        prefix_idx = RANKS.index(lowest_conn[0])
+        kicker_idx = RANKS.index(lowest_conn[1])
+        if prefix_idx < len(RANKS) - 1 and kicker_idx < len(RANKS) - 1:
+            fold_conn = f"{RANKS[prefix_idx + 1]}{RANKS[kicker_idx + 1]}s"
+            if fold_conn not in TRASH_HANDS and fold_conn not in opening:
+                drillable.add(fold_conn)
 
-            # Same-prefix: only 1 step (e.g., K7s → K8s)
-            if kicker_idx >= 1:
-                higher = f"{prefix}{RANKS[kicker_idx - 1]}s"
-                if higher in opening:
-                    drillable.add(hand)
-                    continue
+    # 4. Offsuit connector edges (e.g., QJo opens → JTo is fold edge)
+    offsuit_connectors_opening = [h for h in opening if h.endswith('o') and
+                                   RANKS.index(h[1]) - RANKS.index(h[0]) == 1]  # gap = 1 (true connector)
+    if offsuit_connectors_opening:
+        lowest_off_conn = max(offsuit_connectors_opening, key=lambda h: RANKS.index(h[0]))
+        drillable.add(lowest_off_conn)
+        # Add fold edge
+        prefix_idx = RANKS.index(lowest_off_conn[0])
+        kicker_idx = RANKS.index(lowest_off_conn[1])
+        if prefix_idx < len(RANKS) - 1 and kicker_idx < len(RANKS) - 1:
+            fold_conn = f"{RANKS[prefix_idx + 1]}{RANKS[kicker_idx + 1]}o"
+            if fold_conn not in TRASH_HANDS and fold_conn not in opening:
+                drillable.add(fold_conn)
 
-            # True connectors only (gap ≤ 2): up to 2 steps
-            # e.g., 43s (gap=1) → 54s, 65s
-            # e.g., 53s (gap=2) → 64s, 75s
-            if gap <= 2:
-                for step in [1, 2]:
-                    if prefix_idx >= step and kicker_idx >= step:
-                        higher_prefix = RANKS[prefix_idx - step]
-                        higher_kicker = RANKS[kicker_idx - step]
-                        connector = f"{higher_prefix}{higher_kicker}s"
-                        if connector in opening:
-                            drillable.add(hand)
-                            break
-
-        # Offsuit: same-prefix (1 step) + true connectors (gap ≤ 2, up to 2 steps)
-        elif hand.endswith('o'):
-            prefix = hand[0]
-            kicker = hand[1]
-            prefix_idx = RANKS.index(prefix)
-            kicker_idx = RANKS.index(kicker)
-            gap = kicker_idx - prefix_idx
-
-            # Same-prefix: only 1 step (e.g., K7o → K8o)
-            if kicker_idx >= 1:
-                higher = f"{prefix}{RANKS[kicker_idx - 1]}o"
-                if higher in opening:
-                    drillable.add(hand)
-                    continue
-
-            # True connectors only (gap ≤ 2): up to 2 steps
-            if gap <= 2:
-                for step in [1, 2]:
-                    if prefix_idx >= step and kicker_idx >= step:
-                        higher_prefix = RANKS[prefix_idx - step]
-                        higher_kicker = RANKS[kicker_idx - step]
-                        connector = f"{higher_prefix}{higher_kicker}o"
-                        if connector in opening:
-                            drillable.add(hand)
-                            break
+    # 5. Hands adjacent to mixed frequency hands
+    # If a hand is mixed (1-99%), also drill the hand one step above it
+    for hand, freqs in pos_data.items():
+        if 1 <= freqs.get("raise", 0) <= 99:
+            # Find the hand one step above (higher kicker, same prefix)
+            if hand.endswith('s') or hand.endswith('o'):
+                prefix = hand[0]
+                kicker = hand[1]
+                suffix = hand[2]
+                kicker_idx = RANKS.index(kicker)
+                if kicker_idx > 0:
+                    higher_hand = f"{prefix}{RANKS[kicker_idx - 1]}{suffix}"
+                    if higher_hand in opening and higher_hand not in PREMIUM_HANDS:
+                        drillable.add(higher_hand)
 
     # Remove premium and trash
     drillable -= PREMIUM_HANDS
