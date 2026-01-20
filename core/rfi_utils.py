@@ -254,15 +254,18 @@ def get_drillable_hands(position: str) -> List[str]:
     """
     Get hands that should be drilled for a position.
 
-    New logic (v7.0):
+    Logic (v8.0):
     1. Mixed frequency hands (1-99%)
     2. Edge opening hands = lowest opening hand in each category
     3. Edge fold hands = one step below the opening boundary
+    4. Offsuit connector fold edges (e.g., QJo for UTG)
+    5. Hands adjacent to mixed frequency hands
 
     Excludes:
     - Premium hands (AA, KK, QQ, AKs, AKo)
     - Trash hands (too far from boundary)
-    - "Middle" hands (clearly open or clearly fold, not at boundary)
+    - Obvious hands (all positions open at 100%, e.g., A2s)
+    - Bottom hands with 100% open (no fold edge below)
 
     Returns:
         List of drillable hand strings
@@ -333,19 +336,14 @@ def get_drillable_hands(position: str) -> List[str]:
             if fold_conn not in TRASH_HANDS and fold_conn not in opening:
                 drillable.add(fold_conn)
 
-    # 4. Offsuit connector edges (e.g., QJo opens → JTo is fold edge)
-    offsuit_connectors_opening = [h for h in opening if h.endswith('o') and
-                                   RANKS.index(h[1]) - RANKS.index(h[0]) == 1]  # gap = 1 (true connector)
-    if offsuit_connectors_opening:
-        lowest_off_conn = max(offsuit_connectors_opening, key=lambda h: RANKS.index(h[0]))
-        drillable.add(lowest_off_conn)
-        # Add fold edge
-        prefix_idx = RANKS.index(lowest_off_conn[0])
-        kicker_idx = RANKS.index(lowest_off_conn[1])
-        if prefix_idx < len(RANKS) - 1 and kicker_idx < len(RANKS) - 1:
-            fold_conn = f"{RANKS[prefix_idx + 1]}{RANKS[kicker_idx + 1]}o"
-            if fold_conn not in TRASH_HANDS and fold_conn not in opening:
-                drillable.add(fold_conn)
+    # 4. Offsuit connector edges - only add FOLD edge (not opening edge)
+    # e.g., UTG opens KQo but not QJo → add QJo as fold edge
+    all_offsuit_connectors = [f"{RANKS[i]}{RANKS[i+1]}o" for i in range(len(RANKS) - 1)]
+    for conn in all_offsuit_connectors:
+        if conn not in opening and conn not in TRASH_HANDS:
+            # This is the fold edge connector
+            drillable.add(conn)
+            break  # Only add the first (highest) fold edge
 
     # 5. Hands adjacent to mixed frequency hands
     # If a hand is mixed (1-99%), also drill the hand one step above it
@@ -365,6 +363,21 @@ def get_drillable_hands(position: str) -> List[str]:
     # Remove premium and trash
     drillable -= PREMIUM_HANDS
     drillable -= TRASH_HANDS
+
+    # For later positions (BTN, SB), also remove "obvious" hands
+    # that all positions open at 100% - these are too easy at loose positions
+    # But keep them for earlier positions (UTG, HJ, CO) where they define the range floor
+    if position.upper() in ("BTN", "SB"):
+        drillable -= get_obvious_hands()
+
+        # Also remove "bottom of category" hands that have no fold edge below
+        # e.g., K2s if BTN opens all Kxs - no boundary to test
+        bottom_hands = {f"{r}2s" for r in RANKS}  # A2s, K2s, Q2s, etc.
+        for hand in list(drillable):
+            if hand in bottom_hands:
+                pos_freqs = pos_data.get(hand, {})
+                if pos_freqs.get("raise", 0) == 100:
+                    drillable.discard(hand)
 
     return sorted(list(drillable))
 

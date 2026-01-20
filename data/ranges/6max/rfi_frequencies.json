@@ -1241,11 +1241,11 @@
       "98o": {
         "raise": 100
       },
-      "A2o": {
-        "limp": 25
+      "A3o": {
+        "limp": 50
       },
       "K7o": {
-        "limp": 25
+        "limp": 50
       }
     },
     "stats": {
@@ -1253,7 +1253,7 @@
       "raise_hands": 90,
       "limp_hands": 2,
       "estimated_vpip_contribution": 6.2,
-      "note": "\u7c21\u5316\u7248: \u8ddfBTN\u4e00\u6a23\u7684raise\u7bc4\u570d, \u4fdd\u7559K7o/A2o limp"
+      "note": "簡化版: 跟BTN一樣的raise範圍, 保留K7o/A3o limp 50%"
     },
     "drillable": [
       "22",

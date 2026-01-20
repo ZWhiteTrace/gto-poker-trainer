@@ -1,8 +1,116 @@
 """
 Position-specific tips for RFI ranges.
 Helps players memorize range boundaries by highlighting edge hands.
+
+v2.0: edge_hands now dynamically computed from rfi_utils
 """
-from typing import Dict, Optional
+from typing import Dict, Optional, List
+
+# Import dynamic functions
+try:
+    from core.rfi_utils import get_drillable_hands, get_opening_hands, get_rfi_data, RANKS
+    HAS_RFI_UTILS = True
+except ImportError:
+    HAS_RFI_UTILS = False
+
+
+def get_dynamic_edge_hands(position: str) -> List[str]:
+    """Get edge hands dynamically from rfi_utils."""
+    if not HAS_RFI_UTILS:
+        return []
+    return get_drillable_hands(position)
+
+
+def get_range_boundary(position: str, prefix: str, suffix: str = 's') -> str:
+    """
+    Get the range boundary string dynamically.
+    e.g., get_range_boundary('UTG', 'K', 's') -> 'K8s+'
+    """
+    if not HAS_RFI_UTILS:
+        return ""
+
+    opening = get_opening_hands(position)
+    hands = [h for h in opening if h.startswith(prefix) and h.endswith(suffix)]
+
+    if not hands:
+        return ""
+
+    # Find lowest opening hand
+    lowest_idx = max(RANKS.index(h[1]) for h in hands)
+    lowest = RANKS[lowest_idx]
+
+    # Check if opens all (e.g., A2s+)
+    if lowest == '2':
+        return f"{prefix}2{suffix}+"
+
+    return f"{prefix}{lowest}{suffix}+"
+
+
+def get_hand_start_position(hand: str) -> str:
+    """
+    Dynamically find from which position a hand starts to open.
+    Returns the earliest position that opens this hand.
+    """
+    if not HAS_RFI_UTILS:
+        return ""
+
+    POSITION_ORDER = ["UTG", "HJ", "CO", "BTN", "SB"]
+
+    for pos in POSITION_ORDER:
+        opening = get_opening_hands(pos)
+        if hand in opening:
+            return pos
+
+    return ""  # Not opened from any position
+
+
+def get_dynamic_range_tip(position: str, lang: str = "zh") -> str:
+    """
+    Generate a fully dynamic range tip from frequency data.
+    """
+    if not HAS_RFI_UTILS:
+        return ""
+
+    pos_upper = position.upper()
+    data = get_rfi_data()
+    pos_data = data.get(pos_upper, {})
+    frequencies = pos_data.get("frequencies", {})
+    stats = pos_data.get("stats", {})
+
+    # Count hands
+    raise_100 = sum(1 for h, f in frequencies.items() if f.get("raise", 0) == 100)
+    raise_mixed = sum(1 for h, f in frequencies.items() if 1 <= f.get("raise", 0) < 100)
+    vpip = stats.get("estimated_vpip_contribution", 0)
+
+    # Get boundaries dynamically
+    boundaries = []
+    for prefix in ['A', 'K', 'Q', 'J']:
+        suited_range = get_range_boundary(pos_upper, prefix, 's')
+        if suited_range:
+            boundaries.append(f"{prefix}x同花: {suited_range}")
+
+    # Get dynamic edge hands
+    edges = get_dynamic_edge_hands(pos_upper)
+
+    if lang == "zh":
+        lines = [f"💡 {pos_upper} 開池範圍 (動態)："]
+        lines.append(f"• 100% 開池: {raise_100} 手")
+        lines.append(f"• 混合頻率: {raise_mixed} 手")
+        if boundaries:
+            lines.append(f"• 範圍邊界: {', '.join(boundaries[:4])}")
+        if edges:
+            lines.append(f"• ⚠️ 邊緣牌 ({len(edges)}): {', '.join(edges[:8])}...")
+    else:
+        lines = [f"💡 {pos_upper} Opening Range (Dynamic):"]
+        lines.append(f"• 100% opens: {raise_100} hands")
+        lines.append(f"• Mixed frequency: {raise_mixed} hands")
+        if boundaries:
+            lines.append(f"• Range boundaries: {', '.join(boundaries[:4])}")
+        if edges:
+            lines.append(f"• ⚠️ Edge hands ({len(edges)}): {', '.join(edges[:8])}...")
+
+    return "\n".join(lines)
+
 
 # RFI 各位置的範圍邊界提示
 # 簡化版 - 大部分 100%/0%，只有少數 50%
@@ -144,9 +252,15 @@ def format_rfi_tip(position: str, lang: str = "zh") -> str:
         if "offsuit_broadways" in tip_data:
             lines.append(f"• 不同花百搭：{tip_data['offsuit_broadways']}")
 
-        # 邊緣牌
-        if "edge_hands" in tip_data and tip_data["edge_hands"]:
-            edge_str = ", ".join(tip_data["edge_hands"])
+        # 邊緣牌 - 使用動態算法
+        dynamic_edges = get_dynamic_edge_hands(pos_upper)
+        if dynamic_edges:
+            # 只顯示前 10 個，避免太長
+            display_edges = dynamic_edges[:10]
+            if len(dynamic_edges) > 10:
+                edge_str = ", ".join(display_edges) + f" ... (+{len(dynamic_edges) - 10})"
+            else:
+                edge_str = ", ".join(display_edges)
             lines.append(f"• ⚠️ 邊緣牌：{edge_str}")
 
         # 記憶提示
@@ -169,9 +283,17 @@ def format_rfi_tip(position: str, lang: str = "zh") -> str:
             lines.append(f"• Offsuit Aces: {tip_data['offsuit_aces']}")
         if "offsuit_broadways" in tip_data:
             lines.append(f"• Offsuit Broadways: {tip_data['offsuit_broadways']}")
-        if "edge_hands" in tip_data and tip_data["edge_hands"]:
-            edge_str = ", ".join(tip_data["edge_hands"])
+
+        # Edge hands - use dynamic algorithm
+        dynamic_edges = get_dynamic_edge_hands(pos_upper)
+        if dynamic_edges:
+            display_edges = dynamic_edges[:10]
+            if len(dynamic_edges) > 10:
+                edge_str = ", ".join(display_edges) + f" ... (+{len(dynamic_edges) - 10})"
+            else:
+                edge_str = ", ".join(display_edges)
             lines.append(f"• ⚠️ Edge hands: {edge_str}")
+
         lines.append(f"📝 {tip_data.get('tip_en', '')}")
 
     return "\n".join(lines)
