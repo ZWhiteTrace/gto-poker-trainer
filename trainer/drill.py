@@ -1,8 +1,11 @@
 """
 Preflop drill engine for GTO training.
 """
+import json
 import random
 from dataclasses import dataclass, field
+from functools import lru_cache
+from pathlib import Path
 from typing import List, Optional, Tuple
 from datetime import datetime
 
@@ -13,7 +16,53 @@ from core.evaluator import Evaluator, EvalResult
 
 
 # ============================================================================
+# 從 JSON 讀取出題範圍（v5.0 新架構）
+# ============================================================================
+
+@lru_cache(maxsize=1)
+def _load_rfi_json() -> dict:
+    """載入 RFI 頻率 JSON（快取）"""
+    json_path = Path(__file__).parent.parent / "data" / "ranges" / "6max" / "rfi_frequencies.json"
+    with open(json_path, 'r') as f:
+        return json.load(f)
+
+
+def get_drillable_from_json(position: str) -> List[str]:
+    """
+    從 JSON 讀取指定位置的出題範圍。
+
+    這是 v5.0 的主要數據來源，所有出題範圍統一在 JSON 維護。
+
+    Args:
+        position: 位置名稱 (UTG, HJ, CO, BTN, SB)
+
+    Returns:
+        該位置的出題手牌列表
+    """
+    data = _load_rfi_json()
+    pos_data = data.get(position.upper(), {})
+    return pos_data.get("drillable", [])
+
+
+def get_visual_constants() -> dict:
+    """
+    從 JSON 讀取視覺常數。
+
+    Returns:
+        dict with keys: utg_key_edges, btn_key_edges, obvious_hands
+    """
+    data = _load_rfi_json()
+    return data.get("meta", {}).get("visual", {})
+
+
+def clear_rfi_cache():
+    """清除 RFI JSON 快取（用於測試或熱更新）"""
+    _load_rfi_json.cache_clear()
+
+
+# ============================================================================
 # 出題範圍設計邏輯：專注練習「邊界區域」的牌 (簡化版 v4.0)
+# 注意：以下靜態常數保留用於向後相容，新代碼請使用 get_drillable_from_json()
 #
 # 設計原則：
 #   1. 排除明顯 100% 開的牌（太簡單）
@@ -273,7 +322,7 @@ def get_drillable_hands(range_data: dict = None, scenario_type: str = "vs_rfi", 
     """
     Get all hands that are in the drilling focus.
 
-    位置專屬邏輯：169 手牌 - POSITION_EXCLUDED_HANDS[position] = 可練習範圍
+    v5.0: 優先從 JSON 讀取，若 JSON 無資料則使用靜態常數。
 
     Args:
         range_data: Optional range data (not used currently)
@@ -290,6 +339,16 @@ def get_drillable_hands(range_data: dict = None, scenario_type: str = "vs_rfi", 
         pos_upper = position.value.upper()
     else:
         pos_upper = str(position).upper()
+
+    # v5.0: 優先從 JSON 讀取
+    try:
+        drillable = get_drillable_from_json(pos_upper)
+        if drillable:
+            return drillable
+    except Exception:
+        pass  # 讀取失敗時使用靜態常數
+
+    # 回退到靜態常數
     excluded = POSITION_EXCLUDED_HANDS.get(pos_upper, EXCLUDED_HANDS)
     return [h for h in ALL_HANDS if h not in excluded]
 

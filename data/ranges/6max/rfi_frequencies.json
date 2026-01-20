@@ -10,408 +10,1277 @@
       "SB": "3bb"
     },
     "source": "GTOWizard NL50 100BB - Simplified for Memory",
-    "note": "Simplified GTO: 100%/0% for easy memorization, only key spots use 50%",
-    "version": "4.0",
+    "note": "Simplified GTO with drillable hands for each position",
+    "version": "5.0",
     "last_updated": "2026-01-20",
     "frequency_threshold": {
       "always": 100,
       "mixed": 50
+    },
+    "visual": {
+      "utg_key_edges": [
+        "55",
+        "A2s",
+        "K8s",
+        "Q9s",
+        "J9s",
+        "T9s",
+        "98s",
+        "87s",
+        "76s",
+        "65s",
+        "KJo",
+        "ATo"
+      ],
+      "btn_key_edges": [
+        "K2s",
+        "Q2s",
+        "J4s",
+        "T6s",
+        "96s",
+        "85s",
+        "75s",
+        "64s",
+        "A4o",
+        "K8o",
+        "Q9o",
+        "J8o",
+        "T8o",
+        "98o"
+      ],
+      "obvious_hands": [
+        "AA",
+        "KK",
+        "QQ",
+        "JJ",
+        "TT",
+        "99",
+        "88",
+        "77",
+        "66",
+        "AKs",
+        "AQs",
+        "AJs",
+        "ATs",
+        "A9s",
+        "A8s",
+        "A7s",
+        "A6s",
+        "A5s",
+        "A4s",
+        "A3s",
+        "KQs",
+        "KJs",
+        "KTs",
+        "K9s",
+        "QJs",
+        "QTs",
+        "JTs",
+        "AKo",
+        "AQo",
+        "AJo",
+        "KQo"
+      ]
     }
   },
   "UTG": {
     "frequencies": {
-      "AA": {"raise": 100},
-      "KK": {"raise": 100},
-      "QQ": {"raise": 100},
-      "JJ": {"raise": 100},
-      "TT": {"raise": 100},
-      "99": {"raise": 100},
-      "88": {"raise": 100},
-      "77": {"raise": 100},
-      "66": {"raise": 100},
-      "55": {"raise": 100},
-      "AKs": {"raise": 100},
-      "AQs": {"raise": 100},
-      "AJs": {"raise": 100},
-      "ATs": {"raise": 100},
-      "A9s": {"raise": 100},
-      "A8s": {"raise": 100},
-      "A7s": {"raise": 100},
-      "A6s": {"raise": 100},
-      "A5s": {"raise": 100},
-      "A4s": {"raise": 100},
-      "A3s": {"raise": 100},
-      "A2s": {"raise": 100},
-      "KQs": {"raise": 100},
-      "KJs": {"raise": 100},
-      "KTs": {"raise": 100},
-      "K9s": {"raise": 100},
-      "K8s": {"raise": 100},
-      "QJs": {"raise": 100},
-      "QTs": {"raise": 100},
-      "Q9s": {"raise": 100},
-      "JTs": {"raise": 100},
-      "J9s": {"raise": 100},
-      "T9s": {"raise": 100},
-      "98s": {"raise": 50},
-      "87s": {"raise": 50},
-      "76s": {"raise": 50},
-      "65s": {"raise": 50},
-      "AKo": {"raise": 100},
-      "AQo": {"raise": 100},
-      "AJo": {"raise": 100},
-      "ATo": {"raise": 100},
-      "KQo": {"raise": 100},
-      "KJo": {"raise": 100}
+      "AA": {
+        "raise": 100
+      },
+      "KK": {
+        "raise": 100
+      },
+      "QQ": {
+        "raise": 100
+      },
+      "JJ": {
+        "raise": 100
+      },
+      "TT": {
+        "raise": 100
+      },
+      "99": {
+        "raise": 100
+      },
+      "88": {
+        "raise": 100
+      },
+      "77": {
+        "raise": 100
+      },
+      "66": {
+        "raise": 100
+      },
+      "55": {
+        "raise": 100
+      },
+      "AKs": {
+        "raise": 100
+      },
+      "AQs": {
+        "raise": 100
+      },
+      "AJs": {
+        "raise": 100
+      },
+      "ATs": {
+        "raise": 100
+      },
+      "A9s": {
+        "raise": 100
+      },
+      "A8s": {
+        "raise": 100
+      },
+      "A7s": {
+        "raise": 100
+      },
+      "A6s": {
+        "raise": 100
+      },
+      "A5s": {
+        "raise": 100
+      },
+      "A4s": {
+        "raise": 100
+      },
+      "A3s": {
+        "raise": 100
+      },
+      "A2s": {
+        "raise": 100
+      },
+      "KQs": {
+        "raise": 100
+      },
+      "KJs": {
+        "raise": 100
+      },
+      "KTs": {
+        "raise": 100
+      },
+      "K9s": {
+        "raise": 100
+      },
+      "K8s": {
+        "raise": 100
+      },
+      "QJs": {
+        "raise": 100
+      },
+      "QTs": {
+        "raise": 100
+      },
+      "Q9s": {
+        "raise": 100
+      },
+      "JTs": {
+        "raise": 100
+      },
+      "J9s": {
+        "raise": 100
+      },
+      "T9s": {
+        "raise": 100
+      },
+      "98s": {
+        "raise": 50
+      },
+      "87s": {
+        "raise": 50
+      },
+      "76s": {
+        "raise": 50
+      },
+      "65s": {
+        "raise": 50
+      },
+      "AKo": {
+        "raise": 100
+      },
+      "AQo": {
+        "raise": 100
+      },
+      "AJo": {
+        "raise": 100
+      },
+      "ATo": {
+        "raise": 100
+      },
+      "KQo": {
+        "raise": 100
+      },
+      "KJo": {
+        "raise": 100
+      }
     },
     "stats": {
       "total_hands": 169,
       "raise_hands": 42,
       "estimated_vpip_contribution": 2.6,
-      "note": "簡化版: 移除K7s-K5s/Q8s/A9o/KTo/QTo/QJo, 加入A2s/J9s/T9s/55, 連接牌98s-65s用50%"
-    }
+      "note": "\u7c21\u5316\u7248: \u79fb\u9664K7s-K5s/Q8s/A9o/KTo/QTo/QJo, \u52a0\u5165A2s/J9s/T9s/55, \u9023\u63a5\u724c98s-65s\u752850%"
+    },
+    "drillable": [
+      "44",
+      "54s",
+      "55",
+      "65s",
+      "76s",
+      "87s",
+      "98o",
+      "98s",
+      "A2s",
+      "ATo",
+      "J9s",
+      "JTo",
+      "K7s",
+      "K8s",
+      "KJo",
+      "KTo",
+      "Q9s",
+      "QJo",
+      "T9o",
+      "T9s"
+    ]
   },
   "HJ": {
     "frequencies": {
-      "AA": {"raise": 100},
-      "KK": {"raise": 100},
-      "QQ": {"raise": 100},
-      "JJ": {"raise": 100},
-      "TT": {"raise": 100},
-      "99": {"raise": 100},
-      "88": {"raise": 100},
-      "77": {"raise": 100},
-      "66": {"raise": 100},
-      "55": {"raise": 100},
-      "44": {"raise": 100},
-      "33": {"raise": 100},
-      "AKs": {"raise": 100},
-      "AQs": {"raise": 100},
-      "AJs": {"raise": 100},
-      "ATs": {"raise": 100},
-      "A9s": {"raise": 100},
-      "A8s": {"raise": 100},
-      "A7s": {"raise": 100},
-      "A6s": {"raise": 100},
-      "A5s": {"raise": 100},
-      "A4s": {"raise": 100},
-      "A3s": {"raise": 100},
-      "A2s": {"raise": 100},
-      "KQs": {"raise": 100},
-      "KJs": {"raise": 100},
-      "KTs": {"raise": 100},
-      "K9s": {"raise": 100},
-      "K8s": {"raise": 100},
-      "K7s": {"raise": 100},
-      "QJs": {"raise": 100},
-      "QTs": {"raise": 100},
-      "Q9s": {"raise": 100},
-      "JTs": {"raise": 100},
-      "J9s": {"raise": 100},
-      "T9s": {"raise": 100},
-      "T8s": {"raise": 100},
-      "98s": {"raise": 100},
-      "87s": {"raise": 100},
-      "76s": {"raise": 100},
-      "65s": {"raise": 100},
-      "54s": {"raise": 100},
-      "AKo": {"raise": 100},
-      "AQo": {"raise": 100},
-      "AJo": {"raise": 100},
-      "ATo": {"raise": 100},
-      "KQo": {"raise": 100},
-      "KJo": {"raise": 100},
-      "QJo": {"raise": 100}
+      "AA": {
+        "raise": 100
+      },
+      "KK": {
+        "raise": 100
+      },
+      "QQ": {
+        "raise": 100
+      },
+      "JJ": {
+        "raise": 100
+      },
+      "TT": {
+        "raise": 100
+      },
+      "99": {
+        "raise": 100
+      },
+      "88": {
+        "raise": 100
+      },
+      "77": {
+        "raise": 100
+      },
+      "66": {
+        "raise": 100
+      },
+      "55": {
+        "raise": 100
+      },
+      "44": {
+        "raise": 100
+      },
+      "33": {
+        "raise": 100
+      },
+      "AKs": {
+        "raise": 100
+      },
+      "AQs": {
+        "raise": 100
+      },
+      "AJs": {
+        "raise": 100
+      },
+      "ATs": {
+        "raise": 100
+      },
+      "A9s": {
+        "raise": 100
+      },
+      "A8s": {
+        "raise": 100
+      },
+      "A7s": {
+        "raise": 100
+      },
+      "A6s": {
+        "raise": 100
+      },
+      "A5s": {
+        "raise": 100
+      },
+      "A4s": {
+        "raise": 100
+      },
+      "A3s": {
+        "raise": 100
+      },
+      "A2s": {
+        "raise": 100
+      },
+      "KQs": {
+        "raise": 100
+      },
+      "KJs": {
+        "raise": 100
+      },
+      "KTs": {
+        "raise": 100
+      },
+      "K9s": {
+        "raise": 100
+      },
+      "K8s": {
+        "raise": 100
+      },
+      "K7s": {
+        "raise": 100
+      },
+      "QJs": {
+        "raise": 100
+      },
+      "QTs": {
+        "raise": 100
+      },
+      "Q9s": {
+        "raise": 100
+      },
+      "JTs": {
+        "raise": 100
+      },
+      "J9s": {
+        "raise": 100
+      },
+      "T9s": {
+        "raise": 100
+      },
+      "T8s": {
+        "raise": 100
+      },
+      "98s": {
+        "raise": 100
+      },
+      "87s": {
+        "raise": 100
+      },
+      "76s": {
+        "raise": 100
+      },
+      "65s": {
+        "raise": 100
+      },
+      "54s": {
+        "raise": 100
+      },
+      "AKo": {
+        "raise": 100
+      },
+      "AQo": {
+        "raise": 100
+      },
+      "AJo": {
+        "raise": 100
+      },
+      "ATo": {
+        "raise": 100
+      },
+      "KQo": {
+        "raise": 100
+      },
+      "KJo": {
+        "raise": 100
+      },
+      "QJo": {
+        "raise": 100
+      }
     },
     "stats": {
       "total_hands": 169,
       "raise_hands": 48,
       "estimated_vpip_contribution": 3.2,
-      "note": "簡化版: 移除K6s-K4s/Q8s/J8s/A9o/KTo/QTo/JTo, 加入33/T8s/連接牌全100%"
-    }
+      "note": "\u7c21\u5316\u7248: \u79fb\u9664K6s-K4s/Q8s/J8s/A9o/KTo/QTo/JTo, \u52a0\u516533/T8s/\u9023\u63a5\u724c\u5168100%"
+    },
+    "drillable": [
+      "22",
+      "33",
+      "43s",
+      "54s",
+      "65s",
+      "76s",
+      "87s",
+      "97s",
+      "98s",
+      "J8s",
+      "J9s",
+      "JTo",
+      "K6s",
+      "K7s",
+      "KJo",
+      "KTo",
+      "Q9s",
+      "QJo",
+      "QTo",
+      "T7s",
+      "T8s"
+    ]
   },
   "CO": {
     "frequencies": {
-      "AA": {"raise": 100},
-      "KK": {"raise": 100},
-      "QQ": {"raise": 100},
-      "JJ": {"raise": 100},
-      "TT": {"raise": 100},
-      "99": {"raise": 100},
-      "88": {"raise": 100},
-      "77": {"raise": 100},
-      "66": {"raise": 100},
-      "55": {"raise": 100},
-      "44": {"raise": 100},
-      "33": {"raise": 100},
-      "22": {"raise": 100},
-      "AKs": {"raise": 100},
-      "AQs": {"raise": 100},
-      "AJs": {"raise": 100},
-      "ATs": {"raise": 100},
-      "A9s": {"raise": 100},
-      "A8s": {"raise": 100},
-      "A7s": {"raise": 100},
-      "A6s": {"raise": 100},
-      "A5s": {"raise": 100},
-      "A4s": {"raise": 100},
-      "A3s": {"raise": 100},
-      "A2s": {"raise": 100},
-      "KQs": {"raise": 100},
-      "KJs": {"raise": 100},
-      "KTs": {"raise": 100},
-      "K9s": {"raise": 100},
-      "K8s": {"raise": 100},
-      "K7s": {"raise": 100},
-      "K6s": {"raise": 100},
-      "K5s": {"raise": 100},
-      "K4s": {"raise": 100},
-      "K3s": {"raise": 100},
-      "QJs": {"raise": 100},
-      "QTs": {"raise": 100},
-      "Q9s": {"raise": 100},
-      "Q8s": {"raise": 100},
-      "Q7s": {"raise": 100},
-      "Q6s": {"raise": 100},
-      "JTs": {"raise": 100},
-      "J9s": {"raise": 100},
-      "J8s": {"raise": 100},
-      "J7s": {"raise": 100},
-      "T9s": {"raise": 100},
-      "T8s": {"raise": 100},
-      "T7s": {"raise": 100},
-      "98s": {"raise": 100},
-      "97s": {"raise": 100},
-      "87s": {"raise": 100},
-      "86s": {"raise": 100},
-      "76s": {"raise": 100},
-      "65s": {"raise": 100},
-      "54s": {"raise": 100},
-      "AKo": {"raise": 100},
-      "AQo": {"raise": 100},
-      "AJo": {"raise": 100},
-      "ATo": {"raise": 100},
-      "A9o": {"raise": 100},
-      "A8o": {"raise": 100},
-      "KQo": {"raise": 100},
-      "KJo": {"raise": 100},
-      "KTo": {"raise": 100},
-      "QJo": {"raise": 100},
-      "QTo": {"raise": 100},
-      "JTo": {"raise": 100}
+      "AA": {
+        "raise": 100
+      },
+      "KK": {
+        "raise": 100
+      },
+      "QQ": {
+        "raise": 100
+      },
+      "JJ": {
+        "raise": 100
+      },
+      "TT": {
+        "raise": 100
+      },
+      "99": {
+        "raise": 100
+      },
+      "88": {
+        "raise": 100
+      },
+      "77": {
+        "raise": 100
+      },
+      "66": {
+        "raise": 100
+      },
+      "55": {
+        "raise": 100
+      },
+      "44": {
+        "raise": 100
+      },
+      "33": {
+        "raise": 100
+      },
+      "22": {
+        "raise": 100
+      },
+      "AKs": {
+        "raise": 100
+      },
+      "AQs": {
+        "raise": 100
+      },
+      "AJs": {
+        "raise": 100
+      },
+      "ATs": {
+        "raise": 100
+      },
+      "A9s": {
+        "raise": 100
+      },
+      "A8s": {
+        "raise": 100
+      },
+      "A7s": {
+        "raise": 100
+      },
+      "A6s": {
+        "raise": 100
+      },
+      "A5s": {
+        "raise": 100
+      },
+      "A4s": {
+        "raise": 100
+      },
+      "A3s": {
+        "raise": 100
+      },
+      "A2s": {
+        "raise": 100
+      },
+      "KQs": {
+        "raise": 100
+      },
+      "KJs": {
+        "raise": 100
+      },
+      "KTs": {
+        "raise": 100
+      },
+      "K9s": {
+        "raise": 100
+      },
+      "K8s": {
+        "raise": 100
+      },
+      "K7s": {
+        "raise": 100
+      },
+      "K6s": {
+        "raise": 100
+      },
+      "K5s": {
+        "raise": 100
+      },
+      "K4s": {
+        "raise": 100
+      },
+      "K3s": {
+        "raise": 100
+      },
+      "QJs": {
+        "raise": 100
+      },
+      "QTs": {
+        "raise": 100
+      },
+      "Q9s": {
+        "raise": 100
+      },
+      "Q8s": {
+        "raise": 100
+      },
+      "Q7s": {
+        "raise": 100
+      },
+      "Q6s": {
+        "raise": 100
+      },
+      "JTs": {
+        "raise": 100
+      },
+      "J9s": {
+        "raise": 100
+      },
+      "J8s": {
+        "raise": 100
+      },
+      "J7s": {
+        "raise": 100
+      },
+      "T9s": {
+        "raise": 100
+      },
+      "T8s": {
+        "raise": 100
+      },
+      "T7s": {
+        "raise": 100
+      },
+      "98s": {
+        "raise": 100
+      },
+      "97s": {
+        "raise": 100
+      },
+      "87s": {
+        "raise": 100
+      },
+      "86s": {
+        "raise": 100
+      },
+      "76s": {
+        "raise": 100
+      },
+      "65s": {
+        "raise": 100
+      },
+      "54s": {
+        "raise": 100
+      },
+      "AKo": {
+        "raise": 100
+      },
+      "AQo": {
+        "raise": 100
+      },
+      "AJo": {
+        "raise": 100
+      },
+      "ATo": {
+        "raise": 100
+      },
+      "A9o": {
+        "raise": 100
+      },
+      "A8o": {
+        "raise": 100
+      },
+      "KQo": {
+        "raise": 100
+      },
+      "KJo": {
+        "raise": 100
+      },
+      "KTo": {
+        "raise": 100
+      },
+      "QJo": {
+        "raise": 100
+      },
+      "QTo": {
+        "raise": 100
+      },
+      "JTo": {
+        "raise": 100
+      }
     },
     "stats": {
       "total_hands": 169,
       "raise_hands": 66,
       "estimated_vpip_contribution": 4.4,
-      "note": "簡化版: 加入K3s/J7s/T7s/86s/22/A8o, 移除Q5s/A7o/A5o/K9o/J9o, 連接牌全100%"
-    }
+      "note": "\u7c21\u5316\u7248: \u52a0\u5165K3s/J7s/T7s/86s/22/A8o, \u79fb\u9664Q5s/A7o/A5o/K9o/J9o, \u9023\u63a5\u724c\u5168100%"
+    },
+    "drillable": [
+      "22",
+      "97s",
+      "A8o",
+      "J6s",
+      "J7s",
+      "JTo",
+      "K3s",
+      "KTo",
+      "Q6s",
+      "QTo",
+      "T6s",
+      "T7s",
+      "T9o"
+    ]
   },
   "BTN": {
     "frequencies": {
-      "AA": {"raise": 100},
-      "KK": {"raise": 100},
-      "QQ": {"raise": 100},
-      "JJ": {"raise": 100},
-      "TT": {"raise": 100},
-      "99": {"raise": 100},
-      "88": {"raise": 100},
-      "77": {"raise": 100},
-      "66": {"raise": 100},
-      "55": {"raise": 100},
-      "44": {"raise": 100},
-      "33": {"raise": 100},
-      "22": {"raise": 100},
-      "AKs": {"raise": 100},
-      "AQs": {"raise": 100},
-      "AJs": {"raise": 100},
-      "ATs": {"raise": 100},
-      "A9s": {"raise": 100},
-      "A8s": {"raise": 100},
-      "A7s": {"raise": 100},
-      "A6s": {"raise": 100},
-      "A5s": {"raise": 100},
-      "A4s": {"raise": 100},
-      "A3s": {"raise": 100},
-      "A2s": {"raise": 100},
-      "KQs": {"raise": 100},
-      "KJs": {"raise": 100},
-      "KTs": {"raise": 100},
-      "K9s": {"raise": 100},
-      "K8s": {"raise": 100},
-      "K7s": {"raise": 100},
-      "K6s": {"raise": 100},
-      "K5s": {"raise": 100},
-      "K4s": {"raise": 100},
-      "K3s": {"raise": 100},
-      "K2s": {"raise": 100},
-      "QJs": {"raise": 100},
-      "QTs": {"raise": 100},
-      "Q9s": {"raise": 100},
-      "Q8s": {"raise": 100},
-      "Q7s": {"raise": 100},
-      "Q6s": {"raise": 100},
-      "Q5s": {"raise": 100},
-      "Q4s": {"raise": 100},
-      "Q3s": {"raise": 100},
-      "Q2s": {"raise": 100},
-      "JTs": {"raise": 100},
-      "J9s": {"raise": 100},
-      "J8s": {"raise": 100},
-      "J7s": {"raise": 100},
-      "J6s": {"raise": 100},
-      "J5s": {"raise": 100},
-      "J4s": {"raise": 100},
-      "T9s": {"raise": 100},
-      "T8s": {"raise": 100},
-      "T7s": {"raise": 100},
-      "T6s": {"raise": 100},
-      "98s": {"raise": 100},
-      "97s": {"raise": 100},
-      "96s": {"raise": 100},
-      "87s": {"raise": 100},
-      "86s": {"raise": 100},
-      "85s": {"raise": 100},
-      "76s": {"raise": 100},
-      "75s": {"raise": 100},
-      "65s": {"raise": 100},
-      "64s": {"raise": 100},
-      "54s": {"raise": 100},
-      "AKo": {"raise": 100},
-      "AQo": {"raise": 100},
-      "AJo": {"raise": 100},
-      "ATo": {"raise": 100},
-      "A9o": {"raise": 100},
-      "A8o": {"raise": 100},
-      "A7o": {"raise": 100},
-      "A6o": {"raise": 100},
-      "A5o": {"raise": 100},
-      "A4o": {"raise": 100},
-      "KQo": {"raise": 100},
-      "KJo": {"raise": 100},
-      "KTo": {"raise": 100},
-      "K9o": {"raise": 100},
-      "K8o": {"raise": 100},
-      "QJo": {"raise": 100},
-      "QTo": {"raise": 100},
-      "Q9o": {"raise": 100},
-      "JTo": {"raise": 100},
-      "J9o": {"raise": 100},
-      "J8o": {"raise": 50},
-      "T9o": {"raise": 100},
-      "T8o": {"raise": 100},
-      "98o": {"raise": 100}
+      "AA": {
+        "raise": 100
+      },
+      "KK": {
+        "raise": 100
+      },
+      "QQ": {
+        "raise": 100
+      },
+      "JJ": {
+        "raise": 100
+      },
+      "TT": {
+        "raise": 100
+      },
+      "99": {
+        "raise": 100
+      },
+      "88": {
+        "raise": 100
+      },
+      "77": {
+        "raise": 100
+      },
+      "66": {
+        "raise": 100
+      },
+      "55": {
+        "raise": 100
+      },
+      "44": {
+        "raise": 100
+      },
+      "33": {
+        "raise": 100
+      },
+      "22": {
+        "raise": 100
+      },
+      "AKs": {
+        "raise": 100
+      },
+      "AQs": {
+        "raise": 100
+      },
+      "AJs": {
+        "raise": 100
+      },
+      "ATs": {
+        "raise": 100
+      },
+      "A9s": {
+        "raise": 100
+      },
+      "A8s": {
+        "raise": 100
+      },
+      "A7s": {
+        "raise": 100
+      },
+      "A6s": {
+        "raise": 100
+      },
+      "A5s": {
+        "raise": 100
+      },
+      "A4s": {
+        "raise": 100
+      },
+      "A3s": {
+        "raise": 100
+      },
+      "A2s": {
+        "raise": 100
+      },
+      "KQs": {
+        "raise": 100
+      },
+      "KJs": {
+        "raise": 100
+      },
+      "KTs": {
+        "raise": 100
+      },
+      "K9s": {
+        "raise": 100
+      },
+      "K8s": {
+        "raise": 100
+      },
+      "K7s": {
+        "raise": 100
+      },
+      "K6s": {
+        "raise": 100
+      },
+      "K5s": {
+        "raise": 100
+      },
+      "K4s": {
+        "raise": 100
+      },
+      "K3s": {
+        "raise": 100
+      },
+      "K2s": {
+        "raise": 100
+      },
+      "QJs": {
+        "raise": 100
+      },
+      "QTs": {
+        "raise": 100
+      },
+      "Q9s": {
+        "raise": 100
+      },
+      "Q8s": {
+        "raise": 100
+      },
+      "Q7s": {
+        "raise": 100
+      },
+      "Q6s": {
+        "raise": 100
+      },
+      "Q5s": {
+        "raise": 100
+      },
+      "Q4s": {
+        "raise": 100
+      },
+      "Q3s": {
+        "raise": 100
+      },
+      "Q2s": {
+        "raise": 100
+      },
+      "JTs": {
+        "raise": 100
+      },
+      "J9s": {
+        "raise": 100
+      },
+      "J8s": {
+        "raise": 100
+      },
+      "J7s": {
+        "raise": 100
+      },
+      "J6s": {
+        "raise": 100
+      },
+      "J5s": {
+        "raise": 100
+      },
+      "J4s": {
+        "raise": 100
+      },
+      "T9s": {
+        "raise": 100
+      },
+      "T8s": {
+        "raise": 100
+      },
+      "T7s": {
+        "raise": 100
+      },
+      "T6s": {
+        "raise": 100
+      },
+      "98s": {
+        "raise": 100
+      },
+      "97s": {
+        "raise": 100
+      },
+      "96s": {
+        "raise": 100
+      },
+      "87s": {
+        "raise": 100
+      },
+      "86s": {
+        "raise": 100
+      },
+      "85s": {
+        "raise": 100
+      },
+      "76s": {
+        "raise": 100
+      },
+      "75s": {
+        "raise": 100
+      },
+      "65s": {
+        "raise": 100
+      },
+      "64s": {
+        "raise": 100
+      },
+      "54s": {
+        "raise": 100
+      },
+      "AKo": {
+        "raise": 100
+      },
+      "AQo": {
+        "raise": 100
+      },
+      "AJo": {
+        "raise": 100
+      },
+      "ATo": {
+        "raise": 100
+      },
+      "A9o": {
+        "raise": 100
+      },
+      "A8o": {
+        "raise": 100
+      },
+      "A7o": {
+        "raise": 100
+      },
+      "A6o": {
+        "raise": 100
+      },
+      "A5o": {
+        "raise": 100
+      },
+      "A4o": {
+        "raise": 100
+      },
+      "KQo": {
+        "raise": 100
+      },
+      "KJo": {
+        "raise": 100
+      },
+      "KTo": {
+        "raise": 100
+      },
+      "K9o": {
+        "raise": 100
+      },
+      "K8o": {
+        "raise": 100
+      },
+      "QJo": {
+        "raise": 100
+      },
+      "QTo": {
+        "raise": 100
+      },
+      "Q9o": {
+        "raise": 100
+      },
+      "JTo": {
+        "raise": 100
+      },
+      "J9o": {
+        "raise": 100
+      },
+      "J8o": {
+        "raise": 50
+      },
+      "T9o": {
+        "raise": 100
+      },
+      "T8o": {
+        "raise": 100
+      },
+      "98o": {
+        "raise": 100
+      }
     },
     "stats": {
       "total_hands": 169,
       "raise_hands": 90,
       "estimated_vpip_contribution": 6.0,
-      "note": "簡化版: 加入K2s/Q3s/Q2s/J5s/J4s/85s/64s/K8o/T8o/98o, J8o用50%, 移除A3o"
-    }
+      "note": "\u7c21\u5316\u7248: \u52a0\u5165K2s/Q3s/Q2s/J5s/J4s/85s/64s/K8o/T8o/98o, J8o\u752850%, \u79fb\u9664A3o"
+    },
+    "drillable": [
+      "22",
+      "43s",
+      "53s",
+      "63s",
+      "64s",
+      "74s",
+      "75s",
+      "84s",
+      "85s",
+      "87o",
+      "98o",
+      "A2s",
+      "A4o",
+      "J3s",
+      "J4s",
+      "J7o",
+      "J8o",
+      "K2s",
+      "K8o",
+      "Q2s",
+      "Q3s",
+      "Q9o",
+      "T5s",
+      "T7o",
+      "T8o"
+    ]
   },
   "SB": {
     "frequencies": {
-      "AA": {"raise": 100},
-      "KK": {"raise": 100},
-      "QQ": {"raise": 100},
-      "JJ": {"raise": 100},
-      "TT": {"raise": 100},
-      "99": {"raise": 100},
-      "88": {"raise": 100},
-      "77": {"raise": 100},
-      "66": {"raise": 100},
-      "55": {"raise": 100},
-      "44": {"raise": 100},
-      "33": {"raise": 100},
-      "22": {"raise": 100},
-      "AKs": {"raise": 100},
-      "AQs": {"raise": 100},
-      "AJs": {"raise": 100},
-      "ATs": {"raise": 100},
-      "A9s": {"raise": 100},
-      "A8s": {"raise": 100},
-      "A7s": {"raise": 100},
-      "A6s": {"raise": 100},
-      "A5s": {"raise": 100},
-      "A4s": {"raise": 100},
-      "A3s": {"raise": 100},
-      "A2s": {"raise": 100},
-      "KQs": {"raise": 100},
-      "KJs": {"raise": 100},
-      "KTs": {"raise": 100},
-      "K9s": {"raise": 100},
-      "K8s": {"raise": 100},
-      "K7s": {"raise": 100},
-      "K6s": {"raise": 100},
-      "K5s": {"raise": 100},
-      "K4s": {"raise": 100},
-      "K3s": {"raise": 100},
-      "K2s": {"raise": 100},
-      "QJs": {"raise": 100},
-      "QTs": {"raise": 100},
-      "Q9s": {"raise": 100},
-      "Q8s": {"raise": 100},
-      "Q7s": {"raise": 100},
-      "Q6s": {"raise": 100},
-      "Q5s": {"raise": 100},
-      "Q4s": {"raise": 100},
-      "Q3s": {"raise": 100},
-      "Q2s": {"raise": 100},
-      "JTs": {"raise": 100},
-      "J9s": {"raise": 100},
-      "J8s": {"raise": 100},
-      "J7s": {"raise": 100},
-      "J6s": {"raise": 100},
-      "J5s": {"raise": 100},
-      "J4s": {"raise": 100},
-      "T9s": {"raise": 100},
-      "T8s": {"raise": 100},
-      "T7s": {"raise": 100},
-      "T6s": {"raise": 100},
-      "98s": {"raise": 100},
-      "97s": {"raise": 100},
-      "96s": {"raise": 100},
-      "87s": {"raise": 100},
-      "86s": {"raise": 100},
-      "85s": {"raise": 100},
-      "76s": {"raise": 100},
-      "75s": {"raise": 100},
-      "65s": {"raise": 100},
-      "64s": {"raise": 100},
-      "54s": {"raise": 100},
-      "AKo": {"raise": 100},
-      "AQo": {"raise": 100},
-      "AJo": {"raise": 100},
-      "ATo": {"raise": 100},
-      "A9o": {"raise": 100},
-      "A8o": {"raise": 100},
-      "A7o": {"raise": 100},
-      "A6o": {"raise": 100},
-      "A5o": {"raise": 100},
-      "A4o": {"raise": 100},
-      "KQo": {"raise": 100},
-      "KJo": {"raise": 100},
-      "KTo": {"raise": 100},
-      "K9o": {"raise": 100},
-      "K8o": {"raise": 100},
-      "QJo": {"raise": 100},
-      "QTo": {"raise": 100},
-      "Q9o": {"raise": 100},
-      "JTo": {"raise": 100},
-      "J9o": {"raise": 100},
-      "J8o": {"raise": 50},
-      "T9o": {"raise": 100},
-      "T8o": {"raise": 100},
-      "98o": {"raise": 100},
-      "A2o": {"limp": 25},
-      "K7o": {"limp": 25}
+      "AA": {
+        "raise": 100
+      },
+      "KK": {
+        "raise": 100
+      },
+      "QQ": {
+        "raise": 100
+      },
+      "JJ": {
+        "raise": 100
+      },
+      "TT": {
+        "raise": 100
+      },
+      "99": {
+        "raise": 100
+      },
+      "88": {
+        "raise": 100
+      },
+      "77": {
+        "raise": 100
+      },
+      "66": {
+        "raise": 100
+      },
+      "55": {
+        "raise": 100
+      },
+      "44": {
+        "raise": 100
+      },
+      "33": {
+        "raise": 100
+      },
+      "22": {
+        "raise": 100
+      },
+      "AKs": {
+        "raise": 100
+      },
+      "AQs": {
+        "raise": 100
+      },
+      "AJs": {
+        "raise": 100
+      },
+      "ATs": {
+        "raise": 100
+      },
+      "A9s": {
+        "raise": 100
+      },
+      "A8s": {
+        "raise": 100
+      },
+      "A7s": {
+        "raise": 100
+      },
+      "A6s": {
+        "raise": 100
+      },
+      "A5s": {
+        "raise": 100
+      },
+      "A4s": {
+        "raise": 100
+      },
+      "A3s": {
+        "raise": 100
+      },
+      "A2s": {
+        "raise": 100
+      },
+      "KQs": {
+        "raise": 100
+      },
+      "KJs": {
+        "raise": 100
+      },
+      "KTs": {
+        "raise": 100
+      },
+      "K9s": {
+        "raise": 100
+      },
+      "K8s": {
+        "raise": 100
+      },
+      "K7s": {
+        "raise": 100
+      },
+      "K6s": {
+        "raise": 100
+      },
+      "K5s": {
+        "raise": 100
+      },
+      "K4s": {
+        "raise": 100
+      },
+      "K3s": {
+        "raise": 100
+      },
+      "K2s": {
+        "raise": 100
+      },
+      "QJs": {
+        "raise": 100
+      },
+      "QTs": {
+        "raise": 100
+      },
+      "Q9s": {
+        "raise": 100
+      },
+      "Q8s": {
+        "raise": 100
+      },
+      "Q7s": {
+        "raise": 100
+      },
+      "Q6s": {
+        "raise": 100
+      },
+      "Q5s": {
+        "raise": 100
+      },
+      "Q4s": {
+        "raise": 100
+      },
+      "Q3s": {
+        "raise": 100
+      },
+      "Q2s": {
+        "raise": 100
+      },
+      "JTs": {
+        "raise": 100
+      },
+      "J9s": {
+        "raise": 100
+      },
+      "J8s": {
+        "raise": 100
+      },
+      "J7s": {
+        "raise": 100
+      },
+      "J6s": {
+        "raise": 100
+      },
+      "J5s": {
+        "raise": 100
+      },
+      "J4s": {
+        "raise": 100
+      },
+      "T9s": {
+        "raise": 100
+      },
+      "T8s": {
+        "raise": 100
+      },
+      "T7s": {
+        "raise": 100
+      },
+      "T6s": {
+        "raise": 100
+      },
+      "98s": {
+        "raise": 100
+      },
+      "97s": {
+        "raise": 100
+      },
+      "96s": {
+        "raise": 100
+      },
+      "87s": {
+        "raise": 100
+      },
+      "86s": {
+        "raise": 100
+      },
+      "85s": {
+        "raise": 100
+      },
+      "76s": {
+        "raise": 100
+      },
+      "75s": {
+        "raise": 100
+      },
+      "65s": {
+        "raise": 100
+      },
+      "64s": {
+        "raise": 100
+      },
+      "54s": {
+        "raise": 100
+      },
+      "AKo": {
+        "raise": 100
+      },
+      "AQo": {
+        "raise": 100
+      },
+      "AJo": {
+        "raise": 100
+      },
+      "ATo": {
+        "raise": 100
+      },
+      "A9o": {
+        "raise": 100
+      },
+      "A8o": {
+        "raise": 100
+      },
+      "A7o": {
+        "raise": 100
+      },
+      "A6o": {
+        "raise": 100
+      },
+      "A5o": {
+        "raise": 100
+      },
+      "A4o": {
+        "raise": 100
+      },
+      "KQo": {
+        "raise": 100
+      },
+      "KJo": {
+        "raise": 100
+      },
+      "KTo": {
+        "raise": 100
+      },
+      "K9o": {
+        "raise": 100
+      },
+      "K8o": {
+        "raise": 100
+      },
+      "QJo": {
+        "raise": 100
+      },
+      "QTo": {
+        "raise": 100
+      },
+      "Q9o": {
+        "raise": 100
+      },
+      "JTo": {
+        "raise": 100
+      },
+      "J9o": {
+        "raise": 100
+      },
+      "J8o": {
+        "raise": 50
+      },
+      "T9o": {
+        "raise": 100
+      },
+      "T8o": {
+        "raise": 100
+      },
+      "98o": {
+        "raise": 100
+      },
+      "A2o": {
+        "limp": 25
+      },
+      "K7o": {
+        "limp": 25
+      }
     },
     "stats": {
       "total_hands": 169,
       "raise_hands": 90,
       "limp_hands": 2,
       "estimated_vpip_contribution": 6.2,
-      "note": "簡化版: 跟BTN一樣的raise範圍, 保留K7o/A2o limp"
-    }
+      "note": "\u7c21\u5316\u7248: \u8ddfBTN\u4e00\u6a23\u7684raise\u7bc4\u570d, \u4fdd\u7559K7o/A2o limp"
+    },
+    "drillable": [
+      "22",
+      "43s",
+      "53s",
+      "63s",
+      "64s",
+      "74s",
+      "75s",
+      "84s",
+      "85s",
+      "87o",
+      "98o",
+      "A2s",
+      "A4o",
+      "J3s",
+      "J4s",
+      "J7o",
+      "J8o",
+      "K2s",
+      "K8o",
+      "Q2s",
+      "Q3s",
+      "Q9o",
+      "T5s",
+      "T7o",
+      "T8o"
+    ]
   }
 }

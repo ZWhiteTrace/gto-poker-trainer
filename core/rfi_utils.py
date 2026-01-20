@@ -285,37 +285,73 @@ def get_drillable_hands(position: str) -> List[str]:
     drillable |= edge_opens
 
     # 3. Fold-edge hands (one step below the opening boundary)
-    # Find hands that don't open but are close to hands that do
+    # Also check true connectors (gap ≤ 2) up to two steps
     for hand in ALL_HANDS:
         if hand in opening or hand in PREMIUM_HANDS or hand in TRASH_HANDS:
             continue
 
         # Check if this is near the boundary
-        # Pairs: check if the next higher pair opens
+        # Pairs: check if the next higher pair opens (1 step only)
         if len(hand) == 2:
             rank_idx = RANKS.index(hand[0])
-            if rank_idx > 0:
+            if rank_idx >= 1:
                 higher_pair = RANKS[rank_idx - 1] * 2
                 if higher_pair in opening:
                     drillable.add(hand)
 
-        # Suited: check same-prefix hands
+        # Suited: same-prefix (1 step) + true connectors (gap ≤ 2, up to 2 steps)
         elif hand.endswith('s'):
             prefix = hand[0]
-            kicker_idx = RANKS.index(hand[1])
-            if kicker_idx > 0:
-                higher = f"{prefix}{RANKS[kicker_idx - 1]}s"
-                if higher in opening and hand not in opening:
-                    drillable.add(hand)
+            kicker = hand[1]
+            prefix_idx = RANKS.index(prefix)
+            kicker_idx = RANKS.index(kicker)
+            gap = kicker_idx - prefix_idx  # gap between ranks
 
-        # Offsuit: check same-prefix hands
+            # Same-prefix: only 1 step (e.g., K7s → K8s)
+            if kicker_idx >= 1:
+                higher = f"{prefix}{RANKS[kicker_idx - 1]}s"
+                if higher in opening:
+                    drillable.add(hand)
+                    continue
+
+            # True connectors only (gap ≤ 2): up to 2 steps
+            # e.g., 43s (gap=1) → 54s, 65s
+            # e.g., 53s (gap=2) → 64s, 75s
+            if gap <= 2:
+                for step in [1, 2]:
+                    if prefix_idx >= step and kicker_idx >= step:
+                        higher_prefix = RANKS[prefix_idx - step]
+                        higher_kicker = RANKS[kicker_idx - step]
+                        connector = f"{higher_prefix}{higher_kicker}s"
+                        if connector in opening:
+                            drillable.add(hand)
+                            break
+
+        # Offsuit: same-prefix (1 step) + true connectors (gap ≤ 2, up to 2 steps)
         elif hand.endswith('o'):
             prefix = hand[0]
-            kicker_idx = RANKS.index(hand[1])
-            if kicker_idx > 0:
+            kicker = hand[1]
+            prefix_idx = RANKS.index(prefix)
+            kicker_idx = RANKS.index(kicker)
+            gap = kicker_idx - prefix_idx
+
+            # Same-prefix: only 1 step (e.g., K7o → K8o)
+            if kicker_idx >= 1:
                 higher = f"{prefix}{RANKS[kicker_idx - 1]}o"
-                if higher in opening and hand not in opening:
+                if higher in opening:
                     drillable.add(hand)
+                    continue
+
+            # True connectors only (gap ≤ 2): up to 2 steps
+            if gap <= 2:
+                for step in [1, 2]:
+                    if prefix_idx >= step and kicker_idx >= step:
+                        higher_prefix = RANKS[prefix_idx - step]
+                        higher_kicker = RANKS[kicker_idx - step]
+                        connector = f"{higher_prefix}{higher_kicker}o"
+                        if connector in opening:
+                            drillable.add(hand)
+                            break
 
     # Remove premium and trash
     drillable -= PREMIUM_HANDS
