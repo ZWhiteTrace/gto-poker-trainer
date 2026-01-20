@@ -458,6 +458,20 @@ def get_drillable_hands_dynamic(frequency_data: dict, scenario_type: str = "rfi"
                 fold_boundary_hands.append(fold_hand)
                 break
 
+    # 按牌力排序（高牌優先），確保重要的 fold boundary 如 A7o 被選中
+    RANKS = "AKQJT98765432"
+    def hand_strength_key(hand: str) -> tuple:
+        """Return a sort key for hand strength (lower = stronger)"""
+        if len(hand) == 2:  # 對子
+            return (0, RANKS.index(hand[0]), 0)  # 對子最強
+        else:  # 非對子
+            high_rank = RANKS.index(hand[0])
+            low_rank = RANKS.index(hand[1])
+            is_suited = 1 if hand[2] == 's' else 2  # suited 比 offsuit 好
+            return (is_suited, high_rank, low_rank)
+
+    fold_boundary_hands.sort(key=hand_strength_key)
+
     # 限制 fold 邊界牌數量（避免太多垃圾牌）
     MAX_FOLD_BOUNDARY = 15
     interesting_hands.extend(fold_boundary_hands[:MAX_FOLD_BOUNDARY])
@@ -529,7 +543,14 @@ def get_drillable_hands_for_scenario(
     if scenario_type == "rfi":
         return get_drillable_hands(position=hero_position)
 
-    # vs 場景：使用動態計算（混合策略多，適合動態識別邊界牌）
+    # 首先嘗試獲取 JSON 中預定義的 drillable 陣列（包含手動定義的 fold boundaries）
+    json_drillable = evaluator.get_scenario_drillable(
+        scenario_type, hero_position, villain_position, table_format
+    )
+    if json_drillable:
+        return json_drillable
+
+    # 如果沒有預定義陣列，使用動態計算
     freq_data = None
 
     if scenario_type == "vs_rfi" and hero_position and villain_position:
@@ -707,8 +728,29 @@ class PreflopDrill:
             # Check if data exists for this scenario
             range_data = self.evaluator.get_range_for_scenario(scenario, format=self.format)
             if range_data and ("3bet" in range_data or "call" in range_data):
-                # Use interesting hands instead of random to focus on borderline decisions
-                hand = get_interesting_hand(range_data, "vs_rfi")
+                # Get all action hands (3bet or call)
+                action_hands = set(range_data.get("3bet", []) + range_data.get("call", []))
+
+                # Get drillable hands for this VS RFI scenario (includes fold boundary)
+                drillable = set(get_drillable_hands_for_scenario(
+                    self.evaluator, self.format, "vs_rfi",
+                    hero_position=hero_pos.value, villain_position=villain_pos.value
+                ))
+
+                # Prefer action hands that are drillable (80%), else all drillable (20%)
+                drillable_action = list(action_hands & drillable)
+                drillable_list = list(drillable)
+
+                if random.random() < 0.8 and drillable_action:
+                    hand_str = random.choice(drillable_action)
+                elif drillable_list:
+                    hand_str = random.choice(drillable_list)
+                elif action_hands:
+                    hand_str = random.choice(list(action_hands))
+                else:
+                    hand_str = str(random_hand())
+
+                hand = Hand(hand_str)
                 return Spot(hand=hand, scenario=scenario)
 
         # Fallback: return any valid scenario (may have no data)
@@ -728,9 +770,29 @@ class PreflopDrill:
             action_type=ActionType.VS_RFI,
             villain_position=villain_pos,
         )
-        # Fallback also uses interesting hands
+
+        # Fallback: use dynamic drillable hands
         range_data = self.evaluator.get_range_for_scenario(scenario, format=self.format) or {}
-        hand = get_interesting_hand(range_data, "vs_rfi")
+        action_hands = set(range_data.get("3bet", []) + range_data.get("call", []))
+
+        drillable = set(get_drillable_hands_for_scenario(
+            self.evaluator, self.format, "vs_rfi",
+            hero_position=hero_pos.value, villain_position=villain_pos.value
+        ))
+
+        drillable_action = list(action_hands & drillable)
+        drillable_list = list(drillable)
+
+        if random.random() < 0.8 and drillable_action:
+            hand_str = random.choice(drillable_action)
+        elif drillable_list:
+            hand_str = random.choice(drillable_list)
+        elif action_hands:
+            hand_str = random.choice(list(action_hands))
+        else:
+            hand_str = str(random_hand())
+
+        hand = Hand(hand_str)
         return Spot(hand=hand, scenario=scenario)
 
     def _generate_vs_3bet_spot(self) -> Spot:
@@ -778,10 +840,22 @@ class PreflopDrill:
                 # Get hero's RFI range - hand must be in opening range
                 rfi_scenario = Scenario(hero_position=hero_pos, action_type=ActionType.RFI)
                 rfi_range = self.evaluator.get_range_for_scenario(rfi_scenario, format=self.format)
-                rfi_hands = rfi_range.get("raise", [])
+                rfi_hands = set(rfi_range.get("raise", []))
 
-                if rfi_hands:
-                    hand_str = random.choice(rfi_hands)
+                # Get drillable hands for this VS 3-Bet scenario (includes fold boundary)
+                drillable = set(get_drillable_hands_for_scenario(
+                    self.evaluator, self.format, "vs_3bet",
+                    hero_position=hero_pos.value, villain_position=villain_pos.value
+                ))
+
+                # Intersect: hands must be in RFI range AND be drillable
+                candidate_hands = list(rfi_hands & drillable)
+                if not candidate_hands:
+                    # Fallback to all RFI hands if no intersection
+                    candidate_hands = list(rfi_hands)
+
+                if candidate_hands:
+                    hand_str = random.choice(candidate_hands)
                     hand = Hand(hand_str)
                     return Spot(hand=hand, scenario=scenario)
 
@@ -798,12 +872,20 @@ class PreflopDrill:
                 later_positions = filtered
         villain_pos = random.choice(later_positions)
 
-        # Get hand from RFI range
+        # Get hand from RFI range, prefer drillable hands
         rfi_scenario = Scenario(hero_position=hero_pos, action_type=ActionType.RFI)
         rfi_range = self.evaluator.get_range_for_scenario(rfi_scenario, format=self.format)
-        rfi_hands = rfi_range.get("raise", [])
-        if rfi_hands:
-            hand_str = random.choice(rfi_hands)
+        rfi_hands = set(rfi_range.get("raise", []))
+
+        # Try to use drillable hands
+        drillable = set(get_drillable_hands_for_scenario(
+            self.evaluator, self.format, "vs_3bet",
+            hero_position=hero_pos.value, villain_position=villain_pos.value
+        ))
+        candidate_hands = list(rfi_hands & drillable) or list(rfi_hands)
+
+        if candidate_hands:
+            hand_str = random.choice(candidate_hands)
             hand = Hand(hand_str)
         else:
             hand = random_hand()
@@ -863,10 +945,22 @@ class PreflopDrill:
                     villain_position=villain_pos,
                 )
                 vs_rfi_range = self.evaluator.get_range_for_scenario(vs_rfi_scenario, format=self.format)
-                threbet_hands = vs_rfi_range.get("3bet", [])
+                threbet_hands = set(vs_rfi_range.get("3bet", []))
 
-                if threbet_hands:
-                    hand_str = random.choice(threbet_hands)
+                # Get drillable hands for this VS 4-Bet scenario (includes fold boundary)
+                drillable = set(get_drillable_hands_for_scenario(
+                    self.evaluator, self.format, "vs_4bet",
+                    hero_position=hero_pos.value, villain_position=villain_pos.value
+                ))
+
+                # Intersect: hands must be in 3-bet range AND be drillable
+                candidate_hands = list(threbet_hands & drillable)
+                if not candidate_hands:
+                    # Fallback to all 3-bet hands if no intersection
+                    candidate_hands = list(threbet_hands)
+
+                if candidate_hands:
+                    hand_str = random.choice(candidate_hands)
                     hand = Hand(hand_str)
                     return Spot(hand=hand, scenario=scenario)
 
@@ -882,16 +976,24 @@ class PreflopDrill:
                 earlier_positions = filtered
         villain_pos = random.choice(earlier_positions)
 
-        # Get hand from 3-bet range
+        # Get hand from 3-bet range, prefer drillable hands
         vs_rfi_scenario = Scenario(
             hero_position=hero_pos,
             action_type=ActionType.VS_RFI,
             villain_position=villain_pos,
         )
         vs_rfi_range = self.evaluator.get_range_for_scenario(vs_rfi_scenario, format=self.format)
-        threbet_hands = vs_rfi_range.get("3bet", [])
-        if threbet_hands:
-            hand_str = random.choice(threbet_hands)
+        threbet_hands = set(vs_rfi_range.get("3bet", []))
+
+        # Try to use drillable hands
+        drillable = set(get_drillable_hands_for_scenario(
+            self.evaluator, self.format, "vs_4bet",
+            hero_position=hero_pos.value, villain_position=villain_pos.value
+        ))
+        candidate_hands = list(threbet_hands & drillable) or list(threbet_hands)
+
+        if candidate_hands:
+            hand_str = random.choice(candidate_hands)
             hand = Hand(hand_str)
         else:
             hand = random_hand()

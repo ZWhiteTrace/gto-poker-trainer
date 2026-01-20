@@ -113,6 +113,33 @@ class Evaluator:
         position_data = vs_4bet_freq.get(key, {})
         return position_data.get("frequencies", {})
 
+    def get_scenario_drillable(self, scenario_type: str, hero_position: str, villain_position: str = None, format: str = "6max") -> list:
+        """Get pre-defined drillable hands from JSON for a scenario."""
+        frequencies = self.load_frequencies(format)
+        hero = hero_position.upper() if isinstance(hero_position, str) else hero_position.value
+
+        if scenario_type == "rfi":
+            rfi_freq = frequencies.get("rfi", {})
+            position_data = rfi_freq.get(hero, {})
+            return position_data.get("drillable", [])
+
+        villain = villain_position.upper() if isinstance(villain_position, str) else villain_position.value
+        key = f"{hero}_vs_{villain}"
+
+        if scenario_type == "vs_rfi":
+            vs_rfi_freq = frequencies.get("vs_rfi", {})
+            position_data = vs_rfi_freq.get(key, {})
+        elif scenario_type == "vs_3bet":
+            vs_3bet_freq = frequencies.get("vs_3bet", {})
+            position_data = vs_3bet_freq.get(key, {})
+        elif scenario_type == "vs_4bet":
+            vs_4bet_freq = frequencies.get("vs_4bet", {})
+            position_data = vs_4bet_freq.get(key, {})
+        else:
+            return []
+
+        return position_data.get("drillable", [])
+
     def get_hand_frequencies(self, hand: Hand, scenario: Scenario, format: str = "6max") -> Dict[str, int]:
         """
         Get frequencies for all actions for a hand in a scenario.
