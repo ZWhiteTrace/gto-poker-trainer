@@ -5,7 +5,6 @@ Provides file upload and leak analysis display for Streamlit.
 import streamlit as st
 import sys
 from pathlib import Path
-import io
 
 # Add project root to path
 project_root = Path(__file__).parent.parent.parent
@@ -72,96 +71,6 @@ def display_hand_analysis_page():
         with tab2:
             _display_postflop_analysis(postflop_report)
 
-
-def _display_preflop_analysis(report, analyzer, show_detailed):
-    """Display preflop analysis results."""
-    # Display summary
-    st.subheader("📊 翻前分析摘要")
-
-        col1, col2, col3, col4 = st.columns(4)
-        with col1:
-            st.metric("總手數", report.total_hands)
-        with col2:
-            st.metric("已分析", report.analyzed_hands)
-        with col3:
-            mistake_rate = report.mistakes / report.analyzed_hands * 100 if report.analyzed_hands > 0 else 0
-            st.metric("錯誤數", f"{report.mistakes} ({mistake_rate:.1f}%)")
-        with col4:
-            st.metric("估計 EV 損失", f"{report.total_ev_loss:.1f} bb")
-
-        # Position breakdown
-        st.subheader("📍 位置分析")
-
-        position_data = []
-        for pos in ["UTG", "HJ", "CO", "BTN", "SB", "BB"]:
-            if pos in report.position_stats:
-                data = report.position_stats[pos]
-                rate = data["mistakes"] / data["total"] * 100 if data["total"] > 0 else 0
-                position_data.append({
-                    "位置": pos,
-                    "手數": data["total"],
-                    "錯誤": data["mistakes"],
-                    "錯誤率": f"{rate:.1f}%",
-                    "EV損失": f"{data['ev_loss']:.1f}bb"
-                })
-
-        if position_data:
-            st.table(position_data)
-
-        # Top leaks
-        if report.top_leaks:
-            st.subheader("🔴 主要漏洞")
-
-            for i, leak in enumerate(report.top_leaks[:10], 1):
-                with st.expander(f"{i}. {leak['description']} (EV -{leak['ev_loss']:.1f}bb)"):
-                    st.write(f"**樣本**: {leak['total_hands']} 手")
-                    st.write(f"**錯誤**: {leak['mistakes']} ({leak['mistake_rate']:.0f}%)")
-
-                    if leak["type"] == "scenario" and leak.get("common_mistakes"):
-                        st.write("**常見錯誤動作**:")
-                        for action, count in leak["common_mistakes"].items():
-                            st.write(f"  - {action}: {count} 次")
-
-        # Detailed mistakes
-        if show_detailed:
-            st.subheader("📋 詳細錯誤列表")
-
-            mistakes = [d for d in analyzer.decisions if d.is_mistake]
-
-            if mistakes:
-                for i, decision in enumerate(mistakes[:50], 1):
-                    villain_str = f" vs {decision.villain_position}" if decision.villain_position else ""
-                    with st.expander(
-                        f"#{decision.hand_id} | {decision.hero_position} {decision.hero_hand} | "
-                        f"{decision.scenario.value}{villain_str}"
-                    ):
-                        col1, col2 = st.columns(2)
-                        with col1:
-                            st.write(f"**你的動作**: {decision.hero_action.value}")
-                            st.write(f"**EV 損失**: {decision.ev_loss:.1f} bb")
-                        with col2:
-                            st.write("**GTO 建議**:")
-                            for action, freq in decision.gto_frequencies.items():
-                                if freq > 0:
-                                    st.write(f"  - {action}: {freq}%")
-            else:
-                st.info("沒有找到錯誤決策 - 太棒了！")
-
-        # Export option
-        st.subheader("💾 匯出報告")
-
-        if st.button("生成文字報告"):
-            report_text = format_leak_report(report)
-            st.code(report_text, language=None)
-
-            # Download button
-            st.download_button(
-                label="下載報告",
-                data=report_text,
-                file_name="preflop_analysis_report.txt",
-                mime="text/plain"
-            )
-
     else:
         # Show instructions
         st.info("""
@@ -183,7 +92,6 @@ def _display_preflop_analysis(report, analyzer, show_detailed):
         st.markdown("沒有手牌歷史？試試範例數據：")
 
         if st.button("載入範例分析"):
-            # Create mock analysis result
             st.session_state.demo_analysis = True
             st.rerun()
 
@@ -191,58 +99,93 @@ def _display_preflop_analysis(report, analyzer, show_detailed):
             _show_demo_analysis()
 
 
-def _show_demo_analysis():
-    """Show demo analysis with mock data."""
-    st.subheader("📊 範例分析結果")
-
-    st.info("這是模擬數據，用於展示分析功能")
+def _display_preflop_analysis(report, analyzer, show_detailed):
+    """Display preflop analysis results."""
+    st.subheader("📊 翻前分析摘要")
 
     col1, col2, col3, col4 = st.columns(4)
     with col1:
-        st.metric("總手數", 1000)
+        st.metric("總手數", report.total_hands)
     with col2:
-        st.metric("已分析", 876)
+        st.metric("已分析", report.analyzed_hands)
     with col3:
-        st.metric("錯誤數", "74 (8.4%)")
+        mistake_rate = report.mistakes / report.analyzed_hands * 100 if report.analyzed_hands > 0 else 0
+        st.metric("錯誤數", f"{report.mistakes} ({mistake_rate:.1f}%)")
     with col4:
-        st.metric("估計 EV 損失", "52.3 bb")
+        st.metric("估計 EV 損失", f"{report.total_ev_loss:.1f} bb")
 
+    # Position breakdown
     st.subheader("📍 位置分析")
-    demo_data = [
-        {"位置": "UTG", "手數": 145, "錯誤": 8, "錯誤率": "5.5%", "EV損失": "6.2bb"},
-        {"位置": "HJ", "手數": 152, "錯誤": 10, "錯誤率": "6.6%", "EV損失": "7.8bb"},
-        {"位置": "CO", "手數": 158, "錯誤": 9, "錯誤率": "5.7%", "EV損失": "5.4bb"},
-        {"位置": "BTN", "手數": 165, "錯誤": 7, "錯誤率": "4.2%", "EV損失": "4.1bb"},
-        {"位置": "SB", "手數": 128, "錯誤": 12, "錯誤率": "9.4%", "EV損失": "9.8bb"},
-        {"位置": "BB", "手數": 128, "錯誤": 28, "錯誤率": "21.9%", "EV損失": "19.0bb"},
-    ]
-    st.table(demo_data)
 
-    st.subheader("🔴 主要漏洞")
+    position_data = []
+    for pos in ["UTG", "HJ", "CO", "BTN", "SB", "BB"]:
+        if pos in report.position_stats:
+            data = report.position_stats[pos]
+            rate = data["mistakes"] / data["total"] * 100 if data["total"] > 0 else 0
+            position_data.append({
+                "位置": pos,
+                "手數": data["total"],
+                "錯誤": data["mistakes"],
+                "錯誤率": f"{rate:.1f}%",
+                "EV損失": f"{data['ev_loss']:.1f}bb"
+            })
 
-    with st.expander("1. vs_rfi_BB_vs_BTN (EV -8.5bb)"):
-        st.write("**樣本**: 89 手")
-        st.write("**錯誤**: 19 (21%)")
-        st.write("**常見錯誤動作**:")
-        st.write("  - fold: 15 次 (K8o-KTo, Q9o 等應該 call 的牌)")
-        st.write("  - call: 4 次 (72o, 83o 等應該 fold 的牌)")
+    if position_data:
+        st.table(position_data)
 
-    with st.expander("2. vs_rfi_BB_vs_CO (EV -5.2bb)"):
-        st.write("**樣本**: 67 手")
-        st.write("**錯誤**: 12 (18%)")
-        st.write("**常見錯誤動作**:")
-        st.write("  - fold: 10 次")
-        st.write("  - call: 2 次")
+    # Top leaks
+    if report.top_leaks:
+        st.subheader("🔴 主要漏洞")
 
-    with st.expander("3. rfi_SB (EV -4.8bb)"):
-        st.write("**樣本**: 128 手")
-        st.write("**錯誤**: 9 (7%)")
-        st.write("**常見錯誤動作**:")
-        st.write("  - fold: 6 次 (應該 raise 的牌)")
-        st.write("  - raise: 3 次 (應該 fold 的牌)")
+        for i, leak in enumerate(report.top_leaks[:10], 1):
+            with st.expander(f"{i}. {leak['description']} (EV -{leak['ev_loss']:.1f}bb)"):
+                st.write(f"**樣本**: {leak['total_hands']} 手")
+                st.write(f"**錯誤**: {leak['mistakes']} ({leak['mistake_rate']:.0f}%)")
 
-    st.markdown("---")
-    st.markdown("*上傳你自己的手牌歷史來獲得真實分析！*")
+                if leak["type"] == "scenario" and leak.get("common_mistakes"):
+                    st.write("**常見錯誤動作**:")
+                    for action, count in leak["common_mistakes"].items():
+                        st.write(f"  - {action}: {count} 次")
+
+    # Detailed mistakes
+    if show_detailed:
+        st.subheader("📋 詳細錯誤列表")
+
+        mistakes = [d for d in analyzer.decisions if d.is_mistake]
+
+        if mistakes:
+            for i, decision in enumerate(mistakes[:50], 1):
+                villain_str = f" vs {decision.villain_position}" if decision.villain_position else ""
+                with st.expander(
+                    f"#{decision.hand_id} | {decision.hero_position} {decision.hero_hand} | "
+                    f"{decision.scenario.value}{villain_str}"
+                ):
+                    col1, col2 = st.columns(2)
+                    with col1:
+                        st.write(f"**你的動作**: {decision.hero_action.value}")
+                        st.write(f"**EV 損失**: {decision.ev_loss:.1f} bb")
+                    with col2:
+                        st.write("**GTO 建議**:")
+                        for action, freq in decision.gto_frequencies.items():
+                            if freq > 0:
+                                st.write(f"  - {action}: {freq}%")
+        else:
+            st.info("沒有找到錯誤決策 - 太棒了！")
+
+    # Export option
+    st.subheader("💾 匯出報告")
+
+    if st.button("生成文字報告", key="preflop_export"):
+        report_text = format_leak_report(report)
+        st.code(report_text, language=None)
+
+        st.download_button(
+            label="下載報告",
+            data=report_text,
+            file_name="preflop_analysis_report.txt",
+            mime="text/plain",
+            key="preflop_download"
+        )
 
 
 def _display_postflop_analysis(report):
@@ -371,3 +314,57 @@ def _display_postflop_analysis(report):
             mime="text/plain",
             key="postflop_download"
         )
+
+
+def _show_demo_analysis():
+    """Show demo analysis with mock data."""
+    st.subheader("📊 範例分析結果")
+
+    st.info("這是模擬數據，用於展示分析功能")
+
+    col1, col2, col3, col4 = st.columns(4)
+    with col1:
+        st.metric("總手數", 1000)
+    with col2:
+        st.metric("已分析", 876)
+    with col3:
+        st.metric("錯誤數", "74 (8.4%)")
+    with col4:
+        st.metric("估計 EV 損失", "52.3 bb")
+
+    st.subheader("📍 位置分析")
+    demo_data = [
+        {"位置": "UTG", "手數": 145, "錯誤": 8, "錯誤率": "5.5%", "EV損失": "6.2bb"},
+        {"位置": "HJ", "手數": 152, "錯誤": 10, "錯誤率": "6.6%", "EV損失": "7.8bb"},
+        {"位置": "CO", "手數": 158, "錯誤": 9, "錯誤率": "5.7%", "EV損失": "5.4bb"},
+        {"位置": "BTN", "手數": 165, "錯誤": 7, "錯誤率": "4.2%", "EV損失": "4.1bb"},
+        {"位置": "SB", "手數": 128, "錯誤": 12, "錯誤率": "9.4%", "EV損失": "9.8bb"},
+        {"位置": "BB", "手數": 128, "錯誤": 28, "錯誤率": "21.9%", "EV損失": "19.0bb"},
+    ]
+    st.table(demo_data)
+
+    st.subheader("🔴 主要漏洞")
+
+    with st.expander("1. vs_rfi_BB_vs_BTN (EV -8.5bb)"):
+        st.write("**樣本**: 89 手")
+        st.write("**錯誤**: 19 (21%)")
+        st.write("**常見錯誤動作**:")
+        st.write("  - fold: 15 次 (K8o-KTo, Q9o 等應該 call 的牌)")
+        st.write("  - call: 4 次 (72o, 83o 等應該 fold 的牌)")
+
+    with st.expander("2. vs_rfi_BB_vs_CO (EV -5.2bb)"):
+        st.write("**樣本**: 67 手")
+        st.write("**錯誤**: 12 (18%)")
+        st.write("**常見錯誤動作**:")
+        st.write("  - fold: 10 次")
+        st.write("  - call: 2 次")
+
+    with st.expander("3. rfi_SB (EV -4.8bb)"):
+        st.write("**樣本**: 128 手")
+        st.write("**錯誤**: 9 (7%)")
+        st.write("**常見錯誤動作**:")
+        st.write("  - fold: 6 次 (應該 raise 的牌)")
+        st.write("  - raise: 3 次 (應該 fold 的牌)")
+
+    st.markdown("---")
+    st.markdown("*上傳你自己的手牌歷史來獲得真實分析！*")
