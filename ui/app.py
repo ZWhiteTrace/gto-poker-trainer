@@ -29,11 +29,12 @@ from ui.components.storage import save_progress_to_storage, load_progress_from_s
 from ui.components.rfi_chart import display_rfi_charts
 from ui.components.push_fold_chart import display_push_fold_chart, display_push_fold_comparison, display_push_fold_drill
 from ui.components.hand_review import display_hand_review_page
+from ui.components.hand_analysis import display_hand_analysis_page
 # Achievements system removed for simplification
 
 # Page URL mappings
-PAGE_KEYS = ["drill", "range", "pushfold", "review", "postflop", "equity", "outs", "ev", "learning", "stats"]
-PAGE_NAMES = ["Drill Mode", "Range Viewer", "Push/Fold", "Hand Review", "Postflop", "Equity Quiz", "Outs Quiz", "EV Quiz", "Learning", "Statistics"]
+PAGE_KEYS = ["drill", "range", "pushfold", "review", "analysis", "postflop", "equity", "outs", "ev", "learning", "stats"]
+PAGE_NAMES = ["Drill Mode", "Range Viewer", "Push/Fold", "Hand Review", "Hand Analysis", "Postflop", "Equity Quiz", "Outs Quiz", "EV Quiz", "Learning", "Statistics"]
 
 # Equity breakdown data for vs 4-bet scenarios
 # Shows equity of common hands against typical 4-bet range hands
@@ -795,6 +796,8 @@ def main():
         push_fold_page()
     elif page == "Hand Review":
         hand_review_page()
+    elif page == "Hand Analysis":
+        display_hand_analysis_page()
     elif page == "Postflop":
         postflop_page()
     elif page == "Equity Quiz":

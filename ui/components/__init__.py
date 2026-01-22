@@ -12,6 +12,7 @@ from .position_selector import (
     display_position_selector,
     display_villain_selector,
 )
+from .hand_analysis import display_hand_analysis_page
 
 __all__ = [
     "display_range_grid", "display_simple_grid", "create_range_grid",
@@ -21,4 +22,5 @@ __all__ = [
     "save_progress_to_storage", "load_progress_from_storage",
     "init_storage_sync", "clear_local_storage",
     "display_position_selector", "display_villain_selector",
+    "display_hand_analysis_page",
 ]
