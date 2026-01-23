@@ -9,10 +9,10 @@
       "BTN": "2.5bb",
       "SB": "3bb"
     },
-    "source": "GTOWizard NL50 100BB - Simplified for Memory",
-    "note": "Simplified GTO with drillable hands for each position",
-    "version": "5.0",
-    "last_updated": "2026-01-20",
+    "source": "GTOWizard NL50 100BB - Simplified for Memory (Tightened UTG/HJ)",
+    "note": "UTG/HJ tightened: removed dominated/marginal hands. CO/BTN/SB unchanged.",
+    "version": "6.0",
+    "last_updated": "2026-01-23",
     "frequency_threshold": {
       "always": 100,
       "mixed": 50
@@ -21,16 +21,10 @@
       "utg_key_edges": [
         "55",
         "A2s",
-        "K8s",
-        "Q9s",
-        "J9s",
+        "K9s",
         "T9s",
-        "98s",
-        "87s",
-        "76s",
-        "65s",
-        "KJo",
-        "ATo"
+        "ATo",
+        "KQo"
       ],
       "btn_key_edges": [
         "K2s",
@@ -44,7 +38,6 @@
         "A4o",
         "K8o",
         "Q9o",
-        "J8o",
         "T8o",
         "98o"
       ],
@@ -163,38 +156,17 @@
       "K9s": {
         "raise": 100
       },
-      "K8s": {
-        "raise": 100
-      },
       "QJs": {
         "raise": 100
       },
       "QTs": {
         "raise": 100
       },
-      "Q9s": {
-        "raise": 100
-      },
       "JTs": {
-        "raise": 100
-      },
-      "J9s": {
         "raise": 100
       },
       "T9s": {
         "raise": 100
-      },
-      "98s": {
-        "raise": 50
-      },
-      "87s": {
-        "raise": 50
-      },
-      "76s": {
-        "raise": 50
-      },
-      "65s": {
-        "raise": 50
       },
       "AKo": {
         "raise": 100
@@ -210,32 +182,23 @@
       },
       "KQo": {
         "raise": 100
-      },
-      "KJo": {
-        "raise": 100
       }
     },
     "stats": {
       "total_hands": 169,
-      "raise_hands": 42,
-      "estimated_vpip_contribution": 2.6,
-      "note": "\u7c21\u5316\u7248: \u79fb\u9664K7s-K5s/Q8s/A9o/KTo/QTo/QJo, \u52a0\u5165A2s/J9s/T9s/55, \u9023\u63a5\u724c98s-65s\u752850%"
+      "raise_hands": 35,
+      "estimated_vpip_contribution": 2.2,
+      "note": "收緊版: 移除K8s/Q9s/J9s/KJo/98s-65s, 保留T9s/ATo/全部suited aces"
     },
     "drillable": [
       "44",
-      "54s",
       "55",
-      "65s",
-      "76s",
-      "87s",
-      "98o",
-      "98s",
       "A2s",
       "ATo",
-      "J9s",
       "JTo",
       "K7s",
       "K8s",
+      "K9s",
       "KJo",
       "KTo",
       "Q9s",
@@ -354,9 +317,6 @@
       "T9s": {
         "raise": 100
       },
-      "T8s": {
-        "raise": 100
-      },
       "98s": {
         "raise": 100
       },
@@ -367,9 +327,6 @@
         "raise": 100
       },
       "65s": {
-        "raise": 100
-      },
-      "54s": {
         "raise": 100
       },
       "AKo": {
@@ -389,16 +346,13 @@
       },
       "KJo": {
         "raise": 100
-      },
-      "QJo": {
-        "raise": 100
       }
     },
     "stats": {
       "total_hands": 169,
-      "raise_hands": 48,
-      "estimated_vpip_contribution": 3.2,
-      "note": "\u7c21\u5316\u7248: \u79fb\u9664K6s-K4s/Q8s/J8s/A9o/KTo/QTo/JTo, \u52a0\u516533/T8s/\u9023\u63a5\u724c\u5168100%"
+      "raise_hands": 45,
+      "estimated_vpip_contribution": 3.0,
+      "note": "收緊版: 移除54s/T8s/QJo, 保留98s-65s全100%"
     },
     "drillable": [
       "22",
@@ -917,7 +871,7 @@
         "raise": 100
       },
       "J8o": {
-        "raise": 50
+        "raise": 100
       },
       "T9o": {
         "raise": 100
@@ -933,7 +887,7 @@
       "total_hands": 169,
       "raise_hands": 90,
       "estimated_vpip_contribution": 6.0,
-      "note": "\u7c21\u5316\u7248: \u52a0\u5165K2s/Q3s/Q2s/J5s/J4s/85s/64s/K8o/T8o/98o, J8o\u752850%, \u79fb\u9664A3o"
+      "note": "\u7c21\u5316\u7248: \u52a0\u5165K2s/Q3s/Q2s/J5s/J4s/85s/64s/K8o/T8o/98o/J8o, \u79fb\u9664A3o"
     },
     "drillable": [
       "22",
@@ -952,7 +906,6 @@
       "J3s",
       "J4s",
       "J7o",
-      "J8o",
       "K2s",
       "K8o",
       "Q2s",
@@ -1230,7 +1183,7 @@
         "raise": 100
       },
       "J8o": {
-        "raise": 50
+        "raise": 100
       },
       "T9o": {
         "raise": 100
@@ -1253,7 +1206,7 @@
       "raise_hands": 90,
       "limp_hands": 0,
       "estimated_vpip_contribution": 6.0,
-      "note": "簡化版: 跟BTN一樣的raise範圍，無 limp - Raise or Fold"
+      "note": "簡化版: 跟BTN一樣的raise範圍(含J8o 100%)，無 limp - Raise or Fold"
     },
     "drillable": [
       "22",
@@ -1272,7 +1225,6 @@
       "J3s",
       "J4s",
       "J7o",
-      "J8o",
       "K2s",
       "K8o",
       "Q2s",

@@ -95,14 +95,14 @@ TRASH_HANDS = {
 BASE_EXCLUDED_HANDS = PREMIUM_HANDS | TRASH_HANDS
 
 # ============================================================================
-# 位置專屬排除列表 (簡化版 v4.0)
+# 位置專屬排除列表 (收緊版 v6.0)
 #
-# 簡化版範圍：
-#   UTG: 55+, A2s+, K8s+, Q9s+, JTs, J9s, T9s, KJo+, ATo+ (50%: 98s/87s/76s/65s)
-#   HJ: 33+, A2s+, K7s+, Q9s+, J9s+, T8s-54s, KJo+, ATo+
+# 收緊版範圍：
+#   UTG: 55+, A2s+, K9s+, QJs-QTs, JTs, T9s, ATo+, KQo
+#   HJ: 33+, A2s+, K7s+, Q9s+, J9s+, T9s, 98s-65s, KJo+, ATo+
 #   CO: 22+, A2s+, K3s+, Q6s+, J7s+, T7s+, 97s-54s, 86s, KTo+, QTo+, JTo, A8o+
 #   BTN: 22+, A2s+, K2s+, Q2s+, J4s+, T6s+, 96s+, 85s+, 75s+, 64s+, 54s,
-#        K8o+, Q9o+, J9o+, T8o+, 98o, A4o+ (50%: J8o)
+#        K8o+, Q9o+, J8o+, T8o+, 98o, A4o+
 #   SB: 同 BTN
 # ============================================================================
 
@@ -111,21 +111,20 @@ POSITION_EXCLUDED_HANDS = {
         # === 明顯 100% 牌（不用練）===
         "JJ", "TT", "99", "88", "77", "66",  # 66+ 明顯
         "AQs", "AJs", "ATs", "A9s", "A8s", "A7s", "A6s", "A5s", "A4s", "A3s",  # A3s+ 明顯
-        "KQs", "KJs", "KTs", "K9s",  # K9s+ 明顯 (K8s 是邊緣，要考)
-        "QJs", "QTs",  # QTs+ 明顯 (Q9s 是邊緣，要考)
+        "KQs", "KJs", "KTs",  # KTs+ 明顯 (K9s 是邊緣，要考)
+        "QJs",  # QJs 明顯 (QTs 是邊緣，要考)
         "JTs",  # JTs 明顯
         "AQo", "AJo",  # AJo+ 明顯
-        "KQo",  # KQo 明顯
         # === 遠離邊界的 0% 牌（不用練）===
-        # 同花 K (K7s 以下都是 0%，但 K7s 是邊緣要考)
+        # 同花 K (K8s 以下都是 0%，但 K8s 是邊緣要考)
         "K6s", "K5s", "K4s", "K3s", "K2s",  # 不考
         # 同花 Q (Q8s 以下是 0%)
-        "Q8s", "Q7s", "Q6s", "Q5s", "Q4s", "Q3s", "Q2s",  # Q7s 不考
-        # 同花 J (J8s 以下是 0%)
+        "Q8s", "Q7s", "Q6s", "Q5s", "Q4s", "Q3s", "Q2s",
+        # 同花 J (J8s 以下是 0%, J9s 是 fold 邊緣要考)
         "J8s", "J7s", "J6s", "J5s", "J4s", "J3s", "J2s",
         # 同花 T (T8s 以下是 0%)
         "T8s", "T7s", "T6s", "T5s", "T4s", "T3s",
-        # 同花隔張
+        # 同花連張 (98s-65s 全 fold，但要考)
         "97s", "96s", "95s",
         "86s", "85s", "84s",
         "75s", "74s",
@@ -134,9 +133,9 @@ POSITION_EXCLUDED_HANDS = {
         "33", "22",  # 小對子 0%
         "32s", "42s", "52s",
         # === Offsuit 牌（大部分不考）===
-        "A9o", "A8o", "A7o", "A6o", "A5o", "A4o", "A3o", "A2o",  # A9o 不考
+        "A9o", "A8o", "A7o", "A6o", "A5o", "A4o", "A3o", "A2o",
         "K9o", "K8o", "K7o", "K6o", "K5o", "K4o", "K3o", "K2o",  # 但 KTo 要考
-        "QTo", "Q9o", "Q8o", "Q7o", "Q6o", "Q5o", "Q4o", "Q3o", "Q2o",  # QTo 不考
+        "QTo", "Q9o", "Q8o", "Q7o", "Q6o", "Q5o", "Q4o", "Q3o", "Q2o",
         "J9o", "J8o", "J7o", "J6o", "J5o", "J4o", "J3o", "J2o",  # 但 JTo 要考
         "T8o", "T7o", "T6o", "T5o", "T4o", "T3o", "T2o",
         "97o", "96o", "95o", "94o", "93o", "92o",
@@ -146,11 +145,13 @@ POSITION_EXCLUDED_HANDS = {
         "54o", "53o", "43o", "32o", "42o", "52o",
     },
     # === UTG 要考的牌 (不在排除列表) ===
-    # K8s (100% 邊緣), K7s (0% 邊緣), Q9s (100% 邊緣)
-    # J9s (100%), T9s (100%), 55 (100% 邊緣)
-    # 98s/87s/76s/65s (50% 混合)
-    # KJo (100% 邊緣), ATo (100% 邊緣)
-    # JTo (0% 邊緣), KTo (0% 邊緣)
+    # K9s (100% 邊緣 open), K8s (0% 邊緣 fold), K7s (0%)
+    # QTs (100% 邊緣 open), Q9s (0% 邊緣 fold)
+    # T9s (100% 邊緣 open), J9s (0% 邊緣 fold)
+    # 55 (100% 邊緣), 44 (0% 邊緣)
+    # 98s/87s/76s/65s (0% fold 邊緣)
+    # ATo (100% 邊緣), KQo (100% 邊緣)
+    # KJo (0% 邊緣), JTo (0% 邊緣), KTo (0% 邊緣)
 
     "HJ": BASE_EXCLUDED_HANDS | {
         # === 明顯 100% 牌（不用練）===
@@ -160,12 +161,13 @@ POSITION_EXCLUDED_HANDS = {
         "QJs", "QTs",  # QTs+ 明顯 (Q9s 是邊緣，要考)
         "JTs",  # JTs 明顯
         "T9s",  # T9s 明顯
+        "98s", "87s", "76s", "65s",  # 98s-65s 明顯 (54s 是 fold 邊緣，要考)
         "AQo", "AJo", "ATo",  # ATo+ 明顯
         "KQo",  # KQo 明顯 (KJo 是邊緣，要考)
         # === 遠離邊界的 0% 牌（不用練）===
         "K5s", "K4s", "K3s", "K2s",  # 不考
-        "Q8s", "Q7s", "Q6s", "Q5s", "Q4s", "Q3s", "Q2s",  # Q7s 不考
-        "J7s", "J6s", "J5s", "J4s", "J3s", "J2s",  # J7s 不考
+        "Q8s", "Q7s", "Q6s", "Q5s", "Q4s", "Q3s", "Q2s",
+        "J7s", "J6s", "J5s", "J4s", "J3s", "J2s",
         "T6s", "T5s", "T4s", "T3s",
         "96s", "95s",
         "86s", "85s", "84s",
@@ -175,9 +177,9 @@ POSITION_EXCLUDED_HANDS = {
         "32s", "42s", "52s",
         # === Offsuit 牌 ===
         "A9o", "A8o", "A7o", "A6o", "A5o", "A4o", "A3o", "A2o",
-        "K9o", "K8o", "K7o", "K6o", "K5o", "K4o", "K3o", "K2o",  # K9o 不考
-        "Q9o", "Q8o", "Q7o", "Q6o", "Q5o", "Q4o", "Q3o", "Q2o",  # Q9o 不考
-        "J9o", "J8o", "J7o", "J6o", "J5o", "J4o", "J3o", "J2o",  # J9o 不考
+        "K9o", "K8o", "K7o", "K6o", "K5o", "K4o", "K3o", "K2o",
+        "Q9o", "Q8o", "Q7o", "Q6o", "Q5o", "Q4o", "Q3o", "Q2o",
+        "J9o", "J8o", "J7o", "J6o", "J5o", "J4o", "J3o", "J2o",
         "T9o", "T8o", "T7o", "T6o", "T5o", "T4o", "T3o", "T2o",
         "98o", "97o", "96o", "95o", "94o", "93o", "92o",
         "87o", "86o", "85o", "84o", "83o", "82o",
@@ -187,10 +189,10 @@ POSITION_EXCLUDED_HANDS = {
     },
     # === HJ 要考的牌 ===
     # K7s (100% 邊緣), K6s (0% 邊緣), Q9s (100% 邊緣)
-    # J9s (100%), T8s (100%), 98s-54s (100%)
+    # J9s (100%), T8s (0% fold 邊緣)
+    # 54s (0% fold 邊緣), 43s (0% 邊緣)
     # 33 (100% 邊緣), 22 (0% 邊緣)
-    # 43s (0% 邊緣)
-    # KJo (100% 邊緣)
+    # KJo (100% 邊緣), QJo (0% fold 邊緣)
 
     "CO": BASE_EXCLUDED_HANDS | {
         # === 明顯 100% 牌（不用練）===
@@ -251,7 +253,7 @@ POSITION_EXCLUDED_HANDS = {
         "AQo", "AJo", "ATo", "A9o", "A8o", "A7o", "A6o", "A5o",  # (A4o 是邊緣)
         "KQo", "KJo", "KTo", "K9o",  # (K8o 是邊緣)
         "QJo", "QTo",  # QTo+ 明顯
-        "JTo", "J9o",  # J9o+ 明顯
+        "JTo", "J9o", "J8o",  # J8o 100% 明顯
         "T9o",  # (T8o 是邊緣)
         # === 遠離邊界的 0% 牌（不用練）===
         "J2s",
@@ -276,7 +278,7 @@ POSITION_EXCLUDED_HANDS = {
     # 84s/74s (100% 邊緣), 64s (100% 邊緣), 53s/43s (100% 邊緣)
     # 22 (100% 邊緣)
     # A4o (100% 邊緣), K8o (100% 邊緣), T8o (100% 邊緣), 98o (100% 邊緣)
-    # J8o (50% 混合), J7o/T7o/87o (0% 邊緣)
+    # J7o/T7o/87o (0% 邊緣)
 
     "SB": BASE_EXCLUDED_HANDS | {
         # === SB 與 BTN 相同（raise range 相同）===
@@ -294,7 +296,7 @@ POSITION_EXCLUDED_HANDS = {
         "AQo", "AJo", "ATo", "A9o", "A8o", "A7o", "A6o", "A5o",
         "KQo", "KJo", "KTo", "K9o",
         "QJo", "QTo",
-        "JTo", "J9o",
+        "JTo", "J9o", "J8o",  # J8o 100% 明顯
         "T9o",
         # === 遠離邊界的 0% 牌（不用練）===
         "J2s",

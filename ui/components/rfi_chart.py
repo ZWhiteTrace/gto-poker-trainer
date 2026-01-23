@@ -111,15 +111,15 @@ PREMIUM_3BET_HANDS = {
 
 # UTG key edge hands - gold border (靜態 fallback)
 _UTG_KEY_EDGES_STATIC = {
-    "K8s", "Q9s", "J9s", "T9s", "A2s", "55",  # 100% 邊緣
-    "98s", "87s", "76s", "65s",                # 50% 混合
-    "KJo", "ATo",                               # offsuit 邊緣
+    "K9s", "T9s", "A2s", "55",  # 100% 邊緣 opens
+    "K8s", "Q9s", "J9s",        # 邊緣 folds (剛移除)
+    "ATo", "KQo",               # offsuit 邊緣
 }
 
 # BTN key edge hands - white border (靜態 fallback)
 _BTN_KEY_EDGES_STATIC = {
     "K2s", "Q2s", "J4s", "T6s", "96s", "85s", "75s", "64s",  # 同花
-    "A4o", "K8o", "Q9o", "J8o", "T8o", "98o",                 # 不同花
+    "A4o", "K8o", "Q9o", "T8o", "98o",                          # 不同花
 }
 
 # SB hands that are obvious (fade to 50%)
@@ -133,14 +133,14 @@ _OBVIOUS_HANDS_STATIC = {
     "AA", "KK", "QQ", "JJ", "TT", "99", "88", "77", "66",
     # Suited Ax (A3s+ 明顯, but A2s is UTG edge)
     "AKs", "AQs", "AJs", "ATs", "A9s", "A8s", "A7s", "A6s", "A5s", "A4s", "A3s",
-    # Suited Kx (K9s+ 明顯, K8s is UTG edge)
-    "KQs", "KJs", "KTs", "K9s",
-    # Suited Qx (QTs+ 明顯, Q9s is UTG edge)
-    "QJs", "QTs",
-    # Suited connectors (JTs 明顯, J9s/T9s are UTG edge)
+    # Suited Kx (KTs+ 明顯, K9s is UTG edge)
+    "KQs", "KJs", "KTs",
+    # Suited Qx (QJs 明顯, QTs is edge since Q9s removed)
+    "QJs",
+    # Suited connectors (JTs 明顯, T9s is UTG edge)
     "JTs",
-    # Offsuit (AJo+, KQo 明顯, KJo/ATo are UTG edge)
-    "AKo", "AQo", "AJo", "KQo",
+    # Offsuit (AJo+ 明顯, ATo/KQo are UTG edge)
+    "AKo", "AQo", "AJo",
 }
 
 POSITION_ORDER = ["UTG", "HJ", "CO", "BTN", "SB"]
