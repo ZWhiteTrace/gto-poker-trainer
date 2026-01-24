@@ -1,0 +1,77 @@
+{
+  "meta": {
+    "version": "1.0",
+    "description": "vs RFI 場景的決策邏輯層。每個場景包含 context (Layer 1) 和 hands (Layer 2) 資訊。",
+    "assumptions": {
+      "stack_bb": 100,
+      "open_size": "2.5bb",
+      "three_bet_size": "8bb",
+      "format": "6max",
+      "rake": "standard_NL50"
+    }
+  },
+  "HJ_vs_UTG": {
+    "context": {
+      "range_advantage": "villain",
+      "nut_advantage": "villain",
+      "hero_range_shape": "polarized",
+      "squeeze_risk": "high",
+      "note": "全桌最緊的兩個位置對撞。UTG range 極強且 uncapped，HJ 後面還有 4 人可能 squeeze。"
+    },
+    "hands": {
+      "A5s": {
+        "role": "bluff_3bet",
+        "tags": ["ace_blocker", "suited", "wheel_potential", "low_domination", "polarized_range_bluff"],
+        "compare_group": "suited_aces",
+        "stability": "stable"
+      },
+      "A8s": {
+        "role": "fold",
+        "tags": ["blocks_calling_range", "medium_kicker_trap", "reverse_implied"],
+        "compare_group": "suited_aces",
+        "stability": "stable",
+        "note": "A8s 阻擋了 ATs/AJs (你希望對手 call 的牌)，且翻後容易被 AK/AQ dominate。"
+      },
+      "KQs": {
+        "role": "call",
+        "tags": ["high_equity", "high_eqr_suited", "board_coverage", "condensed_range_call"],
+        "compare_group": "suited_broadways",
+        "stability": "stable"
+      },
+      "KQo": {
+        "role": "fold",
+        "tags": ["offsuit_low_eqr", "reverse_implied", "squeeze_vulnerability"],
+        "compare_group": "suited_broadways",
+        "stability": "stable",
+        "note": "與 KQs 相同的 raw equity，但缺乏同花 EQR 且面臨 squeeze 風險，整體 EV < 0。"
+      },
+      "JJ": {
+        "role": "mix_call_3bet",
+        "tags": ["high_equity", "low_domination"],
+        "compare_group": "pocket_pairs_high",
+        "stability": "param_sensitive",
+        "note": "經典邊界牌。Call 保護 condensed range (讓 postflop overpair 有); 3bet 拿價值但只能打跑 AQ-/中對以下。參數敏感：rake 高偏 call，deep 偏 call。"
+      },
+      "77": {
+        "role": "call",
+        "tags": ["set_mining", "implied_odds_deep", "board_coverage"],
+        "compare_group": "pocket_pairs_mid",
+        "stability": "stable",
+        "note": "純 set mining。100bb 深度下 implied odds 足夠。翻後沒中 set 幾乎一定放棄。"
+      },
+      "AQo": {
+        "role": "call",
+        "tags": ["high_equity", "linear_range_top", "domination_risk"],
+        "compare_group": "premium_broadways",
+        "stability": "stable",
+        "note": "AQo 對 UTG range equity 夠高能 call，但 3bet 只讓 AK/KK/AA 繼續 (全部壓制你)。典型的 'call EV > 3bet EV' 案例。"
+      },
+      "AKo": {
+        "role": "value_3bet",
+        "tags": ["high_equity", "ace_blocker", "nut_potential"],
+        "compare_group": "premium_broadways",
+        "stability": "stable"
+      }
+    }
+  }
+}

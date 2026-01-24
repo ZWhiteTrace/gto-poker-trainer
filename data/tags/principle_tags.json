@@ -1,0 +1,189 @@
+{
+  "meta": {
+    "version": "1.0",
+    "description": "GTO 決策原理的原子標籤庫。每個標籤代表一個不可再分的決策因素。",
+    "categories": ["blocker", "eqr", "equity", "playability", "balance", "structure"]
+  },
+  "tags": {
+    "ace_blocker": {
+      "name": "Ace Blocker",
+      "category": "blocker",
+      "explanation": "手牌中的 A 阻擋了對手範圍中最強的 AA 和 AK 組合，顯著增加 fold equity。",
+      "misconceptions": [
+        "因為 A 是最大的牌，單純比牌力強 (混淆 showdown value 與 blocker)",
+        "因為對手很少有 A (過度推論，未考慮組合數變化)"
+      ]
+    },
+    "blocks_calling_range": {
+      "name": "阻擋跟注範圍",
+      "category": "blocker",
+      "explanation": "這手牌阻擋了我們希望對手繼續的牌 (如 ATs, AJs)。拿來詐唬反而降低了對手的棄牌率。",
+      "misconceptions": [
+        "因為這手牌勝率太低所以不能 3bet (重點是 blocker 效應方向錯誤)",
+        "因為對手一定會 4bet (混淆了對手的回應頻率)"
+      ]
+    },
+    "suited": {
+      "name": "同花潛力",
+      "category": "eqr",
+      "explanation": "同花屬性提供額外的 EQR：後門花聽牌、正花聽牌可做半詐唬，整體 playability 提升。",
+      "misconceptions": [
+        "因為花色有加分 (過度簡化，重點是多街 playability)",
+        "因為同花容易中 (實際只有 6% 翻牌中花)"
+      ]
+    },
+    "offsuit_low_eqr": {
+      "name": "非同花低 EQR",
+      "category": "eqr",
+      "explanation": "缺乏同花潛力，翻後 playability 大幅下降。沒中牌就毫無價值，中了也缺乏後手發展。",
+      "misconceptions": [
+        "因為非同花勝率比同花低很多 (實際差距只有 2-3%，重點是 realization)",
+        "因為非同花不能做順子 (順子潛力跟花色無關)"
+      ]
+    },
+    "wheel_potential": {
+      "name": "Wheel 順子潛力",
+      "category": "playability",
+      "explanation": "可組成 A-2-3-4-5 堅果順，隱蔽性極強，對手難以預測，具高隱含賠率。",
+      "misconceptions": [
+        "因為小牌容易中兩對 (重點是順子結構)",
+        "因為 A5 勝率高 (其實落後，優勢在 playability)"
+      ]
+    },
+    "low_domination": {
+      "name": "不易被主導",
+      "category": "equity",
+      "explanation": "即使落後也保有 ~30% equity（活三條 + 後門花順），不容易陷入踢腳輸人的死局。",
+      "misconceptions": [
+        "因為這手牌勝率很高 (其實是落後但死不透)",
+        "因為可以抓詐唬 (重點是 equity preservation)"
+      ]
+    },
+    "domination_risk": {
+      "name": "被主導風險",
+      "category": "equity",
+      "explanation": "中了頂對也常被更好的踢腳壓制 (如 AQ vs AK)，屬於贏小輸大的結構。",
+      "misconceptions": [
+        "因為勝率太低 (AQo vs UTG range equity 不算低)",
+        "因為翻後不好打 (同花版也會被 dominate，重點是踢腳結構)"
+      ]
+    },
+    "reverse_implied": {
+      "name": "反向隱含賠率",
+      "category": "playability",
+      "explanation": "中了頂對容易輸給更強的牌 (Reverse Implied Odds)，贏的時候贏小、輸的時候輸大。",
+      "misconceptions": [
+        "因為勝率太低 (其實 raw equity 可能不差，是 realization 的問題)",
+        "因為容易被詐唬 (重點是被價值壓制)"
+      ]
+    },
+    "medium_kicker_trap": {
+      "name": "中踢腳陷阱",
+      "category": "equity",
+      "explanation": "中等踢腳 (A8-AJ offsuit) 面對強 range 非常尷尬：中了 A 怕輸踢腳，沒中就是空氣。",
+      "misconceptions": [
+        "因為 A8 比 A5 弱 (A8 的 raw equity 其實更高)",
+        "因為踢腳太小 (重點是踢腳在對手 range 中的相對位置)"
+      ]
+    },
+    "high_equity": {
+      "name": "高原始勝率",
+      "category": "equity",
+      "explanation": "對抗對手 opening range 有足夠的 raw equity 支撐正EV的繼續動作。",
+      "misconceptions": [
+        "因為是 nuts (翻前沒有絕對 nuts)",
+        "因為適合詐唬 (高 equity 的牌應該拿價值)"
+      ]
+    },
+    "high_eqr_suited": {
+      "name": "同花高 EQR",
+      "category": "eqr",
+      "explanation": "同花 + broadway/連接結構 = 多條 nut 路線 (nut flush, nut straight)，翻後 playability 極高。",
+      "misconceptions": [
+        "因為牌力本身很強 (重點是多街 playability，不是翻前 equity)",
+        "因為同花一定中 (只有 6% 翻牌中花，但有後門和半詐唬價值)"
+      ]
+    },
+    "board_coverage": {
+      "name": "牌面覆蓋",
+      "category": "balance",
+      "explanation": "保留此類牌在 range 中確保在各種 board texture 都有代表，防止被對手在特定 flop 結構剝削。",
+      "misconceptions": [
+        "因為勝率很高 (通常是中等牌力，目的是 balance)",
+        "因為要設陷阱 (重點是保護 range 結構完整性)"
+      ]
+    },
+    "set_mining": {
+      "name": "翻暗三投機",
+      "category": "playability",
+      "explanation": "小對子翻 set 機率 ~12%，但中了後贏的底池很大 (implied odds)。需要足夠的有效籌碼深度。",
+      "misconceptions": [
+        "因為對子本身就很強 (77 翻前 vs UTG range 只有 ~50% equity)",
+        "因為可以當 overpair 打 (77 在大多數 board 都不是 overpair)"
+      ]
+    },
+    "implied_odds_deep": {
+      "name": "深籌隱含賠率",
+      "category": "playability",
+      "explanation": "100bb+ 的深度讓投機牌有足夠空間：中了大牌可以贏完整籌碼，沒中的損失只是翻前投入。",
+      "misconceptions": [
+        "因為翻前勝率就夠高 (77 的價值在 postflop，不是 preflop equity)",
+        "因為可以 bluff (set mining 的價值在 made hand，不是 bluff)"
+      ]
+    },
+    "linear_range_top": {
+      "name": "線性範圍頂端",
+      "category": "structure",
+      "explanation": "位於 calling range 的最頂端：equity 足夠高到能 call，但 3bet 會讓對手只留下壓制你的牌。",
+      "misconceptions": [
+        "因為不夠強去 3bet (AQo equity 很高，問題是 3bet 的回應品質)",
+        "因為要慢打 (不是 slowplay，是 EV: call > 3bet)"
+      ]
+    },
+    "squeeze_vulnerability": {
+      "name": "擠壓脆弱",
+      "category": "structure",
+      "explanation": "在多人還未行動時 flat call，容易被後面玩家 squeeze (加注)，導致被迫棄牌浪費投入。",
+      "misconceptions": [
+        "因為後面的人一定會加注 (squeeze 頻率取決於位置和 range)",
+        "因為 flat 永遠不好 (有些牌力足以面對 squeeze)"
+      ]
+    },
+    "nut_potential": {
+      "name": "堅果潛力",
+      "category": "equity",
+      "explanation": "翻後有多條路線成為 nuts (頂對頂踢腳、順子、同花)，在大底池中能自信地打光籌碼。",
+      "misconceptions": [
+        "因為翻前就是 nuts (翻前沒有絕對 nuts)",
+        "因為不會被 dominated (AK 也可能遇到 set)"
+      ]
+    },
+    "polarized_range_bluff": {
+      "name": "極化範圍詐唬端",
+      "category": "structure",
+      "explanation": "3bet range 由價值端 (nuts) + 詐唬端組成。詐唬端需要好的 blocker + playability，失敗時損失小。",
+      "misconceptions": [
+        "因為這手牌很強 (詐唬端的定義就是牌力不足以打價值)",
+        "因為對手會棄牌 (fold equity 只是一部分，被 call 時的 playability 也重要)"
+      ]
+    },
+    "condensed_range_call": {
+      "name": "濃縮範圍跟注",
+      "category": "structure",
+      "explanation": "Call range 的上限被移除 (nuts 都去 3bet 了)，形成沒有頂端的濃縮結構，翻後面對大注壓力較大。",
+      "misconceptions": [
+        "因為 call 比 3bet 保守 (call 是有意識的範圍建構)",
+        "因為牌不夠好 (call range 的牌 equity 可能比 3bet bluff 更高)"
+      ]
+    },
+    "connectivity": {
+      "name": "連接結構",
+      "category": "playability",
+      "explanation": "相鄰 rank 的牌有順子潛力，增加了 nut 可能性和翻後 playability。",
+      "misconceptions": [
+        "因為順子比同花好 (重點是多了一條 nut 路線)",
+        "因為連接牌勝率高 (連接牌的價值在 playability，不是 raw equity)"
+      ]
+    }
+  }
+}

@@ -1,0 +1,49 @@
+{
+  "meta": {
+    "version": "1.0",
+    "description": "題目生成模板。QuestionGenerator 讀取此檔 + reasoning + tags 來動態產生題目。"
+  },
+  "question_types": {
+    "A_role_identify": {
+      "type": "A",
+      "name": "角色辨識",
+      "description": "測試是否理解某張牌做某動作的底層原因",
+      "template": "在 {scenario} 場景中，{hand} 的最佳策略是 {action}。支撐此決策的主要邏輯是？",
+      "correct_source": "hand.tags",
+      "distractor_source": "misconceptions",
+      "options_count": 4,
+      "correct_count": 1,
+      "layer": "Layer 2 (WHY)"
+    },
+    "B_comparison": {
+      "type": "B",
+      "name": "比較推理",
+      "description": "測試是否理解同類型牌之間的策略差異",
+      "template": "在 {scenario} 中，為什麼 {hand_a} 傾向 {action_a}，但 {hand_b} 卻建議 {action_b}？",
+      "correct_source": "diff_tags",
+      "distractor_source": "misconceptions",
+      "trigger": "same compare_group, different role",
+      "options_count": 4,
+      "correct_count": 1,
+      "layer": "Layer 2 (WHY) + Range Shape"
+    }
+  },
+  "option_generation_rules": {
+    "correct_option": {
+      "source": "從 hand.tags 中取主要 tag 的 explanation 作為正確答案",
+      "format": "{tag.name}：{tag.explanation}"
+    },
+    "distractor_options": {
+      "priority_1": "從正確 tag 的 misconceptions 中抽取 (最強干擾)",
+      "priority_2": "從同 category 其他 tag 的 explanation 中抽取 (中等干擾)",
+      "priority_3": "從不相關 category 的 tag explanation 中抽取 (弱干擾)",
+      "rule": "確保至少 1 個 priority_1 干擾項"
+    }
+  },
+  "comparison_logic": {
+    "find_pairs": "在同一個 compare_group 中找 role 不同的兩張牌",
+    "find_diff": "找出 hand_a.tags 有但 hand_b.tags 沒有的 tag (或反之)",
+    "correct_answer": "用 diff tag 的 explanation 解釋差異",
+    "distractors": "用 misconceptions + 無關 tag 混淆"
+  }
+}
