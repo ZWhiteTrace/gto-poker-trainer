@@ -528,6 +528,46 @@ def get_drillable_hands_dynamic(frequency_data: dict, scenario_type: str = "rfi"
     MAX_BOUNDARY = 50 if scenario_type != "rfi" else 20
     interesting_hands.extend(rank_boundary_hands[:MAX_BOUNDARY])
 
+    # 規則 6: 跨組邊界偵測（vs 場景專用）
+    if scenario_type != "rfi":
+        cross_group_hands = []
+        listed_hands = set(frequency_data.keys())
+
+        # 6a: Offsuit counterparts - 同花有正向動作但非同花是 fold
+        # 只對有正向動作的同花牌加其非同花版本
+        for hand in rank_boundary_hands[:MAX_BOUNDARY]:
+            if len(hand) == 3 and hand[2] == 's' and hand in listed_hands:
+                # 確認該牌確實有正向動作（不是 fold 側的邊界牌）
+                hand_actions = frequency_data.get(hand, {})
+                has_positive = any(hand_actions.get(a, 0) > 0 for a in actions_to_check)
+                if has_positive:
+                    counterpart = f"{hand[0]}{hand[1]}o"
+                    if counterpart not in listed_hands and counterpart not in interesting_hands:
+                        cross_group_hands.append(counterpart)
+
+        # 6b: Connector chain - 同花連接牌往下延伸
+        # 只對真正的連接牌/1-gap牌觸發（rank差距≤2）
+        for key, hands in groups.items():
+            if key == "pairs" or key.endswith('o'):
+                continue
+            suited_hands = [(h, a) for h, a in hands if a != "fold"]
+            if not suited_hands:
+                continue
+            suited_hands.sort(key=lambda x: RANKS.index(x[0][1]))
+            weakest = suited_hands[-1][0]
+            if len(weakest) == 3 and weakest[2] == 's':
+                high_idx = RANKS.index(weakest[0])
+                low_idx = RANKS.index(weakest[1])
+                # 只對連接牌/1-gap (rank差距≤2) 觸發 chain
+                if low_idx - high_idx <= 2:
+                    next_low = RANKS[low_idx + 1] if low_idx < len(RANKS) - 1 else None
+                    if next_low:
+                        connector = f"{weakest[1]}{next_low}s"
+                        if connector not in listed_hands and connector not in interesting_hands:
+                            cross_group_hands.append(connector)
+
+        interesting_hands.extend(cross_group_hands)
+
     # 如果沒有找到有趣的牌，返回所有有動作的牌
     if not interesting_hands:
         for hand, actions in frequency_data.items():
