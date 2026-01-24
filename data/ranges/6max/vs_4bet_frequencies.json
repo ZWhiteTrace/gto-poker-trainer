@@ -26,8 +26,7 @@
       "call_hands": 3,
       "fold_boundary_hands": 3,
       "note": "HJ vs UTG 4bet: Very tight. JJ/TT/AQs all fold vs EP 4bet."
-    },
-    "drillable": ["QQ", "AKs", "AKo", "JJ", "TT", "AQs"]
+    }
   },
   "CO_vs_UTG": {
     "frequencies": {
@@ -45,8 +44,7 @@
       "call_hands": 3,
       "fold_boundary_hands": 3,
       "note": "CO vs UTG 4bet: Very tight."
-    },
-    "drillable": ["QQ", "AKs", "AKo", "JJ", "TT", "AQs"]
+    }
   },
   "CO_vs_HJ": {
     "frequencies": {
@@ -65,8 +63,7 @@
       "call_hands": 4,
       "fold_boundary_hands": 3,
       "note": "CO vs HJ 4bet: Tight. JJ calls, TT/AQs fold."
-    },
-    "drillable": ["QQ", "JJ", "AKs", "AKo", "TT", "AQs", "99"]
+    }
   },
   "BTN_vs_UTG": {
     "frequencies": {
@@ -85,8 +82,7 @@
       "call_hands": 4,
       "fold_boundary_hands": 3,
       "note": "BTN vs UTG 4bet: Still tight vs EP. JJ calls, TT folds."
-    },
-    "drillable": ["QQ", "JJ", "AKs", "AKo", "TT", "AQs", "99"]
+    }
   },
   "BTN_vs_HJ": {
     "frequencies": {
@@ -106,8 +102,7 @@
       "mixed_hands": 1,
       "fold_boundary_hands": 2,
       "note": "BTN vs HJ 4bet: Medium. TT is borderline (simplified to fold)."
-    },
-    "drillable": ["QQ", "JJ", "AKs", "AKo", "TT", "AQs", "99"]
+    }
   },
   "BTN_vs_CO": {
     "frequencies": {
@@ -128,8 +123,7 @@
       "mixed_hands": 1,
       "fold_boundary_hands": 2,
       "note": "BTN vs CO 4bet: Wider. TT calls, AQs is borderline (lean call)."
-    },
-    "drillable": ["QQ", "JJ", "TT", "AKs", "AKo", "AQs", "99", "AQo"]
+    }
   },
   "SB_vs_UTG": {
     "frequencies": {
@@ -147,8 +141,7 @@
       "call_hands": 3,
       "fold_boundary_hands": 3,
       "note": "SB vs UTG 4bet: Very tight, even OOP."
-    },
-    "drillable": ["QQ", "AKs", "AKo", "JJ", "TT", "AQs"]
+    }
   },
   "SB_vs_HJ": {
     "frequencies": {
@@ -167,8 +160,7 @@
       "call_hands": 4,
       "fold_boundary_hands": 3,
       "note": "SB vs HJ 4bet: Tight."
-    },
-    "drillable": ["QQ", "JJ", "AKs", "AKo", "TT", "AQs", "99"]
+    }
   },
   "SB_vs_CO": {
     "frequencies": {
@@ -187,8 +179,7 @@
       "call_hands": 4,
       "fold_boundary_hands": 3,
       "note": "SB vs CO 4bet: Medium."
-    },
-    "drillable": ["QQ", "JJ", "AKs", "AKo", "TT", "AQs", "99"]
+    }
   },
   "SB_vs_BTN": {
     "frequencies": {
@@ -210,8 +201,7 @@
       "mixed_hands": 1,
       "fold_boundary_hands": 2,
       "note": "SB vs BTN 4bet: Wide. 99 is borderline."
-    },
-    "drillable": ["QQ", "AKs", "JJ", "TT", "AKo", "AQs", "99", "AQo", "AJs"]
+    }
   },
   "BB_vs_UTG": {
     "frequencies": {
@@ -229,8 +219,7 @@
       "call_hands": 3,
       "fold_boundary_hands": 3,
       "note": "BB vs UTG 4bet: Very tight."
-    },
-    "drillable": ["QQ", "AKs", "AKo", "JJ", "TT", "AQs"]
+    }
   },
   "BB_vs_HJ": {
     "frequencies": {
@@ -249,8 +238,7 @@
       "call_hands": 4,
       "fold_boundary_hands": 3,
       "note": "BB vs HJ 4bet: Tight."
-    },
-    "drillable": ["QQ", "JJ", "AKs", "AKo", "TT", "AQs", "99"]
+    }
   },
   "BB_vs_CO": {
     "frequencies": {
@@ -270,8 +258,7 @@
       "mixed_hands": 1,
       "fold_boundary_hands": 2,
       "note": "BB vs CO 4bet: Medium. TT is borderline."
-    },
-    "drillable": ["QQ", "JJ", "AKs", "AKo", "TT", "AQs", "99"]
+    }
   },
   "BB_vs_BTN": {
     "frequencies": {
@@ -293,8 +280,7 @@
       "mixed_hands": 1,
       "fold_boundary_hands": 2,
       "note": "BB vs BTN 4bet: Wide. 99 is borderline."
-    },
-    "drillable": ["QQ", "AKs", "JJ", "TT", "AKo", "AQs", "99", "AQo", "AJs"]
+    }
   },
   "BB_vs_SB": {
     "frequencies": {
@@ -321,7 +307,6 @@
       "mixed_hands": 1,
       "fold_boundary_hands": 3,
       "note": "BB vs SB 4bet: Blind war, widest. 88 borderline, 77/KQs fold."
-    },
-    "drillable": ["QQ", "JJ", "AKs", "AQs", "A5s", "TT", "99", "AKo", "AQo", "AJs", "88", "KQs", "ATs", "77"]
+    }
   }
 }

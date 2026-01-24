@@ -31,8 +31,7 @@
       "4bet_hands": 6,
       "call_hands": 3,
       "note": "UTG vs HJ 3bet: Very tight (千算 simplified)"
-    },
-    "drillable": ["AQs", "A5s", "JJ", "TT", "99", "AJs"]
+    }
   },
   "UTG_vs_CO": {
     "frequencies": {
@@ -50,8 +49,7 @@
       "4bet_hands": 6,
       "call_hands": 3,
       "note": "UTG vs CO 3bet: Very tight (千算 simplified)"
-    },
-    "drillable": ["AQs", "A5s", "JJ", "TT", "99", "AJs"]
+    }
   },
   "UTG_vs_BTN": {
     "frequencies": {
@@ -70,8 +68,7 @@
       "4bet_hands": 6,
       "call_hands": 4,
       "note": "UTG vs BTN 3bet: Slightly wider call (千算 simplified)"
-    },
-    "drillable": ["AQs", "A5s", "JJ", "TT", "99", "88", "AJs"]
+    }
   },
   "UTG_vs_SB": {
     "frequencies": {
@@ -89,8 +86,7 @@
       "4bet_hands": 6,
       "call_hands": 3,
       "note": "UTG vs SB 3bet: Tight (千算 simplified)"
-    },
-    "drillable": ["AQs", "A5s", "JJ", "TT", "99", "AJs"]
+    }
   },
   "UTG_vs_BB": {
     "frequencies": {
@@ -108,8 +104,7 @@
       "4bet_hands": 6,
       "call_hands": 3,
       "note": "UTG vs BB 3bet: Tight (千算 simplified)"
-    },
-    "drillable": ["AQs", "A5s", "JJ", "TT", "99", "AJs"]
+    }
   },
   "HJ_vs_CO": {
     "frequencies": {
@@ -148,8 +143,7 @@
       "4bet_hands": 8,
       "call_hands": 22,
       "note": "HJ vs CO 3bet: Medium range (千算 simplified)"
-    },
-    "drillable": ["AQs", "AQo", "AJs", "ATs", "A5s", "A4s", "JJ", "TT", "99", "88", "77", "66", "KQs", "KJs", "QJs", "T9s", "98s", "87s", "76s"]
+    }
   },
   "HJ_vs_BTN": {
     "frequencies": {
@@ -198,8 +192,7 @@
       "4bet_hands": 9,
       "call_hands": 30,
       "note": "HJ vs BTN 3bet: Wide call range (千算 simplified)"
-    },
-    "drillable": ["AQs", "AQo", "AJs", "ATs", "A5s", "A4s", "A3s", "JJ", "TT", "99", "88", "77", "66", "55", "44", "KQs", "KJs", "QJs", "JTs", "T9s", "98s", "87s", "76s", "65s", "54s"]
+    }
   },
   "HJ_vs_SB": {
     "frequencies": {
@@ -238,8 +231,7 @@
       "4bet_hands": 8,
       "call_hands": 22,
       "note": "HJ vs SB 3bet: Medium range (千算 simplified)"
-    },
-    "drillable": ["AQs", "AQo", "AJs", "ATs", "A5s", "A4s", "JJ", "TT", "99", "88", "77", "66", "KQs", "KJs", "QJs", "T9s", "98s", "87s", "76s"]
+    }
   },
   "HJ_vs_BB": {
     "frequencies": {
@@ -278,8 +270,7 @@
       "4bet_hands": 8,
       "call_hands": 22,
       "note": "HJ vs BB 3bet: Medium range (千算 simplified)"
-    },
-    "drillable": ["AQs", "AQo", "AJs", "ATs", "A5s", "A4s", "JJ", "TT", "99", "88", "77", "66", "KQs", "KJs", "QJs", "T9s", "98s", "87s", "76s"]
+    }
   },
   "CO_vs_BTN": {
     "frequencies": {
@@ -335,8 +326,7 @@
       "4bet_hands": 10,
       "call_hands": 37,
       "note": "CO vs BTN 3bet: Wide range (千算 simplified)"
-    },
-    "drillable": ["AQs", "AQo", "AJs", "ATs", "A9s", "A5s", "A4s", "A3s", "A2s", "JJ", "TT", "99", "88", "77", "66", "55", "44", "KQs", "KQo", "KJs", "KTs", "QJs", "QTs", "JTs", "T9s", "98s", "87s", "76s", "65s", "54s"]
+    }
   },
   "CO_vs_SB": {
     "frequencies": {
@@ -389,8 +379,7 @@
       "4bet_hands": 8,
       "call_hands": 35,
       "note": "CO vs SB 3bet: Wide call range (千算 simplified)"
-    },
-    "drillable": ["AQs", "AQo", "AJs", "ATs", "A9s", "A5s", "A4s", "JJ", "TT", "99", "88", "77", "66", "55", "44", "KQs", "KJs", "QJs", "JTs", "T9s", "98s", "87s", "76s", "65s", "54s"]
+    }
   },
   "CO_vs_BB": {
     "frequencies": {
@@ -443,8 +432,7 @@
       "4bet_hands": 8,
       "call_hands": 35,
       "note": "CO vs BB 3bet: Wide call range (千算 simplified)"
-    },
-    "drillable": ["AQs", "AQo", "AJs", "ATs", "A9s", "A5s", "A4s", "JJ", "TT", "99", "88", "77", "66", "55", "44", "KQs", "KJs", "QJs", "JTs", "T9s", "98s", "87s", "76s", "65s", "54s"]
+    }
   },
   "BTN_vs_SB": {
     "frequencies": {
@@ -508,8 +496,7 @@
       "4bet_hands": 9,
       "call_hands": 46,
       "note": "BTN vs SB 3bet: Very wide call range (千算 simplified)"
-    },
-    "drillable": ["AQs", "AQo", "AJs", "AJo", "ATs", "A9s", "A8s", "A5s", "A4s", "A3s", "A2s", "JJ", "TT", "99", "88", "77", "66", "55", "44", "KQs", "KQo", "KJs", "KJo", "KTs", "QJs", "QTs", "JTs", "T9s", "98s", "87s", "76s", "65s", "54s", "43s"]
+    }
   },
   "BTN_vs_BB": {
     "frequencies": {
@@ -570,8 +557,7 @@
       "4bet_hands": 9,
       "call_hands": 42,
       "note": "BTN vs BB 3bet: Very wide call range (千算 simplified)"
-    },
-    "drillable": ["AQs", "AQo", "AJs", "AJo", "ATs", "A9s", "A8s", "A5s", "A4s", "A3s", "A2s", "JJ", "TT", "99", "88", "77", "66", "55", "44", "KQs", "KQo", "KJs", "KTs", "QJs", "QTs", "JTs", "T9s", "98s", "87s", "76s", "65s", "54s", "43s"]
+    }
   },
   "SB_vs_BB": {
     "frequencies": {
@@ -667,7 +653,6 @@
       "4bet_hands": 7,
       "call_hands": 80,
       "note": "SB vs BB 3bet: Blind war, very wide (千算 simplified)"
-    },
-    "drillable": ["AQs", "AQo", "AJs", "AJo", "ATs", "ATo", "A9s", "A8s", "A5s", "A4s", "A3s", "A2s", "JJ", "TT", "99", "88", "77", "66", "55", "44", "33", "22", "KQs", "KQo", "KJs", "KJo", "KTs", "K9s", "QJs", "QJo", "QTs", "JTs", "JTo", "T9s", "98s", "87s", "76s", "65s", "54s", "43s"]
+    }
   }
 }

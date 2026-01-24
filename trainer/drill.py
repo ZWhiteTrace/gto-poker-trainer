@@ -474,7 +474,29 @@ def get_drillable_hands_dynamic(frequency_data: dict, scenario_type: str = "rfi"
 
         groups[key].append((hand, action))
 
+    # vs 場景：填入未列出的手牌作為 "fold"，以便偵測 action→fold 邊界
+    if scenario_type != "rfi":
+        listed_hands = set(frequency_data.keys())
+        for key in list(groups.keys()):
+            existing_hands_in_group = {h for h, _ in groups[key]}
+            if key == "pairs":
+                all_in_group = [r + r for r in RANKS]
+            else:
+                high = key[0]  # e.g., "A" from "Axs"
+                suit = key[2]  # e.g., "s" from "Axs"
+                high_idx = RANKS.index(high)
+                all_in_group = [f"{high}{RANKS[i]}{suit}" for i in range(high_idx + 1, len(RANKS))]
+            for h in all_in_group:
+                if h not in existing_hands_in_group and h not in listed_hands:
+                    groups[key].append((h, "fold"))
+
     # 在每組內找 rank 邊界
+    # vs 場景需要更寬的邊界範圍（灰色地帶練習）
+    BOUNDARY_WIDTH_VS = 3   # vs scenarios: 3 hands on each side of transition
+    BOUNDARY_WIDTH_RFI = 1  # RFI: keep current narrow behavior
+
+    boundary_width = BOUNDARY_WIDTH_VS if scenario_type != "rfi" else BOUNDARY_WIDTH_RFI
+
     rank_boundary_hands = []
     for key, hands in groups.items():
         if key == "pairs":
@@ -482,22 +504,28 @@ def get_drillable_hands_dynamic(frequency_data: dict, scenario_type: str = "rfi"
         else:
             hands.sort(key=lambda x: RANKS.index(x[0][1]))
 
-        prev_action = None
-        prev_hand = None
-        for hand, action in hands:
-            if prev_action and prev_action != action:
-                # 邊界點！加入兩邊的牌
-                rank_boundary_hands.append(hand)
-                if prev_hand:
-                    rank_boundary_hands.append(prev_hand)
-            prev_action = action
-            prev_hand = hand
+        # 找出所有邊界點的索引
+        transition_indices = []
+        for i in range(1, len(hands)):
+            if hands[i][1] != hands[i-1][1]:
+                transition_indices.append(i)
+
+        # 在每個邊界點兩側擴展 boundary_width 個手牌
+        boundary_indices = set()
+        for ti in transition_indices:
+            for offset in range(-boundary_width, boundary_width):
+                idx = ti + offset
+                if 0 <= idx < len(hands):
+                    boundary_indices.add(idx)
+
+        for idx in boundary_indices:
+            rank_boundary_hands.append(hands[idx][0])
 
     # 排序並限制數量
     rank_boundary_hands = list(set(rank_boundary_hands))
     rank_boundary_hands.sort(key=hand_strength_key)
 
-    MAX_BOUNDARY = 20
+    MAX_BOUNDARY = 50 if scenario_type != "rfi" else 20
     interesting_hands.extend(rank_boundary_hands[:MAX_BOUNDARY])
 
     # 如果沒有找到有趣的牌，返回所有有動作的牌

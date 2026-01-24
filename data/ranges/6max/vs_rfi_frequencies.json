@@ -91,20 +91,7 @@
     },
     "stats": {
       "note": "HJ vs UTG: Tight 3bet, call with strong hands in position"
-    },
-    "drillable": [
-      "QQ",
-      "JJ",
-      "TT",
-      "AKs",
-      "AQs",
-      "AJs",
-      "ATs",
-      "A5s",
-      "A4s",
-      "AKo",
-      "AQo"
-    ]
+    }
   },
   "CO_vs_UTG": {
     "frequencies": {
@@ -177,21 +164,7 @@
     },
     "stats": {
       "note": "CO vs UTG: Tight 3bet, wider call range"
-    },
-    "drillable": [
-      "JJ",
-      "TT",
-      "99",
-      "AQs",
-      "AJs",
-      "ATs",
-      "A5s",
-      "A4s",
-      "KQs",
-      "KJs",
-      "AKo",
-      "AQo"
-    ]
+    }
   },
   "CO_vs_HJ": {
     "frequencies": {
@@ -268,22 +241,7 @@
     },
     "stats": {
       "note": "CO vs HJ: Medium 3bet range"
-    },
-    "drillable": [
-      "TT",
-      "99",
-      "88",
-      "AQs",
-      "AJs",
-      "ATs",
-      "A5s",
-      "A4s",
-      "KQs",
-      "KJs",
-      "AKo",
-      "AQo",
-      "AJo"
-    ]
+    }
   },
   "BTN_vs_UTG": {
     "frequencies": {
@@ -357,21 +315,7 @@
     },
     "stats": {
       "note": "BTN vs UTG: Value 3bet, wide call with position"
-    },
-    "drillable": [
-      "TT",
-      "99",
-      "88",
-      "AJs",
-      "ATs",
-      "A5s",
-      "A4s",
-      "KQs",
-      "KJs",
-      "AKo",
-      "AQo",
-      "AJo"
-    ]
+    }
   },
   "BTN_vs_HJ": {
     "frequencies": {
@@ -447,19 +391,7 @@
     },
     "stats": {
       "note": "BTN vs HJ: Value 3bet + blocker, very wide call"
-    },
-    "drillable": [
-      "99",
-      "88",
-      "77",
-      "AJs",
-      "ATs",
-      "A5s",
-      "A4s",
-      "AKo",
-      "AQo",
-      "AJo"
-    ]
+    }
   },
   "BTN_vs_CO": {
     "frequencies": {
@@ -548,21 +480,7 @@
     },
     "stats": {
       "note": "BTN vs CO: Wide 3bet with blockers, very wide call"
-    },
-    "drillable": [
-      "88",
-      "77",
-      "A4s",
-      "A3s",
-      "KJs",
-      "KTs",
-      "QJs",
-      "AKo",
-      "AQo",
-      "AJo",
-      "ATo",
-      "KJo"
-    ]
+    }
   },
   "SB_vs_UTG": {
     "frequencies": {
@@ -615,16 +533,7 @@
     },
     "stats": {
       "note": "SB vs UTG: 3bet or fold (no call OOP)"
-    },
-    "drillable": [
-      "TT",
-      "99",
-      "AQs",
-      "AJs",
-      "A5s",
-      "A4s",
-      "KQs"
-    ]
+    }
   },
   "SB_vs_HJ": {
     "frequencies": {
@@ -686,16 +595,7 @@
     },
     "stats": {
       "note": "SB vs HJ: 3bet or fold"
-    },
-    "drillable": [
-      "99",
-      "88",
-      "A5s",
-      "A4s",
-      "AQo",
-      "AJo",
-      "KQo"
-    ]
+    }
   },
   "SB_vs_CO": {
     "frequencies": {
@@ -774,15 +674,7 @@
     },
     "stats": {
       "note": "SB vs CO: Wide 3bet or fold"
-    },
-    "drillable": [
-      "88",
-      "77",
-      "AJo",
-      "ATo",
-      "KQo",
-      "KJo"
-    ]
+    }
   },
   "SB_vs_BTN": {
     "frequencies": {
@@ -894,21 +786,7 @@
     },
     "stats": {
       "note": "SB vs BTN: Very wide 3bet or fold"
-    },
-    "drillable": [
-      "77",
-      "66",
-      "A9s",
-      "A8s",
-      "A5s",
-      "QJs",
-      "QTs",
-      "JTs",
-      "ATo",
-      "A9o",
-      "KJo",
-      "KTo"
-    ]
+    }
   },
   "BB_vs_UTG": {
     "frequencies": {
@@ -1431,39 +1309,7 @@
     },
     "stats": {
       "note": "BB vs UTG: Tight 3bet, wide call to defend"
-    },
-    "drillable": [
-      "88",
-      "77",
-      "66",
-      "A9s",
-      "A8s",
-      "A7s",
-      "K9s",
-      "K8s",
-      "K7s",
-      "QJs",
-      "QTs",
-      "Q9s",
-      "Q8s",
-      "JTs",
-      "J9s",
-      "AJo",
-      "ATo",
-      "A9o",
-      "A8o",
-      "A7o",
-      "KQo",
-      "KJo",
-      "KTo",
-      "K8o",
-      "K7o",
-      "QJo",
-      "QTo",
-      "Q9o",
-      "Q8o",
-      "JTo"
-    ]
+    }
   },
   "BB_vs_HJ": {
     "frequencies": {
@@ -1986,39 +1832,7 @@
     },
     "stats": {
       "note": "BB vs HJ: Medium 3bet, wide call"
-    },
-    "drillable": [
-      "77",
-      "66",
-      "55",
-      "A8s",
-      "A7s",
-      "A6s",
-      "K8s",
-      "K7s",
-      "K6s",
-      "Q9s",
-      "Q8s",
-      "Q7s",
-      "JTs",
-      "J9s",
-      "J8s",
-      "ATo",
-      "A9o",
-      "A8o",
-      "A7o",
-      "A6o",
-      "KJo",
-      "KTo",
-      "K9o",
-      "K8o",
-      "K7o",
-      "QJo",
-      "QTo",
-      "Q9o",
-      "Q8o",
-      "JTo"
-    ]
+    }
   },
   "BB_vs_CO": {
     "frequencies": {
@@ -2541,38 +2355,7 @@
     },
     "stats": {
       "note": "BB vs CO: Wide 3bet, very wide call"
-    },
-    "drillable": [
-      "66",
-      "55",
-      "44",
-      "A6s",
-      "A5s",
-      "A4s",
-      "K7s",
-      "K6s",
-      "K5s",
-      "Q8s",
-      "Q7s",
-      "Q6s",
-      "J9s",
-      "J8s",
-      "J7s",
-      "A9o",
-      "A8o",
-      "A7o",
-      "A6o",
-      "A5o",
-      "KTo",
-      "K9o",
-      "K8o",
-      "K7o",
-      "QTo",
-      "Q9o",
-      "Q8o",
-      "JTo",
-      "J9o"
-    ]
+    }
   },
   "BB_vs_BTN": {
     "frequencies": {
@@ -3095,39 +2878,7 @@
     },
     "stats": {
       "note": "BB vs BTN: Very wide 3bet, widest call"
-    },
-    "drillable": [
-      "55",
-      "44",
-      "33",
-      "A5s",
-      "A4s",
-      "A3s",
-      "K6s",
-      "K5s",
-      "K4s",
-      "Q7s",
-      "Q6s",
-      "Q5s",
-      "J8s",
-      "J7s",
-      "J6s",
-      "A8o",
-      "A7o",
-      "A6o",
-      "A5o",
-      "A4o",
-      "K9o",
-      "K8o",
-      "K7o",
-      "K6o",
-      "Q9o",
-      "Q8o",
-      "Q7o",
-      "JTo",
-      "J9o",
-      "J8o"
-    ]
+    }
   },
   "BB_vs_SB": {
     "frequencies": {
@@ -3650,38 +3401,6 @@
     },
     "stats": {
       "note": "BB vs SB: Blind war, widest ranges"
-    },
-    "drillable": [
-      "44",
-      "33",
-      "22",
-      "A4s",
-      "A3s",
-      "A2s",
-      "K5s",
-      "K4s",
-      "K3s",
-      "Q6s",
-      "Q5s",
-      "Q4s",
-      "J7s",
-      "J6s",
-      "J5s",
-      "A7o",
-      "A6o",
-      "A5o",
-      "A4o",
-      "A3o",
-      "K8o",
-      "K7o",
-      "K6o",
-      "K5o",
-      "Q8o",
-      "Q7o",
-      "Q6o",
-      "J9o",
-      "J8o",
-      "J7o"
-    ]
+    }
   }
 }
