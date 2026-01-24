@@ -184,6 +184,78 @@
         "因為順子比同花好 (重點是多了一條 nut 路線)",
         "因為連接牌勝率高 (連接牌的價值在 playability，不是 raw equity)"
       ]
+    },
+    "position_advantage": {
+      "name": "位置優勢",
+      "category": "eqr",
+      "explanation": "擁有位置 (IP) 讓你最後行動，翻後資訊優勢大幅提升 EQR。同樣的牌在 IP 比 OOP 多實現 5-15% equity。",
+      "misconceptions": [
+        "因為位置只影響翻前 (位置的價值主要體現在翻後多街決策)",
+        "因為有位置就可以隨便打 (位置是加分但不能彌補牌力不足)"
+      ]
+    },
+    "oop_penalty": {
+      "name": "OOP 懲罰",
+      "category": "eqr",
+      "explanation": "在沒有位置 (OOP) 必須先行動，資訊劣勢導致 EQR 下降。需要更強的牌或更好的 playability 來補償。",
+      "misconceptions": [
+        "因為 OOP 不能贏 (OOP 仍可獲利，但需要更好的起手牌)",
+        "因為要每次都 3bet (OOP 有些牌 call 仍然有利可圖，取決於 pot odds)"
+      ]
+    },
+    "pot_odds_bb": {
+      "name": "BB 底池賠率",
+      "category": "structure",
+      "explanation": "BB 已投入 1bb 盲注，面對 2.5bb open 只需再投 1.5bb 就能看翻牌。優異的 pot odds (約 3.5:1.5) 支撐極寬的防守範圍。",
+      "misconceptions": [
+        "因為 BB 牌力強 (BB 防守寬是因為價格好，不是因為牌好)",
+        "因為要保護盲注 (重點是數學上有利可圖，不是情緒性保護)"
+      ]
+    },
+    "sb_no_flat": {
+      "name": "SB 不能平跟",
+      "category": "structure",
+      "explanation": "SB 平跟後 OOP + BB 可能 squeeze，形成三方底池極難打。GTO 策略為純 3bet-or-fold，不存在 call。",
+      "misconceptions": [
+        "因為 SB 牌不夠好 (即使 KQs 也不 call，是結構性問題不是牌力問題)",
+        "因為 BB 一定會 squeeze (不確定性本身就是問題，不需要 100% squeeze)"
+      ]
+    },
+    "wider_value_3bet": {
+      "name": "寬價值 3bet",
+      "category": "structure",
+      "explanation": "對手 open range 較寬 (如 CO vs BTN)，3bet 價值端可以擴展。更多牌面對寬 range 有足夠 equity 打價值。",
+      "misconceptions": [
+        "因為對手弱就隨便 3bet (仍需要結構性理由，不是單純欺負人)",
+        "因為位置好就可以 3bet 任何牌 (位置好但沒有 equity 支撐仍是負 EV)"
+      ]
+    },
+    "4bet_bluff_candidate": {
+      "name": "4bet 詐唬候選",
+      "category": "structure",
+      "explanation": "面對 3bet 的理想詐唬牌：有 Ace blocker 減少對手 AA/AK、有同花潛力被 call 時仍有 playability、失敗時損失可控。",
+      "misconceptions": [
+        "因為這手牌太弱所以要詐唬 (好的 4bet bluff 需要 blocker + playability)",
+        "因為對手 3bet 都是詐唬 (4bet bluff 的設計是為了維持平衡)"
+      ]
+    },
+    "calling_vs_3bet": {
+      "name": "跟注 vs 3bet",
+      "category": "structure",
+      "explanation": "牌力足以面對 3bet 但不適合 4bet：4bet 會讓對手只留下壓制你的牌 (AA, KK)，call 保留更寬的對手 range。",
+      "misconceptions": [
+        "因為不敢 4bet (call 是經過計算的最優選擇)",
+        "因為要慢打 (不是 slowplay，是 4bet 的回應品質太差)"
+      ]
+    },
+    "gap_concept": {
+      "name": "間距概念",
+      "category": "equity",
+      "explanation": "面對已經 open 的對手，你需要比開牌者更強的牌才能繼續。因為你面對的是已篩選過的 range，不是隨機牌。",
+      "misconceptions": [
+        "因為對手一定很強 (UTG open 確實強，但 BTN open 可能很寬)",
+        "因為位置不重要 (間距大小取決於 open range 寬度和你的位置)"
+      ]
     }
   }
 }

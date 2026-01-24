@@ -113,9 +113,12 @@ class LogicQuizEngine:
         role_map = {
             "bluff_3bet": "3bet (詐唬端)",
             "value_3bet": "3bet (價值端)",
+            "bluff_4bet": "4bet (詐唬端)",
+            "value_4bet": "4bet (價值端)",
             "call": "Call",
             "fold": "Fold",
             "mix_call_3bet": "混合 (Call/3bet)",
+            "mix_3bet_fold": "混合 (3bet/Fold)",
         }
         return role_map.get(role, role)
 

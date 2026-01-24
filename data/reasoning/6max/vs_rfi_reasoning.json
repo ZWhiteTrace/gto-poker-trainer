@@ -73,5 +73,278 @@
         "stability": "stable"
       }
     }
+  },
+  "CO_vs_UTG": {
+    "context": {
+      "range_advantage": "villain",
+      "nut_advantage": "villain",
+      "hero_range_shape": "polarized",
+      "squeeze_risk": "medium",
+      "note": "與 HJ vs UTG 類似但稍寬。CO 後面只剩 3 人可能 squeeze，壓力較小。可以略微放寬 3bet bluff 和 call range。"
+    },
+    "hands": {
+      "TT": {
+        "role": "mix_call_3bet",
+        "tags": ["high_equity", "low_domination", "gap_concept"],
+        "compare_group": "pocket_pairs_high",
+        "stability": "param_sensitive",
+        "note": "TT 在 CO vs UTG 是經典的混合牌。3bet 拿價值但面對 4bet 尷尬；call 保護 postflop range 有 overpair。"
+      },
+      "99": {
+        "role": "call",
+        "tags": ["set_mining", "implied_odds_deep", "board_coverage"],
+        "compare_group": "pocket_pairs_mid",
+        "stability": "stable",
+        "note": "99 equity 足夠 call 但 3bet 面對 UTG 4bet range 全部被壓制。翻後中 set 有高隱含賠率。"
+      },
+      "AJs": {
+        "role": "mix_call_3bet",
+        "tags": ["high_equity", "high_eqr_suited", "domination_risk"],
+        "compare_group": "suited_broadways",
+        "stability": "param_sensitive",
+        "note": "AJs 對 UTG 有不錯的 equity 且同花結構好，但 3bet 後面對 4bet (AA/KK/AKs) 極難繼續。"
+      },
+      "A5s": {
+        "role": "mix_3bet_fold",
+        "tags": ["ace_blocker", "wheel_potential", "polarized_range_bluff", "suited"],
+        "compare_group": "suited_aces",
+        "stability": "stable",
+        "note": "經典 3bet bluff 候選：Ace blocker + wheel potential + 同花。比 A4s 多一個順子組合。"
+      },
+      "A4s": {
+        "role": "mix_3bet_fold",
+        "tags": ["ace_blocker", "wheel_potential", "polarized_range_bluff"],
+        "compare_group": "suited_aces",
+        "stability": "param_sensitive",
+        "note": "A4s 是 3bet bluff 的邊界。比 A5s 少一個順子組合 (A2345)，部分 solver 將其設為 fold。"
+      },
+      "KQs": {
+        "role": "mix_call_3bet",
+        "tags": ["high_equity", "high_eqr_suited", "nut_potential", "connectivity"],
+        "compare_group": "suited_broadways",
+        "stability": "param_sensitive",
+        "note": "KQs 在 CO 可以作為 thin value 3bet（面對 UTG call range 有高 equity），也可以 call 保護 condensed range。"
+      },
+      "AQo": {
+        "role": "mix_call_3bet",
+        "tags": ["high_equity", "domination_risk", "linear_range_top"],
+        "compare_group": "premium_broadways",
+        "stability": "param_sensitive",
+        "note": "CO 比 HJ 位置好，AQo 混合策略出現。3bet 可以打跑 TT-99/AJs 等，但被 4bet 時很尷尬。"
+      },
+      "AKo": {
+        "role": "value_3bet",
+        "tags": ["high_equity", "ace_blocker", "nut_potential"],
+        "compare_group": "premium_broadways",
+        "stability": "stable"
+      }
+    }
+  },
+  "BTN_vs_CO": {
+    "context": {
+      "range_advantage": "neutral",
+      "nut_advantage": "neutral",
+      "hero_range_shape": "polarized",
+      "squeeze_risk": "low",
+      "note": "BTN 有絕對位置優勢且僅 SB/BB 可能 squeeze。CO open range 較寬 (~25%)，BTN 可以寬 3bet。"
+    },
+    "hands": {
+      "77": {
+        "role": "mix_call_3bet",
+        "tags": ["set_mining", "implied_odds_deep", "position_advantage"],
+        "compare_group": "pocket_pairs_mid",
+        "stability": "param_sensitive",
+        "note": "77 在 BTN 是混合：call set mine (有位置提升隱含賠率) 或 3bet 利用 fold equity。CO range 寬讓 3bet 更有利。"
+      },
+      "66": {
+        "role": "call",
+        "tags": ["set_mining", "implied_odds_deep", "position_advantage"],
+        "compare_group": "pocket_pairs_low",
+        "stability": "stable",
+        "note": "66 在 BTN 純 call set mine。有位置讓 postflop 價值最大化，但 3bet 後 pot too big for set mining odds。"
+      },
+      "A5s": {
+        "role": "value_3bet",
+        "tags": ["ace_blocker", "wheel_potential", "suited", "wider_value_3bet"],
+        "compare_group": "suited_aces",
+        "stability": "stable",
+        "note": "對 CO 寬 range，A5s 升格為價值 3bet (不再只是 bluff)。Ace blocker + nut potential + 位置 = 正 EV 3bet。"
+      },
+      "A3s": {
+        "role": "mix_3bet_fold",
+        "tags": ["ace_blocker", "suited", "polarized_range_bluff"],
+        "compare_group": "suited_aces",
+        "stability": "param_sensitive",
+        "note": "A3s 在 BTN vs CO 是 3bet bluff 邊界。有 Ace blocker 但缺乏 wheel straight 的完整性。"
+      },
+      "QJs": {
+        "role": "mix_call_3bet",
+        "tags": ["high_eqr_suited", "connectivity", "board_coverage", "position_advantage"],
+        "compare_group": "suited_broadways",
+        "stability": "param_sensitive",
+        "note": "QJs 在 BTN 擁有位置優勢。Call 有極佳 playability；3bet 利用 fold equity + 被 call 後仍有 nut straight/flush draw。"
+      },
+      "JTs": {
+        "role": "call",
+        "tags": ["high_eqr_suited", "connectivity", "implied_odds_deep", "position_advantage"],
+        "compare_group": "suited_connectors",
+        "stability": "stable",
+        "note": "JTs 純 call：有位置的 suited connector 翻後 playability 極高。不 3bet 是因為希望多人看翻牌增加隱含賠率。"
+      },
+      "AQo": {
+        "role": "mix_call_3bet",
+        "tags": ["high_equity", "position_advantage", "wider_value_3bet"],
+        "compare_group": "premium_broadways",
+        "stability": "param_sensitive",
+        "note": "BTN vs CO 的 AQo 混合策略。對 CO 寬 range，3bet 有足夠價值；call 則利用位置最大化翻後 EQR。"
+      },
+      "KJo": {
+        "role": "mix_call_3bet",
+        "tags": ["position_advantage", "offsuit_low_eqr", "wider_value_3bet"],
+        "compare_group": "offsuit_broadways",
+        "stability": "param_sensitive",
+        "note": "KJo 在 BTN 是邊界牌。有位置優勢讓 offsuit 的 EQR 損失部分被補償，但仍是 thin 的操作。"
+      }
+    }
+  },
+  "SB_vs_BTN": {
+    "context": {
+      "range_advantage": "neutral",
+      "nut_advantage": "hero",
+      "hero_range_shape": "polarized",
+      "squeeze_risk": "none",
+      "note": "SB 採用純 3bet-or-fold 策略。原因：OOP flat 後 BB 可能 squeeze 且翻後資訊劣勢極大。3bet range 極化：頂端價值 + Axs bluff。"
+    },
+    "hands": {
+      "66": {
+        "role": "mix_3bet_fold",
+        "tags": ["sb_no_flat", "set_mining", "oop_penalty"],
+        "compare_group": "pocket_pairs_mid",
+        "stability": "param_sensitive",
+        "note": "66 是 SB 3bet 的邊界。有 set mining 價值但 3bet pot 中 OOP 很難實現。部分頻率 3bet 維持 range 中有小對子。"
+      },
+      "55": {
+        "role": "fold",
+        "tags": ["sb_no_flat", "oop_penalty", "reverse_implied"],
+        "compare_group": "pocket_pairs_mid",
+        "stability": "stable",
+        "note": "55 從 SB 不夠好 3bet (pot too big, no position)，也不能 call (SB 不 flat)。放棄是最佳選擇。"
+      },
+      "A9s": {
+        "role": "value_3bet",
+        "tags": ["ace_blocker", "suited", "wider_value_3bet", "sb_no_flat"],
+        "compare_group": "suited_aces",
+        "stability": "stable",
+        "note": "A9s 對 BTN 寬 range 有足夠 equity 3bet 拿價值。Ace blocker + 同花讓 3bet 正 EV。"
+      },
+      "A9o": {
+        "role": "mix_3bet_fold",
+        "tags": ["ace_blocker", "offsuit_low_eqr", "sb_no_flat", "oop_penalty"],
+        "compare_group": "offsuit_aces",
+        "stability": "param_sensitive",
+        "note": "A9o 是 SB 3bet 的邊界。有 Ace blocker 但缺乏同花 playability，OOP 時 EQR 大幅下降。"
+      },
+      "KTs": {
+        "role": "value_3bet",
+        "tags": ["high_eqr_suited", "connectivity", "wider_value_3bet", "sb_no_flat"],
+        "compare_group": "suited_broadways",
+        "stability": "stable",
+        "note": "KTs 從 SB 3bet 對 BTN：同花 + 連接結構提供多條 nut 路線，即使 OOP 也有足夠 playability。"
+      },
+      "K9s": {
+        "role": "mix_3bet_fold",
+        "tags": ["suited", "sb_no_flat", "oop_penalty", "medium_kicker_trap"],
+        "compare_group": "suited_broadways",
+        "stability": "param_sensitive",
+        "note": "K9s 是 SB 3bet 的邊界。同花有幫助但 K9 的踢腳在 3bet pot 中容易被壓制。"
+      },
+      "AKo": {
+        "role": "value_3bet",
+        "tags": ["high_equity", "ace_blocker", "nut_potential", "sb_no_flat"],
+        "compare_group": "premium_broadways",
+        "stability": "stable"
+      },
+      "A4s": {
+        "role": "bluff_3bet",
+        "tags": ["ace_blocker", "wheel_potential", "polarized_range_bluff", "sb_no_flat"],
+        "compare_group": "suited_aces",
+        "stability": "stable",
+        "note": "SB 3bet bluff 的理想選擇：Ace blocker 擋 AA/AK + wheel potential + 同花。失敗損失只是 3bet sizing。"
+      }
+    }
+  },
+  "BB_vs_BTN": {
+    "context": {
+      "range_advantage": "villain",
+      "nut_advantage": "neutral",
+      "hero_range_shape": "mixed",
+      "squeeze_risk": "none",
+      "note": "BB 面對 BTN open 必須極寬防守 (~55-60%)。已投入 1bb 的 pot odds 優勢讓幾乎所有有 playability 的牌都能獲利。3bet 極化 + 寬 call。"
+    },
+    "hands": {
+      "44": {
+        "role": "mix_call_3bet",
+        "tags": ["set_mining", "pot_odds_bb", "low_domination"],
+        "compare_group": "pocket_pairs_low",
+        "stability": "param_sensitive",
+        "note": "44 是 BB 3bet 的邊界對子。3bet 利用 fold equity + 被 call 時可 set mine；call 則利用 pot odds 純 set mine。"
+      },
+      "33": {
+        "role": "call",
+        "tags": ["set_mining", "pot_odds_bb", "implied_odds_deep"],
+        "compare_group": "pocket_pairs_low",
+        "stability": "stable",
+        "note": "33 純 call set mine。BB pot odds 讓即使最小對子也有利可圖，但 3bet 後 pot 太大，miss set 損失太高。"
+      },
+      "A4s": {
+        "role": "mix_call_3bet",
+        "tags": ["ace_blocker", "wheel_potential", "pot_odds_bb", "polarized_range_bluff"],
+        "compare_group": "suited_aces",
+        "stability": "param_sensitive",
+        "note": "A4s 在 BB 是 3bet bluff 邊界。有 Ace blocker + wheel potential，但 call 也合理 (pot odds 好 + 同花 playability)。"
+      },
+      "A3s": {
+        "role": "call",
+        "tags": ["pot_odds_bb", "suited", "wheel_potential"],
+        "compare_group": "suited_aces",
+        "stability": "stable",
+        "note": "A3s 純 call。有 pot odds 支撐且同花 + 微弱 wheel potential，但 3bet bluff 的 fold equity 不如 A4s/A5s。"
+      },
+      "K5s": {
+        "role": "mix_call_3bet",
+        "tags": ["suited", "pot_odds_bb", "polarized_range_bluff", "oop_penalty"],
+        "compare_group": "suited_kings",
+        "stability": "param_sensitive",
+        "note": "K5s 是 BB 3bet 的 Kxs 邊界。King blocker (擋 KK/AK) + 同花潛力讓 3bet bluff 可行。"
+      },
+      "K4s": {
+        "role": "call",
+        "tags": ["pot_odds_bb", "suited", "oop_penalty"],
+        "compare_group": "suited_kings",
+        "stability": "stable",
+        "note": "K4s 純 call。Pot odds 好但 3bet bluff 的 blocker 價值不夠 (K 只擋部分強牌)。"
+      },
+      "Q6s": {
+        "role": "mix_call_3bet",
+        "tags": ["suited", "pot_odds_bb", "polarized_range_bluff"],
+        "compare_group": "suited_queens",
+        "stability": "param_sensitive",
+        "note": "Q6s 是 BB 3bet 的 Qxs 邊界。Queen blocker 較弱但同花潛力提供 playability。"
+      },
+      "A7o": {
+        "role": "mix_call_3bet",
+        "tags": ["ace_blocker", "pot_odds_bb", "offsuit_low_eqr", "oop_penalty"],
+        "compare_group": "offsuit_aces",
+        "stability": "param_sensitive",
+        "note": "A7o 是 BB 3bet 的 offsuit ace 邊界。Ace blocker 有價值但缺乏同花 playability，OOP 懲罰大。"
+      },
+      "A6o": {
+        "role": "call",
+        "tags": ["pot_odds_bb", "offsuit_low_eqr", "oop_penalty"],
+        "compare_group": "offsuit_aces",
+        "stability": "stable",
+        "note": "A6o 純 call。Pot odds 讓 call 有利但 3bet bluff 不夠好 (offsuit + 踢腳弱)。"
+      }
+    }
   }
 }

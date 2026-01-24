@@ -21,6 +21,7 @@ from core.ev_quiz import EVQuiz, EVQuestion
 from core.outs import OutsQuiz, OutsQuestion, Card
 from core.postflop import PostflopDrill, PostflopSpot, PostflopAction, PostflopResult, TEXTURE_NAMES, HeroCard
 from trainer.session import TrainingSession, ProgressTracker
+from trainer.logic_quiz import LogicQuizEngine, LogicQuestion
 from ui.components.range_grid import display_range_grid
 from ui.components.table_visual import display_table, display_postflop_table
 from ui.components.card_display import display_hand_cards
@@ -33,8 +34,8 @@ from ui.components.hand_analysis import display_hand_analysis_page
 # Achievements system removed for simplification
 
 # Page URL mappings
-PAGE_KEYS = ["drill", "range", "pushfold", "review", "analysis", "postflop", "equity", "outs", "ev", "learning", "stats"]
-PAGE_NAMES = ["Drill Mode", "Range Viewer", "Push/Fold", "Hand Review", "Hand Analysis", "Postflop", "Equity Quiz", "Outs Quiz", "EV Quiz", "Learning", "Statistics"]
+PAGE_KEYS = ["drill", "range", "pushfold", "review", "analysis", "postflop", "equity", "outs", "ev", "logic", "learning", "stats"]
+PAGE_NAMES = ["Drill Mode", "Range Viewer", "Push/Fold", "Hand Review", "Hand Analysis", "Postflop", "Equity Quiz", "Outs Quiz", "EV Quiz", "Logic Quiz", "Learning", "Statistics"]
 
 # Equity breakdown data for vs 4-bet scenarios
 # Shows equity of common hands against typical 4-bet range hands
@@ -376,6 +377,8 @@ TEXTS = {
         "locked": "未解鎖",
         "equity_quiz": "權益測驗",
         "ev_quiz": "EV 測驗",
+        "logic_quiz": "邏輯測驗",
+        "hand_analysis": "手牌分析",
         "ev_question": "河牌圈是否跟注？",
         "ev_pot": "底池",
         "ev_bet": "對手下注",
@@ -482,6 +485,8 @@ TEXTS = {
         "locked": "Locked",
         "equity_quiz": "Equity Quiz",
         "ev_quiz": "EV Quiz",
+        "logic_quiz": "Logic Quiz",
+        "hand_analysis": "Hand Analysis",
         "ev_question": "River: Call or Fold?",
         "ev_pot": "Pot",
         "ev_bet": "Opponent bets",
@@ -609,7 +614,7 @@ def main():
         st.markdown("<div style='height: 5px;'></div>", unsafe_allow_html=True)
 
         # Navigation
-        nav_options = [t("drill_mode"), t("range_viewer"), t("push_fold"), t("hand_review"), t("postflop"), t("equity_quiz"), t("outs_quiz"), t("ev_quiz"), t("learning"), t("statistics")]
+        nav_options = [t("drill_mode"), t("range_viewer"), t("push_fold"), t("hand_review"), t("hand_analysis"), t("postflop"), t("equity_quiz"), t("outs_quiz"), t("ev_quiz"), t("logic_quiz"), t("learning"), t("statistics")]
         page_idx = st.radio(
             "Navigate",
             options=range(len(nav_options)),
@@ -806,6 +811,8 @@ def main():
         outs_quiz_page()
     elif page == "EV Quiz":
         ev_quiz_page()
+    elif page == "Logic Quiz":
+        logic_quiz_page()
     elif page == "Learning":
         learning_page()
     elif page == "Statistics":
@@ -1915,6 +1922,254 @@ def stats_page():
                         )
     else:
         st.success(t("no_mistakes") + " 🎉")
+
+
+def logic_quiz_page():
+    """Logic Quiz page - WHY-layer GTO reasoning questions."""
+    lang = st.session_state.language
+
+    # Initialize logic quiz state
+    if 'logic_engine' not in st.session_state:
+        st.session_state.logic_engine = LogicQuizEngine()
+    if 'logic_question' not in st.session_state:
+        st.session_state.logic_question = None
+    if 'logic_show_result' not in st.session_state:
+        st.session_state.logic_show_result = False
+    if 'logic_answered_idx' not in st.session_state:
+        st.session_state.logic_answered_idx = None
+    if 'logic_score' not in st.session_state:
+        st.session_state.logic_score = {"correct": 0, "total": 0}
+    if 'logic_scenario' not in st.session_state:
+        st.session_state.logic_scenario = None
+
+    engine = st.session_state.logic_engine
+
+    # Header with score
+    score = st.session_state.logic_score
+    accuracy = (score["correct"] / score["total"] * 100) if score["total"] > 0 else 0
+
+    header_title = "🧠 GTO 邏輯測驗" if lang == "zh" else "🧠 GTO Logic Quiz"
+    st.markdown(f"""
+    <div style="
+        background: linear-gradient(135deg, #4a1d96 0%, #1e1b4b 100%);
+        padding: 6px 12px;
+        border-radius: 8px;
+        margin-bottom: 8px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    ">
+        <span style="font-size: 1.1rem; font-weight: bold;">{header_title}</span>
+        <span style="color: #a78bfa; font-size: 0.9rem;">
+            {score["correct"]}/{score["total"]} ({accuracy:.0f}%)
+        </span>
+    </div>
+    """, unsafe_allow_html=True)
+
+    # Subtitle
+    subtitle = "理解 WHY：為什麼 GTO 選擇這個動作？" if lang == "zh" else "Understanding WHY: Why does GTO choose this action?"
+    st.caption(subtitle)
+
+    # Scenario selector
+    scenarios = engine.get_available_scenarios()
+    if not scenarios:
+        no_data_msg = "尚無邏輯題目資料。請確認 data/reasoning/ 目錄中有對應的 JSON 檔案。" if lang == "zh" else "No logic quiz data available. Please ensure JSON files exist in data/reasoning/ directory."
+        st.warning(no_data_msg)
+        return
+
+    # Format scenario names for display
+    def format_scenario_name(s):
+        parts = s.replace("_", " ").split()
+        if len(parts) >= 3 and parts[1].lower() == "vs":
+            return f"{parts[0]} vs {parts[2]}"
+        return s.replace("_", " ")
+
+    all_label = "全部場景" if lang == "zh" else "All Scenarios"
+    scenario_options = [all_label] + [format_scenario_name(s) for s in scenarios]
+    scenario_keys = [None] + scenarios
+
+    col_scenario, col_type = st.columns([2, 1])
+    with col_scenario:
+        scenario_label = "選擇場景" if lang == "zh" else "Scenario"
+        selected_idx = st.selectbox(
+            scenario_label,
+            options=range(len(scenario_options)),
+            format_func=lambda i: scenario_options[i],
+            key="logic_scenario_select",
+        )
+        selected_scenario = scenario_keys[selected_idx]
+
+    with col_type:
+        type_label = "題型" if lang == "zh" else "Type"
+        type_options = ["A+B", "A", "B"] if lang == "zh" else ["A+B", "A", "B"]
+        type_descriptions = [
+            "混合" if lang == "zh" else "Mixed",
+            "角色辨識" if lang == "zh" else "Role ID",
+            "比較推理" if lang == "zh" else "Compare",
+        ]
+        selected_type = st.selectbox(
+            type_label,
+            options=range(3),
+            format_func=lambda i: f"{type_options[i]} ({type_descriptions[i]})",
+            key="logic_type_select",
+        )
+
+    # Generate question button or auto-generate
+    def generate_new_question():
+        scenario = selected_scenario
+        if scenario is None:
+            scenario = None  # random
+
+        if selected_type == 0:  # Mixed
+            q = engine.generate_random_question(scenario=scenario)
+        elif selected_type == 1:  # Type A only
+            if scenario:
+                hands = engine.get_scenario_hands(scenario)
+                if hands:
+                    import random
+                    hand = random.choice(hands)
+                    q = engine.generate_type_a(scenario, hand)
+                else:
+                    q = None
+            else:
+                q = engine.generate_random_question(scenario=None)
+        else:  # Type B only
+            if scenario:
+                q = engine.generate_type_b(scenario)
+            else:
+                q = engine.generate_random_question(scenario=None)
+
+        st.session_state.logic_question = q
+        st.session_state.logic_show_result = False
+        st.session_state.logic_answered_idx = None
+
+    if st.session_state.logic_question is None:
+        generate_new_question()
+
+    question = st.session_state.logic_question
+
+    if question is None:
+        no_q_msg = "無法生成此類型的題目。請嘗試其他場景或題型。" if lang == "zh" else "Cannot generate this question type. Try another scenario or type."
+        st.info(no_q_msg)
+        next_label = "重新生成" if lang == "zh" else "Regenerate"
+        if st.button(next_label, key="logic_regen"):
+            generate_new_question()
+            st.rerun()
+        return
+
+    # Display question info badge
+    type_badge = "A 角色辨識" if question.question_type == "A" else "B 比較推理"
+    if lang == "en":
+        type_badge = "A Role ID" if question.question_type == "A" else "B Comparison"
+
+    badge_color = "#6366f1" if question.question_type == "A" else "#8b5cf6"
+    st.markdown(f"""
+    <div style="display: flex; gap: 8px; margin-bottom: 8px; flex-wrap: wrap;">
+        <span style="background: {badge_color}; color: white; padding: 2px 8px; border-radius: 12px; font-size: 0.75rem;">
+            {type_badge}
+        </span>
+        <span style="background: #374151; color: #d1d5db; padding: 2px 8px; border-radius: 12px; font-size: 0.75rem;">
+            {question.layer}
+        </span>
+        <span style="background: #1f2937; color: #9ca3af; padding: 2px 8px; border-radius: 12px; font-size: 0.75rem;">
+            {question.hand}
+        </span>
+    </div>
+    """, unsafe_allow_html=True)
+
+    # Display question text
+    st.markdown(f"""
+    <div style="
+        background: #1e293b;
+        border: 1px solid #4a1d96;
+        border-radius: 8px;
+        padding: 16px;
+        margin-bottom: 12px;
+        font-size: 1.05rem;
+        line-height: 1.6;
+    ">
+        {question.question_text}
+    </div>
+    """, unsafe_allow_html=True)
+
+    # Display options as buttons
+    has_answered = st.session_state.logic_answered_idx is not None
+
+    for i, option in enumerate(question.options):
+        if has_answered:
+            is_correct = (i == question.correct_index)
+            is_selected = (i == st.session_state.logic_answered_idx)
+
+            if is_correct:
+                btn_style = "background: #065f46; border: 2px solid #10b981;"
+                icon = "✓ "
+            elif is_selected and not is_correct:
+                btn_style = "background: #7f1d1d; border: 2px solid #ef4444;"
+                icon = "✗ "
+            else:
+                btn_style = "background: #1f2937; border: 1px solid #374151; opacity: 0.6;"
+                icon = ""
+
+            st.markdown(f"""
+            <div style="{btn_style} padding: 10px 14px; border-radius: 6px; margin-bottom: 6px; font-size: 0.9rem;">
+                {icon}{option}
+            </div>
+            """, unsafe_allow_html=True)
+        else:
+            if st.button(f"{chr(65+i)}. {option}", key=f"logic_opt_{i}", use_container_width=True):
+                st.session_state.logic_answered_idx = i
+                st.session_state.logic_show_result = True
+                # Update score
+                if i == question.correct_index:
+                    st.session_state.logic_score["correct"] += 1
+                st.session_state.logic_score["total"] += 1
+                st.rerun()
+
+    # Show result and explanation
+    if st.session_state.logic_show_result:
+        is_correct = st.session_state.logic_answered_idx == question.correct_index
+
+        if is_correct:
+            result_msg = "正確！" if lang == "zh" else "Correct!"
+            st.success(result_msg)
+        else:
+            result_msg = "錯誤" if lang == "zh" else "Incorrect"
+            st.error(result_msg)
+
+        # Explanation
+        explain_header = "解說" if lang == "zh" else "Explanation"
+        st.markdown(f"**{explain_header}:**")
+        st.markdown(f"""
+        <div style="
+            background: #0f172a;
+            border-left: 3px solid #6366f1;
+            padding: 12px 16px;
+            border-radius: 0 6px 6px 0;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+            line-height: 1.7;
+            white-space: pre-wrap;
+        ">
+{question.explanation}
+        </div>
+        """, unsafe_allow_html=True)
+
+        # Related tags
+        if question.tags_involved:
+            tags_header = "相關原則標籤" if lang == "zh" else "Related Tags"
+            tag_names = [engine._get_tag_name(t) for t in question.tags_involved]
+            tags_html = " ".join([
+                f'<span style="background: #312e81; color: #c4b5fd; padding: 2px 8px; border-radius: 10px; font-size: 0.75rem; margin-right: 4px;">{name}</span>'
+                for name in tag_names
+            ])
+            st.markdown(f"**{tags_header}:** {tags_html}", unsafe_allow_html=True)
+
+        # Next question button
+        st.markdown("<div style='height: 10px;'></div>", unsafe_allow_html=True)
+        next_label = "下一題 →" if lang == "zh" else "Next →"
+        if st.button(next_label, key="logic_next", type="primary", use_container_width=True):
+            generate_new_question()
+            st.rerun()
 
 
 def learning_page():

@@ -1,0 +1,152 @@
+{
+  "meta": {
+    "version": "1.0",
+    "description": "vs 3bet 場景的決策邏輯層。Hero open → Villain 3bet → Hero 決策 (4bet / call / fold)。",
+    "assumptions": {
+      "stack_bb": 100,
+      "open_size": "2.5bb",
+      "three_bet_size": "8-10bb",
+      "four_bet_size": "20-22bb",
+      "format": "6max",
+      "rake": "standard_NL50"
+    }
+  },
+  "UTG_vs_BTN": {
+    "context": {
+      "range_advantage": "hero",
+      "nut_advantage": "hero",
+      "hero_range_shape": "linear",
+      "squeeze_risk": "none",
+      "note": "UTG open range 極強 (~15%)，面對 BTN 3bet 的回應很緊。4bet 純粹打價值 + 少量 bluff。Call range 是高 equity 但不想 4bet 的牌。"
+    },
+    "hands": {
+      "QQ": {
+        "role": "value_4bet",
+        "tags": ["high_equity", "nut_potential", "gap_concept"],
+        "compare_group": "premium_pairs",
+        "stability": "stable",
+        "note": "QQ 面對 BTN 3bet 有足夠 equity 純 4bet 拿價值。BTN 3bet range 包含很多 QQ 壓制的牌 (JJ, TT, AQ, AJ)。"
+      },
+      "JJ": {
+        "role": "value_4bet",
+        "tags": ["high_equity", "calling_vs_3bet"],
+        "compare_group": "premium_pairs",
+        "stability": "param_sensitive",
+        "note": "JJ 在 UTG vs BTN 3bet 以 4bet 為主。UTG 的 open range 很強所以 4bet 不會被輕易 exploit，但部分頻率可 call 保護。"
+      },
+      "TT": {
+        "role": "call",
+        "tags": ["calling_vs_3bet", "set_mining", "implied_odds_deep"],
+        "compare_group": "pocket_pairs_high",
+        "stability": "stable",
+        "note": "TT call vs 3bet：equity 足夠 call 但 4bet 面對 5bet jam (AA/KK/AKs) 極難受。Call 後 postflop 有 overpair + set 潛力。"
+      },
+      "99": {
+        "role": "call",
+        "tags": ["set_mining", "implied_odds_deep", "calling_vs_3bet"],
+        "compare_group": "pocket_pairs_high",
+        "stability": "stable",
+        "note": "99 純 call set mine。面對 3bet 的 pot odds 足夠，且 3bet pot 中 set 有極高隱含賠率。"
+      },
+      "AKs": {
+        "role": "value_4bet",
+        "tags": ["high_equity", "ace_blocker", "nut_potential", "high_eqr_suited"],
+        "compare_group": "premium_broadways",
+        "stability": "stable",
+        "note": "AKs 是最強的 4bet 手牌之一：阻擋 AA/AK，有位置時翻後極強，面對 5bet 也有足夠 equity call。"
+      },
+      "AQs": {
+        "role": "call",
+        "tags": ["high_equity", "calling_vs_3bet", "domination_risk", "high_eqr_suited"],
+        "compare_group": "premium_broadways",
+        "stability": "stable",
+        "note": "AQs call vs 3bet：equity 夠高但 4bet 讓對手只留 AK/KK/AA (全壓制你)。Call 後同花結構提供翻後 playability。"
+      },
+      "A5s": {
+        "role": "bluff_4bet",
+        "tags": ["ace_blocker", "wheel_potential", "4bet_bluff_candidate", "suited"],
+        "compare_group": "suited_aces",
+        "stability": "stable",
+        "note": "A5s 是理想的 4bet bluff：Ace blocker 擋 AA/AK、wheel potential 被 call 時有 backup equity、失敗損失可控。"
+      },
+      "AKo": {
+        "role": "value_4bet",
+        "tags": ["high_equity", "ace_blocker", "nut_potential"],
+        "compare_group": "premium_broadways",
+        "stability": "stable"
+      }
+    }
+  },
+  "CO_vs_BTN": {
+    "context": {
+      "range_advantage": "neutral",
+      "nut_advantage": "hero",
+      "hero_range_shape": "polarized",
+      "squeeze_risk": "none",
+      "note": "CO open range 較寬 (~22%)，面對 BTN 3bet 防守範圍也寬。4bet 極化 (premium + Axs bluff)，call range 包含大量 suited hands 和 pairs。"
+    },
+    "hands": {
+      "JJ": {
+        "role": "call",
+        "tags": ["calling_vs_3bet", "high_equity", "set_mining"],
+        "compare_group": "pocket_pairs_high",
+        "stability": "stable",
+        "note": "JJ 在 CO vs BTN 3bet 純 call。CO open range 寬所以 4bet 不像 UTG 那麼有支撐力。Call 保護 range 且有 overpair/set 潛力。"
+      },
+      "88": {
+        "role": "call",
+        "tags": ["set_mining", "implied_odds_deep", "calling_vs_3bet"],
+        "compare_group": "pocket_pairs_mid",
+        "stability": "stable",
+        "note": "88 純 set mine vs 3bet。3bet pot 深度仍足夠支撐 implied odds。"
+      },
+      "AKs": {
+        "role": "value_4bet",
+        "tags": ["high_equity", "ace_blocker", "nut_potential", "high_eqr_suited"],
+        "compare_group": "premium_broadways",
+        "stability": "stable"
+      },
+      "AQs": {
+        "role": "call",
+        "tags": ["high_equity", "calling_vs_3bet", "high_eqr_suited", "domination_risk"],
+        "compare_group": "premium_broadways",
+        "stability": "stable",
+        "note": "AQs 同花結構讓 call 後翻後極有 playability。4bet 面對 5bet 只剩 AA 能撐，不值得冒險。"
+      },
+      "A9s": {
+        "role": "bluff_4bet",
+        "tags": ["ace_blocker", "4bet_bluff_candidate", "suited"],
+        "compare_group": "suited_aces",
+        "stability": "stable",
+        "note": "A9s 作為 CO 4bet bluff：Ace blocker 效應 + 同花 backup。比 A5s 少 wheel potential 但 blocker 相同。"
+      },
+      "A5s": {
+        "role": "bluff_4bet",
+        "tags": ["ace_blocker", "wheel_potential", "4bet_bluff_candidate", "suited"],
+        "compare_group": "suited_aces",
+        "stability": "stable",
+        "note": "A5s 依然是最經典的 4bet bluff：所有核心要素齊全 (blocker + wheel + suited)。"
+      },
+      "A4s": {
+        "role": "bluff_4bet",
+        "tags": ["ace_blocker", "wheel_potential", "4bet_bluff_candidate"],
+        "compare_group": "suited_aces",
+        "stability": "stable",
+        "note": "CO 4bet range 更寬，A4s 也被納入 bluff range。有 Ace blocker 和 wheel potential 支撐。"
+      },
+      "KQs": {
+        "role": "call",
+        "tags": ["high_eqr_suited", "connectivity", "calling_vs_3bet", "board_coverage"],
+        "compare_group": "suited_broadways",
+        "stability": "stable",
+        "note": "KQs call vs 3bet：翻後 playability 極高 (nut flush + nut straight draw)。4bet 的 fold equity 不足以彌補被 5bet 的風險。"
+      },
+      "AKo": {
+        "role": "value_4bet",
+        "tags": ["high_equity", "ace_blocker", "nut_potential"],
+        "compare_group": "premium_broadways",
+        "stability": "stable"
+      }
+    }
+  }
+}
