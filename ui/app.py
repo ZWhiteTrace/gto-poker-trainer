@@ -2458,9 +2458,10 @@ def mock_exam_page():
             | 🎲 權益測驗 | 3 題 | 手牌對抗權益估算 |
             | 🃏 補牌測驗 | 2 題 | Outs 計算 |
             | 💰 EV 測驗 | 2 題 | 底池賠率決策 |
-            | 🧠 邏輯測驗 | 3 題 | GTO 推理 |
+            | 🧠 翻前邏輯 | 2 題 | 翻前 GTO 推理 |
+            | 🎯 翻後邏輯 | 2 題 | 翻後決策推理 |
 
-            **總題數**: 10 題
+            **總題數**: 11 題
 
             **計時**: 測驗會記錄完成時間
 
@@ -2478,9 +2479,10 @@ def mock_exam_page():
             | 🎲 Equity Quiz | 3 | Hand vs hand equity |
             | 🃏 Outs Quiz | 2 | Counting outs |
             | 💰 EV Quiz | 2 | Pot odds decisions |
-            | 🧠 Logic Quiz | 3 | GTO reasoning |
+            | 🧠 Preflop Logic | 2 | Preflop GTO reasoning |
+            | 🎯 Postflop Logic | 2 | Postflop decision logic |
 
-            **Total**: 10 questions
+            **Total**: 11 questions
 
             **Timer**: Your completion time will be recorded
 
@@ -2650,7 +2652,8 @@ def mock_exam_page():
             "equity": ("🎲 權益測驗", "🎲 Equity"),
             "outs": ("🃏 補牌測驗", "🃏 Outs"),
             "ev": ("💰 EV 測驗", "💰 EV"),
-            "logic": ("🧠 邏輯測驗", "🧠 Logic"),
+            "logic": ("🧠 翻前邏輯", "🧠 Preflop"),
+            "postflop": ("🎯 翻後邏輯", "🎯 Postflop"),
         }
 
         # Improvement suggestions based on weak areas
@@ -2668,18 +2671,22 @@ def mock_exam_page():
                 "en": "💡 Tip: Strengthen pot odds calculation, practice 'EV Quiz'.",
             },
             "logic": {
-                "zh": "💡 建議：深入學習「📖 Preflop WHY」理解 GTO 推理邏輯。",
-                "en": "💡 Tip: Study '📖 Preflop WHY' to understand GTO reasoning.",
+                "zh": "💡 建議：深入學習「📖 Preflop WHY」理解翻前 GTO 推理邏輯。",
+                "en": "💡 Tip: Study '📖 Preflop WHY' to understand preflop GTO reasoning.",
+            },
+            "postflop": {
+                "zh": "💡 建議：深入學習「📖 Postflop WHY」理解翻後 C-bet、Barrel 決策邏輯。",
+                "en": "💡 Tip: Study '📖 Postflop WHY' to understand postflop C-bet and barrel decisions.",
             },
         }
 
         breakdown_title = "題型分析" if lang == "zh" else "Breakdown by Type"
         st.markdown(f"### {breakdown_title}")
 
-        cols = st.columns(4)
+        cols = st.columns(5)
         weak_areas = []
         for i, (qtype, stats) in enumerate(type_stats.items()):
-            with cols[i % 4]:
+            with cols[i % 5]:
                 name = type_names.get(qtype, (qtype, qtype))[0 if lang == "zh" else 1]
                 pct = (stats["correct"] / stats["total"] * 100) if stats["total"] > 0 else 0
                 color = "#22c55e" if pct >= 80 else "#eab308" if pct >= 60 else "#ef4444"
@@ -2716,7 +2723,7 @@ def mock_exam_page():
         with st.expander(review_title, expanded=True):
             for i, r in enumerate(results):
                 icon = "✅" if r["correct"] else "❌"
-                qtype_icon = {"equity": "🎲", "outs": "🃏", "ev": "💰", "logic": "🧠"}.get(r["type"], "❓")
+                qtype_icon = {"equity": "🎲", "outs": "🃏", "ev": "💰", "logic": "🧠", "postflop": "🎯"}.get(r["type"], "❓")
 
                 # Question header
                 st.markdown(f"""
@@ -2876,12 +2883,12 @@ def _generate_mock_exam():
         if q:
             questions.append({"type": "ev", **q})
 
-    # 4. Logic questions (3)
+    # 4. Preflop Logic questions (2)
     if "logic_engine" not in st.session_state:
         st.session_state.logic_engine = LogicQuizEngine()
     engine = st.session_state.logic_engine
 
-    for _ in range(3):
+    for _ in range(2):
         try:
             lq = engine.generate_random_question()
             if lq:
@@ -2893,6 +2900,23 @@ def _generate_mock_exam():
                     "options": options,
                     "correct": lq.correct_answer,
                     "explanation": lq.explanation,
+                })
+        except Exception:
+            pass
+
+    # 5. Postflop Logic questions (2)
+    for _ in range(2):
+        try:
+            pq = engine.generate_type_e()
+            if pq:
+                options = pq.options
+                random.shuffle(options)
+                questions.append({
+                    "type": "postflop",
+                    "question": pq.question_text,
+                    "options": options,
+                    "correct": pq.correct_answer,
+                    "explanation": pq.explanation,
                 })
         except Exception:
             pass
@@ -3049,12 +3073,14 @@ def _display_mock_question(q, idx, lang):
         "outs": "🃏",
         "ev": "💰",
         "logic": "🧠",
+        "postflop": "🎯",
     }
     type_names = {
         "equity": ("權益測驗", "Equity"),
         "outs": ("補牌測驗", "Outs"),
         "ev": ("EV 測驗", "EV"),
-        "logic": ("邏輯測驗", "Logic"),
+        "logic": ("翻前邏輯", "Preflop"),
+        "postflop": ("翻後邏輯", "Postflop"),
     }
 
     icon = type_icons.get(qtype, "❓")
