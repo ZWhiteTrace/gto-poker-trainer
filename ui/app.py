@@ -1971,16 +1971,17 @@ def logic_quiz_page():
     """, unsafe_allow_html=True)
 
     # Mode selector
-    mode_options = ["GTO (WHY)", "Exploit (偏移)", "Rake-Aware"]
+    mode_options = ["GTO (WHY)", "Exploit (偏移)", "Rake-Aware", "Postflop (翻後)"]
     mode_descriptions = [
         "為什麼 GTO 選擇這個動作？" if lang == "zh" else "Why does GTO choose this action?",
         "面對特定對手如何調整？" if lang == "zh" else "How to adjust vs specific opponents?",
         "高 Rake 環境的策略修正" if lang == "zh" else "Strategy adjustments for high-rake environments",
+        "翻後 C-bet / 防守決策邏輯" if lang == "zh" else "Postflop C-bet / defense logic",
     ]
 
     selected_mode = st.radio(
         "模式" if lang == "zh" else "Mode",
-        options=range(3),
+        options=range(4),
         format_func=lambda i: mode_options[i],
         horizontal=True,
         key="logic_mode_radio",
@@ -2105,7 +2106,7 @@ def logic_quiz_page():
             generate_new_question()
 
     # ─── Mode 2: Rake-Aware ──────────────────────────────────────────
-    else:
+    elif selected_mode == 2:
         rake_levels = exploit_engine.get_rake_levels()
         if not rake_levels:
             st.warning("尚無 Rake 資料。" if lang == "zh" else "No rake data available.")
@@ -2149,6 +2150,80 @@ def logic_quiz_page():
         if st.session_state.logic_question is None:
             generate_new_question()
 
+    # ─── Mode 3: Postflop (翻後) ──────────────────────────────────────
+    elif selected_mode == 3:
+        # Get postflop summary
+        postflop_summary = engine.get_postflop_summary()
+        if postflop_summary["total_postflop_hands"] == 0:
+            st.warning("尚無翻後資料。" if lang == "zh" else "No postflop data available.")
+            return
+
+        # Board texture selector
+        cbet_textures = engine.get_available_board_textures("cbet")
+        texture_display = {
+            "dry_ace_high": "乾燥 A 高 (A72r)",
+            "dry_king_high": "乾燥 K 高 (K83r)",
+            "paired_board": "配對牌面 (773r)",
+            "monotone": "單花牌面 (Ts7s3s)",
+            "wet_connected": "濕潤連接 (Jh9h8c)",
+            "low_rainbow": "低彩虹 (652r)",
+        }
+
+        all_label = "全部牌面" if lang == "zh" else "All Textures"
+        texture_options = [all_label] + [texture_display.get(t, t) for t in cbet_textures]
+        texture_keys = [None] + cbet_textures
+
+        col_texture, col_type = st.columns([2, 1])
+        with col_texture:
+            selected_texture_idx = st.selectbox(
+                "牌面類型" if lang == "zh" else "Board Texture",
+                options=range(len(texture_options)),
+                format_func=lambda i: texture_options[i],
+                key="postflop_texture_select",
+            )
+            selected_texture = texture_keys[selected_texture_idx]
+
+        with col_type:
+            postflop_type_options = [
+                "混合 (E+F)" if lang == "zh" else "Mixed (E+F)",
+                "E: C-bet",
+                "F: Defense",
+            ]
+            selected_postflop_type = st.selectbox(
+                "題型" if lang == "zh" else "Type",
+                options=range(3),
+                format_func=lambda i: postflop_type_options[i],
+                key="postflop_type_select",
+            )
+
+        # Show stats
+        st.markdown(f"""
+        <div style="background: #1e1b4b; border-radius: 6px; padding: 6px 12px; margin-bottom: 8px; font-size: 0.8rem;">
+            C-bet: {postflop_summary['cbet_hands']} 手牌 | Defense: {postflop_summary['defense_hands']} 手牌
+        </div>
+        """, unsafe_allow_html=True)
+
+        def generate_new_question():
+            import random
+            if selected_postflop_type == 0:
+                q_type = random.choice(["E", "F"])
+            elif selected_postflop_type == 1:
+                q_type = "E"
+            else:
+                q_type = "F"
+
+            if q_type == "E":
+                q = engine.generate_type_e(board_texture=selected_texture)
+            else:
+                q = engine.generate_type_f(board_texture=selected_texture)
+
+            st.session_state.logic_question = q
+            st.session_state.logic_show_result = False
+            st.session_state.logic_answered_idx = None
+
+        if st.session_state.logic_question is None:
+            generate_new_question()
+
     question = st.session_state.logic_question
 
     if question is None:
@@ -2166,6 +2241,8 @@ def logic_quiz_page():
         "B": ("B 比較推理", "B Comparison", "#8b5cf6"),
         "C": ("C 對手剝削", "C Exploit", "#7c3aed"),
         "D": ("D Rake 感知", "D Rake-Aware", "#d97706"),
+        "E": ("E C-bet 邏輯", "E C-bet Logic", "#059669"),
+        "F": ("F 防守邏輯", "F Defense Logic", "#0891b2"),
     }
     zh_badge, en_badge, badge_color = type_badge_map.get(
         question.question_type, ("?", "?", "#6b7280")
