@@ -2403,11 +2403,11 @@ def learning_page():
 
     # Tabs for different topics
     if lang == "zh":
-        tabs = ["RFI 速記表", "RFI 範圍提示", "📝 記憶訣竅", "權益對抗", "Outs 補牌", "賠率表", "起手牌", "SPR 法則", "翻後策略", "資金管理", "位置價值", "Blocker", "常見錯誤", "EV 計算", "🧮 GTO 概念"]
+        tabs = ["RFI 速記表", "RFI 範圍提示", "📝 記憶訣竅", "權益對抗", "Outs 補牌", "賠率表", "起手牌", "SPR 法則", "翻後策略", "資金管理", "位置價值", "Blocker", "常見錯誤", "EV 計算", "🧮 GTO 概念", "📖 Postflop WHY"]
     else:
-        tabs = ["RFI Charts", "RFI Tips", "📝 Mnemonics", "Equity", "Outs", "Pot Odds", "Starting Hands", "SPR", "Post-flop", "Bankroll", "Position", "Blockers", "Mistakes", "EV Calc", "🧮 GTO Concepts"]
+        tabs = ["RFI Charts", "RFI Tips", "📝 Mnemonics", "Equity", "Outs", "Pot Odds", "Starting Hands", "SPR", "Post-flop", "Bankroll", "Position", "Blockers", "Mistakes", "EV Calc", "🧮 GTO Concepts", "📖 Postflop WHY"]
 
-    tab0, tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8, tab9, tab10, tab11, tab12, tab13, tab14 = st.tabs(tabs)
+    tab0, tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8, tab9, tab10, tab11, tab12, tab13, tab14, tab15 = st.tabs(tabs)
 
     with tab0:
         evaluator = Evaluator()
@@ -2454,6 +2454,204 @@ def learning_page():
 
     with tab14:
         _display_gto_concepts_learning(lang)
+
+    with tab15:
+        _display_postflop_why_learning(lang)
+
+
+def _display_postflop_why_learning(lang: str):
+    """Display structured postflop WHY learning content (lecture mode)."""
+    from trainer.logic_quiz import LogicQuizEngine
+    import json
+
+    # Initialize engine
+    engine = LogicQuizEngine()
+
+    # Header
+    header = "Postflop WHY 講義" if lang == "zh" else "Postflop WHY Lecture"
+    subtitle = "系統性學習翻後決策邏輯 — 不只是 WHAT，更要理解 WHY" if lang == "zh" else "Learn postflop decision logic systematically — not just WHAT, but WHY"
+    st.markdown(f"### 📖 {header}")
+    st.caption(subtitle)
+
+    # Pot type selector
+    pot_types = ["SRP (單挑底池)", "3bet Pot"] if lang == "zh" else ["SRP (Single Raised)", "3bet Pot"]
+    selected_pot = st.radio(
+        "底池類型" if lang == "zh" else "Pot Type",
+        options=range(2),
+        format_func=lambda i: pot_types[i],
+        horizontal=True,
+        key="postflop_why_pot_type",
+    )
+
+    # Category selector
+    categories = ["C-bet 策略", "防守策略", "Barrel 策略"] if lang == "zh" else ["C-bet Strategy", "Defense Strategy", "Barrel Strategy"]
+    selected_cat = st.selectbox(
+        "策略類型" if lang == "zh" else "Strategy Type",
+        options=range(3),
+        format_func=lambda i: categories[i],
+        key="postflop_why_category",
+    )
+
+    # Get data based on selection
+    if selected_cat == 0:  # C-bet
+        spot = "3bet_ip_vs_oop" if selected_pot == 1 else "srp_btn_vs_bb"
+        data = engine.postflop_data.get("cbet", {}).get(spot, {})
+        cat_label = "C-bet"
+    elif selected_cat == 1:  # Defense
+        spot = "3bet_oop_vs_ip" if selected_pot == 1 else "bb_vs_btn_srp"
+        data = engine.postflop_data.get("defense", {}).get(spot, {})
+        cat_label = "Defense"
+    else:  # Barrel
+        spot = "srp_btn_vs_bb"
+        barrel_data = engine.postflop_data.get("barrel", {}).get(spot, {})
+        # Flatten barrel data
+        data = {}
+        for street_key, scenarios in barrel_data.items():
+            for scenario_name, scenario_data in scenarios.items():
+                data[f"{street_key}_{scenario_name}"] = scenario_data
+        cat_label = "Barrel"
+
+    if not data:
+        st.info("此類型尚無資料。" if lang == "zh" else "No data available for this type.")
+        return
+
+    # Board texture selector
+    texture_display = {
+        "dry_ace_high": "🅰️ 乾燥 A 高 (A72r)",
+        "dry_king_high": "👑 乾燥 K 高 (K83r)",
+        "paired_board": "👯 配對牌面 (773r)",
+        "monotone": "🎨 單花牌面 (Ts7s3s)",
+        "wet_connected": "💧 濕潤連接 (Jh9h8c)",
+        "low_rainbow": "🌈 低彩虹 (652r)",
+        "two_tone": "🔷 雙色牌面 (Kh9h4c)",
+        "broadway": "🎰 高張連接 (KQJr)",
+        "wheel_board": "🎡 Wheel 牌面 (543r)",
+        "dry_ace_high_3bet": "🅰️ 3bet A 高 (A52r)",
+        "low_board_3bet": "📉 3bet 低牌面 (742r)",
+        "wet_board_3bet": "💧 3bet 濕潤 (Jh9h7c)",
+        "turn_barrel_scenarios_improving_turn": "⬆️ Turn 改善牌",
+        "turn_barrel_scenarios_brick_turn": "🧱 Turn 磚塊",
+        "turn_barrel_scenarios_completing_draw": "🎯 Turn 完成聽牌",
+        "river_barrel_scenarios_missed_draw_bluff": "❌ River 聽牌失敗",
+        "river_barrel_scenarios_value_river": "💰 River 價值",
+    }
+
+    textures = list(data.keys())
+    if not textures:
+        st.info("此類型尚無資料。" if lang == "zh" else "No data available.")
+        return
+
+    texture_options = [texture_display.get(t, t) for t in textures]
+    selected_texture_idx = st.selectbox(
+        "牌面類型" if lang == "zh" else "Board Texture",
+        options=range(len(textures)),
+        format_func=lambda i: texture_options[i],
+        key="postflop_why_texture",
+    )
+    selected_texture = textures[selected_texture_idx]
+    texture_data = data[selected_texture]
+
+    # Display context
+    st.markdown("---")
+    context = texture_data.get("context", {})
+    example_board = texture_data.get("example_board", "")
+    flop = texture_data.get("flop", "")
+    turn = texture_data.get("turn", "")
+    river = texture_data.get("river", "")
+
+    # Board display
+    if example_board:
+        board_str = example_board
+    elif flop:
+        board_str = f"Flop: {flop}"
+        if turn:
+            board_str += f" → Turn: {turn}"
+        if river:
+            board_str += f" → River: {river}"
+    else:
+        board_str = selected_texture
+
+    st.markdown(f"## 🃏 {board_str}")
+
+    # Context cards
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        range_adv = context.get("range_advantage", context.get("equity_change", "N/A"))
+        range_color = "#10b981" if range_adv == "hero" else "#ef4444" if range_adv == "villain" else "#6b7280"
+        st.markdown(f"""
+        <div style="background: {range_color}22; border: 1px solid {range_color}; border-radius: 8px; padding: 12px; text-align: center;">
+            <div style="font-size: 0.8rem; color: #9ca3af;">範圍優勢</div>
+            <div style="font-size: 1.2rem; font-weight: bold; color: {range_color};">{range_adv.upper()}</div>
+        </div>
+        """, unsafe_allow_html=True)
+
+    with col2:
+        freq = context.get("cbet_frequency", context.get("defense_frequency", context.get("barrel_frequency", "N/A")))
+        st.markdown(f"""
+        <div style="background: #3b82f622; border: 1px solid #3b82f6; border-radius: 8px; padding: 12px; text-align: center;">
+            <div style="font-size: 0.8rem; color: #9ca3af;">{cat_label} 頻率</div>
+            <div style="font-size: 1.2rem; font-weight: bold; color: #3b82f6;">{freq}</div>
+        </div>
+        """, unsafe_allow_html=True)
+
+    with col3:
+        sizing = context.get("preferred_sizing", context.get("bluff_frequency", "N/A"))
+        st.markdown(f"""
+        <div style="background: #8b5cf622; border: 1px solid #8b5cf6; border-radius: 8px; padding: 12px; text-align: center;">
+            <div style="font-size: 0.8rem; color: #9ca3af;">建議 Sizing</div>
+            <div style="font-size: 1.2rem; font-weight: bold; color: #8b5cf6;">{sizing}</div>
+        </div>
+        """, unsafe_allow_html=True)
+
+    # Note
+    note = context.get("note", "")
+    if note:
+        st.markdown(f"""
+        <div style="background: #1e293b; border-left: 4px solid #6366f1; padding: 12px 16px; margin: 16px 0; border-radius: 0 8px 8px 0;">
+            <strong>💡 核心洞察</strong><br/>
+            {note}
+        </div>
+        """, unsafe_allow_html=True)
+
+    # Hands table
+    st.markdown("### 📋 手牌決策表")
+    hands = texture_data.get("hands", {})
+
+    for hand, hand_data in hands.items():
+        role = hand_data.get("role", "")
+        action = hand_data.get("action", "")
+        why = hand_data.get("why", "")
+        tags = hand_data.get("tags", [])
+        stability = hand_data.get("stability", "stable")
+
+        # Action color
+        if "bet" in action or "raise" in action:
+            action_color = "#ef4444"
+            action_icon = "🔴"
+        elif action == "check" or action == "call":
+            action_color = "#10b981"
+            action_icon = "🟢"
+        else:
+            action_color = "#6b7280"
+            action_icon = "⚪"
+
+        # Stability badge
+        stability_badge = "🔒" if stability == "stable" else "🔀" if stability == "mixed" else "⚖️"
+
+        # Format action
+        action_map = {
+            "bet_25": "Bet 25%", "bet_33": "Bet 33%", "bet_50": "Bet 50%",
+            "bet_66": "Bet 66%", "bet_75": "Bet 75%", "check": "Check",
+            "call": "Call", "raise": "Raise", "fold": "Fold"
+        }
+        action_display = action_map.get(action, action)
+
+        with st.expander(f"{action_icon} **{hand}** → {action_display} {stability_badge}", expanded=False):
+            st.markdown(f"**角色**: {role.replace('_', ' ')}")
+            st.markdown(f"**為什麼**: {why}")
+            if tags:
+                tag_names = [engine._get_tag_name(t) for t in tags]
+                st.markdown(f"**相關原則**: {', '.join(tag_names)}")
 
 
 def _display_gto_concepts_learning(lang: str):
