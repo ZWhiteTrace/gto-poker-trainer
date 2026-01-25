@@ -2484,16 +2484,34 @@ def _display_preflop_why_learning(lang: str):
     total_lessons = len(scenarios)
 
     # ═══════════════════════════════════════════════════════════════════════
-    # Session State for Lesson Navigation
+    # Session State for Lesson Navigation + Completion Tracking
     # ═══════════════════════════════════════════════════════════════════════
     if "preflop_lesson_idx" not in st.session_state:
         st.session_state.preflop_lesson_idx = 0
 
-    current_idx = st.session_state.preflop_lesson_idx
+    # Initialize completion tracking
+    if "preflop_completed" not in st.session_state:
+        st.session_state.preflop_completed = set()
 
-    # Progress bar
-    progress = (current_idx + 1) / total_lessons
-    st.progress(progress)
+    current_idx = st.session_state.preflop_lesson_idx
+    current_scenario = scenarios[current_idx]
+
+    # Completion stats
+    completed_count = len(st.session_state.preflop_completed)
+    completion_pct = (completed_count / total_lessons) * 100
+
+    # Progress bar (shows completion)
+    st.progress(completed_count / total_lessons)
+
+    # Completion stats row
+    is_current_completed = current_scenario in st.session_state.preflop_completed
+    completion_color = "#10b981" if completion_pct >= 80 else "#f59e0b" if completion_pct >= 40 else "#6b7280"
+    st.markdown(f"""
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; padding: 8px 12px; background: #1e293b; border-radius: 8px;">
+        <span style="color: #9ca3af;">{"已完成" if lang == "zh" else "Completed"}: <strong style="color: {completion_color};">{completed_count}/{total_lessons}</strong> ({completion_pct:.0f}%)</span>
+        <span style="color: {'#10b981' if is_current_completed else '#6b7280'};">{"✅ 已學習" if is_current_completed else "⬜ 未學習"}</span>
+    </div>
+    """, unsafe_allow_html=True)
 
     # Format scenario display
     def format_scenario(s):
@@ -2523,12 +2541,13 @@ def _display_preflop_why_learning(lang: str):
             st.session_state.preflop_lesson_idx = min(total_lessons - 1, current_idx + 1)
             st.rerun()
 
-    # Quick jump selector (collapsed)
+    # Quick jump selector (collapsed) - with completion indicators
     with st.expander("🔍 快速跳轉" if lang == "zh" else "🔍 Quick Jump", expanded=False):
         cols = st.columns(4)
         for i, s in enumerate(scenarios):
             with cols[i % 4]:
-                label = format_scenario(s)[:15]
+                is_done = s in st.session_state.preflop_completed
+                label = f"{'✅' if is_done else '⬜'} {format_scenario(s)[:12]}"
                 if st.button(label, key=f"preflop_jump_{i}", use_container_width=True):
                     st.session_state.preflop_lesson_idx = i
                     st.rerun()
@@ -2673,8 +2692,29 @@ def _display_preflop_why_learning(lang: str):
         for hand, hand_data in hands_list:
             st.write(f"- {hand}")
 
-    # Bottom navigation
+    # ═══════════════════════════════════════════════════════════════════════
+    # Mark Complete + Bottom Navigation
+    # ═══════════════════════════════════════════════════════════════════════
     st.markdown("---")
+
+    # Mark as complete button
+    if selected_scenario not in st.session_state.preflop_completed:
+        col_complete = st.columns([1, 2, 1])[1]
+        with col_complete:
+            if st.button("✅ 標記為已完成" if lang == "zh" else "✅ Mark as Complete", key="preflop_mark_complete", use_container_width=True, type="primary"):
+                st.session_state.preflop_completed.add(selected_scenario)
+                # Auto advance to next lesson
+                if current_idx < total_lessons - 1:
+                    st.session_state.preflop_lesson_idx = current_idx + 1
+                st.rerun()
+    else:
+        st.markdown(f"""
+        <div style="text-align: center; padding: 10px; color: #10b981;">
+            ✅ {"此課程已完成" if lang == "zh" else "Lesson completed"}
+        </div>
+        """, unsafe_allow_html=True)
+
+    # Bottom navigation
     col_b1, col_b2, col_b3 = st.columns([1, 2, 1])
     with col_b1:
         if st.button("← 上一課 " if lang == "zh" else "← Prev ", disabled=current_idx == 0, key="preflop_prev_bottom", use_container_width=True):
@@ -2836,7 +2876,7 @@ def _display_postflop_why_learning(lang: str):
         return
 
     # ═══════════════════════════════════════════════════════════════════════
-    # Lesson Navigation
+    # Lesson Navigation + Completion Tracking
     # ═══════════════════════════════════════════════════════════════════════
     total_lessons = len(all_lessons)
 
@@ -2844,12 +2884,30 @@ def _display_postflop_why_learning(lang: str):
     if "postflop_lesson_idx" not in st.session_state:
         st.session_state.postflop_lesson_idx = 0
 
+    # Initialize completion tracking
+    if "postflop_completed" not in st.session_state:
+        st.session_state.postflop_completed = set()
+
     current_idx = st.session_state.postflop_lesson_idx
     current_lesson = all_lessons[current_idx]
+    lesson_key = current_lesson["key"]
 
-    # Progress bar
-    progress = (current_idx + 1) / total_lessons
-    st.progress(progress)
+    # Completion stats
+    completed_count = len(st.session_state.postflop_completed)
+    completion_pct = (completed_count / total_lessons) * 100
+
+    # Progress bar (shows completion, not position)
+    st.progress(completed_count / total_lessons)
+
+    # Completion stats row
+    is_current_completed = lesson_key in st.session_state.postflop_completed
+    completion_color = "#10b981" if completion_pct >= 80 else "#f59e0b" if completion_pct >= 40 else "#6b7280"
+    st.markdown(f"""
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; padding: 8px 12px; background: #1e293b; border-radius: 8px;">
+        <span style="color: #9ca3af;">{"已完成" if lang == "zh" else "Completed"}: <strong style="color: {completion_color};">{completed_count}/{total_lessons}</strong> ({completion_pct:.0f}%)</span>
+        <span style="color: {'#10b981' if is_current_completed else '#6b7280'};">{"✅ 已學習" if is_current_completed else "⬜ 未學習"}</span>
+    </div>
+    """, unsafe_allow_html=True)
 
     # Navigation header
     col_prev, col_info, col_next = st.columns([1, 3, 1])
@@ -2872,7 +2930,7 @@ def _display_postflop_why_learning(lang: str):
             st.session_state.postflop_lesson_idx = min(total_lessons - 1, current_idx + 1)
             st.rerun()
 
-    # Quick jump selector (collapsed)
+    # Quick jump selector (collapsed) - with completion indicators
     with st.expander("🔍 快速跳轉" if lang == "zh" else "🔍 Quick Jump", expanded=False):
         # Group by category
         categories = {}
@@ -2883,11 +2941,14 @@ def _display_postflop_why_learning(lang: str):
             categories[cat].append((i, lesson))
 
         for cat, lessons in categories.items():
-            st.markdown(f"**{cat}**")
+            cat_completed = sum(1 for _, l in lessons if l["key"] in st.session_state.postflop_completed)
+            st.markdown(f"**{cat}** ({cat_completed}/{len(lessons)} ✅)")
             cols = st.columns(min(len(lessons), 4))
             for j, (idx, lesson) in enumerate(lessons):
                 with cols[j % 4]:
-                    if st.button(f"{lesson['name'][:12]}", key=f"jump_{idx}", use_container_width=True):
+                    is_done = lesson["key"] in st.session_state.postflop_completed
+                    label = f"{'✅' if is_done else '⬜'} {lesson['name'][:10]}"
+                    if st.button(label, key=f"jump_{idx}", use_container_width=True):
                         st.session_state.postflop_lesson_idx = idx
                         st.rerun()
 
@@ -2993,8 +3054,29 @@ def _display_postflop_why_learning(lang: str):
         </div>
         """, unsafe_allow_html=True)
 
-    # Bottom navigation (duplicate for convenience)
+    # ═══════════════════════════════════════════════════════════════════════
+    # Mark Complete + Bottom Navigation
+    # ═══════════════════════════════════════════════════════════════════════
     st.markdown("---")
+
+    # Mark as complete button
+    if lesson_key not in st.session_state.postflop_completed:
+        col_complete = st.columns([1, 2, 1])[1]
+        with col_complete:
+            if st.button("✅ 標記為已完成" if lang == "zh" else "✅ Mark as Complete", key="postflop_mark_complete", use_container_width=True, type="primary"):
+                st.session_state.postflop_completed.add(lesson_key)
+                # Auto advance to next lesson
+                if current_idx < total_lessons - 1:
+                    st.session_state.postflop_lesson_idx = current_idx + 1
+                st.rerun()
+    else:
+        st.markdown(f"""
+        <div style="text-align: center; padding: 10px; color: #10b981;">
+            ✅ {"此課程已完成" if lang == "zh" else "Lesson completed"}
+        </div>
+        """, unsafe_allow_html=True)
+
+    # Bottom navigation
     col_b1, col_b2, col_b3 = st.columns([1, 2, 1])
     with col_b1:
         if st.button("← 上一課 " if lang == "zh" else "← Prev ", disabled=current_idx == 0, key="postflop_prev_bottom", use_container_width=True):
