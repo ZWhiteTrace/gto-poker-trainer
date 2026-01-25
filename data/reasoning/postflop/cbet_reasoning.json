@@ -1,0 +1,256 @@
+{
+  "meta": {
+    "version": "1.0",
+    "description": "Flop C-bet 決策 WHY 系統：按牌面類型分類，解釋為什麼特定手牌在特定牌面應該 bet/check。",
+    "board_categories": ["dry_ace_high", "dry_king_high", "paired_board", "monotone", "wet_connected", "low_rainbow"]
+  },
+  "srp_btn_vs_bb": {
+    "dry_ace_high": {
+      "example_board": "A72r",
+      "context": {
+        "range_advantage": "hero",
+        "nut_advantage": "hero",
+        "cbet_frequency": "high (70%+)",
+        "preferred_sizing": "33%",
+        "note": "BTN 範圍含更多 Ax 組合，BB 的 Ax 多已 3bet 出去。乾燥牌面缺乏聽牌，小注高頻策略有效。"
+      },
+      "hands": {
+        "AK": {
+          "role": "value_bet_thin",
+          "action": "bet_33",
+          "tags": ["cbet_range_advantage", "nut_advantage_structure"],
+          "why": "頂對頂踢腳，在乾燥 A 高牌面是明確價值。小注可以從 Ax 弱踢腳、口袋對子獲得價值。",
+          "stability": "stable"
+        },
+        "KQ": {
+          "role": "bet_overcards",
+          "action": "bet_33",
+          "tags": ["cbet_range_advantage", "barrel_equity"],
+          "why": "雖然沒中但有兩張 overcards。小注可以獲得 fold equity，同時 Turn 中 K/Q 變成頂對。",
+          "stability": "stable"
+        },
+        "77": {
+          "role": "check_medium_pair",
+          "action": "check",
+          "tags": ["check_pot_control"],
+          "why": "中對在 A 高牌面尷尬：贏的時候贏小，輸的時候輸大。Check 保留 showdown value 避免膨脹。",
+          "stability": "stable"
+        },
+        "T9s": {
+          "role": "check_equity_preserve",
+          "action": "check",
+          "tags": ["check_pot_control", "barrel_equity"],
+          "why": "後門順子+後門花聽牌有一定 equity。Check 保留 Turn 發展空間，在乾燥牌面 bet 難以獲得 fold。",
+          "stability": "stable"
+        },
+        "65s": {
+          "role": "give_up",
+          "action": "check",
+          "tags": ["check_pot_control"],
+          "why": "幾乎沒有 equity，在 A72r 完全 miss。不值得投入籌碼，check fold 到任何 aggression。",
+          "stability": "stable"
+        }
+      }
+    },
+    "dry_king_high": {
+      "example_board": "K83r",
+      "context": {
+        "range_advantage": "hero",
+        "nut_advantage": "hero",
+        "cbet_frequency": "high (65%+)",
+        "preferred_sizing": "33-50%",
+        "note": "K 高牌面 BTN 仍有範圍優勢，但 BB 的 Kx 比例比 A 高時更多。中等頻率 c-bet。"
+      },
+      "hands": {
+        "KQ": {
+          "role": "value_bet",
+          "action": "bet_33",
+          "tags": ["cbet_range_advantage", "high_equity"],
+          "why": "頂對好踢腳，對抗 BB defend range 是明確價值。小注從 Kx 弱踢腳、口袋對子獲得薄價值。",
+          "stability": "stable"
+        },
+        "AQ": {
+          "role": "bet_overcards",
+          "action": "bet_33",
+          "tags": ["barrel_equity", "cbet_range_advantage"],
+          "why": "A 高 + Q kicker overcards，6 outs 中 A/Q。小注獲得 fold equity，中了變頂對。",
+          "stability": "stable"
+        },
+        "QJs": {
+          "role": "check_overcards",
+          "action": "check",
+          "tags": ["check_pot_control"],
+          "why": "兩張 overcards 但缺乏 A 的 fold equity。Check 保留 Turn 發展，中 Q/J 變頂對可以再進攻。",
+          "stability": "medium"
+        },
+        "99": {
+          "role": "check_medium_pair",
+          "action": "check",
+          "tags": ["check_pot_control"],
+          "why": "中對偏弱，贏的底池小輸的底池大。K 高牌面對手 Kx 比例不低，check 控池。",
+          "stability": "stable"
+        }
+      }
+    },
+    "paired_board": {
+      "example_board": "773r",
+      "context": {
+        "range_advantage": "neutral",
+        "nut_advantage": "slight_villain",
+        "cbet_frequency": "low (40%)",
+        "preferred_sizing": "25-33%",
+        "note": "配對牌面三條組合數少，但 BB defend range 更可能有 7x。雙方範圍都 miss 多，check 頻率提升。"
+      },
+      "hands": {
+        "AA": {
+          "role": "value_bet",
+          "action": "bet_25",
+          "tags": ["high_equity", "sizing_advantage"],
+          "why": "Overpair 在配對牌面是強牌。小注從對手 underpair、overcards 獲得薄價值。",
+          "stability": "stable"
+        },
+        "AK": {
+          "role": "check_overcards",
+          "action": "check",
+          "tags": ["check_pot_control"],
+          "why": "Overcards 在配對牌面 equity 實現困難。中 A/K 仍輸給三條，check 保留 showdown value。",
+          "stability": "stable"
+        },
+        "QQ": {
+          "role": "check_medium_overpair",
+          "action": "check",
+          "tags": ["check_pot_control"],
+          "why": "Overpair 但配對牌面尷尬：bet 被 call 可能落後，被 raise 更難處理。Check 控池。",
+          "stability": "medium"
+        }
+      }
+    },
+    "monotone": {
+      "example_board": "Ts7s3s",
+      "context": {
+        "range_advantage": "neutral",
+        "nut_advantage": "neutral",
+        "cbet_frequency": "low (35%)",
+        "preferred_sizing": "50%+",
+        "note": "單花牌面雙方都可能有花。有花的 bet 大注價值/保護，沒花的多 check。極化策略。"
+      },
+      "hands": {
+        "AsKs": {
+          "role": "value_bet_big",
+          "action": "bet_66",
+          "tags": ["nut_advantage_structure", "sizing_advantage"],
+          "why": "堅果花，大注構建底池。對手有第二花或聽花會跟注，小牌 made hands 被定價困難。",
+          "stability": "stable"
+        },
+        "KsQs": {
+          "role": "value_bet",
+          "action": "bet_50",
+          "tags": ["high_equity", "barrel_equity"],
+          "why": "第二大花，仍是強牌。大注價值，同時保護不讓對手便宜看到第四張花。",
+          "stability": "stable"
+        },
+        "AA_no_spade": {
+          "role": "check_vulnerable",
+          "action": "check",
+          "tags": ["check_pot_control"],
+          "why": "Overpair 但無花，在單花牌面非常脆弱。Bet 被 call/raise 幾乎都落後，check 控池。",
+          "stability": "stable"
+        },
+        "Ah7h": {
+          "role": "check_give_up",
+          "action": "check",
+          "tags": ["check_pot_control"],
+          "why": "中對無花，對抗任何 aggression 都很弱。Check 保留 showdown value。",
+          "stability": "stable"
+        }
+      }
+    },
+    "wet_connected": {
+      "example_board": "Jh9h8c",
+      "context": {
+        "range_advantage": "slight_villain",
+        "nut_advantage": "slight_villain",
+        "cbet_frequency": "medium (50%)",
+        "preferred_sizing": "50-66%",
+        "note": "濕潤連接牌面 BB 更多兩對、順子組合。有 range 的牌 bet 大注保護，其他 check。"
+      },
+      "hands": {
+        "JJ": {
+          "role": "value_bet_protect",
+          "action": "bet_66",
+          "tags": ["high_equity", "sizing_advantage"],
+          "why": "頂 set 在連接牌面需要保護。大注定價對手聽牌，同時從兩對、頂對獲得價值。",
+          "stability": "stable"
+        },
+        "QQ": {
+          "role": "value_bet_thin",
+          "action": "bet_50",
+          "tags": ["barrel_equity", "sizing_advantage"],
+          "why": "Overpair 在連接牌面有價值但脆弱。中注從 Jx、聽牌獲得價值，同時控制底池。",
+          "stability": "medium"
+        },
+        "AhKh": {
+          "role": "semibluff_bet",
+          "action": "bet_66",
+          "tags": ["barrel_equity", "nut_advantage_structure"],
+          "why": "堅果花聽牌 + overcards。大注半詐唬：獲得 fold equity，被 call 有 9+ outs。",
+          "stability": "stable"
+        },
+        "AA": {
+          "role": "check_vulnerable",
+          "action": "check",
+          "tags": ["check_pot_control"],
+          "why": "Overpair 在連接牌面被兩對、順子壓制多。Check 保護 range，也可以 check-call。",
+          "stability": "medium"
+        },
+        "KQo": {
+          "role": "check_give_up",
+          "action": "check",
+          "tags": ["check_pot_control"],
+          "why": "完全 miss 的 overcards。在連接牌面對手 continue 頻率高，不值得 bluff。",
+          "stability": "stable"
+        }
+      }
+    },
+    "low_rainbow": {
+      "example_board": "652r",
+      "context": {
+        "range_advantage": "slight_villain",
+        "nut_advantage": "slight_villain",
+        "cbet_frequency": "low (40%)",
+        "preferred_sizing": "33%",
+        "note": "低彩虹牌面對 BB 有利：更多小對子、wheel 連接牌。BTN overpairs 有價值但要小心。"
+      },
+      "hands": {
+        "AA": {
+          "role": "value_bet",
+          "action": "bet_33",
+          "tags": ["high_equity", "cbet_range_advantage"],
+          "why": "Overpair 在低牌面是強牌。小注從對手頂對、中對、聽牌獲得價值。",
+          "stability": "stable"
+        },
+        "KK": {
+          "role": "value_bet",
+          "action": "bet_33",
+          "tags": ["high_equity"],
+          "why": "Overpair 價值明確。小注獲得薄價值，被 raise 可以繼續跟注評估。",
+          "stability": "stable"
+        },
+        "AK": {
+          "role": "check_overcards",
+          "action": "check",
+          "tags": ["check_pot_control"],
+          "why": "Overcards 在低牌面 equity 較低。對手 range 擊中這個牌面更多，check 控池。",
+          "stability": "stable"
+        },
+        "JTs": {
+          "role": "check_equity",
+          "action": "check",
+          "tags": ["barrel_equity", "check_pot_control"],
+          "why": "後門順子 + overcards。Check 看免費牌，Turn 來好牌再進攻。",
+          "stability": "stable"
+        }
+      }
+    }
+  }
+}

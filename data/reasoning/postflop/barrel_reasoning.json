@@ -1,0 +1,169 @@
+{
+  "meta": {
+    "version": "1.0",
+    "description": "Turn/River Barrel 決策 WHY 系統：解釋為什麼在 Flop bet 後的後續街應該繼續/停止。",
+    "streets": ["turn", "river"],
+    "key_concepts": ["equity_change", "blocker_value", "range_polarization", "pot_commitment"]
+  },
+  "srp_btn_vs_bb": {
+    "turn_barrel_scenarios": {
+      "improving_turn": {
+        "flop": "K83r",
+        "turn": "A",
+        "context": {
+          "equity_change": "hero_improves",
+          "barrel_frequency": "high",
+          "note": "A 是 BTN 的好牌：AK 變兩對、AQ 中頂對、Ax 踢腳提升。對 BB 不利因其 Ax 多已 3bet。"
+        },
+        "hands": {
+          "AQ": {
+            "role": "barrel_value",
+            "action": "bet_66",
+            "tags": ["barrel_equity", "high_equity"],
+            "why": "Turn 中 A 變頂對。繼續下注從 Kx、中對獲得價值。對手難以有 AK+ 因 3bet 頻率高。",
+            "stability": "stable"
+          },
+          "KQ": {
+            "role": "check_behind",
+            "action": "check",
+            "tags": ["check_pot_control"],
+            "why": "Flop 頂對變成二對力量，被 Ax 壓制。Check 控池，River 可以 call 合理的 bet。",
+            "stability": "stable"
+          },
+          "QJs": {
+            "role": "give_up",
+            "action": "check",
+            "tags": ["check_pot_control"],
+            "why": "Flop 的 overcards bluff 價值降低。A 對 BTN 有利讓對手會更頻繁 call，停止 bluff。",
+            "stability": "stable"
+          }
+        }
+      },
+      "brick_turn": {
+        "flop": "K83r",
+        "turn": "2",
+        "context": {
+          "equity_change": "neutral",
+          "barrel_frequency": "medium",
+          "note": "磚塊 Turn 不改變範圍結構。Flop 有價值的牌繼續，沒有 equity 的牌多數放棄。"
+        },
+        "hands": {
+          "KQ": {
+            "role": "barrel_value",
+            "action": "bet_66",
+            "tags": ["barrel_equity", "high_equity"],
+            "why": "頂對好踢腳繼續有價值。磚塊 Turn 不改變相對牌力，繼續從弱牌獲得價值。",
+            "stability": "stable"
+          },
+          "AQ": {
+            "role": "barrel_bluff",
+            "action": "bet_50",
+            "tags": ["barrel_equity", "ace_blocker"],
+            "why": "Overcards + blocker。A blocker 減少對手 AK 組合，繼續 bluff 仍有 fold equity。",
+            "stability": "medium"
+          },
+          "JTs": {
+            "role": "give_up",
+            "action": "check",
+            "tags": ["check_pot_control"],
+            "why": "沒有改善，純空氣。磚塊 Turn 對手會繼續防守，沒有 equity 支撐繼續 bluff。",
+            "stability": "stable"
+          }
+        }
+      },
+      "completing_draw": {
+        "flop": "Jh9h8c",
+        "turn": "7h",
+        "context": {
+          "equity_change": "villain_improves",
+          "barrel_frequency": "polarized",
+          "note": "Turn 完成順子和花聽牌。雙方範圍都可能中牌，極化策略：有牌大注，沒牌 check。"
+        },
+        "hands": {
+          "T6": {
+            "role": "barrel_value_nuts",
+            "action": "bet_75",
+            "tags": ["nut_advantage_structure", "sizing_advantage"],
+            "why": "堅果順子。大注從 flush、兩對、sets 獲得價值。對手有很多會 call 的第二強牌。",
+            "stability": "stable"
+          },
+          "AhKh": {
+            "role": "barrel_made_hand",
+            "action": "bet_66",
+            "tags": ["high_equity", "nut_advantage_structure"],
+            "why": "中了堅果花。大注價值 + 保護不讓 board pair up 的 out。",
+            "stability": "stable"
+          },
+          "QQ": {
+            "role": "check_medium",
+            "action": "check",
+            "tags": ["check_pot_control"],
+            "why": "Overpair 在完成牌面非常脆弱。順子、花都可能，check 控池評估 River。",
+            "stability": "stable"
+          },
+          "AA": {
+            "role": "check_or_thin_bet",
+            "action": "check",
+            "tags": ["check_pot_control", "indifference_threshold"],
+            "why": "Overpair + redraw。邊界手牌：可以小注薄價值也可以 check 控池。對手 range 依賴。",
+            "stability": "mixed"
+          }
+        }
+      }
+    },
+    "river_barrel_scenarios": {
+      "missed_draw_bluff": {
+        "flop": "Jh9h8c",
+        "turn": "2c",
+        "river": "3d",
+        "context": {
+          "board_state": "draws_missed",
+          "bluff_frequency": "selective",
+          "note": "聽牌全部 miss。有 blocker 的純空氣可以 bluff，但需要選擇性。"
+        },
+        "hands": {
+          "AhKh": {
+            "role": "bluff_missed_draw",
+            "action": "bet_75",
+            "tags": ["ace_blocker", "barrel_equity"],
+            "why": "Nut flush draw miss。A blocker 阻擋對手 nuts，可以代表 missed draw 轉型成 bluff。",
+            "stability": "medium"
+          },
+          "QhTh": {
+            "role": "give_up",
+            "action": "check",
+            "tags": ["check_pot_control"],
+            "why": "Flush draw miss 但缺乏好的 blocker。對手會用 Jx、99、88 等 bluff-catch，放棄。",
+            "stability": "stable"
+          }
+        }
+      },
+      "value_river": {
+        "flop": "K83r",
+        "turn": "K",
+        "river": "5",
+        "context": {
+          "board_state": "paired_board",
+          "value_frequency": "thin",
+          "note": "配對 K 讓 Kx 變三條。Hero 的 Kx trips 有價值，其他牌難以獲得 call。"
+        },
+        "hands": {
+          "KQ": {
+            "role": "value_bet_river",
+            "action": "bet_50",
+            "tags": ["high_equity", "sizing_advantage"],
+            "why": "三條 K。中注從對手 full house 擔心的手牌、underpairs 獲得薄價值。",
+            "stability": "stable"
+          },
+          "AA": {
+            "role": "check_behind_river",
+            "action": "check",
+            "tags": ["check_pot_control"],
+            "why": "Overpair 在配對 K 牌面尷尬。Bet 只被更好的牌 call，check 保留 showdown value。",
+            "stability": "stable"
+          }
+        }
+      }
+    }
+  }
+}

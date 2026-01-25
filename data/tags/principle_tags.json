@@ -301,6 +301,51 @@
         "因為 SPR 只影響 set mining (SPR 影響所有翻後決策，包括 c-bet 頻率和 sizing)",
         "因為深籌總是更好 (深籌讓投機牌有價值，但也讓對手的詐唬更有效)"
       ]
+    },
+    "cbet_range_advantage": {
+      "name": "C-bet 範圍優勢",
+      "category": "postflop",
+      "explanation": "在該牌面 Hero 的範圍擊中更多強牌組合。乾燥 A 高牌面 BTN 有更多 Ax；濕潤連接牌面 BB 則有更多兩對、順子。範圍優勢支撐更高的 c-bet 頻率和更大的 sizing。",
+      "misconceptions": [
+        "因為 Hero 有 overpair 就該 bet (overpair 只是一手牌，範圍優勢看整體結構)",
+        "因為對手沒中就會 fold (對手會根據範圍優勢調整防守頻率)"
+      ]
+    },
+    "barrel_equity": {
+      "name": "Barrel 權益",
+      "category": "postflop",
+      "explanation": "Turn/River 繼續下注需要權益支撐：要麼有足夠的 showdown value 追打價值，要麼有足夠的 outs 做半詐唬。純空氣連續 barrel 會被 GTO 防守者逮住。",
+      "misconceptions": [
+        "因為 Flop bet 了 Turn 就該繼續 (每條街都是獨立決策，需要重新評估)",
+        "因為 barrel 可以逼對手 fold (需要 blocker 或 equity 才能支撐多街詐唬)"
+      ]
+    },
+    "check_pot_control": {
+      "name": "Check 控池",
+      "category": "postflop",
+      "explanation": "中等牌力的手牌通過 check 控制底池大小，避免膨脹到只有更強的牌會跟注。中對、弱頂對等手牌在 check 時保留了 showdown value，同時不用面對 raise 的困境。",
+      "misconceptions": [
+        "因為 check 就是軟弱 (check 是有意識的策略選擇，保護 check range)",
+        "因為中對沒有價值 (中對有 showdown value，只是不適合膨脹底池)"
+      ]
+    },
+    "check_raise_semibluff": {
+      "name": "Check-raise 半詐唬",
+      "category": "postflop",
+      "explanation": "有 outs 的手牌使用 check-raise 作為半詐唬：當場獲得 fold equity + 被 call 時仍有後手。理想的 CR 半詐唬需要足夠的 outs (8+) 和對手不太可能有 nuts 的條件。",
+      "misconceptions": [
+        "因為有聽牌就該 CR (需要評估對手的 c-bet range 和自己的 outs 質量)",
+        "因為 CR 很嚇人對手會 fold (好的對手會根據 MDF 防守)"
+      ]
+    },
+    "board_texture_favor": {
+      "name": "牌面有利",
+      "category": "postflop",
+      "explanation": "牌面結構對 Hero 範圍有利：乾燥 A 高對 PFR 有利 (對手的 Ax 多已 3bet)，低連接牌對 BB 有利 (caller 有更多 connectors)。識別牌面有利方是翻後策略的第一步。",
+      "misconceptions": [
+        "因為有位置牌面就對 Hero 有利 (位置優勢和牌面優勢是獨立的)",
+        "因為中了對子牌面就有利 (中對不代表範圍優勢)"
+      ]
     }
   }
 }

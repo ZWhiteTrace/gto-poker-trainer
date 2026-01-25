@@ -1,0 +1,190 @@
+{
+  "meta": {
+    "version": "1.0",
+    "description": "OOP 防守決策 WHY 系統：解釋 BB 面對 c-bet 時的 check-call/check-raise/fold 邏輯。",
+    "positions": ["bb_vs_btn", "bb_vs_co"],
+    "key_concepts": ["mdf", "range_protection", "check_raise_value", "check_raise_bluff"]
+  },
+  "bb_vs_btn_srp": {
+    "dry_ace_high": {
+      "example_board": "A72r",
+      "context": {
+        "range_advantage": "villain",
+        "defense_frequency": "tight",
+        "note": "乾燥 A 高對 BTN 有利。BB 的 Ax 多已 3bet，剩餘 range 擊中率低。緊防守。"
+      },
+      "hands": {
+        "A5s": {
+          "role": "check_call",
+          "action": "call",
+          "tags": ["high_equity", "board_texture_favor"],
+          "why": "弱 Ax 在對手 range 有利的牌面仍有價值。Flat 看 Turn，對手多數時候沒有 A。",
+          "stability": "stable"
+        },
+        "77": {
+          "role": "check_call_set",
+          "action": "call",
+          "tags": ["high_equity", "check_pot_control"],
+          "why": "Set 在乾燥牌面極強。可以 slow play 幾條街，讓對手繼續 bluff。",
+          "stability": "stable"
+        },
+        "KQs": {
+          "role": "check_fold",
+          "action": "fold",
+          "tags": ["domination_risk"],
+          "why": "完全 miss 的 overcards。在 A 高牌面沒有好的繼續路線，fold 節省籌碼。",
+          "stability": "stable"
+        },
+        "65s": {
+          "role": "check_fold",
+          "action": "fold",
+          "tags": ["offsuit_low_eqr"],
+          "why": "完全 miss 無後手。即使有後門順子聽牌，賠率不足以繼續。",
+          "stability": "stable"
+        }
+      }
+    },
+    "wet_connected": {
+      "example_board": "Jh9h8c",
+      "context": {
+        "range_advantage": "hero",
+        "defense_frequency": "wide",
+        "note": "連接牌面對 BB 有利：更多兩對、順子、聽牌組合。可以使用 check-raise 積極防守。"
+      },
+      "hands": {
+        "JT": {
+          "role": "check_raise_value",
+          "action": "raise",
+          "tags": ["check_raise_semibluff", "high_equity"],
+          "why": "頂對 + 開放順子聽牌。Check-raise 建立底池，有強 made hand 和 14 outs backup。",
+          "stability": "stable"
+        },
+        "T7s": {
+          "role": "check_raise_semibluff",
+          "action": "raise",
+          "tags": ["check_raise_semibluff", "barrel_equity"],
+          "why": "開放順子聽牌 + 後門花。Check-raise 半詐唬：fold equity + 8 outs 被 call 時。",
+          "stability": "stable"
+        },
+        "99": {
+          "role": "check_call_set",
+          "action": "call",
+          "tags": ["high_equity", "check_pot_control"],
+          "why": "Set 是 nuts 但在連接牌面脆弱。Flat 讓對手繼續 bluff，也可以 Turn raise。",
+          "stability": "medium"
+        },
+        "J8": {
+          "role": "check_call_two_pair",
+          "action": "call",
+          "tags": ["high_equity"],
+          "why": "兩對在連接牌面是強牌但不是 nuts。Flat 保持底池可控，River 評估。",
+          "stability": "stable"
+        },
+        "AhKh": {
+          "role": "check_raise_bluff",
+          "action": "raise",
+          "tags": ["check_raise_semibluff", "ace_blocker", "nut_advantage_structure"],
+          "why": "堅果花聽牌。Check-raise 半詐唬極強：對手棄牌贏，call 有 9 clean outs。",
+          "stability": "stable"
+        },
+        "Qc7c": {
+          "role": "check_fold",
+          "action": "fold",
+          "tags": ["check_pot_control"],
+          "why": "純空氣 + 後門花不夠強。連接牌面對手 continue 寬，bluff 效率低。",
+          "stability": "stable"
+        }
+      }
+    },
+    "low_rainbow": {
+      "example_board": "652r",
+      "context": {
+        "range_advantage": "hero",
+        "defense_frequency": "wide",
+        "note": "低彩虹牌面對 BB 有利：更多小對子、wheel 連接牌。可以積極 check-raise。"
+      },
+      "hands": {
+        "76s": {
+          "role": "check_raise_value",
+          "action": "raise",
+          "tags": ["high_equity", "board_texture_favor"],
+          "why": "頂兩對。在對 Hero 有利的牌面積極 check-raise 建立底池。",
+          "stability": "stable"
+        },
+        "66": {
+          "role": "check_raise_value",
+          "action": "raise",
+          "tags": ["high_equity"],
+          "why": "Set 是 nuts。Check-raise 建立底池，對手 overpairs 會 call。",
+          "stability": "stable"
+        },
+        "43s": {
+          "role": "check_raise_semibluff",
+          "action": "raise",
+          "tags": ["check_raise_semibluff", "wheel_potential"],
+          "why": "開放順子聽牌。Check-raise 半詐唬：在對 Hero 有利的牌面有 fold equity + outs。",
+          "stability": "stable"
+        },
+        "A5s": {
+          "role": "check_call",
+          "action": "call",
+          "tags": ["wheel_potential", "barrel_equity"],
+          "why": "開放順子聽牌 + A 高。Flat 看便宜的 Turn，中 A 或順子都有價值。",
+          "stability": "stable"
+        },
+        "KQo": {
+          "role": "check_fold",
+          "action": "fold",
+          "tags": ["check_pot_control", "domination_risk"],
+          "why": "完全 miss 的 overcards。低牌面對手 range 中更多，沒有繼續的價值。",
+          "stability": "stable"
+        }
+      }
+    },
+    "paired_board": {
+      "example_board": "773r",
+      "context": {
+        "range_advantage": "slight_hero",
+        "defense_frequency": "medium",
+        "note": "配對牌面雙方都 miss 多。BB 有更多 7x 組合，可以選擇性 check-raise bluff。"
+      },
+      "hands": {
+        "77": {
+          "role": "check_call_quads",
+          "action": "call",
+          "tags": ["high_equity"],
+          "why": "四條 monster。Slowplay 讓對手多 bluff 幾條街。",
+          "stability": "stable"
+        },
+        "A7s": {
+          "role": "check_raise_value",
+          "action": "raise",
+          "tags": ["high_equity", "board_texture_favor"],
+          "why": "三條。Check-raise 從對手 overpairs 獲得價值。",
+          "stability": "stable"
+        },
+        "JJ": {
+          "role": "check_call_overpair",
+          "action": "call",
+          "tags": ["check_pot_control"],
+          "why": "Overpair 在配對牌面是強牌。Flat 讓對手繼續，River 評估。",
+          "stability": "stable"
+        },
+        "T9s": {
+          "role": "check_raise_bluff",
+          "action": "raise",
+          "tags": ["check_raise_semibluff"],
+          "why": "空氣 + 後門花順。配對牌面對手 miss 多，check-raise bluff 有 fold equity。",
+          "stability": "medium"
+        },
+        "65s": {
+          "role": "check_fold",
+          "action": "fold",
+          "tags": ["check_pot_control"],
+          "why": "完全 miss 無後手。配對牌面 bluff 效率低，fold 節省。",
+          "stability": "stable"
+        }
+      }
+    }
+  }
+}
