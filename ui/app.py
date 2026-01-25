@@ -2568,9 +2568,49 @@ def mock_exam_page():
         elapsed = st.session_state.mock_answers.get("_elapsed", 0)
         mins, secs = divmod(int(elapsed), 60)
 
+        # Save to history (if not already saved)
+        if "mock_history" not in st.session_state:
+            st.session_state.mock_history = []
+
+        # Check if this result is already saved (prevent duplicate on rerun)
+        current_result_hash = f"{correct}_{total}_{int(elapsed)}"
+        if not st.session_state.mock_history or st.session_state.mock_history[-1].get("_hash") != current_result_hash:
+            import datetime
+            type_stats_for_history = {}
+            for r in results:
+                qtype = r["type"]
+                if qtype not in type_stats_for_history:
+                    type_stats_for_history[qtype] = {"correct": 0, "total": 0}
+                type_stats_for_history[qtype]["total"] += 1
+                if r["correct"]:
+                    type_stats_for_history[qtype]["correct"] += 1
+
+            st.session_state.mock_history.append({
+                "_hash": current_result_hash,
+                "date": datetime.datetime.now().strftime("%Y-%m-%d %H:%M"),
+                "score": correct,
+                "total": total,
+                "time_secs": int(elapsed),
+                "type_stats": type_stats_for_history,
+                "wrong_types": [r["type"] for r in results if not r["correct"]],
+            })
+            # Keep only last 10 records
+            if len(st.session_state.mock_history) > 10:
+                st.session_state.mock_history = st.session_state.mock_history[-10:]
+
         # Score display
         score_pct = (correct / total * 100) if total > 0 else 0
         grade_color = "#22c55e" if score_pct >= 80 else "#eab308" if score_pct >= 60 else "#ef4444"
+
+        # Grade label
+        if score_pct >= 90:
+            grade_label = "🏆 優秀！" if lang == "zh" else "🏆 Excellent!"
+        elif score_pct >= 80:
+            grade_label = "👍 良好" if lang == "zh" else "👍 Good"
+        elif score_pct >= 60:
+            grade_label = "📚 需加強" if lang == "zh" else "📚 Needs Work"
+        else:
+            grade_label = "💪 繼續努力" if lang == "zh" else "💪 Keep Practicing"
 
         st.markdown(f"""
         <div style="
@@ -2588,7 +2628,7 @@ def mock_exam_page():
                 margin: 20px 0;
             ">{correct}/{total}</div>
             <div style="font-size: 1.2rem; color: #a5b4fc;">
-                {score_pct:.0f}% {"正確率" if lang == "zh" else "Accuracy"}
+                {score_pct:.0f}% {"正確率" if lang == "zh" else "Accuracy"} — {grade_label}
             </div>
             <div style="color: #6b7280; margin-top: 12px;">
                 ⏱️ {"完成時間" if lang == "zh" else "Time"}: {mins:02d}:{secs:02d}
@@ -2613,15 +2653,38 @@ def mock_exam_page():
             "logic": ("🧠 邏輯測驗", "🧠 Logic"),
         }
 
+        # Improvement suggestions based on weak areas
+        improvement_tips = {
+            "equity": {
+                "zh": "💡 建議：多練習「權益測驗」頁面，熟記常見對抗組合的權益。",
+                "en": "💡 Tip: Practice 'Equity Quiz' page, memorize common matchup equities.",
+            },
+            "outs": {
+                "zh": "💡 建議：複習「Outs 補牌」章節，記住各種聽牌的 outs 數量。",
+                "en": "💡 Tip: Review 'Outs' section, memorize outs for different draws.",
+            },
+            "ev": {
+                "zh": "💡 建議：加強底池賠率計算，練習「EV 測驗」。",
+                "en": "💡 Tip: Strengthen pot odds calculation, practice 'EV Quiz'.",
+            },
+            "logic": {
+                "zh": "💡 建議：深入學習「📖 Preflop WHY」理解 GTO 推理邏輯。",
+                "en": "💡 Tip: Study '📖 Preflop WHY' to understand GTO reasoning.",
+            },
+        }
+
         breakdown_title = "題型分析" if lang == "zh" else "Breakdown by Type"
         st.markdown(f"### {breakdown_title}")
 
         cols = st.columns(4)
+        weak_areas = []
         for i, (qtype, stats) in enumerate(type_stats.items()):
             with cols[i % 4]:
                 name = type_names.get(qtype, (qtype, qtype))[0 if lang == "zh" else 1]
                 pct = (stats["correct"] / stats["total"] * 100) if stats["total"] > 0 else 0
                 color = "#22c55e" if pct >= 80 else "#eab308" if pct >= 60 else "#ef4444"
+                if pct < 60:
+                    weak_areas.append(qtype)
                 st.markdown(f"""
                 <div style="
                     background: #1e1b4b;
@@ -2637,23 +2700,122 @@ def mock_exam_page():
                 </div>
                 """, unsafe_allow_html=True)
 
-        # Detailed review
+        # Show improvement suggestions for weak areas
+        if weak_areas:
+            st.markdown("---")
+            weak_title = "🎯 需要加強的領域" if lang == "zh" else "🎯 Areas to Improve"
+            st.markdown(f"### {weak_title}")
+            for area in weak_areas:
+                tip = improvement_tips.get(area, {}).get("zh" if lang == "zh" else "en", "")
+                area_name = type_names.get(area, (area, area))[0 if lang == "zh" else 1]
+                st.warning(f"**{area_name}**: {tip}")
+
+        # Detailed review with explanations
         st.markdown("---")
-        review_title = "詳細檢視" if lang == "zh" else "Detailed Review"
-        with st.expander(review_title, expanded=False):
+        review_title = "📝 詳細解答" if lang == "zh" else "📝 Detailed Review"
+        with st.expander(review_title, expanded=True):
             for i, r in enumerate(results):
                 icon = "✅" if r["correct"] else "❌"
-                st.markdown(f"**{icon} Q{i+1}**: {r['question'][:100]}...")
-                if not r["correct"]:
-                    correct_label = "正確答案" if lang == "zh" else "Correct"
-                    your_label = "你的答案" if lang == "zh" else "Your answer"
-                    st.markdown(f"- {your_label}: {r['user_answer']}")
-                    st.markdown(f"- {correct_label}: {r['correct_answer']}")
-                st.markdown("---")
+                qtype_icon = {"equity": "🎲", "outs": "🃏", "ev": "💰", "logic": "🧠"}.get(r["type"], "❓")
 
-        # Retry button
-        col1, col2, col3 = st.columns([1, 2, 1])
-        with col2:
+                # Question header
+                st.markdown(f"""
+                <div style="
+                    background: {'#1a2e1a' if r['correct'] else '#2e1a1a'};
+                    border-radius: 8px;
+                    padding: 12px;
+                    margin: 8px 0;
+                    border-left: 4px solid {'#22c55e' if r['correct'] else '#ef4444'};
+                ">
+                    <div style="font-weight: bold; margin-bottom: 8px;">
+                        {icon} Q{i+1} {qtype_icon} {r['question']}
+                    </div>
+                """, unsafe_allow_html=True)
+
+                if r["correct"]:
+                    st.markdown(f"""
+                    <div style="color: #22c55e;">
+                        ✓ {"你的答案正確" if lang == "zh" else "Your answer is correct"}: {r['user_answer']}
+                    </div>
+                    """, unsafe_allow_html=True)
+                else:
+                    your_label = "你的答案" if lang == "zh" else "Your answer"
+                    correct_label = "正確答案" if lang == "zh" else "Correct answer"
+                    st.markdown(f"""
+                    <div style="color: #ef4444;">✗ {your_label}: {r['user_answer'] or '(未作答)'}</div>
+                    <div style="color: #22c55e;">✓ {correct_label}: {r['correct_answer']}</div>
+                    """, unsafe_allow_html=True)
+
+                # Show explanation
+                explanation = r.get("explanation", "")
+                if explanation:
+                    explain_label = "解說" if lang == "zh" else "Explanation"
+                    st.markdown(f"""
+                    <div style="
+                        background: #1e1b4b;
+                        border-radius: 6px;
+                        padding: 10px;
+                        margin-top: 8px;
+                        font-size: 0.9rem;
+                    ">
+                        <strong>💡 {explain_label}:</strong> {explanation}
+                    </div>
+                    """, unsafe_allow_html=True)
+
+                st.markdown("</div>", unsafe_allow_html=True)
+
+        # History section
+        if st.session_state.mock_history and len(st.session_state.mock_history) > 1:
+            st.markdown("---")
+            history_title = "📊 歷史紀錄" if lang == "zh" else "📊 History"
+            with st.expander(history_title, expanded=False):
+                # Create history table
+                history_data = []
+                for record in reversed(st.session_state.mock_history):
+                    m, s = divmod(record["time_secs"], 60)
+                    pct = (record["score"] / record["total"] * 100) if record["total"] > 0 else 0
+                    history_data.append({
+                        "日期" if lang == "zh" else "Date": record["date"],
+                        "分數" if lang == "zh" else "Score": f"{record['score']}/{record['total']}",
+                        "正確率" if lang == "zh" else "Accuracy": f"{pct:.0f}%",
+                        "時間" if lang == "zh" else "Time": f"{m:02d}:{s:02d}",
+                    })
+
+                st.table(history_data)
+
+                # Trend analysis
+                if len(st.session_state.mock_history) >= 3:
+                    recent_scores = [r["score"] / r["total"] * 100 for r in st.session_state.mock_history[-3:]]
+                    avg_recent = sum(recent_scores) / len(recent_scores)
+                    trend_msg = ""
+                    if avg_recent >= 80:
+                        trend_msg = "🚀 近期表現優異！保持下去！" if lang == "zh" else "🚀 Great recent performance! Keep it up!"
+                    elif avg_recent >= 60:
+                        trend_msg = "📈 穩定進步中，繼續練習！" if lang == "zh" else "📈 Steady progress, keep practicing!"
+                    else:
+                        trend_msg = "💪 多加練習，你會進步的！" if lang == "zh" else "💪 Practice more, you'll improve!"
+                    st.info(trend_msg)
+
+                # Aggregate weak areas from history
+                all_wrong_types = []
+                for record in st.session_state.mock_history:
+                    all_wrong_types.extend(record.get("wrong_types", []))
+
+                if all_wrong_types:
+                    from collections import Counter
+                    wrong_counts = Counter(all_wrong_types)
+                    most_common_weak = wrong_counts.most_common(2)
+                    if most_common_weak:
+                        chronic_title = "⚠️ 常見弱點" if lang == "zh" else "⚠️ Recurring Weak Areas"
+                        st.markdown(f"**{chronic_title}**")
+                        for qtype, count in most_common_weak:
+                            area_name = type_names.get(qtype, (qtype, qtype))[0 if lang == "zh" else 1]
+                            st.markdown(f"- {area_name}: {count} 次錯誤")
+
+        # Action buttons
+        st.markdown("---")
+        col1, col2, col3 = st.columns([1, 1, 1])
+        with col1:
             retry_btn = "🔄 重新測驗" if lang == "zh" else "🔄 Retry Exam"
             if st.button(retry_btn, type="primary", use_container_width=True, key="mock_retry"):
                 st.session_state.mock_active = False
@@ -2663,6 +2825,30 @@ def mock_exam_page():
                 st.session_state.mock_current = 0
                 st.session_state.mock_results = []
                 st.rerun()
+
+        with col2:
+            # Quick link to weak area practice
+            if weak_areas:
+                practice_btn = "📚 練習弱點" if lang == "zh" else "📚 Practice Weak Areas"
+                if st.button(practice_btn, use_container_width=True, key="mock_practice_weak"):
+                    # Navigate to the weakest quiz type
+                    quiz_page_map = {
+                        "equity": 6,  # Equity Quiz index
+                        "outs": 7,    # Outs Quiz index
+                        "ev": 8,      # EV Quiz index
+                        "logic": 9,   # Logic Quiz index
+                    }
+                    weakest = weak_areas[0]
+                    if weakest in quiz_page_map:
+                        st.session_state.nav = quiz_page_map[weakest]
+                        st.rerun()
+
+        with col3:
+            if st.session_state.mock_history:
+                clear_btn = "🗑️ 清除紀錄" if lang == "zh" else "🗑️ Clear History"
+                if st.button(clear_btn, use_container_width=True, key="mock_clear_history"):
+                    st.session_state.mock_history = []
+                    st.rerun()
 
 
 def _generate_mock_exam():
