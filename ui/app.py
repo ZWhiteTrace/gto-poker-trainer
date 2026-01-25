@@ -2296,11 +2296,11 @@ def learning_page():
 
     # Tabs for different topics
     if lang == "zh":
-        tabs = ["RFI 速記表", "RFI 範圍提示", "📝 記憶訣竅", "權益對抗", "Outs 補牌", "賠率表", "起手牌", "SPR 法則", "翻後策略", "資金管理", "位置價值", "Blocker", "常見錯誤", "EV 計算"]
+        tabs = ["RFI 速記表", "RFI 範圍提示", "📝 記憶訣竅", "權益對抗", "Outs 補牌", "賠率表", "起手牌", "SPR 法則", "翻後策略", "資金管理", "位置價值", "Blocker", "常見錯誤", "EV 計算", "🧮 GTO 概念"]
     else:
-        tabs = ["RFI Charts", "RFI Tips", "📝 Mnemonics", "Equity", "Outs", "Pot Odds", "Starting Hands", "SPR", "Post-flop", "Bankroll", "Position", "Blockers", "Mistakes", "EV Calc"]
+        tabs = ["RFI Charts", "RFI Tips", "📝 Mnemonics", "Equity", "Outs", "Pot Odds", "Starting Hands", "SPR", "Post-flop", "Bankroll", "Position", "Blockers", "Mistakes", "EV Calc", "🧮 GTO Concepts"]
 
-    tab0, tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8, tab9, tab10, tab11, tab12, tab13 = st.tabs(tabs)
+    tab0, tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8, tab9, tab10, tab11, tab12, tab13, tab14 = st.tabs(tabs)
 
     with tab0:
         evaluator = Evaluator()
@@ -2344,6 +2344,204 @@ def learning_page():
 
     with tab13:
         _display_ev_calculation_learning(lang)
+
+    with tab14:
+        _display_gto_concepts_learning(lang)
+
+
+def _display_gto_concepts_learning(lang: str):
+    """Display interactive GTO concept calculators (MDF, Alpha, SPR)."""
+
+    # Section header
+    header = "GTO 核心數學概念" if lang == "zh" else "Core GTO Math Concepts"
+    subtitle = "互動計算器幫助你理解 Solver 背後的數學原理" if lang == "zh" else "Interactive calculators to understand the math behind solvers"
+    st.markdown(f"### {header}")
+    st.caption(subtitle)
+
+    # ─── MDF Calculator ─────────────────────────────────────────────
+    mdf_title = "MDF (最小防守頻率)" if lang == "zh" else "MDF (Minimum Defense Frequency)"
+    with st.expander(f"📊 {mdf_title}", expanded=True):
+        mdf_desc = """
+**MDF 公式**: `MDF = 1 / (1 + Bet/Pot)`
+
+當對手下注時，你必須至少防守 MDF% 的 range 來避免被自動獲利詐唬。
+""" if lang == "zh" else """
+**MDF Formula**: `MDF = 1 / (1 + Bet/Pot)`
+
+When facing a bet, you must defend at least MDF% of your range to prevent opponent from auto-profiting with bluffs.
+"""
+        st.markdown(mdf_desc)
+
+        col1, col2, col3 = st.columns(3)
+        with col1:
+            pot_mdf = st.number_input("底池 (Pot)" if lang == "zh" else "Pot Size", value=100, min_value=1, key="mdf_pot")
+        with col2:
+            bet_mdf = st.number_input("下注 (Bet)" if lang == "zh" else "Bet Size", value=50, min_value=1, key="mdf_bet")
+        with col3:
+            mdf_result = 100 / (1 + bet_mdf / pot_mdf)
+            st.metric("MDF", f"{mdf_result:.1f}%")
+
+        # Visual bar
+        st.markdown(f"""
+        <div style="background: #1e293b; border-radius: 8px; padding: 10px; margin-top: 10px;">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                <span style="color: #94a3b8;">{"必須防守" if lang == "zh" else "Must Defend"}</span>
+                <span style="color: #22c55e; font-weight: bold;">{mdf_result:.1f}%</span>
+            </div>
+            <div style="background: #374151; border-radius: 4px; height: 20px; overflow: hidden;">
+                <div style="background: linear-gradient(90deg, #22c55e, #16a34a); width: {mdf_result}%; height: 100%;"></div>
+            </div>
+            <div style="display: flex; justify-content: space-between; margin-top: 5px; font-size: 0.8rem; color: #64748b;">
+                <span>{"棄牌" if lang == "zh" else "Fold"}: {100-mdf_result:.1f}%</span>
+                <span>{"繼續" if lang == "zh" else "Continue"}: {mdf_result:.1f}%</span>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+
+        # Common sizing reference
+        sizing_ref = """
+| Sizing | MDF |
+|--------|-----|
+| 25% pot | 80% |
+| 33% pot | 75% |
+| 50% pot | 67% |
+| 75% pot | 57% |
+| 100% pot | 50% |
+| 150% pot | 40% |
+"""
+        st.markdown(sizing_ref)
+
+    # ─── Alpha Calculator ───────────────────────────────────────────
+    alpha_title = "Alpha (詐唬必需棄牌率)" if lang == "zh" else "Alpha (Required Fold Frequency)"
+    with st.expander(f"🎯 {alpha_title}", expanded=True):
+        alpha_desc = """
+**Alpha 公式**: `Alpha = Bet / (Bet + Pot)`
+
+當你詐唬時，對手必須棄牌 Alpha% 以上你才能獲利。這是 MDF 的鏡像。
+""" if lang == "zh" else """
+**Alpha Formula**: `Alpha = Bet / (Bet + Pot)`
+
+When bluffing, opponent must fold at least Alpha% for your bluff to be profitable. This mirrors MDF.
+"""
+        st.markdown(alpha_desc)
+
+        col1, col2, col3 = st.columns(3)
+        with col1:
+            pot_alpha = st.number_input("底池 (Pot)" if lang == "zh" else "Pot Size", value=100, min_value=1, key="alpha_pot")
+        with col2:
+            bet_alpha = st.number_input("下注 (Bet)" if lang == "zh" else "Bet Size", value=50, min_value=1, key="alpha_bet")
+        with col3:
+            alpha_result = (bet_alpha / (bet_alpha + pot_alpha)) * 100
+            st.metric("Alpha", f"{alpha_result:.1f}%")
+
+        # Visual bar
+        st.markdown(f"""
+        <div style="background: #1e293b; border-radius: 8px; padding: 10px; margin-top: 10px;">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                <span style="color: #94a3b8;">{"對手必須棄牌" if lang == "zh" else "Opponent Must Fold"}</span>
+                <span style="color: #f59e0b; font-weight: bold;">{alpha_result:.1f}%</span>
+            </div>
+            <div style="background: #374151; border-radius: 4px; height: 20px; overflow: hidden;">
+                <div style="background: linear-gradient(90deg, #f59e0b, #d97706); width: {alpha_result}%; height: 100%;"></div>
+            </div>
+            <div style="display: flex; justify-content: space-between; margin-top: 5px; font-size: 0.8rem; color: #64748b;">
+                <span>{"對手棄牌" if lang == "zh" else "Fold"} > {alpha_result:.1f}% = {"獲利" if lang == "zh" else "Profit"}</span>
+                <span>{"對手棄牌" if lang == "zh" else "Fold"} < {alpha_result:.1f}% = {"虧損" if lang == "zh" else "Loss"}</span>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+
+    # ─── SPR Zone Calculator ────────────────────────────────────────
+    spr_title = "SPR 區間策略" if lang == "zh" else "SPR Zone Strategy"
+    with st.expander(f"📐 {spr_title}", expanded=True):
+        spr_desc = """
+**SPR 公式**: `SPR = 有效籌碼 / 底池`
+
+SPR 決定翻後的承諾深度。低 SPR 傾向 commit；高 SPR 支撐投機牌。
+""" if lang == "zh" else """
+**SPR Formula**: `SPR = Effective Stack / Pot`
+
+SPR determines postflop commitment depth. Low SPR favors commitment; High SPR supports speculative hands.
+"""
+        st.markdown(spr_desc)
+
+        col1, col2, col3 = st.columns(3)
+        with col1:
+            stack_spr = st.number_input("有效籌碼" if lang == "zh" else "Effective Stack", value=100, min_value=1, key="spr_stack")
+        with col2:
+            pot_spr = st.number_input("底池" if lang == "zh" else "Pot Size", value=10, min_value=1, key="spr_pot")
+        with col3:
+            spr_result = stack_spr / pot_spr
+            st.metric("SPR", f"{spr_result:.1f}")
+
+        # SPR Zone determination
+        if spr_result <= 4:
+            zone = "低 SPR (Low)" if lang == "zh" else "Low SPR"
+            zone_color = "#ef4444"
+            zone_strategy = "頂對+ 傾向 commit，投機牌價值低" if lang == "zh" else "Top pair+ tends to commit, speculative hands lose value"
+        elif spr_result <= 10:
+            zone = "中 SPR (Medium)" if lang == "zh" else "Medium SPR"
+            zone_color = "#f59e0b"
+            zone_strategy = "需要更強的牌才能 commit，set mining 開始有價值" if lang == "zh" else "Need stronger hands to commit, set mining becomes valuable"
+        else:
+            zone = "高 SPR (High)" if lang == "zh" else "High SPR"
+            zone_color = "#22c55e"
+            zone_strategy = "投機牌極有價值，頂對不足以打完籌碼" if lang == "zh" else "Speculative hands very valuable, top pair not enough to stack off"
+
+        st.markdown(f"""
+        <div style="background: {zone_color}20; border: 2px solid {zone_color}; border-radius: 8px; padding: 15px; margin-top: 10px;">
+            <div style="color: {zone_color}; font-size: 1.2rem; font-weight: bold; margin-bottom: 8px;">{zone}</div>
+            <div style="color: #e2e8f0;">{zone_strategy}</div>
+        </div>
+        """, unsafe_allow_html=True)
+
+        # Zone reference table
+        zone_table = """
+| SPR | Zone | Strategy |
+|-----|------|----------|
+| 1-4 | Low | Top pair+ commit, no set mine |
+| 4-10 | Medium | Overpair+ commit, set mine ok |
+| 10+ | High | Speculative hands shine |
+""" if lang == "en" else """
+| SPR | 區間 | 策略 |
+|-----|------|------|
+| 1-4 | 低 | 頂對+ commit，不 set mine |
+| 4-10 | 中 | Overpair+ commit，可 set mine |
+| 10+ | 高 | 投機牌大放異彩 |
+"""
+        st.markdown(zone_table)
+
+    # ─── Indifference & Balance ─────────────────────────────────────
+    indiff_title = "無差異與平衡" if lang == "zh" else "Indifference & Balance"
+    with st.expander(f"⚖️ {indiff_title}", expanded=False):
+        indiff_desc = """
+### 無差異原理
+
+在 GTO 均衡中，當對手用某些牌達到「無差異」時，表示 EV(call) = EV(fold)。這就是為什麼：
+
+1. **你的詐唬頻率** = Alpha (讓對手 bluff-catcher 無差異)
+2. **對手的防守頻率** = MDF (讓你的 bluff 無差異)
+
+### 關鍵洞察
+
+- 當對手偏向 overfold → 增加詐唬頻率
+- 當對手偏向 overcall → 減少詐唬，增加價值注
+- 邊界牌 (indifference hands) 是 exploit 的最佳目標
+""" if lang == "zh" else """
+### Indifference Principle
+
+In GTO equilibrium, when opponent reaches "indifference" with certain hands, it means EV(call) = EV(fold). This is why:
+
+1. **Your bluff frequency** = Alpha (makes opponent's bluff-catchers indifferent)
+2. **Opponent's defense frequency** = MDF (makes your bluffs indifferent)
+
+### Key Insights
+
+- When opponent overfolds → Increase bluff frequency
+- When opponent overcalls → Reduce bluffs, increase value bets
+- Indifference hands are prime targets for exploitation
+"""
+        st.markdown(indiff_desc)
 
 
 def _display_rfi_tips_learning(lang: str):

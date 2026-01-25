@@ -2,7 +2,7 @@
   "meta": {
     "version": "1.0",
     "description": "GTO 決策原理的原子標籤庫。每個標籤代表一個不可再分的決策因素。",
-    "categories": ["blocker", "eqr", "equity", "playability", "balance", "structure"]
+    "categories": ["blocker", "eqr", "equity", "playability", "balance", "structure", "postflop"]
   },
   "tags": {
     "ace_blocker": {
@@ -255,6 +255,51 @@
       "misconceptions": [
         "因為對手一定很強 (UTG open 確實強，但 BTN open 可能很寬)",
         "因為位置不重要 (間距大小取決於 open range 寬度和你的位置)"
+      ]
+    },
+    "sizing_advantage": {
+      "name": "Sizing 優勢",
+      "category": "structure",
+      "explanation": "Bet sizing 創造決策壓力：大注逼迫對手放棄更多牌，小注讓對手犯錯跟注。選擇正確的 sizing 可以最大化 EV，讓對手在任何選擇都處於劣勢。Sizing 與 range 結構的配合比單純打大或打小更重要。",
+      "misconceptions": [
+        "因為 sizing 更大就更有力 (大小注應該配合 range 極化程度和牌面結構)",
+        "因為 value 就要打大 bluff 就要打小 (現代 GTO 使用統一 sizing 平衡 range)"
+      ]
+    },
+    "range_advantage_hero": {
+      "name": "範圍優勢",
+      "category": "structure",
+      "explanation": "Hero 的範圍在當前場景中包含更多強牌和連接良好的組合，而對手的範圍中弱牌比例更高。這種結構優勢支撐更高頻率的進攻 (c-bet, barrel)，即使個別手牌不強也能從整體範圍優勢中獲利。",
+      "misconceptions": [
+        "因為 hero 有更好的單張牌力 (範圍優勢是統計性的結構問題，不是個別手牌比較)",
+        "因為範圍優勢意味著可以隨意詐唬 (需要適當的 blocker 和 playability 配合)"
+      ]
+    },
+    "nut_advantage_structure": {
+      "name": "堅果優勢 (結構性)",
+      "category": "equity",
+      "explanation": "在該場景中，Hero 能成為 nuts 的路線比對手多。即使 showdown value 相同，Hero 能打更大的底池並承受更多壓力。堅果優勢讓你可以使用 overbet 策略，因為對手缺乏頂端牌力無法防守。",
+      "misconceptions": [
+        "因為堅果優勢和高 equity 一樣 (你可以高 equity 但堅果路線少，如 QQ on AKJ)",
+        "因為有堅果優勢就一定要激進 (需要搭配 range 結構，有時 check 也是正確的)"
+      ]
+    },
+    "indifference_threshold": {
+      "name": "無差異閾值",
+      "category": "structure",
+      "explanation": "在 GTO 均衡中，EV(action A) = EV(action B) 的決策點。這些邊界牌是混合策略的來源，也是 exploit 的目標。當對手偏離 GTO 時，無差異牌會明確傾向某個動作。理解無差異點幫助你識別哪些牌對 solver 參數敏感。",
+      "misconceptions": [
+        "因為無差異就代表這張牌不重要 (恰恰相反，邊界牌是調整策略的關鍵)",
+        "因為無差異牌應該隨機選擇 (實際上應該根據對手傾向調整到 pure strategy)"
+      ]
+    },
+    "spr_aware": {
+      "name": "SPR 感知",
+      "category": "structure",
+      "explanation": "SPR (Stack-to-Pot Ratio) 決定了翻後的承諾深度。低 SPR (<4) 傾向 commit 頂對+；中 SPR (4-10) 需要更強的牌力；高 SPR (>10) 支撐投機牌 set mining。同一手牌在不同 SPR 下策略完全不同，理解 SPR 影響是翻後決策的基礎。",
+      "misconceptions": [
+        "因為 SPR 只影響 set mining (SPR 影響所有翻後決策，包括 c-bet 頻率和 sizing)",
+        "因為深籌總是更好 (深籌讓投機牌有價值，但也讓對手的詐唬更有效)"
       ]
     }
   }

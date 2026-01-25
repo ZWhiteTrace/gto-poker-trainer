@@ -346,5 +346,467 @@
         "note": "A6o 純 call。Pot odds 讓 call 有利但 3bet bluff 不夠好 (offsuit + 踢腳弱)。"
       }
     }
+  },
+  "CO_vs_HJ": {
+    "context": {
+      "range_advantage": "villain",
+      "nut_advantage": "villain",
+      "hero_range_shape": "polarized",
+      "squeeze_risk": "medium",
+      "note": "HJ open range (~15%) 比 UTG 寬但仍然偏緊。CO 有位置優勢但後面仍有 BTN/SB/BB 可能 squeeze。3bet 極化為主。"
+    },
+    "hands": {
+      "JJ": {
+        "role": "mix_call_3bet",
+        "tags": ["high_equity", "indifference_threshold", "position_advantage"],
+        "compare_group": "pocket_pairs_high",
+        "stability": "param_sensitive",
+        "note": "JJ vs HJ 是經典無差異點。3bet 拿價值但面對 4bet 只剩 call/fold；call 保護翻後 overpair。"
+      },
+      "TT": {
+        "role": "call",
+        "tags": ["set_mining", "high_equity", "position_advantage"],
+        "compare_group": "pocket_pairs_high",
+        "stability": "stable",
+        "note": "TT 對 HJ range call 更穩健：3bet 後面對 4bet 極尷尬，不如保留 postflop 靈活性。"
+      },
+      "AJs": {
+        "role": "mix_call_3bet",
+        "tags": ["high_eqr_suited", "ace_blocker", "domination_risk"],
+        "compare_group": "suited_broadways",
+        "stability": "param_sensitive",
+        "note": "AJs 對 HJ 有好 equity + playability，但 3bet 後被 4bet 時很難繼續 (被 AA/KK/AKs 壓制)。"
+      },
+      "A5s": {
+        "role": "bluff_3bet",
+        "tags": ["ace_blocker", "wheel_potential", "polarized_range_bluff"],
+        "compare_group": "suited_aces",
+        "stability": "stable",
+        "note": "標準 3bet bluff：Ace blocker + wheel potential + 同花。對 HJ range 有足夠 fold equity。"
+      },
+      "KQs": {
+        "role": "call",
+        "tags": ["high_eqr_suited", "connectivity", "condensed_range_call"],
+        "compare_group": "suited_broadways",
+        "stability": "stable",
+        "note": "KQs 對 HJ 傾向 call：有位置的情況下 playability 極高，3bet 反而會讓對手 4bet 或只留強牌。"
+      },
+      "QJs": {
+        "role": "call",
+        "tags": ["high_eqr_suited", "connectivity", "position_advantage"],
+        "compare_group": "suited_connectors",
+        "stability": "stable",
+        "note": "QJs 純 call：有位置 + 同花連接結構 = 翻後 playability 極高。不需要承擔 3bet pot 的風險。"
+      },
+      "AQo": {
+        "role": "call",
+        "tags": ["high_equity", "linear_range_top", "domination_risk"],
+        "compare_group": "premium_broadways",
+        "stability": "stable",
+        "note": "AQo 對 HJ 傾向 call (vs UTG 也是)。3bet 只讓 AK/KK/AA 繼續，全部壓制你。"
+      },
+      "AKo": {
+        "role": "value_3bet",
+        "tags": ["high_equity", "ace_blocker", "nut_potential"],
+        "compare_group": "premium_broadways",
+        "stability": "stable"
+      }
+    }
+  },
+  "BTN_vs_UTG": {
+    "context": {
+      "range_advantage": "villain",
+      "nut_advantage": "villain",
+      "hero_range_shape": "polarized",
+      "squeeze_risk": "low",
+      "note": "UTG 是全桌最緊的位置 (~12%)，但 BTN 有絕對位置優勢且僅 SB/BB 可能 squeeze。可以寬 3bet bluff 利用 fold equity。"
+    },
+    "hands": {
+      "QQ": {
+        "role": "value_3bet",
+        "tags": ["high_equity", "nut_potential", "position_advantage"],
+        "compare_group": "pocket_pairs_premium",
+        "stability": "stable"
+      },
+      "JJ": {
+        "role": "mix_call_3bet",
+        "tags": ["high_equity", "indifference_threshold", "position_advantage"],
+        "compare_group": "pocket_pairs_high",
+        "stability": "param_sensitive",
+        "note": "JJ vs UTG 在 BTN 是混合：有位置讓 call 更有價值 (可控制 pot size)，但 3bet 也有 fold equity。"
+      },
+      "TT": {
+        "role": "call",
+        "tags": ["set_mining", "position_advantage", "implied_odds_deep"],
+        "compare_group": "pocket_pairs_high",
+        "stability": "stable",
+        "note": "TT 在 BTN vs UTG 純 call：位置優勢最大化 set mine 價值。3bet 後被 4bet 極尷尬。"
+      },
+      "AQs": {
+        "role": "mix_call_3bet",
+        "tags": ["high_equity", "high_eqr_suited", "domination_risk"],
+        "compare_group": "suited_broadways",
+        "stability": "param_sensitive",
+        "note": "AQs 在 BTN 混合：3bet 有 thin value (對手 AJ-/99- fold)，call 則利用位置和同花 playability。"
+      },
+      "A5s": {
+        "role": "bluff_3bet",
+        "tags": ["ace_blocker", "wheel_potential", "polarized_range_bluff", "position_advantage"],
+        "compare_group": "suited_aces",
+        "stability": "stable",
+        "note": "BTN 有位置讓 A5s 3bet bluff 更有效：被 call 後翻後 playability 也好。"
+      },
+      "KQs": {
+        "role": "call",
+        "tags": ["high_eqr_suited", "connectivity", "position_advantage", "condensed_range_call"],
+        "compare_group": "suited_broadways",
+        "stability": "stable",
+        "note": "KQs 對 UTG 傾向 call：有位置 + 極佳 playability。3bet 會讓對手只留下壓制你的牌。"
+      },
+      "88": {
+        "role": "call",
+        "tags": ["set_mining", "position_advantage", "implied_odds_deep"],
+        "compare_group": "pocket_pairs_mid",
+        "stability": "stable"
+      },
+      "AKo": {
+        "role": "value_3bet",
+        "tags": ["high_equity", "ace_blocker", "nut_potential"],
+        "compare_group": "premium_broadways",
+        "stability": "stable"
+      }
+    }
+  },
+  "BTN_vs_HJ": {
+    "context": {
+      "range_advantage": "neutral",
+      "nut_advantage": "neutral",
+      "hero_range_shape": "polarized",
+      "squeeze_risk": "low",
+      "note": "HJ open (~15%) 比 UTG 寬，BTN 有位置優勢。可以比 vs UTG 更寬地 3bet，包括更多 thin value 和 bluff。"
+    },
+    "hands": {
+      "JJ": {
+        "role": "value_3bet",
+        "tags": ["high_equity", "position_advantage", "wider_value_3bet"],
+        "compare_group": "pocket_pairs_high",
+        "stability": "stable",
+        "note": "JJ 對 HJ 寬 range 升格為 value 3bet。對手 call range 包含更多被我們壓制的牌。"
+      },
+      "TT": {
+        "role": "mix_call_3bet",
+        "tags": ["high_equity", "set_mining", "position_advantage", "indifference_threshold"],
+        "compare_group": "pocket_pairs_high",
+        "stability": "param_sensitive",
+        "note": "TT 在 BTN vs HJ 是混合：對手 range 較寬讓 3bet 更有價值，但 call 的 set mine 也有位置加成。"
+      },
+      "AJs": {
+        "role": "mix_call_3bet",
+        "tags": ["high_eqr_suited", "ace_blocker", "position_advantage"],
+        "compare_group": "suited_broadways",
+        "stability": "param_sensitive",
+        "note": "AJs 混合策略：對 HJ range 有不錯 equity，但被 4bet 時困難。有位置讓 call 更有價值。"
+      },
+      "A5s": {
+        "role": "value_3bet",
+        "tags": ["ace_blocker", "wheel_potential", "wider_value_3bet", "position_advantage"],
+        "compare_group": "suited_aces",
+        "stability": "stable",
+        "note": "A5s 對 HJ 升格為 thin value 3bet (類似 BTN vs CO)。對手 call range 寬讓 blocker + nut potential 更有價值。"
+      },
+      "KTs": {
+        "role": "call",
+        "tags": ["high_eqr_suited", "connectivity", "position_advantage"],
+        "compare_group": "suited_broadways",
+        "stability": "stable",
+        "note": "KTs 純 call：有位置 + 同花連接結構 = 翻後 playability 極高。set up postflop 比 3bet 更有價值。"
+      },
+      "98s": {
+        "role": "call",
+        "tags": ["high_eqr_suited", "connectivity", "implied_odds_deep", "position_advantage"],
+        "compare_group": "suited_connectors",
+        "stability": "stable",
+        "note": "98s 純 call：有位置的 suited connector 翻後 playability 極高，不需要 3bet 膨脹底池。"
+      },
+      "AQo": {
+        "role": "mix_call_3bet",
+        "tags": ["high_equity", "position_advantage", "wider_value_3bet"],
+        "compare_group": "premium_broadways",
+        "stability": "param_sensitive",
+        "note": "AQo 對 HJ 混合：對手 range 較寬讓 3bet 價值增加，但 call 利用位置也很好。"
+      },
+      "AKo": {
+        "role": "value_3bet",
+        "tags": ["high_equity", "ace_blocker", "nut_potential"],
+        "compare_group": "premium_broadways",
+        "stability": "stable"
+      }
+    }
+  },
+  "SB_vs_UTG": {
+    "context": {
+      "range_advantage": "villain",
+      "nut_advantage": "villain",
+      "hero_range_shape": "polarized",
+      "squeeze_risk": "none",
+      "note": "SB 3bet-or-fold vs UTG 最緊的場景。OOP + 對手 range 極強 = 只有最頂端的價值牌和最佳 blocker 才值得 3bet。"
+    },
+    "hands": {
+      "QQ": {
+        "role": "value_3bet",
+        "tags": ["high_equity", "sb_no_flat"],
+        "compare_group": "pocket_pairs_premium",
+        "stability": "stable"
+      },
+      "JJ": {
+        "role": "mix_3bet_fold",
+        "tags": ["high_equity", "indifference_threshold", "sb_no_flat", "oop_penalty"],
+        "compare_group": "pocket_pairs_high",
+        "stability": "param_sensitive",
+        "note": "JJ 從 SB vs UTG 是邊界：3bet 拿 thin value 但被 4bet 很尷尬。部分頻率 fold 避免 OOP 困境。"
+      },
+      "TT": {
+        "role": "fold",
+        "tags": ["sb_no_flat", "oop_penalty", "gap_concept"],
+        "compare_group": "pocket_pairs_high",
+        "stability": "stable",
+        "note": "TT 從 SB vs UTG 不夠好 3bet (面對 4bet 無法繼續)，也不能 call (SB 不 flat)。放棄最佳。"
+      },
+      "AKs": {
+        "role": "value_3bet",
+        "tags": ["high_equity", "ace_blocker", "nut_potential", "sb_no_flat"],
+        "compare_group": "premium_broadways",
+        "stability": "stable"
+      },
+      "AQs": {
+        "role": "mix_3bet_fold",
+        "tags": ["high_equity", "sb_no_flat", "domination_risk", "oop_penalty"],
+        "compare_group": "suited_broadways",
+        "stability": "param_sensitive",
+        "note": "AQs 從 SB vs UTG 是邊界：有 equity 3bet 但 OOP + 被 4bet 時只剩 fold。部分頻率直接 fold。"
+      },
+      "A5s": {
+        "role": "bluff_3bet",
+        "tags": ["ace_blocker", "wheel_potential", "sb_no_flat", "polarized_range_bluff"],
+        "compare_group": "suited_aces",
+        "stability": "stable",
+        "note": "即使 vs UTG，A5s 仍是 SB 的標準 bluff：Ace blocker 效應強，被 call 有 playability。"
+      },
+      "KQs": {
+        "role": "fold",
+        "tags": ["sb_no_flat", "oop_penalty", "domination_risk"],
+        "compare_group": "suited_broadways",
+        "stability": "stable",
+        "note": "KQs 從 SB vs UTG 不夠好 3bet：對 UTG range 被 AK/AA/KK 壓制，OOP 時 EQR 大減。"
+      },
+      "AKo": {
+        "role": "value_3bet",
+        "tags": ["high_equity", "ace_blocker", "nut_potential", "sb_no_flat"],
+        "compare_group": "premium_broadways",
+        "stability": "stable"
+      }
+    }
+  },
+  "SB_vs_HJ": {
+    "context": {
+      "range_advantage": "villain",
+      "nut_advantage": "neutral",
+      "hero_range_shape": "polarized",
+      "squeeze_risk": "none",
+      "note": "SB 3bet-or-fold vs HJ。HJ range (~15%) 比 UTG 寬，讓 SB 可以略微放寬 3bet range，但 OOP 懲罰仍大。"
+    },
+    "hands": {
+      "JJ": {
+        "role": "value_3bet",
+        "tags": ["high_equity", "sb_no_flat", "wider_value_3bet"],
+        "compare_group": "pocket_pairs_high",
+        "stability": "stable",
+        "note": "JJ 對 HJ 寬 range 升格為 SB value 3bet (vs UTG 是混合)。"
+      },
+      "TT": {
+        "role": "mix_3bet_fold",
+        "tags": ["high_equity", "sb_no_flat", "oop_penalty", "indifference_threshold"],
+        "compare_group": "pocket_pairs_high",
+        "stability": "param_sensitive",
+        "note": "TT 從 SB vs HJ 是邊界：對手 range 較寬讓 3bet 有一些價值，但 OOP + 被 4bet 很難繼續。"
+      },
+      "AQs": {
+        "role": "value_3bet",
+        "tags": ["high_equity", "high_eqr_suited", "sb_no_flat"],
+        "compare_group": "suited_broadways",
+        "stability": "stable",
+        "note": "AQs 對 HJ range 升格為 value 3bet。同花結構幫助 OOP 的 playability。"
+      },
+      "AJs": {
+        "role": "mix_3bet_fold",
+        "tags": ["high_eqr_suited", "sb_no_flat", "domination_risk"],
+        "compare_group": "suited_broadways",
+        "stability": "param_sensitive",
+        "note": "AJs 從 SB vs HJ 是邊界：有 equity 3bet 但 OOP + 被 4bet 時面對 AK/QQ+ 困難。"
+      },
+      "A5s": {
+        "role": "bluff_3bet",
+        "tags": ["ace_blocker", "wheel_potential", "sb_no_flat", "polarized_range_bluff"],
+        "compare_group": "suited_aces",
+        "stability": "stable"
+      },
+      "KQs": {
+        "role": "mix_3bet_fold",
+        "tags": ["high_eqr_suited", "sb_no_flat", "oop_penalty", "connectivity"],
+        "compare_group": "suited_broadways",
+        "stability": "param_sensitive",
+        "note": "KQs 從 SB vs HJ 是邊界：同花連接有 playability，但 OOP 時 EQR 損失大。"
+      },
+      "AKo": {
+        "role": "value_3bet",
+        "tags": ["high_equity", "ace_blocker", "nut_potential", "sb_no_flat"],
+        "compare_group": "premium_broadways",
+        "stability": "stable"
+      },
+      "A4s": {
+        "role": "bluff_3bet",
+        "tags": ["ace_blocker", "wheel_potential", "sb_no_flat", "polarized_range_bluff"],
+        "compare_group": "suited_aces",
+        "stability": "stable",
+        "note": "A4s 是 SB 3bet bluff 的標準選擇：Ace blocker + wheel potential。"
+      }
+    }
+  },
+  "SB_vs_CO": {
+    "context": {
+      "range_advantage": "neutral",
+      "nut_advantage": "hero",
+      "hero_range_shape": "polarized",
+      "squeeze_risk": "none",
+      "note": "SB 3bet-or-fold vs CO。CO range (~20%) 較寬，讓 SB 可以更寬地 3bet。堅果優勢在 hero 這邊因為 3bet range 更極化。"
+    },
+    "hands": {
+      "TT": {
+        "role": "value_3bet",
+        "tags": ["high_equity", "sb_no_flat", "wider_value_3bet"],
+        "compare_group": "pocket_pairs_high",
+        "stability": "stable",
+        "note": "TT 對 CO 寬 range 升格為 SB value 3bet。"
+      },
+      "99": {
+        "role": "mix_3bet_fold",
+        "tags": ["high_equity", "sb_no_flat", "indifference_threshold"],
+        "compare_group": "pocket_pairs_mid",
+        "stability": "param_sensitive",
+        "note": "99 從 SB vs CO 是邊界：對手 range 寬讓 3bet 有一些價值，但翻後常常是 underpair。"
+      },
+      "AJs": {
+        "role": "value_3bet",
+        "tags": ["high_eqr_suited", "ace_blocker", "sb_no_flat", "wider_value_3bet"],
+        "compare_group": "suited_broadways",
+        "stability": "stable",
+        "note": "AJs 對 CO range 升格為 value 3bet。"
+      },
+      "ATs": {
+        "role": "mix_3bet_fold",
+        "tags": ["high_eqr_suited", "sb_no_flat", "medium_kicker_trap"],
+        "compare_group": "suited_broadways",
+        "stability": "param_sensitive",
+        "note": "ATs 從 SB vs CO 是邊界：同花 playability 好但踢腳在 3bet pot 中可能輸給 AJ+。"
+      },
+      "KQs": {
+        "role": "value_3bet",
+        "tags": ["high_eqr_suited", "connectivity", "sb_no_flat", "wider_value_3bet"],
+        "compare_group": "suited_broadways",
+        "stability": "stable",
+        "note": "KQs 對 CO 升格為 value 3bet：對手 call range 包含大量被我們壓制的牌。"
+      },
+      "A5s": {
+        "role": "bluff_3bet",
+        "tags": ["ace_blocker", "wheel_potential", "sb_no_flat", "polarized_range_bluff"],
+        "compare_group": "suited_aces",
+        "stability": "stable"
+      },
+      "K9s": {
+        "role": "bluff_3bet",
+        "tags": ["suited", "sb_no_flat", "polarized_range_bluff"],
+        "compare_group": "suited_kings",
+        "stability": "stable",
+        "note": "K9s 是 SB vs CO 的 3bet bluff 擴展：對手 range 寬讓更多 bluff 有利可圖。"
+      },
+      "AKo": {
+        "role": "value_3bet",
+        "tags": ["high_equity", "ace_blocker", "nut_potential", "sb_no_flat"],
+        "compare_group": "premium_broadways",
+        "stability": "stable"
+      }
+    }
+  },
+  "BB_vs_UTG": {
+    "context": {
+      "range_advantage": "villain",
+      "nut_advantage": "villain",
+      "hero_range_shape": "mixed",
+      "squeeze_risk": "none",
+      "note": "BB 面對 UTG 最緊 range 的防守。Pot odds 仍然很好讓防守 range 寬，但 3bet 必須非常極化 (只有頂端價值 + 最佳 blocker)。"
+    },
+    "hands": {
+      "QQ": {
+        "role": "value_3bet",
+        "tags": ["high_equity", "pot_odds_bb"],
+        "compare_group": "pocket_pairs_premium",
+        "stability": "stable"
+      },
+      "JJ": {
+        "role": "mix_call_3bet",
+        "tags": ["high_equity", "pot_odds_bb", "indifference_threshold"],
+        "compare_group": "pocket_pairs_high",
+        "stability": "param_sensitive",
+        "note": "JJ vs UTG 在 BB 混合：pot odds 讓 call 有價值，但 3bet 也有 thin value 對抗 UTG wide range。"
+      },
+      "TT": {
+        "role": "call",
+        "tags": ["set_mining", "pot_odds_bb", "implied_odds_deep"],
+        "compare_group": "pocket_pairs_high",
+        "stability": "stable",
+        "note": "TT 從 BB vs UTG 傾向 call：pot odds 好 + set mine 價值。3bet 後面對 4bet 太尷尬。"
+      },
+      "AQs": {
+        "role": "mix_call_3bet",
+        "tags": ["high_equity", "high_eqr_suited", "pot_odds_bb", "domination_risk"],
+        "compare_group": "suited_broadways",
+        "stability": "param_sensitive",
+        "note": "AQs 在 BB vs UTG 混合：有 equity 3bet thin value，但 call 利用 pot odds + 同花 playability 也好。"
+      },
+      "AJs": {
+        "role": "call",
+        "tags": ["high_eqr_suited", "pot_odds_bb", "domination_risk"],
+        "compare_group": "suited_broadways",
+        "stability": "stable",
+        "note": "AJs 從 BB vs UTG 傾向 call：3bet 後被 4bet 太難繼續，call 則有 pot odds + playability。"
+      },
+      "A5s": {
+        "role": "mix_call_3bet",
+        "tags": ["ace_blocker", "wheel_potential", "pot_odds_bb", "polarized_range_bluff"],
+        "compare_group": "suited_aces",
+        "stability": "param_sensitive",
+        "note": "A5s 在 BB 可以 3bet bluff (利用 Ace blocker) 或 call (pot odds + 同花 playability)。"
+      },
+      "KQs": {
+        "role": "call",
+        "tags": ["high_eqr_suited", "pot_odds_bb", "condensed_range_call"],
+        "compare_group": "suited_broadways",
+        "stability": "stable",
+        "note": "KQs 從 BB vs UTG 純 call：pot odds 極好 + 同花連接 playability。3bet 會讓對手只留強牌。"
+      },
+      "AKo": {
+        "role": "value_3bet",
+        "tags": ["high_equity", "ace_blocker", "nut_potential", "pot_odds_bb"],
+        "compare_group": "premium_broadways",
+        "stability": "stable"
+      },
+      "77": {
+        "role": "call",
+        "tags": ["set_mining", "pot_odds_bb", "implied_odds_deep"],
+        "compare_group": "pocket_pairs_mid",
+        "stability": "stable",
+        "note": "77 從 BB vs UTG 純 call set mine：pot odds 讓 call 正 EV，3bet 後 pot 太大對 set mine 不利。"
+      }
+    }
   }
 }
