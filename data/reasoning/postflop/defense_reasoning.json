@@ -185,6 +185,148 @@
           "stability": "stable"
         }
       }
+    },
+    "two_tone": {
+      "example_board": "Kh9h4c",
+      "context": {
+        "range_advantage": "slight_villain",
+        "defense_frequency": "medium",
+        "note": "雙色牌面 BB 有更多花聽牌可以 semi-bluff。需要選擇性 check-raise。"
+      },
+      "hands": {
+        "AhTh": {
+          "role": "check_raise_semibluff",
+          "action": "raise",
+          "tags": ["check_raise_semibluff", "nut_advantage_structure"],
+          "why": "堅果花聽牌。Check-raise 半詐唬：fold equity + 9 outs。Turn 來花變 nuts。",
+          "stability": "stable"
+        },
+        "K9": {
+          "role": "check_raise_value",
+          "action": "raise",
+          "tags": ["high_equity", "board_texture_favor"],
+          "why": "兩對。Check-raise 建立底池，從對手頂對、聽牌獲得價值。",
+          "stability": "stable"
+        },
+        "KTo": {
+          "role": "check_call",
+          "action": "call",
+          "tags": ["high_equity", "check_pot_control"],
+          "why": "頂對中等踢腳。Flat 保持底池可控，Turn 評估對手的行動。",
+          "stability": "stable"
+        },
+        "99": {
+          "role": "check_call_set",
+          "action": "call",
+          "tags": ["high_equity"],
+          "why": "Set 極強。可以 flat 讓對手繼續 bluff，也可以 Turn raise。",
+          "stability": "stable"
+        },
+        "QJs_no_heart": {
+          "role": "check_fold",
+          "action": "fold",
+          "tags": ["check_pot_control"],
+          "why": "後門順子但沒有紅心。K 高牌面 overcards 弱，fold 節省籌碼。",
+          "stability": "stable"
+        }
+      }
+    },
+    "broadway": {
+      "example_board": "KQJr",
+      "context": {
+        "range_advantage": "hero",
+        "defense_frequency": "wide",
+        "note": "高張連接牌面對 BB 極有利。更多兩對、順子組合，可以積極 check-raise。"
+      },
+      "hands": {
+        "AT": {
+          "role": "check_raise_value_nuts",
+          "action": "raise",
+          "tags": ["nut_advantage_structure", "high_equity"],
+          "why": "堅果順子。Check-raise 建立大底池，從對手兩對、set、頂對獲得最大價值。",
+          "stability": "stable"
+        },
+        "KJ": {
+          "role": "check_raise_value",
+          "action": "raise",
+          "tags": ["high_equity", "board_texture_favor"],
+          "why": "兩對。在對 Hero 極有利的牌面積極 check-raise。",
+          "stability": "stable"
+        },
+        "QJ": {
+          "role": "check_call",
+          "action": "call",
+          "tags": ["high_equity", "check_pot_control"],
+          "why": "兩對但不是堅果。Flat 保持底池可控，River 評估。",
+          "stability": "stable"
+        },
+        "T9s": {
+          "role": "check_raise_semibluff",
+          "action": "raise",
+          "tags": ["check_raise_semibluff", "barrel_equity"],
+          "why": "開放順子聽牌 (9 需要 A)。Check-raise 半詐唬：在有利牌面 fold equity 高。",
+          "stability": "medium"
+        },
+        "88": {
+          "role": "check_fold",
+          "action": "fold",
+          "tags": ["check_pot_control"],
+          "why": "口袋對子在 broadway 牌面極弱。對手 range 壓制太多，fold。",
+          "stability": "stable"
+        }
+      }
+    },
+    "wheel_board": {
+      "example_board": "543r",
+      "context": {
+        "range_advantage": "hero",
+        "defense_frequency": "very_wide",
+        "note": "Wheel 牌面對 BB 極度有利。更多兩對、順子、set，可以非常積極防守。"
+      },
+      "hands": {
+        "A2": {
+          "role": "check_raise_value_nuts",
+          "action": "raise",
+          "tags": ["nut_advantage_structure", "wheel_potential"],
+          "why": "Wheel 順子 (nuts)。Check-raise 建立底池，從對手 overpairs、兩對獲得最大價值。",
+          "stability": "stable"
+        },
+        "76s": {
+          "role": "check_raise_value",
+          "action": "raise",
+          "tags": ["high_equity"],
+          "why": "順子。Check-raise 從對手 overpairs 獲得價值。",
+          "stability": "stable"
+        },
+        "55": {
+          "role": "check_raise_value_set",
+          "action": "raise",
+          "tags": ["high_equity", "board_texture_favor"],
+          "why": "Set。在對 Hero 極有利的牌面積極 check-raise 建立底池。",
+          "stability": "stable"
+        },
+        "64s": {
+          "role": "check_raise_two_pair",
+          "action": "raise",
+          "tags": ["high_equity", "board_texture_favor"],
+          "why": "兩對。在 wheel 牌面非常強，check-raise 建立底池。",
+          "stability": "stable"
+        },
+        "A9s": {
+          "role": "check_call",
+          "action": "call",
+          "tags": ["wheel_potential", "barrel_equity"],
+          "why": "卡順聽牌 (A-2-3-4-5) + A 高。Flat 看 Turn，中 2 變 nuts。",
+          "stability": "stable"
+        },
+        "KQo": {
+          "role": "check_fold",
+          "action": "fold",
+          "tags": ["check_pot_control"],
+          "why": "完全 miss 的 overcards。Wheel 牌面對 BB 極有利，對手不會 fold，fold 節省。",
+          "stability": "stable"
+        }
+      }
     }
   }
 }

@@ -603,6 +603,120 @@ class LogicQuizEngine:
             scenario=f"{spot} / {board_texture}",
         )
 
+    def generate_type_g(
+        self, street: str = None, spot: str = "srp_btn_vs_bb"
+    ) -> Optional[LogicQuestion]:
+        """
+        生成 G 類題型：Barrel 決策
+        「Flop bet 後 Turn/River 為什麼應該繼續/停止？」
+        """
+        barrel_data = self.postflop_data.get("barrel", {})
+        if spot not in barrel_data:
+            return None
+
+        spot_data = barrel_data[spot]
+
+        # 選擇街道
+        if street == "turn":
+            scenario_group = spot_data.get("turn_barrel_scenarios", {})
+            street_label = "Turn"
+        elif street == "river":
+            scenario_group = spot_data.get("river_barrel_scenarios", {})
+            street_label = "River"
+        else:
+            # 隨機選擇
+            turn_scenarios = spot_data.get("turn_barrel_scenarios", {})
+            river_scenarios = spot_data.get("river_barrel_scenarios", {})
+            if turn_scenarios and river_scenarios:
+                if random.choice([True, False]):
+                    scenario_group = turn_scenarios
+                    street_label = "Turn"
+                else:
+                    scenario_group = river_scenarios
+                    street_label = "River"
+            elif turn_scenarios:
+                scenario_group = turn_scenarios
+                street_label = "Turn"
+            elif river_scenarios:
+                scenario_group = river_scenarios
+                street_label = "River"
+            else:
+                return None
+
+        if not scenario_group:
+            return None
+
+        # 隨機選場景
+        scenario_name = random.choice(list(scenario_group.keys()))
+        scenario_data = scenario_group[scenario_name]
+
+        hands = scenario_data.get("hands", {})
+        if not hands:
+            return None
+
+        # 隨機選一手牌
+        hand = random.choice(list(hands.keys()))
+        hand_data = hands[hand]
+
+        action = hand_data.get("action", "")
+        why = hand_data.get("why", "")
+        tags = hand_data.get("tags", [])
+
+        flop = scenario_data.get("flop", "")
+        turn = scenario_data.get("turn", "")
+        river = scenario_data.get("river", "")
+        context = scenario_data.get("context", {})
+
+        if not tags:
+            return None
+
+        # 正確答案
+        correct_answer = why
+
+        # 生成干擾選項
+        distractors = self._generate_distractors(tags, count=3)
+
+        # 組合選項
+        options = [correct_answer] + distractors
+        indices = list(range(len(options)))
+        random.shuffle(indices)
+        options = [options[i] for i in indices]
+        correct_index = indices.index(0)
+
+        # 題目文字
+        if street_label == "Turn":
+            board_str = f"Flop: {flop} → Turn: {turn}"
+        else:
+            board_str = f"Flop: {flop} → Turn: {turn} → River: {river}"
+
+        question_text = (
+            f"BTN vs BB 單挑底池，Flop bet 後對手 call。\n"
+            f"{board_str}\n"
+            f"為什麼 {hand} 在 {street_label} 應該 {self._format_action(action)}？"
+        )
+
+        # 解說
+        explanation_parts = [why, ""]
+        explanation_parts.append(f"場景：{scenario_name.replace('_', ' ')}")
+        if context.get("equity_change"):
+            explanation_parts.append(f"權益變化：{context['equity_change']}")
+        if context.get("barrel_frequency"):
+            explanation_parts.append(f"Barrel 頻率：{context['barrel_frequency']}")
+        if context.get("note"):
+            explanation_parts.append(f"\n{context['note']}")
+
+        return LogicQuestion(
+            question_type="G",
+            question_text=question_text,
+            options=options,
+            correct_index=correct_index,
+            explanation="\n".join(explanation_parts),
+            tags_involved=tags,
+            layer="Layer 2 (WHY) - Postflop Barrel",
+            hand=hand,
+            scenario=f"{spot} / {street_label} / {scenario_name}",
+        )
+
     def generate_random_question(
         self, scenario: str = None, include_postflop: bool = False
     ) -> Optional[LogicQuestion]:
@@ -615,7 +729,7 @@ class LogicQuizEngine:
 
         # 隨機選題型
         if include_postflop and self.postflop_data.get("cbet"):
-            question_type = random.choice(["A", "B", "E", "F"])
+            question_type = random.choice(["A", "B", "E", "F", "G"])
         else:
             question_type = random.choice(["A", "B"])
 
@@ -629,8 +743,10 @@ class LogicQuizEngine:
             return self.generate_type_b(scenario)
         elif question_type == "E":
             return self.generate_type_e()
-        else:
+        elif question_type == "F":
             return self.generate_type_f()
+        else:
+            return self.generate_type_g()
 
     def generate_quiz(
         self, scenario: str, count: int = 5

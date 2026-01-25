@@ -1,8 +1,8 @@
 {
   "meta": {
-    "version": "1.0",
+    "version": "1.1",
     "description": "Flop C-bet 決策 WHY 系統：按牌面類型分類，解釋為什麼特定手牌在特定牌面應該 bet/check。",
-    "board_categories": ["dry_ace_high", "dry_king_high", "paired_board", "monotone", "wet_connected", "low_rainbow"]
+    "board_categories": ["dry_ace_high", "dry_king_high", "paired_board", "monotone", "wet_connected", "low_rainbow", "two_tone", "broadway", "wheel_board"]
   },
   "srp_btn_vs_bb": {
     "dry_ace_high": {
@@ -249,6 +249,147 @@
           "tags": ["barrel_equity", "check_pot_control"],
           "why": "後門順子 + overcards。Check 看免費牌，Turn 來好牌再進攻。",
           "stability": "stable"
+        }
+      }
+    },
+    "two_tone": {
+      "example_board": "Kh9h4c",
+      "context": {
+        "range_advantage": "hero",
+        "nut_advantage": "hero",
+        "cbet_frequency": "medium (55%)",
+        "preferred_sizing": "50%",
+        "note": "雙色牌面 BTN 有範圍優勢但 BB 有更多花聽牌。中等 sizing 保護 + 從聽牌獲得價值。"
+      },
+      "hands": {
+        "KQ": {
+          "role": "value_bet",
+          "action": "bet_50",
+          "tags": ["high_equity", "cbet_range_advantage"],
+          "why": "頂對好踢腳。中等 sizing 從 Kx 弱踢腳、口袋對子、花聽牌獲得價值。",
+          "stability": "stable"
+        },
+        "AhJh": {
+          "role": "semibluff_bet",
+          "action": "bet_50",
+          "tags": ["barrel_equity", "nut_advantage_structure"],
+          "why": "堅果花聽牌 + A 高。半詐唬：fold equity + 9 outs 被 call。Turn 來花變 nuts。",
+          "stability": "stable"
+        },
+        "QQ": {
+          "role": "value_bet_thin",
+          "action": "bet_50",
+          "tags": ["high_equity", "barrel_equity"],
+          "why": "Overpair 有價值但 K 高牌面要小心。中注從 9x、口袋對子獲得薄價值。",
+          "stability": "medium"
+        },
+        "JTs_no_heart": {
+          "role": "check_equity",
+          "action": "check",
+          "tags": ["check_pot_control"],
+          "why": "後門花 + 順子聽牌但沒紅心。雙色牌面對手有更多花，check 看 Turn 發展。",
+          "stability": "stable"
+        },
+        "77": {
+          "role": "check_medium_pair",
+          "action": "check",
+          "tags": ["check_pot_control"],
+          "why": "中對在 K 高牌面弱。雙色牌面對手聽牌多，check 避免被 raise 趕出底池。",
+          "stability": "stable"
+        }
+      }
+    },
+    "broadway": {
+      "example_board": "KQJr",
+      "context": {
+        "range_advantage": "slight_villain",
+        "nut_advantage": "slight_villain",
+        "cbet_frequency": "low (35%)",
+        "preferred_sizing": "33%",
+        "note": "高張連接牌面 BB 有更多兩對、順子組合。BTN 頂對 + 較難 c-bet bluff。"
+      },
+      "hands": {
+        "ATs": {
+          "role": "value_bet_nuts",
+          "action": "bet_50",
+          "tags": ["nut_advantage_structure", "high_equity"],
+          "why": "堅果順子。在連接牌面大注構建底池，從兩對、set、頂對獲得價值。",
+          "stability": "stable"
+        },
+        "KK": {
+          "role": "value_bet_set",
+          "action": "bet_50",
+          "tags": ["high_equity", "sizing_advantage"],
+          "why": "頂 set。在連接牌面需要大注保護 + 構建底池，對手兩對、順子聽牌會跟。",
+          "stability": "stable"
+        },
+        "AK": {
+          "role": "check_top_pair",
+          "action": "check",
+          "tags": ["check_pot_control"],
+          "why": "頂對頂踢腳但牌面太連接。很多牌壓制你 (ATs, QTs, JTs, QJ)，check 控池。",
+          "stability": "stable"
+        },
+        "AA": {
+          "role": "check_overpair",
+          "action": "check",
+          "tags": ["check_pot_control"],
+          "why": "Overpair 在 broadway 牌面弱。任何 T 或兩對都領先，check 保護 + bluff-catch。",
+          "stability": "stable"
+        },
+        "T9s": {
+          "role": "check_give_up",
+          "action": "check",
+          "tags": ["check_pot_control"],
+          "why": "開放順子聽牌但牌面對對手有利。Bet 難獲得 fold，check 看免費 Turn。",
+          "stability": "stable"
+        }
+      }
+    },
+    "wheel_board": {
+      "example_board": "543r",
+      "context": {
+        "range_advantage": "villain",
+        "nut_advantage": "villain",
+        "cbet_frequency": "low (30%)",
+        "preferred_sizing": "25-33%",
+        "note": "Wheel 牌面極度對 BB 有利：更多兩對、順子、set。BTN 幾乎只有 overpair 有價值。"
+      },
+      "hands": {
+        "AA": {
+          "role": "value_bet_careful",
+          "action": "bet_33",
+          "tags": ["high_equity", "check_pot_control"],
+          "why": "Overpair 在 wheel 牌面最強的非堅果牌。小注薄價值，被 raise 要謹慎評估。",
+          "stability": "medium"
+        },
+        "KK": {
+          "role": "check_overpair",
+          "action": "check",
+          "tags": ["check_pot_control"],
+          "why": "Overpair 但 wheel 牌面危險。對手範圍中兩對、順子太多，check 控池 bluff-catch。",
+          "stability": "stable"
+        },
+        "AK": {
+          "role": "check_give_up",
+          "action": "check",
+          "tags": ["check_pot_control"],
+          "why": "完全 miss 的 overcards。Wheel 牌面對 BB 極度有利，bluff 幾乎沒有 fold equity。",
+          "stability": "stable"
+        },
+        "A2s": {
+          "role": "value_bet_wheel",
+          "action": "bet_33",
+          "tags": ["high_equity", "wheel_potential"],
+          "why": "Wheel 順子。小注從對手兩對、set、頂對獲得價值。隱蔽性強對手難放棄。",
+          "stability": "stable"
+        },
+        "87s": {
+          "role": "semibluff_small",
+          "action": "bet_33",
+          "tags": ["barrel_equity"],
+          "why": "開放順子聽牌 (6-7-8-9)。小注半詐唬：獲得一些 fold equity + 8 outs。",
+          "stability": "medium"
         }
       }
     }

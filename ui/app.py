@@ -2167,6 +2167,9 @@ def logic_quiz_page():
             "monotone": "單花牌面 (Ts7s3s)",
             "wet_connected": "濕潤連接 (Jh9h8c)",
             "low_rainbow": "低彩虹 (652r)",
+            "two_tone": "雙色牌面 (Kh9h4c)",
+            "broadway": "高張連接 (KQJr)",
+            "wheel_board": "Wheel 牌面 (543r)",
         }
 
         all_label = "全部牌面" if lang == "zh" else "All Textures"
@@ -2185,13 +2188,14 @@ def logic_quiz_page():
 
         with col_type:
             postflop_type_options = [
-                "混合 (E+F)" if lang == "zh" else "Mixed (E+F)",
+                "混合 (E+F+G)" if lang == "zh" else "Mixed (E+F+G)",
                 "E: C-bet",
                 "F: Defense",
+                "G: Barrel",
             ]
             selected_postflop_type = st.selectbox(
                 "題型" if lang == "zh" else "Type",
-                options=range(3),
+                options=range(4),
                 format_func=lambda i: postflop_type_options[i],
                 key="postflop_type_select",
             )
@@ -2199,23 +2203,27 @@ def logic_quiz_page():
         # Show stats
         st.markdown(f"""
         <div style="background: #1e1b4b; border-radius: 6px; padding: 6px 12px; margin-bottom: 8px; font-size: 0.8rem;">
-            C-bet: {postflop_summary['cbet_hands']} 手牌 | Defense: {postflop_summary['defense_hands']} 手牌
+            C-bet: {postflop_summary['cbet_hands']} 手牌 | Defense: {postflop_summary['defense_hands']} 手牌 | Barrel: {postflop_summary['barrel_scenarios']} 場景
         </div>
         """, unsafe_allow_html=True)
 
         def generate_new_question():
             import random
             if selected_postflop_type == 0:
-                q_type = random.choice(["E", "F"])
+                q_type = random.choice(["E", "F", "G"])
             elif selected_postflop_type == 1:
                 q_type = "E"
-            else:
+            elif selected_postflop_type == 2:
                 q_type = "F"
+            else:
+                q_type = "G"
 
             if q_type == "E":
                 q = engine.generate_type_e(board_texture=selected_texture)
-            else:
+            elif q_type == "F":
                 q = engine.generate_type_f(board_texture=selected_texture)
+            else:
+                q = engine.generate_type_g()
 
             st.session_state.logic_question = q
             st.session_state.logic_show_result = False
@@ -2243,6 +2251,7 @@ def logic_quiz_page():
         "D": ("D Rake 感知", "D Rake-Aware", "#d97706"),
         "E": ("E C-bet 邏輯", "E C-bet Logic", "#059669"),
         "F": ("F 防守邏輯", "F Defense Logic", "#0891b2"),
+        "G": ("G Barrel 邏輯", "G Barrel Logic", "#dc2626"),
     }
     zh_badge, en_badge, badge_color = type_badge_map.get(
         question.question_type, ("?", "?", "#6b7280")
