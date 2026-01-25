@@ -1,0 +1,169 @@
+{
+  "meta": {
+    "version": "1.0",
+    "description": "Multi-way pot C-bet 策略：3+ 人底池的 c-bet 和防守邏輯。",
+    "key_principle": "在多人底池中，你需要更強的牌才能下注，因為至少有一人會擊中的機率大增。"
+  },
+  "3way_btn_vs_bb_sb": {
+    "dry_ace_high_multiway": {
+      "example_board": "A72r",
+      "context": {
+        "range_advantage": "hero",
+        "nut_advantage": "hero",
+        "cbet_frequency": "low (30%)",
+        "preferred_sizing": "50%+",
+        "note": "即使是乾燥 A 高牌面，3 人底池 c-bet 頻率大幅下降。至少一人有 Ax 的機率很高，只有真正的價值牌才應該下注。"
+      },
+      "hands": {
+        "AK": {
+          "role": "value_bet",
+          "action": "bet_50",
+          "tags": ["high_equity", "nut_advantage_structure"],
+          "why": "頂對頂踢腳。多人底池仍是明確價值，但要用大注保護 + 定價。",
+          "stability": "stable"
+        },
+        "AQ": {
+          "role": "value_bet_thin",
+          "action": "bet_50",
+          "tags": ["high_equity"],
+          "why": "頂對好踢腳。多人底池薄價值，小心被 AK 壓制。",
+          "stability": "medium"
+        },
+        "KK": {
+          "role": "check_behind",
+          "action": "check",
+          "tags": ["check_pot_control"],
+          "why": "Overpair 在多人 A 高牌面非常弱。至少一人有 Ax 的機率 >50%，check 控池。",
+          "stability": "stable"
+        },
+        "QQ": {
+          "role": "check_give_up",
+          "action": "check",
+          "tags": ["check_pot_control"],
+          "why": "Underpair 在多人底池幾乎沒有價值。Check fold 到任何 aggression。",
+          "stability": "stable"
+        },
+        "KQs": {
+          "role": "check_give_up",
+          "action": "check",
+          "tags": ["check_pot_control"],
+          "why": "完全 miss。多人底池不適合 bluff，至少一人會 call。",
+          "stability": "stable"
+        }
+      }
+    },
+    "low_connected_multiway": {
+      "example_board": "876r",
+      "context": {
+        "range_advantage": "villain",
+        "nut_advantage": "villain",
+        "cbet_frequency": "very_low (15%)",
+        "preferred_sizing": "66%+",
+        "note": "低連接牌面對 blinds 極度有利。多人底池幾乎不應該 c-bet bluff，只有堅果才能下注。"
+      },
+      "hands": {
+        "T9": {
+          "role": "value_bet_nuts",
+          "action": "bet_66",
+          "tags": ["nut_advantage_structure", "high_equity"],
+          "why": "堅果順子。多人底池大注構建底池，對手有很多會 call 的第二強牌。",
+          "stability": "stable"
+        },
+        "99": {
+          "role": "value_bet_set",
+          "action": "bet_66",
+          "tags": ["high_equity", "sizing_advantage"],
+          "why": "Set 非常強。大注價值 + 保護，多人底池有人會用兩對、順子聽牌 call。",
+          "stability": "stable"
+        },
+        "AA": {
+          "role": "check_overpair",
+          "action": "check",
+          "tags": ["check_pot_control"],
+          "why": "Overpair 在連接牌面多人底池脆弱。被壓制的機率很高，check 控池。",
+          "stability": "stable"
+        },
+        "AK": {
+          "role": "check_give_up",
+          "action": "check",
+          "tags": ["check_pot_control"],
+          "why": "完全 miss。多人底池 bluff 幾乎不可能成功，check fold。",
+          "stability": "stable"
+        }
+      }
+    },
+    "wet_board_multiway": {
+      "example_board": "Jh9h8c",
+      "context": {
+        "range_advantage": "villain",
+        "nut_advantage": "villain",
+        "cbet_frequency": "very_low (10%)",
+        "preferred_sizing": "75%+",
+        "note": "濕潤連接牌面多人底池幾乎只有 nuts 才能下注。Bluffing 是自殺行為。"
+      },
+      "hands": {
+        "QTs": {
+          "role": "value_bet_nuts",
+          "action": "bet_75",
+          "tags": ["nut_advantage_structure", "high_equity"],
+          "why": "堅果順子。多人底池超大注構建底池，會被 sets、兩對、flush draws call。",
+          "stability": "stable"
+        },
+        "JJ": {
+          "role": "value_bet_set",
+          "action": "bet_66",
+          "tags": ["high_equity"],
+          "why": "頂 set。多人底池需要保護，大注定價聽牌。",
+          "stability": "stable"
+        },
+        "AA": {
+          "role": "check_vulnerable",
+          "action": "check",
+          "tags": ["check_pot_control"],
+          "why": "Overpair 在連接牌面多人底池極度脆弱。被壓制機率非常高。",
+          "stability": "stable"
+        },
+        "AhKh": {
+          "role": "check_draw",
+          "action": "check",
+          "tags": ["barrel_equity", "check_pot_control"],
+          "why": "堅果花聽牌。多人底池不適合 semi-bluff，check 看免費牌。",
+          "stability": "stable"
+        }
+      }
+    }
+  },
+  "multiway_defense": {
+    "as_bb_3way": {
+      "example_board": "A72r",
+      "context": {
+        "range_advantage": "pfr",
+        "defense_frequency": "tight",
+        "note": "作為 BB 在 3 人底池，面對 c-bet 需要更強的牌才能繼續。MDF 不再適用。"
+      },
+      "hands": {
+        "A5s": {
+          "role": "call",
+          "action": "call",
+          "tags": ["high_equity"],
+          "why": "弱 Ax 在多人底池仍有價值。Flat 看 Turn，多人底池 pot control。",
+          "stability": "stable"
+        },
+        "77": {
+          "role": "call_set",
+          "action": "call",
+          "tags": ["high_equity"],
+          "why": "Set 極強。多人底池 slow play 讓其他人繼續。",
+          "stability": "stable"
+        },
+        "KQs": {
+          "role": "fold",
+          "action": "fold",
+          "tags": ["check_pot_control"],
+          "why": "Miss 的 overcards。多人底池不值得繼續，fold 節省。",
+          "stability": "stable"
+        }
+      }
+    }
+  }
+}

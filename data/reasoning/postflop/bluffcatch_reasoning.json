@@ -1,0 +1,186 @@
+{
+  "meta": {
+    "version": "1.0",
+    "description": "River Bluff Catching 決策邏輯：面對 River bet 時的 call/fold 決策。",
+    "key_principle": "河牌抓詐唬需要考慮：1) 對手 bluff 頻率 2) 你的 hand 是否 block 對手的 bluffs 3) Pot odds vs MDF"
+  },
+  "river_bluffcatch_scenarios": {
+    "missed_draws_river": {
+      "example_runout": "Kh9h4c 2d 7s",
+      "context": {
+        "board_state": "flush_draw_missed",
+        "villain_bluff_frequency": "high",
+        "hero_mdf": "~33% vs pot bet",
+        "note": "花聽牌 miss 的河牌。對手範圍中有大量 miss 的花聽牌可能會 bluff。需要用 bluff catchers 防守。"
+      },
+      "hands": {
+        "KQ": {
+          "role": "must_call",
+          "action": "call",
+          "tags": ["high_equity", "board_texture_favor"],
+          "why": "頂對好踢腳。在花聽牌 miss 的 River，對手 bluff 頻率高。必須 call 防守。",
+          "stability": "stable"
+        },
+        "KT": {
+          "role": "call_bluffcatch",
+          "action": "call",
+          "tags": ["high_equity"],
+          "why": "頂對中等踢腳。仍然是好的 bluff catcher，對手的 bluffs 都輸給你。",
+          "stability": "stable"
+        },
+        "99": {
+          "role": "marginal_call",
+          "action": "call",
+          "tags": ["check_pot_control", "indifference_threshold"],
+          "why": "中對。邊界 bluff catcher，取決於對手的 bluff 頻率。vs 標準對手應該 call。",
+          "stability": "medium"
+        },
+        "44": {
+          "role": "fold_weak",
+          "action": "fold",
+          "tags": ["check_pot_control"],
+          "why": "底對。太弱了，被太多價值牌壓制。即使對手有 bluffs，你的 hand 不夠好。",
+          "stability": "stable"
+        },
+        "AhQh": {
+          "role": "fold_missed_draw",
+          "action": "fold",
+          "tags": ["check_pot_control"],
+          "why": "Miss 的花聽牌。你 block 對手的 bluffs (花聽牌)，讓對手更可能是價值。Fold。",
+          "stability": "stable"
+        }
+      }
+    },
+    "straight_completes_river": {
+      "example_runout": "Jh9h8c 2d Tc",
+      "context": {
+        "board_state": "straight_completed",
+        "villain_bluff_frequency": "low",
+        "hero_mdf": "~25% vs overbet",
+        "note": "順子完成的河牌。對手範圍中有很多順子，bluff 比例降低。需要更強的 hand 才能 call。"
+      },
+      "hands": {
+        "KQ": {
+          "role": "value_call",
+          "action": "call",
+          "tags": ["nut_advantage_structure"],
+          "why": "堅果順子。對手可能用更差的順子或 bluff 下注。必須 call。",
+          "stability": "stable"
+        },
+        "Q7": {
+          "role": "second_nuts_call",
+          "action": "call",
+          "tags": ["high_equity"],
+          "why": "第二堅果順子。只輸給 KQ，對手有很多更差的價值和 bluffs。Call。",
+          "stability": "stable"
+        },
+        "JJ": {
+          "role": "fold_set",
+          "action": "fold",
+          "tags": ["check_pot_control"],
+          "why": "Set 在順子完成的牌面太弱。對手很少會 bluff 這個牌面，幾乎都是順子。Fold。",
+          "stability": "stable"
+        },
+        "AA": {
+          "role": "fold_overpair",
+          "action": "fold",
+          "tags": ["check_pot_control"],
+          "why": "Overpair 在四張順子牌面毫無價值。對手不會 bluff 這個牌面。Fold。",
+          "stability": "stable"
+        }
+      }
+    },
+    "paired_board_river": {
+      "example_runout": "Kh9h4c Kd 2s",
+      "context": {
+        "board_state": "board_paired",
+        "villain_bluff_frequency": "medium",
+        "hero_mdf": "~30% vs 66% pot",
+        "note": "配對牌面河牌。對手可能有三條或 full house，但也有很多 miss 的聽牌可能 bluff。"
+      },
+      "hands": {
+        "K9": {
+          "role": "value_call",
+          "action": "call",
+          "tags": ["high_equity"],
+          "why": "Full house。永遠 call，只輸給 KK 或 44。",
+          "stability": "stable"
+        },
+        "99": {
+          "role": "bluffcatch_call",
+          "action": "call",
+          "tags": ["high_equity"],
+          "why": "Full house。永遠 call。",
+          "stability": "stable"
+        },
+        "AK": {
+          "role": "bluffcatch_trips",
+          "action": "call",
+          "tags": ["high_equity", "ace_blocker"],
+          "why": "三條 K 好踢腳。A blocker 減少對手 AK 組合，對手有很多 bluffs。Call。",
+          "stability": "stable"
+        },
+        "QQ": {
+          "role": "fold_underpair",
+          "action": "fold",
+          "tags": ["check_pot_control"],
+          "why": "Underpair 在配對 K 牌面太弱。對手有太多 Kx 壓制你。Fold。",
+          "stability": "stable"
+        },
+        "AhQh": {
+          "role": "fold_missed_draw",
+          "action": "fold",
+          "tags": ["ace_blocker"],
+          "why": "Miss 的花聽牌。你 block 對手 AK (可能 fold 的牌)，讓對手更極化。Fold。",
+          "stability": "stable"
+        }
+      }
+    },
+    "brick_river": {
+      "example_runout": "Ah9h4c 2d 3s",
+      "context": {
+        "board_state": "complete_brick",
+        "villain_bluff_frequency": "low_to_medium",
+        "hero_mdf": "~35% vs 50% pot",
+        "note": "完全磚塊的河牌。沒有聽牌完成，對手 bluff 頻率取決於前幾街的動作。"
+      },
+      "hands": {
+        "AK": {
+          "role": "must_call",
+          "action": "call",
+          "tags": ["high_equity", "nut_advantage_structure"],
+          "why": "頂對頂踢腳。在乾燥牌面磚塊 River，這是最強的 bluff catcher。必須 call。",
+          "stability": "stable"
+        },
+        "AQ": {
+          "role": "call_strong",
+          "action": "call",
+          "tags": ["high_equity"],
+          "why": "頂對好踢腳。非常強的 bluff catcher，對手的 bluffs 全輸。Call。",
+          "stability": "stable"
+        },
+        "A9": {
+          "role": "call_medium",
+          "action": "call",
+          "tags": ["high_equity"],
+          "why": "兩對。在乾燥牌面非常強，對手很少有更好的牌。Call。",
+          "stability": "stable"
+        },
+        "99": {
+          "role": "marginal_call",
+          "action": "call",
+          "tags": ["check_pot_control", "indifference_threshold"],
+          "why": "中對。邊界決策，但在乾燥牌面對手 bluff 頻率應該夠高。Lean call。",
+          "stability": "medium"
+        },
+        "KQ": {
+          "role": "fold_air",
+          "action": "fold",
+          "tags": ["check_pot_control"],
+          "why": "完全 miss。沒有 showdown value，fold。",
+          "stability": "stable"
+        }
+      }
+    }
+  }
+}

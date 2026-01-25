@@ -93,8 +93,8 @@ class LogicQuizEngine:
         return reasoning
 
     def _load_postflop_reasoning(self) -> dict:
-        """載入翻後 reasoning 檔案 (cbet, barrel, defense)"""
-        postflop = {"cbet": {}, "barrel": {}, "defense": {}}
+        """載入翻後 reasoning 檔案 (cbet, barrel, defense, multiway, donk, bluffcatch)"""
+        postflop = {"cbet": {}, "barrel": {}, "defense": {}, "multiway": {}, "donk": {}, "bluffcatch": {}}
         if not POSTFLOP_DIR.exists():
             return postflop
 
@@ -124,6 +124,33 @@ class LogicQuizEngine:
             for key, value in data.items():
                 if key != "meta" and isinstance(value, dict):
                     postflop["defense"][key] = value
+
+        # 載入 Multiway reasoning
+        multiway_path = POSTFLOP_DIR / "multiway_reasoning.json"
+        if multiway_path.exists():
+            with open(multiway_path, "r", encoding="utf-8") as f:
+                data = json.load(f)
+            for key, value in data.items():
+                if key != "meta" and isinstance(value, dict):
+                    postflop["multiway"][key] = value
+
+        # 載入 Donk reasoning
+        donk_path = POSTFLOP_DIR / "donk_reasoning.json"
+        if donk_path.exists():
+            with open(donk_path, "r", encoding="utf-8") as f:
+                data = json.load(f)
+            for key, value in data.items():
+                if key != "meta" and isinstance(value, dict):
+                    postflop["donk"][key] = value
+
+        # 載入 Bluff Catch reasoning
+        bluffcatch_path = POSTFLOP_DIR / "bluffcatch_reasoning.json"
+        if bluffcatch_path.exists():
+            with open(bluffcatch_path, "r", encoding="utf-8") as f:
+                data = json.load(f)
+            for key, value in data.items():
+                if key != "meta" and isinstance(value, dict):
+                    postflop["bluffcatch"][key] = value
 
         return postflop
 

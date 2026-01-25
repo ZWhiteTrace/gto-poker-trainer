@@ -1,0 +1,150 @@
+{
+  "meta": {
+    "version": "1.0",
+    "description": "OOP Lead (Donk bet) 策略：BB 主動下注而非 check 的邏輯。",
+    "key_principle": "Donk bet 通常在牌面對 caller 極度有利、或需要保護脆弱價值牌時使用。"
+  },
+  "bb_donk_vs_btn": {
+    "low_connected_donk": {
+      "example_board": "765r",
+      "context": {
+        "range_advantage": "hero",
+        "nut_advantage": "hero",
+        "donk_frequency": "medium (40%)",
+        "preferred_sizing": "33-50%",
+        "note": "低連接牌面對 BB 極度有利。BTN 幾乎沒有強牌，BB 可以用小注高頻 donk 獲利。"
+      },
+      "hands": {
+        "98s": {
+          "role": "donk_value",
+          "action": "bet_33",
+          "tags": ["nut_advantage_structure", "high_equity"],
+          "why": "堅果順子。Donk 小注讓對手 call 更多，構建底池。對手不會期待你有順子。",
+          "stability": "stable"
+        },
+        "76s": {
+          "role": "donk_value",
+          "action": "bet_33",
+          "tags": ["high_equity", "board_texture_favor"],
+          "why": "頂兩對。Donk 小注從對手 overpairs 獲得價值，同時保護。",
+          "stability": "stable"
+        },
+        "55": {
+          "role": "donk_value_set",
+          "action": "bet_50",
+          "tags": ["high_equity"],
+          "why": "Set。在對 Hero 有利的牌面 donk 建立底池。",
+          "stability": "stable"
+        },
+        "A5s": {
+          "role": "donk_semibluff",
+          "action": "bet_33",
+          "tags": ["barrel_equity", "wheel_potential"],
+          "why": "開放順子聽牌 + A 高。Donk 半詐唬：fold equity + outs。",
+          "stability": "medium"
+        },
+        "QQ": {
+          "role": "check_overpair",
+          "action": "check",
+          "tags": ["check_pot_control"],
+          "why": "Overpair 在連接牌面 donk 不好。Check 控池或 check-raise。",
+          "stability": "stable"
+        }
+      }
+    },
+    "paired_low_donk": {
+      "example_board": "553r",
+      "context": {
+        "range_advantage": "hero",
+        "nut_advantage": "hero",
+        "donk_frequency": "high (50%+)",
+        "preferred_sizing": "25-33%",
+        "note": "低配對牌面對 BB 極度有利。BTN 範圍幾乎不可能有 5x，BB 可以高頻 donk bluff。"
+      },
+      "hands": {
+        "55": {
+          "role": "donk_value_quads",
+          "action": "bet_25",
+          "tags": ["high_equity"],
+          "why": "四條 monster。Donk 小注讓對手繼續 bluff catch。",
+          "stability": "stable"
+        },
+        "A5s": {
+          "role": "donk_value_trips",
+          "action": "bet_33",
+          "tags": ["high_equity", "board_texture_favor"],
+          "why": "三條。Donk 從對手 overpairs 獲得價值。",
+          "stability": "stable"
+        },
+        "76s": {
+          "role": "donk_bluff",
+          "action": "bet_33",
+          "tags": ["barrel_equity"],
+          "why": "開放順子聽牌。Donk 半詐唬：對手幾乎沒有 5x 會 call。",
+          "stability": "stable"
+        },
+        "AA": {
+          "role": "donk_thin_value",
+          "action": "bet_33",
+          "tags": ["high_equity"],
+          "why": "Overpair 在低配對牌面可以 donk 薄價值。對手只有 55 壓制你。",
+          "stability": "medium"
+        },
+        "KQo": {
+          "role": "donk_bluff",
+          "action": "bet_33",
+          "tags": ["cbet_range_advantage"],
+          "why": "空氣但有牌面優勢。Donk bluff 利用對手 miss 率高。",
+          "stability": "medium"
+        }
+      }
+    },
+    "wheel_board_donk": {
+      "example_board": "432r",
+      "context": {
+        "range_advantage": "hero",
+        "nut_advantage": "hero",
+        "donk_frequency": "high (55%)",
+        "preferred_sizing": "33%",
+        "note": "Wheel 牌面對 BB 極度有利。BTN 幾乎沒有連接，BB 可以高頻 donk。"
+      },
+      "hands": {
+        "A5": {
+          "role": "donk_value_nuts",
+          "action": "bet_33",
+          "tags": ["nut_advantage_structure", "wheel_potential"],
+          "why": "Wheel 順子 (nuts)。Donk 小注從對手 overpairs 獲得價值。",
+          "stability": "stable"
+        },
+        "65s": {
+          "role": "donk_value",
+          "action": "bet_33",
+          "tags": ["high_equity"],
+          "why": "順子。Donk 建立底池，隱蔽性強。",
+          "stability": "stable"
+        },
+        "43s": {
+          "role": "donk_value_two_pair",
+          "action": "bet_33",
+          "tags": ["high_equity", "board_texture_favor"],
+          "why": "兩對。Donk 從對手 overpairs 獲得價值 + 保護。",
+          "stability": "stable"
+        },
+        "A2s": {
+          "role": "donk_semibluff",
+          "action": "bet_33",
+          "tags": ["barrel_equity", "wheel_potential"],
+          "why": "開放順子聽牌 + A 高。Donk 半詐唬。",
+          "stability": "stable"
+        },
+        "KK": {
+          "role": "check_overpair",
+          "action": "check",
+          "tags": ["check_pot_control"],
+          "why": "Overpair 但牌面危險。Check 控池或 check-call。",
+          "stability": "stable"
+        }
+      }
+    }
+  }
+}

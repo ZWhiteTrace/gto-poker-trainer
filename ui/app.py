@@ -2403,11 +2403,11 @@ def learning_page():
 
     # Tabs for different topics
     if lang == "zh":
-        tabs = ["RFI 速記表", "RFI 範圍提示", "📝 記憶訣竅", "權益對抗", "Outs 補牌", "賠率表", "起手牌", "SPR 法則", "翻後策略", "資金管理", "位置價值", "Blocker", "常見錯誤", "EV 計算", "🧮 GTO 概念", "📖 Postflop WHY"]
+        tabs = ["RFI 速記表", "RFI 範圍提示", "📝 記憶訣竅", "權益對抗", "Outs 補牌", "賠率表", "起手牌", "SPR 法則", "翻後策略", "資金管理", "位置價值", "Blocker", "常見錯誤", "EV 計算", "🧮 GTO 概念", "📖 Postflop WHY", "📖 Preflop WHY"]
     else:
-        tabs = ["RFI Charts", "RFI Tips", "📝 Mnemonics", "Equity", "Outs", "Pot Odds", "Starting Hands", "SPR", "Post-flop", "Bankroll", "Position", "Blockers", "Mistakes", "EV Calc", "🧮 GTO Concepts", "📖 Postflop WHY"]
+        tabs = ["RFI Charts", "RFI Tips", "📝 Mnemonics", "Equity", "Outs", "Pot Odds", "Starting Hands", "SPR", "Post-flop", "Bankroll", "Position", "Blockers", "Mistakes", "EV Calc", "🧮 GTO Concepts", "📖 Postflop WHY", "📖 Preflop WHY"]
 
-    tab0, tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8, tab9, tab10, tab11, tab12, tab13, tab14, tab15 = st.tabs(tabs)
+    tab0, tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8, tab9, tab10, tab11, tab12, tab13, tab14, tab15, tab16 = st.tabs(tabs)
 
     with tab0:
         evaluator = Evaluator()
@@ -2458,6 +2458,175 @@ def learning_page():
     with tab15:
         _display_postflop_why_learning(lang)
 
+    with tab16:
+        _display_preflop_why_learning(lang)
+
+
+def _display_preflop_why_learning(lang: str):
+    """Display structured preflop WHY learning content (lecture mode)."""
+    from trainer.logic_quiz import LogicQuizEngine
+
+    # Initialize engine
+    engine = LogicQuizEngine()
+
+    # Header
+    header = "Preflop WHY 講義" if lang == "zh" else "Preflop WHY Lecture"
+    subtitle = "系統性學習翻前決策邏輯 — 理解為什麼 GTO 這樣選擇" if lang == "zh" else "Learn preflop decision logic systematically"
+    st.markdown(f"### 📖 {header}")
+    st.caption(subtitle)
+
+    # Get available scenarios
+    scenarios = engine.get_available_scenarios()
+    if not scenarios:
+        st.warning("尚無翻前資料。" if lang == "zh" else "No preflop data available.")
+        return
+
+    # Format scenario display
+    def format_scenario(s):
+        parts = s.split("_vs_")
+        if len(parts) == 2:
+            return f"{parts[0]} vs {parts[1]} RFI"
+        return s.replace("_", " ")
+
+    scenario_display = [format_scenario(s) for s in scenarios]
+    selected_idx = st.selectbox(
+        "選擇場景" if lang == "zh" else "Select Scenario",
+        options=range(len(scenarios)),
+        format_func=lambda i: scenario_display[i],
+        key="preflop_why_scenario",
+    )
+    selected_scenario = scenarios[selected_idx]
+    scenario_data = engine.reasoning_data.get(selected_scenario, {})
+
+    if not scenario_data:
+        st.info("此場景尚無資料。" if lang == "zh" else "No data for this scenario.")
+        return
+
+    # Display context
+    st.markdown("---")
+    context = scenario_data.get("context", {})
+
+    # Context cards
+    col1, col2, col3, col4 = st.columns(4)
+    with col1:
+        range_adv = context.get("range_advantage", "N/A")
+        range_color = "#10b981" if range_adv == "hero" else "#ef4444" if range_adv == "villain" else "#6b7280"
+        st.markdown(f"""
+        <div style="background: {range_color}22; border: 1px solid {range_color}; border-radius: 8px; padding: 10px; text-align: center;">
+            <div style="font-size: 0.75rem; color: #9ca3af;">範圍優勢</div>
+            <div style="font-size: 1rem; font-weight: bold; color: {range_color};">{range_adv.upper()}</div>
+        </div>
+        """, unsafe_allow_html=True)
+
+    with col2:
+        nut_adv = context.get("nut_advantage", "N/A")
+        nut_color = "#10b981" if nut_adv == "hero" else "#ef4444" if nut_adv == "villain" else "#6b7280"
+        st.markdown(f"""
+        <div style="background: {nut_color}22; border: 1px solid {nut_color}; border-radius: 8px; padding: 10px; text-align: center;">
+            <div style="font-size: 0.75rem; color: #9ca3af;">堅果優勢</div>
+            <div style="font-size: 1rem; font-weight: bold; color: {nut_color};">{nut_adv.upper()}</div>
+        </div>
+        """, unsafe_allow_html=True)
+
+    with col3:
+        shape = context.get("hero_range_shape", "N/A")
+        st.markdown(f"""
+        <div style="background: #3b82f622; border: 1px solid #3b82f6; border-radius: 8px; padding: 10px; text-align: center;">
+            <div style="font-size: 0.75rem; color: #9ca3af;">Hero Range</div>
+            <div style="font-size: 1rem; font-weight: bold; color: #3b82f6;">{shape}</div>
+        </div>
+        """, unsafe_allow_html=True)
+
+    with col4:
+        squeeze = context.get("squeeze_risk", "N/A")
+        sq_color = "#ef4444" if squeeze == "high" else "#f59e0b" if squeeze == "medium" else "#10b981"
+        st.markdown(f"""
+        <div style="background: {sq_color}22; border: 1px solid {sq_color}; border-radius: 8px; padding: 10px; text-align: center;">
+            <div style="font-size: 0.75rem; color: #9ca3af;">Squeeze 風險</div>
+            <div style="font-size: 1rem; font-weight: bold; color: {sq_color};">{squeeze.upper()}</div>
+        </div>
+        """, unsafe_allow_html=True)
+
+    # Note
+    note = context.get("note", "")
+    if note:
+        st.markdown(f"""
+        <div style="background: #1e293b; border-left: 4px solid #6366f1; padding: 12px 16px; margin: 16px 0; border-radius: 0 8px 8px 0;">
+            <strong>💡 場景分析</strong><br/>
+            {note}
+        </div>
+        """, unsafe_allow_html=True)
+
+    # Hands by role
+    st.markdown("### 📋 手牌決策表")
+    hands = scenario_data.get("hands", {})
+
+    # Group hands by role
+    role_groups = {}
+    for hand, hand_data in hands.items():
+        role = hand_data.get("role", "unknown")
+        if role not in role_groups:
+            role_groups[role] = []
+        role_groups[role].append((hand, hand_data))
+
+    # Role display order and colors
+    role_order = ["value_3bet", "bluff_3bet", "mix_call_3bet", "mix_3bet_fold", "call", "fold"]
+    role_display = {
+        "value_3bet": ("🔴 3bet (價值)", "#ef4444"),
+        "bluff_3bet": ("🟠 3bet (詐唬)", "#f97316"),
+        "mix_call_3bet": ("🟡 混合 (Call/3bet)", "#eab308"),
+        "mix_3bet_fold": ("🟡 混合 (3bet/Fold)", "#eab308"),
+        "call": ("🟢 Call", "#10b981"),
+        "fold": ("⚪ Fold", "#6b7280"),
+    }
+
+    for role in role_order:
+        if role not in role_groups:
+            continue
+        role_label, role_color = role_display.get(role, (role, "#6b7280"))
+        hands_in_role = role_groups[role]
+
+        st.markdown(f"""
+        <div style="background: {role_color}22; border: 1px solid {role_color}; border-radius: 8px; padding: 8px 12px; margin: 12px 0 8px 0;">
+            <strong>{role_label}</strong> ({len(hands_in_role)} 手)
+        </div>
+        """, unsafe_allow_html=True)
+
+        for hand, hand_data in hands_in_role:
+            tags = hand_data.get("tags", [])
+            stability = hand_data.get("stability", "stable")
+            note = hand_data.get("note", "")
+            compare_group = hand_data.get("compare_group", "")
+
+            stability_badge = "🔒" if stability == "stable" else "🔀" if stability == "param_sensitive" else "⚖️"
+
+            with st.expander(f"**{hand}** {stability_badge}", expanded=False):
+                # Tags
+                if tags:
+                    tag_names = [engine._get_tag_name(t) for t in tags]
+                    st.markdown(f"**關鍵原則**: {', '.join(tag_names)}")
+
+                # Tag explanations
+                for t in tags[:3]:  # Show first 3 tags
+                    explanation = engine._get_tag_explanation(t)
+                    st.markdown(f"- **{engine._get_tag_name(t)}**: {explanation}")
+
+                # Note
+                if note:
+                    st.info(f"💡 {note}")
+
+                # Compare group
+                if compare_group:
+                    st.caption(f"比較組: {compare_group}")
+
+    # Handle any remaining roles not in the order list
+    for role, hands_list in role_groups.items():
+        if role in role_order:
+            continue
+        st.markdown(f"**{role}** ({len(hands_list)} 手)")
+        for hand, hand_data in hands_list:
+            st.write(f"- {hand}")
+
 
 def _display_postflop_why_learning(lang: str):
     """Display structured postflop WHY learning content (lecture mode)."""
@@ -2484,10 +2653,10 @@ def _display_postflop_why_learning(lang: str):
     )
 
     # Category selector
-    categories = ["C-bet 策略", "防守策略", "Barrel 策略"] if lang == "zh" else ["C-bet Strategy", "Defense Strategy", "Barrel Strategy"]
+    categories = ["C-bet 策略", "防守策略", "Barrel 策略", "Multi-way", "Donk Bet", "River 抓詐"] if lang == "zh" else ["C-bet Strategy", "Defense Strategy", "Barrel Strategy", "Multi-way", "Donk Bet", "River Bluff Catch"]
     selected_cat = st.selectbox(
         "策略類型" if lang == "zh" else "Strategy Type",
-        options=range(3),
+        options=range(6),
         format_func=lambda i: categories[i],
         key="postflop_why_category",
     )
@@ -2501,7 +2670,7 @@ def _display_postflop_why_learning(lang: str):
         spot = "3bet_oop_vs_ip" if selected_pot == 1 else "bb_vs_btn_srp"
         data = engine.postflop_data.get("defense", {}).get(spot, {})
         cat_label = "Defense"
-    else:  # Barrel
+    elif selected_cat == 2:  # Barrel
         spot = "srp_btn_vs_bb"
         barrel_data = engine.postflop_data.get("barrel", {}).get(spot, {})
         # Flatten barrel data
@@ -2510,6 +2679,30 @@ def _display_postflop_why_learning(lang: str):
             for scenario_name, scenario_data in scenarios.items():
                 data[f"{street_key}_{scenario_name}"] = scenario_data
         cat_label = "Barrel"
+    elif selected_cat == 3:  # Multiway
+        multiway_data = engine.postflop_data.get("multiway", {})
+        # Flatten multiway data
+        data = {}
+        for spot_key, spot_data in multiway_data.items():
+            for texture, texture_data in spot_data.items():
+                data[f"{spot_key}_{texture}"] = texture_data
+        cat_label = "Multi-way"
+    elif selected_cat == 4:  # Donk
+        donk_data = engine.postflop_data.get("donk", {})
+        # Flatten donk data
+        data = {}
+        for spot_key, spot_data in donk_data.items():
+            for texture, texture_data in spot_data.items():
+                data[f"{spot_key}_{texture}"] = texture_data
+        cat_label = "Donk Bet"
+    else:  # Bluff Catch
+        bluffcatch_data = engine.postflop_data.get("bluffcatch", {})
+        # Flatten bluffcatch data
+        data = {}
+        for spot_key, spot_data in bluffcatch_data.items():
+            for scenario, scenario_data in spot_data.items():
+                data[f"{spot_key}_{scenario}"] = scenario_data
+        cat_label = "Bluff Catch"
 
     if not data:
         st.info("此類型尚無資料。" if lang == "zh" else "No data available for this type.")
@@ -2534,6 +2727,20 @@ def _display_postflop_why_learning(lang: str):
         "turn_barrel_scenarios_completing_draw": "🎯 Turn 完成聽牌",
         "river_barrel_scenarios_missed_draw_bluff": "❌ River 聽牌失敗",
         "river_barrel_scenarios_value_river": "💰 River 價值",
+        # Multiway
+        "3way_btn_vs_bb_sb_dry_ace_high_multiway": "👥 3-way A 高 (A72r)",
+        "3way_btn_vs_bb_sb_low_connected_multiway": "👥 3-way 低連接 (876r)",
+        "3way_btn_vs_bb_sb_wet_board_multiway": "👥 3-way 濕潤 (Jh9h8c)",
+        "multiway_defense_as_bb_3way": "🛡️ BB 3-way 防守",
+        # Donk
+        "bb_donk_vs_btn_low_connected_donk": "🎯 Donk 低連接 (765r)",
+        "bb_donk_vs_btn_paired_low_donk": "🎯 Donk 低配對 (553r)",
+        "bb_donk_vs_btn_wheel_board_donk": "🎯 Donk Wheel (432r)",
+        # Bluff Catch
+        "river_bluffcatch_scenarios_missed_draws_river": "🎣 River 花聽 Miss",
+        "river_bluffcatch_scenarios_straight_completes_river": "🎣 River 順子完成",
+        "river_bluffcatch_scenarios_paired_board_river": "🎣 River 配對牌面",
+        "river_bluffcatch_scenarios_brick_river": "🎣 River 磚塊",
     }
 
     textures = list(data.keys())
