@@ -32,7 +32,18 @@ from ui.components.rfi_chart import display_rfi_charts
 from ui.components.push_fold_chart import display_push_fold_chart, display_push_fold_comparison, display_push_fold_drill
 from ui.components.hand_review import display_hand_review_page
 from ui.components.hand_analysis import display_hand_analysis_page
-# Achievements system removed for simplification
+
+# Auth service (optional - works without Supabase configured)
+try:
+    from services.auth import (
+        is_supabase_configured, get_current_user, is_logged_in,
+        login_with_email, signup_with_email, logout,
+        save_mock_exam_result, load_mock_exam_history, get_user_stats,
+        save_user_progress, load_user_progress
+    )
+    AUTH_AVAILABLE = True
+except ImportError:
+    AUTH_AVAILABLE = False
 
 # Page URL mappings
 PAGE_KEYS = ["drill", "range", "pushfold", "review", "analysis", "postflop", "equity", "outs", "ev", "logic", "mock", "learning", "stats"]
@@ -599,6 +610,84 @@ def get_action_label(action: str, scenario: Scenario, lang: str = "zh") -> str:
     return action.upper()
 
 
+def _display_auth_section(lang: str):
+    """Display authentication section in sidebar."""
+    if not AUTH_AVAILABLE:
+        return
+
+    user = get_current_user()
+
+    if user:
+        # Logged in - show user info
+        name = user.get("name", user.get("email", "User"))
+        avatar = user.get("avatar", "")
+
+        st.markdown(f"""
+        <div style="
+            background: linear-gradient(135deg, #1e3a5f 0%, #0d1b2a 100%);
+            border-radius: 8px;
+            padding: 10px;
+            margin-bottom: 8px;
+        ">
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <div style="
+                    width: 32px; height: 32px;
+                    background: #4a90d9;
+                    border-radius: 50%;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    font-weight: bold;
+                    color: white;
+                ">{name[0].upper() if name else "U"}</div>
+                <div>
+                    <div style="font-weight: 500; font-size: 0.9rem;">{name}</div>
+                    <div style="font-size: 0.75rem; color: #6b7280;">{"已登入" if lang == "zh" else "Logged in"}</div>
+                </div>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+
+        logout_btn = "🚪 登出" if lang == "zh" else "🚪 Logout"
+        if st.button(logout_btn, key="logout_btn", use_container_width=True):
+            logout()
+            st.rerun()
+
+    else:
+        # Not logged in - show login form
+        login_label = "🔐 登入 / 註冊" if lang == "zh" else "🔐 Login / Sign Up"
+        with st.expander(login_label, expanded=False):
+            tab1, tab2 = st.tabs(["登入" if lang == "zh" else "Login", "註冊" if lang == "zh" else "Sign Up"])
+
+            with tab1:
+                email = st.text_input("Email", key="login_email", placeholder="your@email.com")
+                password = st.text_input("密碼" if lang == "zh" else "Password", type="password", key="login_password")
+
+                if st.button("登入" if lang == "zh" else "Login", key="login_submit", use_container_width=True):
+                    if email and password:
+                        result = login_with_email(email, password)
+                        if result:
+                            st.success("登入成功！" if lang == "zh" else "Login successful!")
+                            st.rerun()
+                    else:
+                        st.warning("請輸入 Email 和密碼" if lang == "zh" else "Please enter email and password")
+
+            with tab2:
+                new_email = st.text_input("Email", key="signup_email", placeholder="your@email.com")
+                new_password = st.text_input("密碼" if lang == "zh" else "Password", type="password", key="signup_password")
+                confirm_password = st.text_input("確認密碼" if lang == "zh" else "Confirm Password", type="password", key="signup_confirm")
+
+                if st.button("註冊" if lang == "zh" else "Sign Up", key="signup_submit", use_container_width=True):
+                    if new_password != confirm_password:
+                        st.error("密碼不一致" if lang == "zh" else "Passwords don't match")
+                    elif len(new_password) < 6:
+                        st.error("密碼至少 6 個字元" if lang == "zh" else "Password must be at least 6 characters")
+                    elif new_email and new_password:
+                        result = signup_with_email(new_email, new_password)
+                        if result:
+                            st.success("請檢查您的 Email 確認連結" if lang == "zh" else "Please check your email for confirmation link")
+
+
 def main():
     init_session_state()
 
@@ -613,6 +702,11 @@ def main():
         if st.button(btn_label, key="lang_toggle", help="Switch language / 切換語言", use_container_width=True):
             st.session_state.language = "en" if current_lang == "zh" else "zh"
             st.rerun()
+
+        # User Authentication Section
+        if AUTH_AVAILABLE and is_supabase_configured():
+            st.markdown("<div style='height: 8px;'></div>", unsafe_allow_html=True)
+            _display_auth_section(current_lang)
 
         st.markdown("<div style='height: 5px;'></div>", unsafe_allow_html=True)
 
@@ -3127,6 +3221,8 @@ def _grade_mock_exam():
     answers = st.session_state.mock_answers
     results = []
 
+    # Calculate type stats
+    type_stats = {}
     for i, q in enumerate(questions):
         user_answer = answers.get(i, "")
         correct_answer = q.get("correct", "")
@@ -3141,10 +3237,30 @@ def _grade_mock_exam():
             "explanation": q.get("explanation", ""),
         })
 
+        # Track type stats
+        qtype = q["type"]
+        if qtype not in type_stats:
+            type_stats[qtype] = {"correct": 0, "total": 0}
+        type_stats[qtype]["total"] += 1
+        if is_correct:
+            type_stats[qtype]["correct"] += 1
+
     # Store elapsed time
     elapsed = time.time() - st.session_state.mock_start_time
     st.session_state.mock_answers["_elapsed"] = elapsed
     st.session_state.mock_results = results
+
+    # Save to Supabase if user is logged in
+    if AUTH_AVAILABLE and is_logged_in():
+        user = get_current_user()
+        if user:
+            correct_count = sum(1 for r in results if r["correct"])
+            save_mock_exam_result(user["id"], {
+                "score": correct_count,
+                "total": len(results),
+                "time_secs": int(elapsed),
+                "type_stats": type_stats,
+            })
 
 
 def learning_page():
