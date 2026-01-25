@@ -22,6 +22,7 @@ from core.outs import OutsQuiz, OutsQuestion, Card
 from core.postflop import PostflopDrill, PostflopSpot, PostflopAction, PostflopResult, TEXTURE_NAMES, HeroCard
 from trainer.session import TrainingSession, ProgressTracker
 from trainer.logic_quiz import LogicQuizEngine, LogicQuestion
+from trainer.exploit_quiz import ExploitQuizEngine
 from ui.components.range_grid import display_range_grid
 from ui.components.table_visual import display_table, display_postflop_table
 from ui.components.card_display import display_hand_cards
@@ -1925,12 +1926,14 @@ def stats_page():
 
 
 def logic_quiz_page():
-    """Logic Quiz page - WHY-layer GTO reasoning questions."""
+    """Logic Quiz page - WHY-layer GTO reasoning + Exploit override questions."""
     lang = st.session_state.language
 
     # Initialize logic quiz state
     if 'logic_engine' not in st.session_state:
         st.session_state.logic_engine = LogicQuizEngine()
+    if 'exploit_engine' not in st.session_state:
+        st.session_state.exploit_engine = ExploitQuizEngine()
     if 'logic_question' not in st.session_state:
         st.session_state.logic_question = None
     if 'logic_show_result' not in st.session_state:
@@ -1939,10 +1942,11 @@ def logic_quiz_page():
         st.session_state.logic_answered_idx = None
     if 'logic_score' not in st.session_state:
         st.session_state.logic_score = {"correct": 0, "total": 0}
-    if 'logic_scenario' not in st.session_state:
-        st.session_state.logic_scenario = None
+    if 'logic_mode' not in st.session_state:
+        st.session_state.logic_mode = 0
 
     engine = st.session_state.logic_engine
+    exploit_engine = st.session_state.exploit_engine
 
     # Header with score
     score = st.session_state.logic_score
@@ -1966,85 +1970,184 @@ def logic_quiz_page():
     </div>
     """, unsafe_allow_html=True)
 
-    # Subtitle
-    subtitle = "理解 WHY：為什麼 GTO 選擇這個動作？" if lang == "zh" else "Understanding WHY: Why does GTO choose this action?"
-    st.caption(subtitle)
+    # Mode selector
+    mode_options = ["GTO (WHY)", "Exploit (偏移)", "Rake-Aware"]
+    mode_descriptions = [
+        "為什麼 GTO 選擇這個動作？" if lang == "zh" else "Why does GTO choose this action?",
+        "面對特定對手如何調整？" if lang == "zh" else "How to adjust vs specific opponents?",
+        "高 Rake 環境的策略修正" if lang == "zh" else "Strategy adjustments for high-rake environments",
+    ]
 
-    # Scenario selector
-    scenarios = engine.get_available_scenarios()
-    if not scenarios:
-        no_data_msg = "尚無邏輯題目資料。請確認 data/reasoning/ 目錄中有對應的 JSON 檔案。" if lang == "zh" else "No logic quiz data available. Please ensure JSON files exist in data/reasoning/ directory."
-        st.warning(no_data_msg)
-        return
+    selected_mode = st.radio(
+        "模式" if lang == "zh" else "Mode",
+        options=range(3),
+        format_func=lambda i: mode_options[i],
+        horizontal=True,
+        key="logic_mode_radio",
+    )
 
-    # Format scenario names for display
-    def format_scenario_name(s):
-        parts = s.replace("_", " ").split()
-        if len(parts) >= 3 and parts[1].lower() == "vs":
-            return f"{parts[0]} vs {parts[2]}"
-        return s.replace("_", " ")
-
-    all_label = "全部場景" if lang == "zh" else "All Scenarios"
-    scenario_options = [all_label] + [format_scenario_name(s) for s in scenarios]
-    scenario_keys = [None] + scenarios
-
-    col_scenario, col_type = st.columns([2, 1])
-    with col_scenario:
-        scenario_label = "選擇場景" if lang == "zh" else "Scenario"
-        selected_idx = st.selectbox(
-            scenario_label,
-            options=range(len(scenario_options)),
-            format_func=lambda i: scenario_options[i],
-            key="logic_scenario_select",
-        )
-        selected_scenario = scenario_keys[selected_idx]
-
-    with col_type:
-        type_label = "題型" if lang == "zh" else "Type"
-        type_options = ["A+B", "A", "B"] if lang == "zh" else ["A+B", "A", "B"]
-        type_descriptions = [
-            "混合" if lang == "zh" else "Mixed",
-            "角色辨識" if lang == "zh" else "Role ID",
-            "比較推理" if lang == "zh" else "Compare",
-        ]
-        selected_type = st.selectbox(
-            type_label,
-            options=range(3),
-            format_func=lambda i: f"{type_options[i]} ({type_descriptions[i]})",
-            key="logic_type_select",
-        )
-
-    # Generate question button or auto-generate
-    def generate_new_question():
-        scenario = selected_scenario
-        if scenario is None:
-            scenario = None  # random
-
-        if selected_type == 0:  # Mixed
-            q = engine.generate_random_question(scenario=scenario)
-        elif selected_type == 1:  # Type A only
-            if scenario:
-                hands = engine.get_scenario_hands(scenario)
-                if hands:
-                    import random
-                    hand = random.choice(hands)
-                    q = engine.generate_type_a(scenario, hand)
-                else:
-                    q = None
-            else:
-                q = engine.generate_random_question(scenario=None)
-        else:  # Type B only
-            if scenario:
-                q = engine.generate_type_b(scenario)
-            else:
-                q = engine.generate_random_question(scenario=None)
-
-        st.session_state.logic_question = q
+    # Reset question when mode changes
+    if selected_mode != st.session_state.logic_mode:
+        st.session_state.logic_mode = selected_mode
+        st.session_state.logic_question = None
         st.session_state.logic_show_result = False
         st.session_state.logic_answered_idx = None
 
-    if st.session_state.logic_question is None:
-        generate_new_question()
+    st.caption(mode_descriptions[selected_mode])
+
+    # ─── Mode 0: GTO (WHY) ───────────────────────────────────────────
+    if selected_mode == 0:
+        scenarios = engine.get_available_scenarios()
+        if not scenarios:
+            no_data_msg = "尚無邏輯題目資料。請確認 data/reasoning/ 目錄中有對應的 JSON 檔案。" if lang == "zh" else "No logic quiz data available."
+            st.warning(no_data_msg)
+            return
+
+        def format_scenario_name(s):
+            parts = s.replace("_", " ").split()
+            if len(parts) >= 3 and parts[1].lower() == "vs":
+                return f"{parts[0]} vs {parts[2]}"
+            return s.replace("_", " ")
+
+        all_label = "全部場景" if lang == "zh" else "All Scenarios"
+        scenario_options = [all_label] + [format_scenario_name(s) for s in scenarios]
+        scenario_keys = [None] + scenarios
+
+        col_scenario, col_type = st.columns([2, 1])
+        with col_scenario:
+            selected_idx = st.selectbox(
+                "選擇場景" if lang == "zh" else "Scenario",
+                options=range(len(scenario_options)),
+                format_func=lambda i: scenario_options[i],
+                key="logic_scenario_select",
+            )
+            selected_scenario = scenario_keys[selected_idx]
+
+        with col_type:
+            type_descriptions_list = [
+                "混合" if lang == "zh" else "Mixed",
+                "角色辨識" if lang == "zh" else "Role ID",
+                "比較推理" if lang == "zh" else "Compare",
+            ]
+            selected_type = st.selectbox(
+                "題型" if lang == "zh" else "Type",
+                options=range(3),
+                format_func=lambda i: f"{'A+B,A,B'.split(',')[i]} ({type_descriptions_list[i]})",
+                key="logic_type_select",
+            )
+
+        def generate_new_question():
+            scenario = selected_scenario
+            if selected_type == 0:
+                q = engine.generate_random_question(scenario=scenario)
+            elif selected_type == 1:
+                if scenario:
+                    hands = engine.get_scenario_hands(scenario)
+                    if hands:
+                        import random
+                        hand = random.choice(hands)
+                        q = engine.generate_type_a(scenario, hand)
+                    else:
+                        q = None
+                else:
+                    q = engine.generate_random_question(scenario=None)
+            else:
+                if scenario:
+                    q = engine.generate_type_b(scenario)
+                else:
+                    q = engine.generate_random_question(scenario=None)
+            st.session_state.logic_question = q
+            st.session_state.logic_show_result = False
+            st.session_state.logic_answered_idx = None
+
+        if st.session_state.logic_question is None:
+            generate_new_question()
+
+    # ─── Mode 1: Exploit (偏移) ──────────────────────────────────────
+    elif selected_mode == 1:
+        archetype_names = exploit_engine.get_archetype_names()
+        if not archetype_names:
+            st.warning("尚無對手類型資料。" if lang == "zh" else "No archetype data available.")
+            return
+
+        all_label = "隨機對手" if lang == "zh" else "Random Opponent"
+        arch_display = [all_label] + [exploit_engine.get_archetype_display_name(k) for k in archetype_names]
+        arch_keys = [None] + archetype_names
+
+        selected_arch_idx = st.selectbox(
+            "對手類型" if lang == "zh" else "Opponent Type",
+            options=range(len(arch_display)),
+            format_func=lambda i: arch_display[i],
+            key="exploit_arch_select",
+        )
+        selected_archetype = arch_keys[selected_arch_idx]
+
+        # Show archetype info
+        if selected_archetype:
+            arch_data = exploit_engine.archetypes.get(selected_archetype, {})
+            desc = arch_data.get("description", "")
+            insight = arch_data.get("key_insight", "")
+            if desc:
+                st.markdown(f"""
+                <div style="background: #1e1b4b; border-radius: 6px; padding: 8px 12px; margin-bottom: 8px; font-size: 0.85rem; border-left: 3px solid #7c3aed;">
+                    <strong>{arch_display[selected_arch_idx]}</strong><br/>
+                    <span style="color: #a5b4fc;">{desc}</span>
+                </div>
+                """, unsafe_allow_html=True)
+
+        def generate_new_question():
+            q = exploit_engine.generate_type_c(archetype=selected_archetype)
+            st.session_state.logic_question = q
+            st.session_state.logic_show_result = False
+            st.session_state.logic_answered_idx = None
+
+        if st.session_state.logic_question is None:
+            generate_new_question()
+
+    # ─── Mode 2: Rake-Aware ──────────────────────────────────────────
+    else:
+        rake_levels = exploit_engine.get_rake_levels()
+        if not rake_levels:
+            st.warning("尚無 Rake 資料。" if lang == "zh" else "No rake data available.")
+            return
+
+        rake_level_data = exploit_engine.rake_data.get("rake_levels", {})
+        all_label = "隨機環境" if lang == "zh" else "Random Environment"
+        rake_display = [all_label] + [
+            f"{rake_level_data.get(k, {}).get('name', k)} ({rake_level_data.get(k, {}).get('rake_pct', '?')}%)"
+            for k in rake_levels
+        ]
+        rake_keys = [None] + rake_levels
+
+        selected_rake_idx = st.selectbox(
+            "Rake 環境" if lang == "zh" else "Rake Environment",
+            options=range(len(rake_display)),
+            format_func=lambda i: rake_display[i],
+            key="rake_level_select",
+        )
+        selected_rake = rake_keys[selected_rake_idx]
+
+        # Show general rule
+        general_rules = exploit_engine.rake_data.get("general_rules", {})
+        bluff_rule = general_rules.get("bluff_threshold", {}).get("rule", "")
+        call_rule = general_rules.get("call_threshold", {}).get("rule", "")
+        if bluff_rule or call_rule:
+            st.markdown(f"""
+            <div style="background: #1c1917; border-radius: 6px; padding: 8px 12px; margin-bottom: 8px; font-size: 0.8rem; border-left: 3px solid #d97706;">
+                <strong>{"通用規則" if lang == "zh" else "General Rules"}:</strong><br/>
+                {"• " + bluff_rule if bluff_rule else ""}<br/>
+                {"• " + call_rule if call_rule else ""}
+            </div>
+            """, unsafe_allow_html=True)
+
+        def generate_new_question():
+            q = exploit_engine.generate_type_d(rake_level=selected_rake)
+            st.session_state.logic_question = q
+            st.session_state.logic_show_result = False
+            st.session_state.logic_answered_idx = None
+
+        if st.session_state.logic_question is None:
+            generate_new_question()
 
     question = st.session_state.logic_question
 
@@ -2058,11 +2161,16 @@ def logic_quiz_page():
         return
 
     # Display question info badge
-    type_badge = "A 角色辨識" if question.question_type == "A" else "B 比較推理"
-    if lang == "en":
-        type_badge = "A Role ID" if question.question_type == "A" else "B Comparison"
-
-    badge_color = "#6366f1" if question.question_type == "A" else "#8b5cf6"
+    type_badge_map = {
+        "A": ("A 角色辨識", "A Role ID", "#6366f1"),
+        "B": ("B 比較推理", "B Comparison", "#8b5cf6"),
+        "C": ("C 對手剝削", "C Exploit", "#7c3aed"),
+        "D": ("D Rake 感知", "D Rake-Aware", "#d97706"),
+    }
+    zh_badge, en_badge, badge_color = type_badge_map.get(
+        question.question_type, ("?", "?", "#6b7280")
+    )
+    type_badge = zh_badge if lang == "zh" else en_badge
     st.markdown(f"""
     <div style="display: flex; gap: 8px; margin-bottom: 8px; flex-wrap: wrap;">
         <span style="background: {badge_color}; color: white; padding: 2px 8px; border-radius: 12px; font-size: 0.75rem;">
@@ -2157,7 +2265,15 @@ def logic_quiz_page():
         # Related tags
         if question.tags_involved:
             tags_header = "相關原則標籤" if lang == "zh" else "Related Tags"
-            tag_names = [engine._get_tag_name(t) for t in question.tags_involved]
+            tag_names = []
+            for t in question.tags_involved:
+                # Try principle tag name first, then archetype display name, then raw key
+                name = engine._get_tag_name(t)
+                if name == t:
+                    arch_name = exploit_engine.get_archetype_display_name(t)
+                    if arch_name != t:
+                        name = arch_name
+                tag_names.append(name)
             tags_html = " ".join([
                 f'<span style="background: #312e81; color: #c4b5fd; padding: 2px 8px; border-radius: 10px; font-size: 0.75rem; margin-right: 4px;">{name}</span>'
                 for name in tag_names
