@@ -3639,20 +3639,33 @@ def _display_postflop_why_learning(lang: str):
             "key": f"def_3bet_{tex}"
         })
 
-    # 5. Barrel
-    barrel_data = engine.postflop_data.get("barrel", {}).get("srp_btn_vs_bb", {})
-    for street, scenarios in barrel_data.items():
-        for scenario_name, scenario_data in scenarios.items():
-            street_label = "Turn" if "turn" in street else "River"
-            name = scenario_name.replace("_", " ").title()
-            all_lessons.append({
-                "category": f"Barrel ({street_label})",
-                "pot": "SRP",
-                "name": f"⬆️ {name}",
-                "board": scenario_data.get("flop", ""),
-                "data": scenario_data,
-                "key": f"barrel_{street}_{scenario_name}"
-            })
+    # 5. Barrel (all spots)
+    barrel_all = engine.postflop_data.get("barrel", {})
+    spot_labels = {
+        "srp_btn_vs_bb": "SRP",
+        "3bet_pot_btn_vs_bb": "3bet",
+        "srp_co_vs_bb": "SRP CO",
+    }
+    for spot, spot_data in barrel_all.items():
+        if spot == "meta":
+            continue
+        pot_label = spot_labels.get(spot, spot)
+        for street, scenarios in spot_data.items():
+            if not isinstance(scenarios, dict):
+                continue
+            for scenario_name, scenario_data in scenarios.items():
+                if not isinstance(scenario_data, dict):
+                    continue
+                street_label = "Turn" if "turn" in street else "River"
+                name = scenario_name.replace("_", " ").title()
+                all_lessons.append({
+                    "category": f"Barrel ({street_label})",
+                    "pot": pot_label,
+                    "name": f"⬆️ {name}",
+                    "board": scenario_data.get("flop", ""),
+                    "data": scenario_data,
+                    "key": f"barrel_{spot}_{street}_{scenario_name}"
+                })
 
     # 6. Multiway
     multiway_data = engine.postflop_data.get("multiway", {})
