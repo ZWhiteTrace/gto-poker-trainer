@@ -2693,20 +2693,119 @@ def _display_preflop_why_learning(lang: str):
             st.write(f"- {hand}")
 
     # ═══════════════════════════════════════════════════════════════════════
-    # Mark Complete + Bottom Navigation
+    # Lesson Quiz + Mark Complete
     # ═══════════════════════════════════════════════════════════════════════
     st.markdown("---")
 
-    # Mark as complete button
+    # Initialize quiz state for preflop
+    if "preflop_quiz_active" not in st.session_state:
+        st.session_state.preflop_quiz_active = False
+    if "preflop_quiz_questions" not in st.session_state:
+        st.session_state.preflop_quiz_questions = []
+    if "preflop_quiz_answers" not in st.session_state:
+        st.session_state.preflop_quiz_answers = {}
+
     if selected_scenario not in st.session_state.preflop_completed:
-        col_complete = st.columns([1, 2, 1])[1]
-        with col_complete:
-            if st.button("✅ 標記為已完成" if lang == "zh" else "✅ Mark as Complete", key="preflop_mark_complete", use_container_width=True, type="primary"):
-                st.session_state.preflop_completed.add(selected_scenario)
-                # Auto advance to next lesson
-                if current_idx < total_lessons - 1:
-                    st.session_state.preflop_lesson_idx = current_idx + 1
+        # Check if quiz is active for this lesson
+        if st.session_state.preflop_quiz_active and st.session_state.get("preflop_quiz_lesson") == selected_scenario:
+            # Display quiz
+            st.markdown(f"### 📝 {'課後小測' if lang == 'zh' else 'Lesson Quiz'}")
+            st.caption("回答以下問題來完成此課程" if lang == "zh" else "Answer the following questions to complete this lesson")
+
+            questions = st.session_state.preflop_quiz_questions
+
+            for i, q in enumerate(questions):
+                st.markdown(f"**{i+1}. {q['hand']}** 在 {format_scenario(selected_scenario)} 的正確策略是？" if lang == "zh" else f"**{i+1}. {q['hand']}** - What's the correct strategy in {format_scenario(selected_scenario)}?")
+
+                answer_key = f"preflop_quiz_q{i}"
+                options = q["options"]
+                selected_ans = st.radio(
+                    f"選擇答案 {i+1}" if lang == "zh" else f"Select answer {i+1}",
+                    options=options,
+                    key=answer_key,
+                    label_visibility="collapsed"
+                )
+
+                st.session_state.preflop_quiz_answers[i] = selected_ans
+
+            # Check answers button
+            col_check = st.columns([1, 2, 1])[1]
+            with col_check:
+                if st.button("✅ 提交答案" if lang == "zh" else "✅ Submit Answers", key="preflop_submit_quiz", use_container_width=True, type="primary"):
+                    correct_count = 0
+                    for i, q in enumerate(questions):
+                        if st.session_state.preflop_quiz_answers.get(i) == q["correct"]:
+                            correct_count += 1
+
+                    if correct_count == len(questions):
+                        st.session_state.preflop_completed.add(selected_scenario)
+                        st.session_state.preflop_quiz_active = False
+                        st.session_state.preflop_quiz_questions = []
+                        st.session_state.preflop_quiz_answers = {}
+                        st.success("🎉 全部正確！課程完成！" if lang == "zh" else "🎉 All correct! Lesson completed!")
+                        if current_idx < total_lessons - 1:
+                            st.session_state.preflop_lesson_idx = current_idx + 1
+                        st.rerun()
+                    else:
+                        st.error(f"❌ {correct_count}/{len(questions)} 正確。請再試一次！" if lang == "zh" else f"❌ {correct_count}/{len(questions)} correct. Try again!")
+
+            # Cancel quiz button
+            if st.button("取消測驗" if lang == "zh" else "Cancel Quiz", key="preflop_cancel_quiz"):
+                st.session_state.preflop_quiz_active = False
+                st.session_state.preflop_quiz_questions = []
+                st.session_state.preflop_quiz_answers = {}
                 st.rerun()
+
+        else:
+            # Show "Take Quiz" button
+            col_complete = st.columns([1, 2, 1])[1]
+            with col_complete:
+                if st.button("📝 參加測驗完成課程" if lang == "zh" else "📝 Take Quiz to Complete", key="preflop_start_quiz", use_container_width=True, type="primary"):
+                    # Generate 2 quiz questions from lesson hands
+                    import random
+                    hands_list = list(hands.items())
+                    if len(hands_list) >= 2:
+                        quiz_hands = random.sample(hands_list, min(2, len(hands_list)))
+                    else:
+                        quiz_hands = hands_list
+
+                    questions = []
+                    action_options = ["3bet", "Call", "Fold"]
+                    for hand, hand_data in quiz_hands:
+                        role = hand_data.get("role", "fold")
+                        # Map role to action
+                        if "3bet" in role or "4bet" in role:
+                            correct_display = "3bet"
+                        elif "call" in role:
+                            correct_display = "Call"
+                        else:
+                            correct_display = "Fold"
+
+                        # Create options
+                        options = action_options.copy()
+                        random.shuffle(options)
+
+                        questions.append({
+                            "hand": hand,
+                            "correct": correct_display,
+                            "options": options
+                        })
+
+                    st.session_state.preflop_quiz_active = True
+                    st.session_state.preflop_quiz_lesson = selected_scenario
+                    st.session_state.preflop_quiz_questions = questions
+                    st.session_state.preflop_quiz_answers = {}
+                    st.rerun()
+
+            # Also allow direct mark complete (skip quiz)
+            st.caption("或")
+            col_skip = st.columns([1, 2, 1])[1]
+            with col_skip:
+                if st.button("⏭️ 跳過測驗直接完成" if lang == "zh" else "⏭️ Skip Quiz", key="preflop_skip_quiz"):
+                    st.session_state.preflop_completed.add(selected_scenario)
+                    if current_idx < total_lessons - 1:
+                        st.session_state.preflop_lesson_idx = current_idx + 1
+                    st.rerun()
     else:
         st.markdown(f"""
         <div style="text-align: center; padding: 10px; color: #10b981;">
@@ -3055,20 +3154,128 @@ def _display_postflop_why_learning(lang: str):
         """, unsafe_allow_html=True)
 
     # ═══════════════════════════════════════════════════════════════════════
-    # Mark Complete + Bottom Navigation
+    # Lesson Quiz + Mark Complete
     # ═══════════════════════════════════════════════════════════════════════
     st.markdown("---")
 
-    # Mark as complete button
+    # Initialize quiz state
+    if "postflop_quiz_active" not in st.session_state:
+        st.session_state.postflop_quiz_active = False
+    if "postflop_quiz_questions" not in st.session_state:
+        st.session_state.postflop_quiz_questions = []
+    if "postflop_quiz_answers" not in st.session_state:
+        st.session_state.postflop_quiz_answers = {}
+
     if lesson_key not in st.session_state.postflop_completed:
-        col_complete = st.columns([1, 2, 1])[1]
-        with col_complete:
-            if st.button("✅ 標記為已完成" if lang == "zh" else "✅ Mark as Complete", key="postflop_mark_complete", use_container_width=True, type="primary"):
-                st.session_state.postflop_completed.add(lesson_key)
-                # Auto advance to next lesson
-                if current_idx < total_lessons - 1:
-                    st.session_state.postflop_lesson_idx = current_idx + 1
+        # Check if quiz is active for this lesson
+        if st.session_state.postflop_quiz_active and st.session_state.get("postflop_quiz_lesson") == lesson_key:
+            # Display quiz
+            st.markdown(f"### 📝 {'課後小測' if lang == 'zh' else 'Lesson Quiz'}")
+            st.caption("回答以下問題來完成此課程" if lang == "zh" else "Answer the following questions to complete this lesson")
+
+            questions = st.session_state.postflop_quiz_questions
+            all_correct = True
+
+            for i, q in enumerate(questions):
+                st.markdown(f"**{i+1}. {q['hand']}** 在此牌面的正確動作是？" if lang == "zh" else f"**{i+1}. {q['hand']}** - What's the correct action?")
+
+                answer_key = f"postflop_quiz_q{i}"
+                options = q["options"]
+                selected = st.radio(
+                    f"選擇答案 {i+1}" if lang == "zh" else f"Select answer {i+1}",
+                    options=options,
+                    key=answer_key,
+                    label_visibility="collapsed"
+                )
+
+                # Store answer
+                st.session_state.postflop_quiz_answers[i] = selected
+
+            # Check answers button
+            col_check = st.columns([1, 2, 1])[1]
+            with col_check:
+                if st.button("✅ 提交答案" if lang == "zh" else "✅ Submit Answers", key="postflop_submit_quiz", use_container_width=True, type="primary"):
+                    correct_count = 0
+                    for i, q in enumerate(questions):
+                        if st.session_state.postflop_quiz_answers.get(i) == q["correct"]:
+                            correct_count += 1
+
+                    if correct_count == len(questions):
+                        st.session_state.postflop_completed.add(lesson_key)
+                        st.session_state.postflop_quiz_active = False
+                        st.session_state.postflop_quiz_questions = []
+                        st.session_state.postflop_quiz_answers = {}
+                        st.success("🎉 全部正確！課程完成！" if lang == "zh" else "🎉 All correct! Lesson completed!")
+                        if current_idx < total_lessons - 1:
+                            st.session_state.postflop_lesson_idx = current_idx + 1
+                        st.rerun()
+                    else:
+                        st.error(f"❌ {correct_count}/{len(questions)} 正確。請再試一次！" if lang == "zh" else f"❌ {correct_count}/{len(questions)} correct. Try again!")
+
+            # Cancel quiz button
+            if st.button("取消測驗" if lang == "zh" else "Cancel Quiz", key="postflop_cancel_quiz"):
+                st.session_state.postflop_quiz_active = False
+                st.session_state.postflop_quiz_questions = []
+                st.session_state.postflop_quiz_answers = {}
                 st.rerun()
+
+        else:
+            # Show "Take Quiz" button
+            col_complete = st.columns([1, 2, 1])[1]
+            with col_complete:
+                if st.button("📝 參加測驗完成課程" if lang == "zh" else "📝 Take Quiz to Complete", key="postflop_start_quiz", use_container_width=True, type="primary"):
+                    # Generate 2 quiz questions from lesson hands
+                    import random
+                    hands_list = list(hands.items())
+                    if len(hands_list) >= 2:
+                        quiz_hands = random.sample(hands_list, min(2, len(hands_list)))
+                    else:
+                        quiz_hands = hands_list
+
+                    questions = []
+                    action_options = ["Bet", "Check", "Call", "Fold", "Raise"]
+                    for hand, hand_data in quiz_hands:
+                        correct_action = hand_data.get("action", "check")
+                        # Map to display format
+                        if "bet" in correct_action:
+                            correct_display = "Bet"
+                        elif correct_action == "check":
+                            correct_display = "Check"
+                        elif correct_action == "call":
+                            correct_display = "Call"
+                        elif correct_action == "fold":
+                            correct_display = "Fold"
+                        elif correct_action == "raise":
+                            correct_display = "Raise"
+                        else:
+                            correct_display = correct_action.title()
+
+                        # Create options (correct + 2 wrong)
+                        wrong_options = [a for a in action_options if a != correct_display]
+                        options = [correct_display] + random.sample(wrong_options, 2)
+                        random.shuffle(options)
+
+                        questions.append({
+                            "hand": hand,
+                            "correct": correct_display,
+                            "options": options
+                        })
+
+                    st.session_state.postflop_quiz_active = True
+                    st.session_state.postflop_quiz_lesson = lesson_key
+                    st.session_state.postflop_quiz_questions = questions
+                    st.session_state.postflop_quiz_answers = {}
+                    st.rerun()
+
+            # Also allow direct mark complete (skip quiz)
+            st.caption("或")
+            col_skip = st.columns([1, 2, 1])[1]
+            with col_skip:
+                if st.button("⏭️ 跳過測驗直接完成" if lang == "zh" else "⏭️ Skip Quiz", key="postflop_skip_quiz"):
+                    st.session_state.postflop_completed.add(lesson_key)
+                    if current_idx < total_lessons - 1:
+                        st.session_state.postflop_lesson_idx = current_idx + 1
+                    st.rerun()
     else:
         st.markdown(f"""
         <div style="text-align: center; padding: 10px; color: #10b981;">
