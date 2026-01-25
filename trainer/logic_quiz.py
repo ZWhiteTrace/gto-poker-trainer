@@ -489,9 +489,13 @@ class LogicQuizEngine:
         correct_index = indices.index(0)
 
         # 題目文字
+        if "3bet" in spot:
+            pot_type = "3bet pot"
+        else:
+            pot_type = "單挑底池"
         question_text = (
             f"在 {example_board} 牌面 ({board_texture.replace('_', ' ')})，"
-            f"BTN vs BB 單挑底池，為什麼 {hand} 應該 {self._format_action(action)}？"
+            f"{pot_type}，為什麼 {hand} 應該 {self._format_action(action)}？"
         )
 
         # 解說
@@ -573,8 +577,14 @@ class LogicQuizEngine:
 
         # 題目文字
         action_zh = {"call": "跟注", "raise": "加注", "fold": "棄牌"}.get(action, action)
+        if "3bet" in spot:
+            pot_type = "3bet pot"
+            aggressor = "3bettor"
+        else:
+            pot_type = "單挑底池"
+            aggressor = "BTN"
         question_text = (
-            f"在 {example_board} 牌面，BB 面對 BTN 的 c-bet，"
+            f"在 {example_board} 牌面，{pot_type}，面對 {aggressor} 的 c-bet，"
             f"為什麼 {hand} 應該 check-{action_zh}？"
         )
 

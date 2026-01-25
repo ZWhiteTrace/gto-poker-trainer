@@ -393,5 +393,127 @@
         }
       }
     }
+  },
+  "3bet_ip_vs_oop": {
+    "dry_ace_high_3bet": {
+      "example_board": "A52r",
+      "context": {
+        "range_advantage": "hero",
+        "nut_advantage": "hero",
+        "cbet_frequency": "very_high (80%+)",
+        "preferred_sizing": "25-33%",
+        "note": "3bet pot A 高牌面對 IP 3bettor 極有利：更多 AA, AK, AQ 組合。Caller 的 Ax 多已 4bet 或 fold。低 SPR 讓小注高頻策略最優。"
+      },
+      "hands": {
+        "AK": {
+          "role": "value_bet",
+          "action": "bet_33",
+          "tags": ["cbet_range_advantage", "nut_advantage_structure", "spr_aware"],
+          "why": "頂對頂踢腳。3bet pot 低 SPR (~3-4) 讓頂對是強牌。小注從 Ax 弱踢腳、QQ-JJ 獲得價值。",
+          "stability": "stable"
+        },
+        "KK": {
+          "role": "value_bet_overpair",
+          "action": "bet_33",
+          "tags": ["high_equity", "spr_aware"],
+          "why": "Overpair 在 A 高牌面仍有價值。對手 Ax 比例比 SRP 更低，KK 相對更強。",
+          "stability": "stable"
+        },
+        "QQ": {
+          "role": "check_medium_3bet",
+          "action": "check",
+          "tags": ["check_pot_control", "spr_aware"],
+          "why": "Overpair 在 A 高 3bet pot 尷尬。對手 call 3bet 的 range 含很多 Ax，check 控池。",
+          "stability": "stable"
+        },
+        "JJ": {
+          "role": "check_give_up_3bet",
+          "action": "check",
+          "tags": ["check_pot_control"],
+          "why": "Underpair 在 A 高牌面弱。3bet pot 對手幾乎沒有可以 fold 的牌，check 保留 showdown。",
+          "stability": "stable"
+        }
+      }
+    },
+    "low_board_3bet": {
+      "example_board": "742r",
+      "context": {
+        "range_advantage": "slight_villain",
+        "nut_advantage": "slight_hero",
+        "cbet_frequency": "medium (50%)",
+        "preferred_sizing": "33-50%",
+        "note": "低牌面在 3bet pot 對 caller 較有利：更多 small pairs set up。但 3bettor 有 overpairs 作為堅果優勢。"
+      },
+      "hands": {
+        "AA": {
+          "role": "value_bet",
+          "action": "bet_50",
+          "tags": ["high_equity", "nut_advantage_structure", "spr_aware"],
+          "why": "Overpair 是 nuts。大注從對手 underpairs、頂對獲得價值，同時保護不讓免費看牌。",
+          "stability": "stable"
+        },
+        "KK": {
+          "role": "value_bet",
+          "action": "bet_50",
+          "tags": ["high_equity", "spr_aware"],
+          "why": "Overpair 在低牌面很強。大注價值，被 raise 需謹慎評估 set 可能性。",
+          "stability": "stable"
+        },
+        "AK": {
+          "role": "check_overcards_3bet",
+          "action": "check",
+          "tags": ["check_pot_control"],
+          "why": "Overcards 在低牌面 3bet pot 不太好 bluff。對手 set/overpair 比例高，check 保留 Turn 機會。",
+          "stability": "stable"
+        },
+        "AQs": {
+          "role": "check_give_up",
+          "action": "check",
+          "tags": ["check_pot_control"],
+          "why": "完全 miss。3bet pot 對手 range 很強，沒有好的 bluff 機會。Check fold。",
+          "stability": "stable"
+        }
+      }
+    },
+    "wet_board_3bet": {
+      "example_board": "Jh9h7c",
+      "context": {
+        "range_advantage": "neutral",
+        "nut_advantage": "slight_villain",
+        "cbet_frequency": "low (40%)",
+        "preferred_sizing": "50-66%",
+        "note": "濕潤牌面 3bet pot 對 caller 有利：更多 suited connectors hit。3bettor 需要更極化的策略。"
+      },
+      "hands": {
+        "AA": {
+          "role": "check_protect",
+          "action": "check",
+          "tags": ["check_pot_control", "spr_aware"],
+          "why": "Overpair 在濕潤 3bet pot 脆弱。Check 可以 call down，也可以 check-raise bluff catch。",
+          "stability": "medium"
+        },
+        "KK": {
+          "role": "check_vulnerable",
+          "action": "check",
+          "tags": ["check_pot_control"],
+          "why": "Overpair 在連接牌面被壓制多。Check 控池，Turn 評估。",
+          "stability": "stable"
+        },
+        "AhKh": {
+          "role": "semibluff_big",
+          "action": "bet_66",
+          "tags": ["barrel_equity", "nut_advantage_structure"],
+          "why": "堅果花聽牌。大注半詐唬：fold equity + 9 clean outs。中了變 nuts。",
+          "stability": "stable"
+        },
+        "JJ": {
+          "role": "value_bet_set",
+          "action": "bet_66",
+          "tags": ["high_equity", "sizing_advantage"],
+          "why": "頂 set。在連接牌面大注保護 + 構建底池。對手有很多會繼續的聽牌。",
+          "stability": "stable"
+        }
+      }
+    }
   }
 }

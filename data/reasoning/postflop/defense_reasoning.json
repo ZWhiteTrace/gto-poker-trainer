@@ -328,5 +328,135 @@
         }
       }
     }
+  },
+  "3bet_oop_vs_ip": {
+    "dry_ace_high_3bet": {
+      "example_board": "A52r",
+      "context": {
+        "range_advantage": "villain",
+        "defense_frequency": "tight",
+        "note": "3bet pot A 高牌面對 IP 3bettor 極有利。OOP caller range 中 Ax 少，需緊縮防守。"
+      },
+      "hands": {
+        "AQs": {
+          "role": "check_call_strong",
+          "action": "call",
+          "tags": ["high_equity", "spr_aware"],
+          "why": "頂對好踢腳。3bet pot 低 SPR 讓這手牌很強，flat 讓對手繼續 bluff。",
+          "stability": "stable"
+        },
+        "KK": {
+          "role": "check_call_overpair",
+          "action": "call",
+          "tags": ["high_equity", "check_pot_control"],
+          "why": "Overpair 在 A 高牌面仍有 showdown value。Flat 評估對手後續行動。",
+          "stability": "stable"
+        },
+        "QQ": {
+          "role": "check_fold_underpair",
+          "action": "fold",
+          "tags": ["check_pot_control", "spr_aware"],
+          "why": "Underpair 在 A 高 3bet pot 很弱。對手 c-bet range 幾乎都領先，fold 節省。",
+          "stability": "stable"
+        },
+        "JJ": {
+          "role": "check_fold",
+          "action": "fold",
+          "tags": ["check_pot_control"],
+          "why": "Underpair 在 3bet pot A 高牌面沒有好的繼續路線。Fold 是最優選擇。",
+          "stability": "stable"
+        }
+      }
+    },
+    "low_board_3bet": {
+      "example_board": "742r",
+      "context": {
+        "range_advantage": "slight_hero",
+        "defense_frequency": "medium",
+        "note": "低牌面對 3bet caller 較有利。更多 small pairs set up，可以選擇性 check-raise。"
+      },
+      "hands": {
+        "77": {
+          "role": "check_raise_value_set",
+          "action": "raise",
+          "tags": ["high_equity", "board_texture_favor", "spr_aware"],
+          "why": "Set 是 nuts。Check-raise 建立底池，準備 commit stack。低 SPR 讓 set 幾乎必贏。",
+          "stability": "stable"
+        },
+        "44": {
+          "role": "check_raise_value_set",
+          "action": "raise",
+          "tags": ["high_equity", "spr_aware"],
+          "why": "Set 極強。Check-raise 從對手 overpairs 獲得最大價值。",
+          "stability": "stable"
+        },
+        "99": {
+          "role": "check_call_overpair",
+          "action": "call",
+          "tags": ["high_equity", "check_pot_control"],
+          "why": "Overpair 有價值但不是 nuts。Flat 評估，被 raise 可以 call down。",
+          "stability": "stable"
+        },
+        "AKs": {
+          "role": "check_call_overcards",
+          "action": "call",
+          "tags": ["barrel_equity", "ace_blocker"],
+          "why": "Overcards + A blocker。Flat 看 Turn，中 A/K 變頂對可以 check-raise。",
+          "stability": "medium"
+        },
+        "QJs": {
+          "role": "check_fold",
+          "action": "fold",
+          "tags": ["check_pot_control"],
+          "why": "完全 miss。低牌面對手 overpairs/sets 多，沒有好的繼續路線。",
+          "stability": "stable"
+        }
+      }
+    },
+    "wet_board_3bet": {
+      "example_board": "Jh9h7c",
+      "context": {
+        "range_advantage": "hero",
+        "defense_frequency": "wide",
+        "note": "濕潤牌面對 3bet caller 有利：更多 suited connectors hit。可以積極 check-raise。"
+      },
+      "hands": {
+        "JTs": {
+          "role": "check_raise_value",
+          "action": "raise",
+          "tags": ["high_equity", "board_texture_favor"],
+          "why": "頂對 + 開放順子聽牌。Check-raise 建立底池，有強 made hand + 14 outs backup。",
+          "stability": "stable"
+        },
+        "99": {
+          "role": "check_raise_set",
+          "action": "raise",
+          "tags": ["high_equity", "spr_aware"],
+          "why": "Set 極強。在連接牌面 check-raise 保護 + 構建底池。低 SPR 準備 commit。",
+          "stability": "stable"
+        },
+        "T8s": {
+          "role": "check_raise_semibluff",
+          "action": "raise",
+          "tags": ["check_raise_semibluff", "barrel_equity"],
+          "why": "開放順子聽牌。Check-raise 半詐唬：fold equity + 8 outs 被 call。",
+          "stability": "stable"
+        },
+        "QQ": {
+          "role": "check_call",
+          "action": "call",
+          "tags": ["high_equity", "check_pot_control"],
+          "why": "Overpair 在連接牌面有價值但脆弱。Flat 評估 Turn，不急著膨脹底池。",
+          "stability": "medium"
+        },
+        "AKo": {
+          "role": "check_fold",
+          "action": "fold",
+          "tags": ["check_pot_control"],
+          "why": "完全 miss 的 overcards。連接牌面對手 continue 頻率高，fold 節省。",
+          "stability": "stable"
+        }
+      }
+    }
   }
 }

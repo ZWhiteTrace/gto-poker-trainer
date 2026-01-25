@@ -2158,6 +2158,16 @@ def logic_quiz_page():
             st.warning("尚無翻後資料。" if lang == "zh" else "No postflop data available.")
             return
 
+        # Pot type selector (SRP vs 3bet)
+        pot_type_options = ["SRP (單挑底池)", "3bet Pot"]
+        selected_pot_type = st.radio(
+            "底池類型" if lang == "zh" else "Pot Type",
+            options=range(2),
+            format_func=lambda i: pot_type_options[i],
+            horizontal=True,
+            key="postflop_pot_type_radio",
+        )
+
         # Board texture selector
         cbet_textures = engine.get_available_board_textures("cbet")
         texture_display = {
@@ -2170,6 +2180,9 @@ def logic_quiz_page():
             "two_tone": "雙色牌面 (Kh9h4c)",
             "broadway": "高張連接 (KQJr)",
             "wheel_board": "Wheel 牌面 (543r)",
+            "dry_ace_high_3bet": "3bet A 高 (A52r)",
+            "low_board_3bet": "3bet 低牌面 (742r)",
+            "wet_board_3bet": "3bet 濕潤 (Jh9h7c)",
         }
 
         all_label = "全部牌面" if lang == "zh" else "All Textures"
@@ -2218,10 +2231,18 @@ def logic_quiz_page():
             else:
                 q_type = "G"
 
+            # Determine spot based on pot type
+            if selected_pot_type == 0:  # SRP
+                cbet_spot = "srp_btn_vs_bb"
+                defense_spot = "bb_vs_btn_srp"
+            else:  # 3bet pot
+                cbet_spot = "3bet_ip_vs_oop"
+                defense_spot = "3bet_oop_vs_ip"
+
             if q_type == "E":
-                q = engine.generate_type_e(board_texture=selected_texture)
+                q = engine.generate_type_e(board_texture=selected_texture, spot=cbet_spot)
             elif q_type == "F":
-                q = engine.generate_type_f(board_texture=selected_texture)
+                q = engine.generate_type_f(board_texture=selected_texture, spot=defense_spot)
             else:
                 q = engine.generate_type_g()
 
