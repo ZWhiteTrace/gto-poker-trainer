@@ -1,6 +1,6 @@
 {
   "meta": {
-    "version": "1.0",
+    "version": "2.0",
     "description": "vs 3bet 場景的決策邏輯層。Hero open → Villain 3bet → Hero 決策 (4bet / call / fold)。",
     "assumptions": {
       "stack_bb": 100,
@@ -9,6 +9,122 @@
       "four_bet_size": "20-22bb",
       "format": "6max",
       "rake": "standard_NL50"
+    }
+  },
+  "UTG_vs_HJ": {
+    "context": {
+      "range_advantage": "hero",
+      "nut_advantage": "hero",
+      "hero_range_shape": "linear",
+      "squeeze_risk": "medium",
+      "note": "UTG open 極強 (~15%)，HJ 3bet 範圍也緊。Hero 4bet range 非常線性，幾乎沒有 bluff。CO/BTN/SB 仍在後面可能 cold 4bet。"
+    },
+    "hands": {
+      "AA": {
+        "role": "value_4bet",
+        "tags": ["high_equity", "nut_potential"],
+        "stability": "stable",
+        "note": "AA 永遠 4bet。"
+      },
+      "KK": {
+        "role": "value_4bet",
+        "tags": ["high_equity", "nut_potential"],
+        "stability": "stable",
+        "note": "KK 永遠 4bet。只輸 AA。"
+      },
+      "QQ": {
+        "role": "value_4bet",
+        "tags": ["high_equity", "gap_concept"],
+        "stability": "stable",
+        "note": "QQ vs HJ 3bet 純 4bet。HJ 3bet range 含很多 QQ 壓制的牌 (AK, AQ, JJ, TT)。"
+      },
+      "JJ": {
+        "role": "call",
+        "tags": ["calling_vs_3bet", "set_mining"],
+        "stability": "stable",
+        "note": "JJ 面對 HJ 3bet call。4bet 會讓對手只留 QQ+/AK 繼續，全壓制你。"
+      },
+      "TT": {
+        "role": "call",
+        "tags": ["set_mining", "implied_odds_deep"],
+        "stability": "stable",
+        "note": "TT 純 call set mine。3bet pot 有足夠隱含賠率。"
+      },
+      "AKs": {
+        "role": "value_4bet",
+        "tags": ["high_equity", "ace_blocker", "high_eqr_suited"],
+        "stability": "stable",
+        "note": "AKs 4bet：阻擋 AA/AK，同花結構提供 backup equity。"
+      },
+      "AKo": {
+        "role": "value_4bet",
+        "tags": ["high_equity", "ace_blocker"],
+        "stability": "stable",
+        "note": "AKo 4bet。即使面對 5bet jam 也有足夠 equity。"
+      },
+      "AQs": {
+        "role": "call",
+        "tags": ["high_equity", "calling_vs_3bet", "domination_risk"],
+        "stability": "stable",
+        "note": "AQs call：4bet 讓對手只留壓制你的牌 (AK/KK/AA)。Call 保留 playability。"
+      },
+      "A5s": {
+        "role": "bluff_4bet",
+        "tags": ["ace_blocker", "wheel_potential", "4bet_bluff_candidate"],
+        "stability": "stable",
+        "note": "A5s 是 UTG 唯一的 4bet bluff：Ace blocker + wheel。但頻率低因為後位仍可 cold 4bet。"
+      }
+    }
+  },
+  "UTG_vs_CO": {
+    "context": {
+      "range_advantage": "hero",
+      "nut_advantage": "hero",
+      "hero_range_shape": "linear",
+      "squeeze_risk": "low",
+      "note": "UTG vs CO 3bet。UTG range 極強，CO 3bet 偏極化。Hero 4bet 線性，幾乎純價值。BTN/SB 在後面 squeeze 風險降低。"
+    },
+    "hands": {
+      "QQ": {
+        "role": "value_4bet",
+        "tags": ["high_equity", "gap_concept"],
+        "stability": "stable",
+        "note": "QQ 4bet 價值。CO 3bet range 含 TT-JJ, AQ 讓你獲利。"
+      },
+      "JJ": {
+        "role": "call",
+        "tags": ["calling_vs_3bet", "set_mining"],
+        "stability": "stable",
+        "note": "JJ call。4bet/fold vs 5bet 太難受。"
+      },
+      "TT": {
+        "role": "call",
+        "tags": ["set_mining", "implied_odds_deep"],
+        "stability": "stable",
+        "note": "TT set mine。"
+      },
+      "AKs": {
+        "role": "value_4bet",
+        "tags": ["high_equity", "ace_blocker", "high_eqr_suited"],
+        "stability": "stable"
+      },
+      "AKo": {
+        "role": "value_4bet",
+        "tags": ["high_equity", "ace_blocker"],
+        "stability": "stable"
+      },
+      "AQs": {
+        "role": "call",
+        "tags": ["high_equity", "calling_vs_3bet", "domination_risk"],
+        "stability": "stable",
+        "note": "AQs call：playability 高，不想面對 5bet jam。"
+      },
+      "A5s": {
+        "role": "bluff_4bet",
+        "tags": ["ace_blocker", "wheel_potential", "4bet_bluff_candidate"],
+        "stability": "stable",
+        "note": "A5s 4bet bluff。UTG 4bet bluff 頻率很低但 A5s 是最佳選擇。"
+      }
     }
   },
   "UTG_vs_BTN": {
@@ -77,6 +193,150 @@
       }
     }
   },
+  "HJ_vs_CO": {
+    "context": {
+      "range_advantage": "hero",
+      "nut_advantage": "hero",
+      "hero_range_shape": "linear",
+      "squeeze_risk": "low",
+      "note": "HJ open (~18%) 面對 CO 3bet。HJ range 仍強，4bet 以線性價值為主。BTN 在後面但 squeeze 風險低。"
+    },
+    "hands": {
+      "QQ": {
+        "role": "value_4bet",
+        "tags": ["high_equity", "gap_concept"],
+        "stability": "stable",
+        "note": "QQ 4bet 價值。"
+      },
+      "JJ": {
+        "role": "mix_call_4bet",
+        "tags": ["calling_vs_3bet", "high_equity"],
+        "stability": "param_sensitive",
+        "note": "JJ 混合：部分 4bet 部分 call。HJ range 比 UTG 寬所以 4bet 支撐力稍弱。"
+      },
+      "TT": {
+        "role": "call",
+        "tags": ["set_mining", "calling_vs_3bet"],
+        "stability": "stable",
+        "note": "TT call set mine。"
+      },
+      "99": {
+        "role": "call",
+        "tags": ["set_mining", "implied_odds_deep"],
+        "stability": "stable",
+        "note": "99 call。隱含賠率支撐。"
+      },
+      "AKs": {
+        "role": "value_4bet",
+        "tags": ["high_equity", "ace_blocker", "high_eqr_suited"],
+        "stability": "stable"
+      },
+      "AKo": {
+        "role": "value_4bet",
+        "tags": ["high_equity", "ace_blocker"],
+        "stability": "stable"
+      },
+      "AQs": {
+        "role": "call",
+        "tags": ["high_equity", "calling_vs_3bet", "domination_risk"],
+        "stability": "stable",
+        "note": "AQs call。4bet 讓對手 range 太強。"
+      },
+      "A5s": {
+        "role": "bluff_4bet",
+        "tags": ["ace_blocker", "wheel_potential", "4bet_bluff_candidate"],
+        "stability": "stable",
+        "note": "A5s 4bet bluff。"
+      },
+      "KQs": {
+        "role": "call",
+        "tags": ["high_eqr_suited", "connectivity", "calling_vs_3bet"],
+        "stability": "stable",
+        "note": "KQs call：翻後 playability 極高。"
+      }
+    }
+  },
+  "HJ_vs_BTN": {
+    "context": {
+      "range_advantage": "neutral",
+      "nut_advantage": "hero",
+      "hero_range_shape": "polarized",
+      "squeeze_risk": "none",
+      "note": "HJ vs BTN 3bet。BTN 3bet 頻率高且極化。HJ 4bet 也更極化：純價值 + 更多 Axs bluffs。"
+    },
+    "hands": {
+      "QQ": {
+        "role": "value_4bet",
+        "tags": ["high_equity", "gap_concept"],
+        "stability": "stable",
+        "note": "QQ 4bet。BTN 3bet range 含大量 QQ 壓制的牌。"
+      },
+      "JJ": {
+        "role": "call",
+        "tags": ["calling_vs_3bet", "set_mining"],
+        "stability": "stable",
+        "note": "JJ 純 call。BTN 3bet range 寬但 4bet 會讓對手只留強牌。"
+      },
+      "TT": {
+        "role": "call",
+        "tags": ["set_mining", "implied_odds_deep"],
+        "stability": "stable",
+        "note": "TT call set mine。"
+      },
+      "99": {
+        "role": "call",
+        "tags": ["set_mining", "implied_odds_deep"],
+        "stability": "stable",
+        "note": "99 call。"
+      },
+      "88": {
+        "role": "call",
+        "tags": ["set_mining"],
+        "stability": "stable",
+        "note": "88 call set mine。HJ 有足夠的 calling range 支撐。"
+      },
+      "AKs": {
+        "role": "value_4bet",
+        "tags": ["high_equity", "ace_blocker", "high_eqr_suited"],
+        "stability": "stable"
+      },
+      "AKo": {
+        "role": "value_4bet",
+        "tags": ["high_equity", "ace_blocker"],
+        "stability": "stable"
+      },
+      "AQs": {
+        "role": "call",
+        "tags": ["high_equity", "calling_vs_3bet"],
+        "stability": "stable",
+        "note": "AQs call。翻後 playability 支撐。"
+      },
+      "AJs": {
+        "role": "call",
+        "tags": ["calling_vs_3bet", "high_eqr_suited"],
+        "stability": "stable",
+        "note": "AJs call。比 UTG 更寬的 calling range。"
+      },
+      "A5s": {
+        "role": "bluff_4bet",
+        "tags": ["ace_blocker", "wheel_potential", "4bet_bluff_candidate"],
+        "stability": "stable",
+        "note": "A5s 4bet bluff。"
+      },
+      "A4s": {
+        "role": "bluff_4bet",
+        "tags": ["ace_blocker", "wheel_potential", "4bet_bluff_candidate"],
+        "stability": "stable",
+        "note": "A4s 也進入 4bet bluff range。HJ vs BTN 4bet 更頻繁。"
+      },
+      "KQs": {
+        "role": "call",
+        "tags": ["high_eqr_suited", "connectivity", "calling_vs_3bet"],
+        "stability": "stable",
+        "note": "KQs call。"
+      }
+    }
+  },
   "CO_vs_BTN": {
     "context": {
       "range_advantage": "neutral",
@@ -93,12 +353,30 @@
         "stability": "stable",
         "note": "JJ 在 CO vs BTN 3bet 純 call。CO open range 寬所以 4bet 不像 UTG 那麼有支撐力。Call 保護 range 且有 overpair/set 潛力。"
       },
+      "TT": {
+        "role": "call",
+        "tags": ["set_mining", "calling_vs_3bet"],
+        "stability": "stable",
+        "note": "TT call。"
+      },
+      "99": {
+        "role": "call",
+        "tags": ["set_mining", "implied_odds_deep"],
+        "stability": "stable",
+        "note": "99 call。"
+      },
       "88": {
         "role": "call",
         "tags": ["set_mining", "implied_odds_deep", "calling_vs_3bet"],
         "compare_group": "pocket_pairs_mid",
         "stability": "stable",
         "note": "88 純 set mine vs 3bet。3bet pot 深度仍足夠支撐 implied odds。"
+      },
+      "77": {
+        "role": "call",
+        "tags": ["set_mining"],
+        "stability": "medium",
+        "note": "77 邊界 call。需要好的 implied odds 意識。"
       },
       "AKs": {
         "role": "value_4bet",
@@ -112,6 +390,12 @@
         "compare_group": "premium_broadways",
         "stability": "stable",
         "note": "AQs 同花結構讓 call 後翻後極有 playability。4bet 面對 5bet 只剩 AA 能撐，不值得冒險。"
+      },
+      "AJs": {
+        "role": "call",
+        "tags": ["calling_vs_3bet", "high_eqr_suited"],
+        "stability": "stable",
+        "note": "AJs call。CO 有寬的 calling range。"
       },
       "A9s": {
         "role": "bluff_4bet",
@@ -141,11 +425,269 @@
         "stability": "stable",
         "note": "KQs call vs 3bet：翻後 playability 極高 (nut flush + nut straight draw)。4bet 的 fold equity 不足以彌補被 5bet 的風險。"
       },
+      "KJs": {
+        "role": "call",
+        "tags": ["calling_vs_3bet", "high_eqr_suited"],
+        "stability": "stable",
+        "note": "KJs call。CO 的寬防守 range。"
+      },
       "AKo": {
         "role": "value_4bet",
         "tags": ["high_equity", "ace_blocker", "nut_potential"],
         "compare_group": "premium_broadways",
         "stability": "stable"
+      }
+    }
+  },
+  "BTN_vs_SB": {
+    "context": {
+      "range_advantage": "hero",
+      "nut_advantage": "hero",
+      "hero_range_shape": "wide_polarized",
+      "squeeze_risk": "low",
+      "note": "BTN open (~45%) 面對 SB 3bet。BTN 有位置優勢，4bet 和 call range 都很寬。SB 3bet size 通常較大 (11bb)。"
+    },
+    "hands": {
+      "QQ": {
+        "role": "value_4bet",
+        "tags": ["high_equity", "gap_concept"],
+        "stability": "stable",
+        "note": "QQ 4bet。vs SB 3bet 是純價值。"
+      },
+      "JJ": {
+        "role": "mix_call_4bet",
+        "tags": ["calling_vs_3bet", "high_equity"],
+        "stability": "param_sensitive",
+        "note": "JJ 混合策略。有位置優勢支撐 call，但 4bet 也有價值。"
+      },
+      "TT": {
+        "role": "call",
+        "tags": ["set_mining", "calling_vs_3bet", "positional_advantage"],
+        "stability": "stable",
+        "note": "TT call。有位置優勢讓 call 更有利。"
+      },
+      "99": {
+        "role": "call",
+        "tags": ["set_mining", "positional_advantage"],
+        "stability": "stable",
+        "note": "99 call。位置優勢。"
+      },
+      "88": {
+        "role": "call",
+        "tags": ["set_mining"],
+        "stability": "stable",
+        "note": "88 call set mine。"
+      },
+      "77": {
+        "role": "call",
+        "tags": ["set_mining"],
+        "stability": "medium",
+        "note": "77 邊界 call。需要 implied odds。"
+      },
+      "AKs": {
+        "role": "value_4bet",
+        "tags": ["high_equity", "ace_blocker", "high_eqr_suited"],
+        "stability": "stable"
+      },
+      "AKo": {
+        "role": "value_4bet",
+        "tags": ["high_equity", "ace_blocker"],
+        "stability": "stable"
+      },
+      "AQs": {
+        "role": "mix_call_4bet",
+        "tags": ["high_equity", "calling_vs_3bet", "positional_advantage"],
+        "stability": "param_sensitive",
+        "note": "AQs 混合。有位置讓 call 後 playability 更強，但 4bet 也可以。"
+      },
+      "AQo": {
+        "role": "call",
+        "tags": ["calling_vs_3bet", "positional_advantage"],
+        "stability": "stable",
+        "note": "AQo 純 call。缺乏同花結構讓 4bet 減少價值。"
+      },
+      "AJs": {
+        "role": "call",
+        "tags": ["calling_vs_3bet", "high_eqr_suited", "positional_advantage"],
+        "stability": "stable",
+        "note": "AJs call。有位置優勢。"
+      },
+      "A5s": {
+        "role": "bluff_4bet",
+        "tags": ["ace_blocker", "wheel_potential", "4bet_bluff_candidate"],
+        "stability": "stable",
+        "note": "A5s 4bet bluff。"
+      },
+      "A4s": {
+        "role": "bluff_4bet",
+        "tags": ["ace_blocker", "wheel_potential", "4bet_bluff_candidate"],
+        "stability": "stable",
+        "note": "A4s 4bet bluff。BTN 有更多 4bet bluffs。"
+      },
+      "A3s": {
+        "role": "bluff_4bet",
+        "tags": ["ace_blocker", "wheel_potential", "4bet_bluff_candidate"],
+        "stability": "medium",
+        "note": "A3s 進入 4bet bluff range。BTN vs SB 4bet 頻率高。"
+      },
+      "KQs": {
+        "role": "call",
+        "tags": ["high_eqr_suited", "calling_vs_3bet", "positional_advantage"],
+        "stability": "stable",
+        "note": "KQs call。有位置讓翻後更好打。"
+      },
+      "KJs": {
+        "role": "call",
+        "tags": ["calling_vs_3bet", "high_eqr_suited"],
+        "stability": "stable",
+        "note": "KJs call。BTN 的寬 calling range。"
+      },
+      "QJs": {
+        "role": "call",
+        "tags": ["calling_vs_3bet", "connectivity"],
+        "stability": "stable",
+        "note": "QJs call。連接性強，有位置。"
+      }
+    }
+  },
+  "BTN_vs_BB": {
+    "context": {
+      "range_advantage": "hero",
+      "nut_advantage": "hero",
+      "hero_range_shape": "wide_polarized",
+      "squeeze_risk": "none",
+      "note": "BTN open 面對 BB 3bet。BB 3bet size 最大 (13.5bb) 但 BTN 有位置優勢。4bet 和 call 都很寬。單挑 pot，無 squeeze 風險。"
+    },
+    "hands": {
+      "QQ": {
+        "role": "value_4bet",
+        "tags": ["high_equity", "gap_concept"],
+        "stability": "stable",
+        "note": "QQ 4bet 價值。"
+      },
+      "JJ": {
+        "role": "mix_call_4bet",
+        "tags": ["calling_vs_3bet", "high_equity", "positional_advantage"],
+        "stability": "param_sensitive",
+        "note": "JJ 混合。位置優勢讓 call 有吸引力。"
+      },
+      "TT": {
+        "role": "call",
+        "tags": ["set_mining", "calling_vs_3bet", "positional_advantage"],
+        "stability": "stable",
+        "note": "TT call。有位置的 set mine。"
+      },
+      "99": {
+        "role": "call",
+        "tags": ["set_mining", "positional_advantage"],
+        "stability": "stable",
+        "note": "99 call。"
+      },
+      "88": {
+        "role": "call",
+        "tags": ["set_mining"],
+        "stability": "stable",
+        "note": "88 call。"
+      },
+      "77": {
+        "role": "call",
+        "tags": ["set_mining"],
+        "stability": "medium",
+        "note": "77 call。邊界但 BTN 有足夠寬的 range。"
+      },
+      "66": {
+        "role": "call",
+        "tags": ["set_mining"],
+        "stability": "medium",
+        "note": "66 可 call vs BB 3bet。BTN range 夠寬支撐。"
+      },
+      "AKs": {
+        "role": "value_4bet",
+        "tags": ["high_equity", "ace_blocker", "high_eqr_suited"],
+        "stability": "stable"
+      },
+      "AKo": {
+        "role": "value_4bet",
+        "tags": ["high_equity", "ace_blocker"],
+        "stability": "stable"
+      },
+      "AQs": {
+        "role": "mix_call_4bet",
+        "tags": ["high_equity", "calling_vs_3bet", "positional_advantage"],
+        "stability": "param_sensitive",
+        "note": "AQs 混合。位置優勢讓 call 很有吸引力。"
+      },
+      "AQo": {
+        "role": "call",
+        "tags": ["calling_vs_3bet", "positional_advantage"],
+        "stability": "stable",
+        "note": "AQo call。位置優勢支撐。"
+      },
+      "AJs": {
+        "role": "call",
+        "tags": ["calling_vs_3bet", "high_eqr_suited", "positional_advantage"],
+        "stability": "stable",
+        "note": "AJs call。"
+      },
+      "ATs": {
+        "role": "call",
+        "tags": ["calling_vs_3bet", "high_eqr_suited"],
+        "stability": "stable",
+        "note": "ATs call。BTN 的寬防守。"
+      },
+      "A5s": {
+        "role": "bluff_4bet",
+        "tags": ["ace_blocker", "wheel_potential", "4bet_bluff_candidate"],
+        "stability": "stable",
+        "note": "A5s 4bet bluff。"
+      },
+      "A4s": {
+        "role": "bluff_4bet",
+        "tags": ["ace_blocker", "wheel_potential", "4bet_bluff_candidate"],
+        "stability": "stable",
+        "note": "A4s 4bet bluff。"
+      },
+      "A3s": {
+        "role": "bluff_4bet",
+        "tags": ["ace_blocker", "wheel_potential", "4bet_bluff_candidate"],
+        "stability": "medium",
+        "note": "A3s 4bet bluff。BTN vs BB 4bet 頻繁。"
+      },
+      "A2s": {
+        "role": "bluff_4bet",
+        "tags": ["ace_blocker", "wheel_potential", "4bet_bluff_candidate"],
+        "stability": "medium",
+        "note": "A2s 也可進入 4bet bluff range。頻率較低。"
+      },
+      "KQs": {
+        "role": "call",
+        "tags": ["high_eqr_suited", "calling_vs_3bet", "positional_advantage"],
+        "stability": "stable",
+        "note": "KQs call。"
+      },
+      "KJs": {
+        "role": "call",
+        "tags": ["calling_vs_3bet", "high_eqr_suited"],
+        "stability": "stable",
+        "note": "KJs call。"
+      },
+      "KTs": {
+        "role": "call",
+        "tags": ["calling_vs_3bet", "connectivity"],
+        "stability": "stable",
+        "note": "KTs call。BTN 的寬 range。"
+      },
+      "QJs": {
+        "role": "call",
+        "tags": ["calling_vs_3bet", "connectivity"],
+        "stability": "stable",
+        "note": "QJs call。"
+      },
+      "JTs": {
+        "role": "call",
+        "tags": ["calling_vs_3bet", "connectivity"],
+        "stability": "stable",
+        "note": "JTs call。連接性強。"
       }
     }
   }

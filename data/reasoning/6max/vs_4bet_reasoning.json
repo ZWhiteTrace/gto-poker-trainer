@@ -1,0 +1,320 @@
+{
+  "meta": {
+    "version": "1.0",
+    "description": "vs 4bet/5bet 場景的決策邏輯層。Hero 3bet → Villain 4bet → Hero 決策 (5bet jam / call / fold)。",
+    "assumptions": {
+      "stack_bb": 100,
+      "three_bet_size": "9-11bb",
+      "four_bet_size": "20-25bb",
+      "five_bet_size": "All-in",
+      "format": "6max",
+      "rake": "standard_NL50"
+    }
+  },
+  "BB_3bet_vs_BTN_4bet": {
+    "context": {
+      "range_advantage": "villain",
+      "nut_advantage": "neutral",
+      "hero_range_shape": "polarized",
+      "note": "BB 3bet 後面對 BTN 4bet。BTN 4bet range 通常極化 (AA-QQ, AK + A5s-A2s bluffs)。Hero 必須緊縮到只有能承受 5bet jam 的牌。"
+    },
+    "hands": {
+      "AA": {
+        "role": "5bet_jam",
+        "action": "all_in",
+        "tags": ["high_equity", "nut_potential"],
+        "stability": "stable",
+        "note": "AA 永遠 5bet jam。對任何 4bet range 都是巨大領先。"
+      },
+      "KK": {
+        "role": "5bet_jam",
+        "action": "all_in",
+        "tags": ["high_equity", "nut_potential"],
+        "stability": "stable",
+        "note": "KK 5bet jam。只輸 AA，但 AA 組合數很少。"
+      },
+      "QQ": {
+        "role": "5bet_jam",
+        "action": "all_in",
+        "tags": ["high_equity", "gap_concept"],
+        "stability": "stable",
+        "note": "QQ 5bet jam。對 BTN 4bet bluff range (A5s-A2s) 領先，對 AK 是 flip。"
+      },
+      "JJ": {
+        "role": "call",
+        "action": "call",
+        "tags": ["calling_vs_4bet", "set_mining"],
+        "stability": "stable",
+        "note": "JJ call 4bet。5bet jam 對手只剩 AA/KK/AK，大多壓制你。Call 保留翻後彈性。"
+      },
+      "TT": {
+        "role": "fold",
+        "action": "fold",
+        "tags": ["reverse_implied_odds"],
+        "stability": "stable",
+        "note": "TT fold vs 4bet。沒有足夠 equity 繼續。"
+      },
+      "AKs": {
+        "role": "5bet_jam",
+        "action": "all_in",
+        "tags": ["high_equity", "ace_blocker", "high_eqr_suited"],
+        "stability": "stable",
+        "note": "AKs 5bet jam。阻擋 AA/AK，對 QQ 是 flip，有同花 backup。"
+      },
+      "AKo": {
+        "role": "5bet_jam",
+        "action": "all_in",
+        "tags": ["high_equity", "ace_blocker"],
+        "stability": "stable",
+        "note": "AKo 5bet jam。Blocker 效應 + 對 4bet range 有足夠 equity。"
+      },
+      "AQs": {
+        "role": "call",
+        "action": "call",
+        "tags": ["calling_vs_4bet", "domination_risk"],
+        "stability": "param_sensitive",
+        "note": "AQs call 4bet (混合)。5bet jam 對手只留 AK/KK/AA 壓制你。Call 利用同花 playability。"
+      },
+      "AQo": {
+        "role": "fold",
+        "action": "fold",
+        "tags": ["domination_risk", "reverse_implied_odds"],
+        "stability": "stable",
+        "note": "AQo fold vs 4bet。缺乏同花結構，5bet 或 call 都不好。"
+      },
+      "KQs": {
+        "role": "fold",
+        "action": "fold",
+        "tags": ["domination_risk"],
+        "stability": "stable",
+        "note": "KQs fold vs 4bet。被 4bet range 壓制太嚴重。"
+      },
+      "A5s": {
+        "role": "fold",
+        "action": "fold",
+        "tags": ["bluff_gone_wrong"],
+        "stability": "stable",
+        "note": "A5s fold。你的 3bet bluff 被 4bet 了，放棄。Blocker 價值不足以 5bet jam。"
+      }
+    }
+  },
+  "SB_3bet_vs_BTN_4bet": {
+    "context": {
+      "range_advantage": "villain",
+      "nut_advantage": "neutral",
+      "hero_range_shape": "polarized",
+      "note": "SB 3bet 後面對 BTN 4bet。SB 沒位置，5bet range 必須非常緊。大多數 bluffs 直接放棄。"
+    },
+    "hands": {
+      "AA": {
+        "role": "5bet_jam",
+        "action": "all_in",
+        "tags": ["high_equity", "nut_potential"],
+        "stability": "stable",
+        "note": "AA 5bet jam。"
+      },
+      "KK": {
+        "role": "5bet_jam",
+        "action": "all_in",
+        "tags": ["high_equity", "nut_potential"],
+        "stability": "stable",
+        "note": "KK 5bet jam。"
+      },
+      "QQ": {
+        "role": "5bet_jam",
+        "action": "all_in",
+        "tags": ["high_equity"],
+        "stability": "stable",
+        "note": "QQ 5bet jam。"
+      },
+      "JJ": {
+        "role": "mix_call_fold",
+        "action": "call",
+        "tags": ["calling_vs_4bet"],
+        "stability": "param_sensitive",
+        "note": "JJ 混合 call/fold。沒位置讓 call 更難，但 set value 支撐。"
+      },
+      "TT": {
+        "role": "fold",
+        "action": "fold",
+        "tags": ["reverse_implied_odds"],
+        "stability": "stable",
+        "note": "TT fold。沒位置加上 4bet pot，不值得繼續。"
+      },
+      "AKs": {
+        "role": "5bet_jam",
+        "action": "all_in",
+        "tags": ["high_equity", "ace_blocker"],
+        "stability": "stable",
+        "note": "AKs 5bet jam。"
+      },
+      "AKo": {
+        "role": "5bet_jam",
+        "action": "all_in",
+        "tags": ["high_equity", "ace_blocker"],
+        "stability": "stable",
+        "note": "AKo 5bet jam。"
+      },
+      "AQs": {
+        "role": "fold",
+        "action": "fold",
+        "tags": ["domination_risk"],
+        "stability": "stable",
+        "note": "AQs fold vs BTN 4bet。沒位置讓 call 變差，5bet 對手只留壓制牌。"
+      },
+      "A5s": {
+        "role": "fold",
+        "action": "fold",
+        "tags": ["bluff_gone_wrong"],
+        "stability": "stable",
+        "note": "A5s fold。3bet bluff 失敗，放棄。"
+      }
+    }
+  },
+  "CO_3bet_vs_UTG_4bet": {
+    "context": {
+      "range_advantage": "villain",
+      "nut_advantage": "villain",
+      "hero_range_shape": "polarized",
+      "note": "CO 3bet UTG open 後，面對 4bet。UTG 4bet range 極緊 (AA-QQ, AK)。Hero 只能用最強的牌繼續。"
+    },
+    "hands": {
+      "AA": {
+        "role": "5bet_jam",
+        "action": "all_in",
+        "tags": ["high_equity", "nut_potential"],
+        "stability": "stable",
+        "note": "AA 5bet jam。"
+      },
+      "KK": {
+        "role": "5bet_jam",
+        "action": "all_in",
+        "tags": ["high_equity"],
+        "stability": "stable",
+        "note": "KK 5bet jam。對 UTG 4bet range (AA, QQ, AK) 仍有好 equity。"
+      },
+      "QQ": {
+        "role": "call",
+        "action": "call",
+        "tags": ["calling_vs_4bet"],
+        "stability": "stable",
+        "note": "QQ call UTG 4bet。5bet jam 對手只剩 AA/KK/AK。Call 保留翻後彈性。"
+      },
+      "JJ": {
+        "role": "fold",
+        "action": "fold",
+        "tags": ["reverse_implied_odds", "dominated"],
+        "stability": "stable",
+        "note": "JJ fold vs UTG 4bet。被 UTG 4bet range 全壓制。"
+      },
+      "AKs": {
+        "role": "5bet_jam",
+        "action": "all_in",
+        "tags": ["high_equity", "ace_blocker"],
+        "stability": "stable",
+        "note": "AKs 5bet jam。對 QQ 是 flip，阻擋 AA/AK。"
+      },
+      "AKo": {
+        "role": "5bet_jam",
+        "action": "all_in",
+        "tags": ["high_equity", "ace_blocker"],
+        "stability": "stable",
+        "note": "AKo 5bet jam。"
+      },
+      "AQs": {
+        "role": "fold",
+        "action": "fold",
+        "tags": ["domination_risk"],
+        "stability": "stable",
+        "note": "AQs fold vs UTG 4bet。被 AK 壓制，對 QQ+無優勢。"
+      },
+      "A5s": {
+        "role": "fold",
+        "action": "fold",
+        "tags": ["bluff_gone_wrong"],
+        "stability": "stable",
+        "note": "A5s fold。對 UTG 4bet 沒有繼續價值。"
+      }
+    }
+  },
+  "BTN_3bet_vs_CO_4bet": {
+    "context": {
+      "range_advantage": "neutral",
+      "nut_advantage": "neutral",
+      "hero_range_shape": "polarized",
+      "note": "BTN 3bet CO 後面對 4bet。CO 4bet range 比 UTG 寬，Hero 可以稍微寬一點繼續。有位置優勢。"
+    },
+    "hands": {
+      "AA": {
+        "role": "5bet_jam",
+        "action": "all_in",
+        "tags": ["high_equity", "nut_potential"],
+        "stability": "stable",
+        "note": "AA 5bet jam。"
+      },
+      "KK": {
+        "role": "5bet_jam",
+        "action": "all_in",
+        "tags": ["high_equity"],
+        "stability": "stable",
+        "note": "KK 5bet jam。"
+      },
+      "QQ": {
+        "role": "5bet_jam",
+        "action": "all_in",
+        "tags": ["high_equity"],
+        "stability": "stable",
+        "note": "QQ 5bet jam。CO 4bet range 含更多 QQ 壓制的牌。"
+      },
+      "JJ": {
+        "role": "call",
+        "action": "call",
+        "tags": ["calling_vs_4bet", "positional_advantage"],
+        "stability": "stable",
+        "note": "JJ call。有位置讓 call 更有利。"
+      },
+      "TT": {
+        "role": "fold",
+        "action": "fold",
+        "tags": ["reverse_implied_odds"],
+        "stability": "stable",
+        "note": "TT fold。即使有位置也不夠好。"
+      },
+      "AKs": {
+        "role": "5bet_jam",
+        "action": "all_in",
+        "tags": ["high_equity", "ace_blocker"],
+        "stability": "stable",
+        "note": "AKs 5bet jam。"
+      },
+      "AKo": {
+        "role": "5bet_jam",
+        "action": "all_in",
+        "tags": ["high_equity", "ace_blocker"],
+        "stability": "stable",
+        "note": "AKo 5bet jam。"
+      },
+      "AQs": {
+        "role": "call",
+        "action": "call",
+        "tags": ["calling_vs_4bet", "positional_advantage"],
+        "stability": "param_sensitive",
+        "note": "AQs call vs CO 4bet。有位置 + 同花結構支撐。"
+      },
+      "AQo": {
+        "role": "fold",
+        "action": "fold",
+        "tags": ["domination_risk"],
+        "stability": "stable",
+        "note": "AQo fold。缺乏同花結構。"
+      },
+      "A5s": {
+        "role": "5bet_bluff",
+        "action": "all_in",
+        "tags": ["ace_blocker", "wheel_potential", "5bet_bluff"],
+        "stability": "medium",
+        "note": "A5s 可以 5bet bluff。Ace blocker + 位置優勢 + CO 4bet bluff 頻率較高。"
+      }
+    }
+  }
+}

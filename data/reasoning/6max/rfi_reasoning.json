@@ -1,0 +1,600 @@
+{
+  "meta": {
+    "version": "1.0",
+    "description": "RFI (Raise First In) 決策邏輯層。解釋為什麼在各位置開特定手牌。",
+    "assumptions": {
+      "stack_bb": 100,
+      "open_sizes": {
+        "UTG": "2bb",
+        "HJ": "2bb",
+        "CO": "2.3bb",
+        "BTN": "2.5bb",
+        "SB": "3bb"
+      },
+      "format": "6max",
+      "rake": "standard_NL50"
+    }
+  },
+  "UTG": {
+    "context": {
+      "range_advantage": "hero",
+      "nut_advantage": "hero",
+      "open_range": "~15%",
+      "note": "UTG 是最緊的位置。後面有 5 個玩家可能 3bet，所以只開最強的手牌。Range 必須能承受被 3bet。"
+    },
+    "hands": {
+      "AA": {
+        "role": "premium_open",
+        "action": "raise",
+        "tags": ["high_equity", "nut_potential"],
+        "stability": "stable",
+        "note": "AA 永遠開。在任何位置都是最強手牌。"
+      },
+      "KK": {
+        "role": "premium_open",
+        "action": "raise",
+        "tags": ["high_equity", "nut_potential"],
+        "stability": "stable",
+        "note": "KK 永遠開。只輸 AA。"
+      },
+      "QQ": {
+        "role": "premium_open",
+        "action": "raise",
+        "tags": ["high_equity", "gap_concept"],
+        "stability": "stable",
+        "note": "QQ 必開。雖然可能被 KK/AA 壓制，但勝率夠高且能承受 3bet。"
+      },
+      "JJ": {
+        "role": "strong_open",
+        "action": "raise",
+        "tags": ["high_equity", "set_mining"],
+        "stability": "stable",
+        "note": "JJ 開局。對抗隨機手牌 equity 很高，被 3bet 時有選擇權。"
+      },
+      "TT": {
+        "role": "strong_open",
+        "action": "raise",
+        "tags": ["high_equity", "set_mining"],
+        "stability": "stable",
+        "note": "TT 開局。對 broadways 有優勢，中 set 時有隱含賠率。"
+      },
+      "99": {
+        "role": "medium_open",
+        "action": "raise",
+        "tags": ["set_mining", "implied_odds_deep"],
+        "stability": "stable",
+        "note": "99 開局。主要價值來自 set mining，翻前也能拿到一些折疊權益。"
+      },
+      "88": {
+        "role": "medium_open",
+        "action": "raise",
+        "tags": ["set_mining", "implied_odds_deep"],
+        "stability": "stable",
+        "note": "88 開局。邊界牌，但 set value 支撐。"
+      },
+      "77": {
+        "role": "marginal_open",
+        "action": "raise",
+        "tags": ["set_mining"],
+        "stability": "medium",
+        "note": "77 在 UTG 是邊界。部分策略會 fold，但開局有微弱正 EV。"
+      },
+      "66": {
+        "role": "fold",
+        "action": "fold",
+        "tags": ["set_mining", "reverse_implied_odds"],
+        "stability": "medium",
+        "note": "66 在 UTG fold。被 3bet 很難繼續，set mining 價值不足。"
+      },
+      "AKs": {
+        "role": "premium_open",
+        "action": "raise",
+        "tags": ["high_equity", "ace_blocker", "high_eqr_suited"],
+        "stability": "stable",
+        "note": "AKs 必開。堅果潛力 + blocker 效應 + 同花結構。"
+      },
+      "AKo": {
+        "role": "premium_open",
+        "action": "raise",
+        "tags": ["high_equity", "ace_blocker"],
+        "stability": "stable",
+        "note": "AKo 必開。對大多數 3bet range 有很好的 equity。"
+      },
+      "AQs": {
+        "role": "strong_open",
+        "action": "raise",
+        "tags": ["high_equity", "high_eqr_suited", "domination_risk"],
+        "stability": "stable",
+        "note": "AQs 開局。同花結構提供 playability，但要注意被 AK 壓制。"
+      },
+      "AQo": {
+        "role": "strong_open",
+        "action": "raise",
+        "tags": ["high_equity", "domination_risk"],
+        "stability": "stable",
+        "note": "AQo 開局。在 UTG 是標準，但比 AQs 弱。"
+      },
+      "AJs": {
+        "role": "strong_open",
+        "action": "raise",
+        "tags": ["high_eqr_suited", "domination_risk"],
+        "stability": "stable",
+        "note": "AJs 開局。同花結構是關鍵，讓它可以在 UTG 開。"
+      },
+      "AJo": {
+        "role": "marginal_fold",
+        "action": "fold",
+        "tags": ["domination_risk", "reverse_implied_odds"],
+        "stability": "medium",
+        "note": "AJo 在 UTG fold。被 AK/AQ 壓制太嚴重，缺乏同花後門。"
+      },
+      "ATs": {
+        "role": "medium_open",
+        "action": "raise",
+        "tags": ["high_eqr_suited", "connectivity"],
+        "stability": "stable",
+        "note": "ATs 開局。T 提供連接性，同花結構支撐。"
+      },
+      "A5s": {
+        "role": "medium_open",
+        "action": "raise",
+        "tags": ["wheel_potential", "suited", "4bet_bluff_candidate"],
+        "stability": "stable",
+        "note": "A5s 開局。Wheel potential + 可作 4bet bluff blocker。比 A6s-A2s 好。"
+      },
+      "KQs": {
+        "role": "strong_open",
+        "action": "raise",
+        "tags": ["high_eqr_suited", "connectivity", "board_coverage"],
+        "stability": "stable",
+        "note": "KQs 開局。高連接 + 同花，覆蓋很多翻牌。"
+      },
+      "KQo": {
+        "role": "marginal_open",
+        "action": "raise",
+        "tags": ["connectivity", "domination_risk"],
+        "stability": "medium",
+        "note": "KQo 在 UTG 邊界。有些策略會 fold，但微弱正 EV。"
+      },
+      "KJs": {
+        "role": "marginal_open",
+        "action": "raise",
+        "tags": ["high_eqr_suited", "connectivity"],
+        "stability": "medium",
+        "note": "KJs 邊界開局。同花結構關鍵。"
+      },
+      "QJs": {
+        "role": "marginal_fold",
+        "action": "fold",
+        "tags": ["connectivity", "domination_risk"],
+        "stability": "medium",
+        "note": "QJs 在 UTG fold。被太多 broadways 壓制。"
+      },
+      "T9s": {
+        "role": "marginal_open",
+        "action": "raise",
+        "tags": ["connectivity", "suited", "implied_odds_deep"],
+        "stability": "medium",
+        "note": "T9s 邊界開局。連接性極強，做順子/同花潛力大。"
+      }
+    }
+  },
+  "HJ": {
+    "context": {
+      "range_advantage": "hero",
+      "nut_advantage": "hero",
+      "open_range": "~18%",
+      "note": "HJ 比 UTG 稍寬。後面有 4 個玩家，但可以多開一些 suited connectors 和中等 pairs。"
+    },
+    "hands": {
+      "77": {
+        "role": "standard_open",
+        "action": "raise",
+        "tags": ["set_mining"],
+        "stability": "stable",
+        "note": "77 在 HJ 標準開局。比 UTG 更舒服。"
+      },
+      "66": {
+        "role": "marginal_open",
+        "action": "raise",
+        "tags": ["set_mining"],
+        "stability": "medium",
+        "note": "66 在 HJ 可開。邊界但正 EV。"
+      },
+      "AJo": {
+        "role": "standard_open",
+        "action": "raise",
+        "tags": ["high_equity", "domination_risk"],
+        "stability": "stable",
+        "note": "AJo 在 HJ 標準開局。比 UTG 寬。"
+      },
+      "ATo": {
+        "role": "marginal_fold",
+        "action": "fold",
+        "tags": ["domination_risk", "reverse_implied_odds"],
+        "stability": "medium",
+        "note": "ATo 在 HJ fold。被 AK/AQ/AJ 壓制。"
+      },
+      "KJo": {
+        "role": "marginal_open",
+        "action": "raise",
+        "tags": ["connectivity", "domination_risk"],
+        "stability": "medium",
+        "note": "KJo 邊界開局。"
+      },
+      "QJs": {
+        "role": "standard_open",
+        "action": "raise",
+        "tags": ["high_eqr_suited", "connectivity"],
+        "stability": "stable",
+        "note": "QJs 在 HJ 標準開局。同花連接。"
+      },
+      "JTs": {
+        "role": "standard_open",
+        "action": "raise",
+        "tags": ["connectivity", "suited", "implied_odds_deep"],
+        "stability": "stable",
+        "note": "JTs 標準開局。連接性極強。"
+      },
+      "T9s": {
+        "role": "standard_open",
+        "action": "raise",
+        "tags": ["connectivity", "suited"],
+        "stability": "stable",
+        "note": "T9s 在 HJ 標準。"
+      },
+      "98s": {
+        "role": "marginal_open",
+        "action": "raise",
+        "tags": ["connectivity", "suited"],
+        "stability": "medium",
+        "note": "98s 邊界開局。"
+      },
+      "A9s": {
+        "role": "standard_open",
+        "action": "raise",
+        "tags": ["suited", "ace_blocker"],
+        "stability": "stable",
+        "note": "A9s 標準開局。"
+      },
+      "A4s": {
+        "role": "marginal_open",
+        "action": "raise",
+        "tags": ["wheel_potential", "suited"],
+        "stability": "medium",
+        "note": "A4s 邊界。Wheel potential。"
+      }
+    }
+  },
+  "CO": {
+    "context": {
+      "range_advantage": "hero",
+      "nut_advantage": "hero",
+      "open_range": "~25%",
+      "note": "CO 是偷盲開始的位置。只有 BTN 和 blinds 在後面，可以開更寬的 range 偷取盲注。"
+    },
+    "hands": {
+      "55": {
+        "role": "standard_open",
+        "action": "raise",
+        "tags": ["set_mining"],
+        "stability": "stable",
+        "note": "55 在 CO 標準開局。Set mining + 偷盲。"
+      },
+      "44": {
+        "role": "marginal_open",
+        "action": "raise",
+        "tags": ["set_mining"],
+        "stability": "medium",
+        "note": "44 在 CO 可開。"
+      },
+      "ATo": {
+        "role": "standard_open",
+        "action": "raise",
+        "tags": ["high_equity"],
+        "stability": "stable",
+        "note": "ATo 在 CO 標準開局。"
+      },
+      "A9o": {
+        "role": "marginal_open",
+        "action": "raise",
+        "tags": ["domination_risk"],
+        "stability": "medium",
+        "note": "A9o 邊界。"
+      },
+      "KTo": {
+        "role": "standard_open",
+        "action": "raise",
+        "tags": ["connectivity"],
+        "stability": "stable",
+        "note": "KTo 標準開局。"
+      },
+      "QJo": {
+        "role": "standard_open",
+        "action": "raise",
+        "tags": ["connectivity"],
+        "stability": "stable",
+        "note": "QJo 標準開局。"
+      },
+      "JTo": {
+        "role": "standard_open",
+        "action": "raise",
+        "tags": ["connectivity"],
+        "stability": "stable",
+        "note": "JTo 標準開局。"
+      },
+      "87s": {
+        "role": "standard_open",
+        "action": "raise",
+        "tags": ["connectivity", "suited"],
+        "stability": "stable",
+        "note": "87s 標準。連接性強。"
+      },
+      "76s": {
+        "role": "standard_open",
+        "action": "raise",
+        "tags": ["connectivity", "suited"],
+        "stability": "stable",
+        "note": "76s 標準。"
+      },
+      "A8s": {
+        "role": "standard_open",
+        "action": "raise",
+        "tags": ["suited", "ace_blocker"],
+        "stability": "stable",
+        "note": "A8s 標準。"
+      },
+      "A3s": {
+        "role": "standard_open",
+        "action": "raise",
+        "tags": ["wheel_potential", "suited"],
+        "stability": "stable",
+        "note": "A3s 標準。Wheel。"
+      },
+      "A2s": {
+        "role": "standard_open",
+        "action": "raise",
+        "tags": ["wheel_potential", "suited"],
+        "stability": "stable",
+        "note": "A2s 標準。最低 wheel。"
+      },
+      "K9s": {
+        "role": "standard_open",
+        "action": "raise",
+        "tags": ["suited"],
+        "stability": "stable",
+        "note": "K9s 標準。"
+      },
+      "Q9s": {
+        "role": "standard_open",
+        "action": "raise",
+        "tags": ["suited"],
+        "stability": "stable",
+        "note": "Q9s 標準。"
+      }
+    }
+  },
+  "BTN": {
+    "context": {
+      "range_advantage": "hero",
+      "nut_advantage": "hero",
+      "open_range": "~45%",
+      "note": "BTN 是最有利的位置。只有 blinds 在後面，可以用非常寬的 range 偷盲。位置優勢讓很多邊界牌變成正 EV。"
+    },
+    "hands": {
+      "22": {
+        "role": "standard_open",
+        "action": "raise",
+        "tags": ["set_mining"],
+        "stability": "stable",
+        "note": "22 在 BTN 標準開局。任何 pair 都可以開。"
+      },
+      "A2o": {
+        "role": "standard_open",
+        "action": "raise",
+        "tags": ["ace_blocker"],
+        "stability": "stable",
+        "note": "A2o 在 BTN 標準。Ace blocker 價值。"
+      },
+      "K5s": {
+        "role": "standard_open",
+        "action": "raise",
+        "tags": ["suited"],
+        "stability": "stable",
+        "note": "K5s 標準。"
+      },
+      "K2s": {
+        "role": "standard_open",
+        "action": "raise",
+        "tags": ["suited"],
+        "stability": "stable",
+        "note": "K2s 在 BTN 標準。位置優勢支撐。"
+      },
+      "Q5s": {
+        "role": "standard_open",
+        "action": "raise",
+        "tags": ["suited"],
+        "stability": "stable",
+        "note": "Q5s 標準。"
+      },
+      "J7s": {
+        "role": "standard_open",
+        "action": "raise",
+        "tags": ["suited"],
+        "stability": "stable",
+        "note": "J7s 標準。"
+      },
+      "T6s": {
+        "role": "standard_open",
+        "action": "raise",
+        "tags": ["suited"],
+        "stability": "medium",
+        "note": "T6s 邊界開局。"
+      },
+      "65s": {
+        "role": "standard_open",
+        "action": "raise",
+        "tags": ["connectivity", "suited"],
+        "stability": "stable",
+        "note": "65s 標準。連接性。"
+      },
+      "54s": {
+        "role": "standard_open",
+        "action": "raise",
+        "tags": ["connectivity", "suited", "wheel_potential"],
+        "stability": "stable",
+        "note": "54s 標準。Wheel + 連接。"
+      },
+      "K9o": {
+        "role": "standard_open",
+        "action": "raise",
+        "tags": [],
+        "stability": "stable",
+        "note": "K9o 標準。"
+      },
+      "Q9o": {
+        "role": "standard_open",
+        "action": "raise",
+        "tags": [],
+        "stability": "stable",
+        "note": "Q9o 標準。"
+      },
+      "J9o": {
+        "role": "standard_open",
+        "action": "raise",
+        "tags": ["connectivity"],
+        "stability": "stable",
+        "note": "J9o 標準。"
+      },
+      "T8o": {
+        "role": "marginal_open",
+        "action": "raise",
+        "tags": ["connectivity"],
+        "stability": "medium",
+        "note": "T8o 邊界。"
+      },
+      "97o": {
+        "role": "marginal_fold",
+        "action": "fold",
+        "tags": [],
+        "stability": "medium",
+        "note": "97o 在 BTN fold。Gap 太大。"
+      }
+    }
+  },
+  "SB": {
+    "context": {
+      "range_advantage": "hero",
+      "nut_advantage": "hero",
+      "open_range": "~40%",
+      "note": "SB 對 BB 單挑。雖然沒位置，但只面對一個對手讓 range 可以很寬。通常用 3x raise 表示承諾。"
+    },
+    "hands": {
+      "33": {
+        "role": "standard_open",
+        "action": "raise",
+        "tags": ["set_mining"],
+        "stability": "stable",
+        "note": "33 在 SB vs BB 標準開局。"
+      },
+      "22": {
+        "role": "standard_open",
+        "action": "raise",
+        "tags": ["set_mining"],
+        "stability": "stable",
+        "note": "22 標準。任何 pair 都開。"
+      },
+      "A7o": {
+        "role": "standard_open",
+        "action": "raise",
+        "tags": ["ace_blocker"],
+        "stability": "stable",
+        "note": "A7o 標準。"
+      },
+      "A2o": {
+        "role": "standard_open",
+        "action": "raise",
+        "tags": ["ace_blocker", "wheel_potential"],
+        "stability": "stable",
+        "note": "A2o 標準。"
+      },
+      "K8o": {
+        "role": "standard_open",
+        "action": "raise",
+        "tags": [],
+        "stability": "stable",
+        "note": "K8o 標準。"
+      },
+      "K4o": {
+        "role": "marginal_open",
+        "action": "raise",
+        "tags": [],
+        "stability": "medium",
+        "note": "K4o 邊界。"
+      },
+      "Q7o": {
+        "role": "standard_open",
+        "action": "raise",
+        "tags": [],
+        "stability": "stable",
+        "note": "Q7o 標準。"
+      },
+      "J8o": {
+        "role": "standard_open",
+        "action": "raise",
+        "tags": [],
+        "stability": "stable",
+        "note": "J8o 標準。"
+      },
+      "T7o": {
+        "role": "marginal_open",
+        "action": "raise",
+        "tags": [],
+        "stability": "medium",
+        "note": "T7o 邊界。"
+      },
+      "96s": {
+        "role": "standard_open",
+        "action": "raise",
+        "tags": ["suited", "connectivity"],
+        "stability": "stable",
+        "note": "96s 標準。"
+      },
+      "85s": {
+        "role": "standard_open",
+        "action": "raise",
+        "tags": ["suited", "connectivity"],
+        "stability": "stable",
+        "note": "85s 標準。"
+      },
+      "74s": {
+        "role": "standard_open",
+        "action": "raise",
+        "tags": ["suited", "connectivity"],
+        "stability": "stable",
+        "note": "74s 標準。"
+      },
+      "63s": {
+        "role": "marginal_open",
+        "action": "raise",
+        "tags": ["suited"],
+        "stability": "medium",
+        "note": "63s 邊界。"
+      },
+      "Q4s": {
+        "role": "standard_open",
+        "action": "raise",
+        "tags": ["suited"],
+        "stability": "stable",
+        "note": "Q4s 標準。"
+      },
+      "J5s": {
+        "role": "standard_open",
+        "action": "raise",
+        "tags": ["suited"],
+        "stability": "stable",
+        "note": "J5s 標準。"
+      }
+    }
+  }
+}
