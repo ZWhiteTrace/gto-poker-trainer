@@ -35,8 +35,8 @@ from ui.components.hand_analysis import display_hand_analysis_page
 # Achievements system removed for simplification
 
 # Page URL mappings
-PAGE_KEYS = ["drill", "range", "pushfold", "review", "analysis", "postflop", "equity", "outs", "ev", "logic", "learning", "stats"]
-PAGE_NAMES = ["Drill Mode", "Range Viewer", "Push/Fold", "Hand Review", "Hand Analysis", "Postflop", "Equity Quiz", "Outs Quiz", "EV Quiz", "Logic Quiz", "Learning", "Statistics"]
+PAGE_KEYS = ["drill", "range", "pushfold", "review", "analysis", "postflop", "equity", "outs", "ev", "logic", "mock", "learning", "stats"]
+PAGE_NAMES = ["Drill Mode", "Range Viewer", "Push/Fold", "Hand Review", "Hand Analysis", "Postflop", "Equity Quiz", "Outs Quiz", "EV Quiz", "Logic Quiz", "Mock Exam", "Learning", "Statistics"]
 
 # Equity breakdown data for vs 4-bet scenarios
 # Shows equity of common hands against typical 4-bet range hands
@@ -379,6 +379,7 @@ TEXTS = {
         "equity_quiz": "權益測驗",
         "ev_quiz": "EV 測驗",
         "logic_quiz": "邏輯測驗",
+        "mock_exam": "模擬考",
         "hand_analysis": "手牌分析",
         "ev_question": "河牌圈是否跟注？",
         "ev_pot": "底池",
@@ -487,6 +488,7 @@ TEXTS = {
         "equity_quiz": "Equity Quiz",
         "ev_quiz": "EV Quiz",
         "logic_quiz": "Logic Quiz",
+        "mock_exam": "Mock Exam",
         "hand_analysis": "Hand Analysis",
         "ev_question": "River: Call or Fold?",
         "ev_pot": "Pot",
@@ -615,7 +617,7 @@ def main():
         st.markdown("<div style='height: 5px;'></div>", unsafe_allow_html=True)
 
         # Navigation
-        nav_options = [t("drill_mode"), t("range_viewer"), t("push_fold"), t("hand_review"), t("hand_analysis"), t("postflop"), t("equity_quiz"), t("outs_quiz"), t("ev_quiz"), t("logic_quiz"), t("learning"), t("statistics")]
+        nav_options = [t("drill_mode"), t("range_viewer"), t("push_fold"), t("hand_review"), t("hand_analysis"), t("postflop"), t("equity_quiz"), t("outs_quiz"), t("ev_quiz"), t("logic_quiz"), t("mock_exam"), t("learning"), t("statistics")]
         page_idx = st.radio(
             "Navigate",
             options=range(len(nav_options)),
@@ -814,6 +816,8 @@ def main():
         ev_quiz_page()
     elif page == "Logic Quiz":
         logic_quiz_page()
+    elif page == "Mock Exam":
+        mock_exam_page()
     elif page == "Learning":
         learning_page()
     elif page == "Statistics":
@@ -2393,6 +2397,542 @@ def logic_quiz_page():
         if st.button(next_label, key="logic_next", type="primary", use_container_width=True):
             generate_new_question()
             st.rerun()
+
+
+def mock_exam_page():
+    """Mock Exam page - comprehensive test combining all quiz types."""
+    import time
+    import random
+
+    lang = st.session_state.language
+
+    # Initialize mock exam state
+    if "mock_active" not in st.session_state:
+        st.session_state.mock_active = False
+    if "mock_questions" not in st.session_state:
+        st.session_state.mock_questions = []
+    if "mock_answers" not in st.session_state:
+        st.session_state.mock_answers = {}
+    if "mock_current" not in st.session_state:
+        st.session_state.mock_current = 0
+    if "mock_start_time" not in st.session_state:
+        st.session_state.mock_start_time = None
+    if "mock_finished" not in st.session_state:
+        st.session_state.mock_finished = False
+    if "mock_results" not in st.session_state:
+        st.session_state.mock_results = []
+
+    # Header
+    header_title = "📋 模擬考" if lang == "zh" else "📋 Mock Exam"
+    st.markdown(f"""
+    <div style="
+        background: linear-gradient(135deg, #dc2626 0%, #7f1d1d 100%);
+        padding: 8px 16px;
+        border-radius: 10px;
+        margin-bottom: 12px;
+        text-align: center;
+    ">
+        <span style="font-size: 1.4rem; font-weight: bold;">{header_title}</span>
+    </div>
+    """, unsafe_allow_html=True)
+
+    # Not started - show exam info
+    if not st.session_state.mock_active and not st.session_state.mock_finished:
+        st.markdown("""
+        <div style="
+            background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%);
+            border-radius: 12px;
+            padding: 24px;
+            margin: 20px 0;
+        ">
+        """, unsafe_allow_html=True)
+
+        if lang == "zh":
+            st.markdown("""
+            ### 🎯 模擬考說明
+
+            這個測驗結合了所有題型，全面檢測你的撲克知識：
+
+            | 題型 | 題數 | 內容 |
+            |------|------|------|
+            | 🎲 權益測驗 | 3 題 | 手牌對抗權益估算 |
+            | 🃏 補牌測驗 | 2 題 | Outs 計算 |
+            | 💰 EV 測驗 | 2 題 | 底池賠率決策 |
+            | 🧠 邏輯測驗 | 3 題 | GTO 推理 |
+
+            **總題數**: 10 題
+
+            **計時**: 測驗會記錄完成時間
+
+            ---
+            準備好了嗎？
+            """)
+        else:
+            st.markdown("""
+            ### 🎯 Exam Instructions
+
+            This exam combines all quiz types to test your comprehensive poker knowledge:
+
+            | Type | Questions | Content |
+            |------|-----------|---------|
+            | 🎲 Equity Quiz | 3 | Hand vs hand equity |
+            | 🃏 Outs Quiz | 2 | Counting outs |
+            | 💰 EV Quiz | 2 | Pot odds decisions |
+            | 🧠 Logic Quiz | 3 | GTO reasoning |
+
+            **Total**: 10 questions
+
+            **Timer**: Your completion time will be recorded
+
+            ---
+            Ready to begin?
+            """)
+
+        st.markdown("</div>", unsafe_allow_html=True)
+
+        col1, col2, col3 = st.columns([1, 2, 1])
+        with col2:
+            start_btn = "🚀 開始測驗" if lang == "zh" else "🚀 Start Exam"
+            if st.button(start_btn, type="primary", use_container_width=True, key="mock_start"):
+                _generate_mock_exam()
+                st.session_state.mock_active = True
+                st.session_state.mock_start_time = time.time()
+                st.session_state.mock_current = 0
+                st.session_state.mock_answers = {}
+                st.session_state.mock_finished = False
+                st.session_state.mock_results = []
+                st.rerun()
+
+    # Exam in progress
+    elif st.session_state.mock_active and not st.session_state.mock_finished:
+        questions = st.session_state.mock_questions
+        current = st.session_state.mock_current
+        total = len(questions)
+
+        # Progress bar
+        st.progress((current) / total)
+        progress_text = f"題目 {current + 1} / {total}" if lang == "zh" else f"Question {current + 1} / {total}"
+        st.caption(progress_text)
+
+        # Timer
+        elapsed = time.time() - st.session_state.mock_start_time
+        mins, secs = divmod(int(elapsed), 60)
+        timer_text = f"⏱️ {mins:02d}:{secs:02d}"
+        st.markdown(f"<div style='text-align: right; color: #a5b4fc;'>{timer_text}</div>", unsafe_allow_html=True)
+
+        if current < total:
+            q = questions[current]
+            _display_mock_question(q, current, lang)
+
+            # Navigation
+            col1, col2, col3 = st.columns([1, 1, 1])
+
+            with col1:
+                if current > 0:
+                    prev_btn = "← 上一題" if lang == "zh" else "← Previous"
+                    if st.button(prev_btn, key=f"mock_prev_{current}", use_container_width=True):
+                        st.session_state.mock_current -= 1
+                        st.rerun()
+
+            with col3:
+                if current < total - 1:
+                    next_btn = "下一題 →" if lang == "zh" else "Next →"
+                    if st.button(next_btn, key=f"mock_next_{current}", type="primary", use_container_width=True):
+                        st.session_state.mock_current += 1
+                        st.rerun()
+                else:
+                    submit_btn = "✅ 提交測驗" if lang == "zh" else "✅ Submit Exam"
+                    if st.button(submit_btn, key="mock_submit", type="primary", use_container_width=True):
+                        _grade_mock_exam()
+                        st.session_state.mock_finished = True
+                        st.session_state.mock_active = False
+                        st.rerun()
+
+            # Jump to question
+            st.markdown("---")
+            jump_label = "跳至題目:" if lang == "zh" else "Jump to:"
+            jump_cols = st.columns(10)
+            for i in range(total):
+                with jump_cols[i]:
+                    answered = i in st.session_state.mock_answers
+                    btn_style = "🔵" if answered else "⚪"
+                    if st.button(f"{btn_style}{i+1}", key=f"mock_jump_{i}"):
+                        st.session_state.mock_current = i
+                        st.rerun()
+
+    # Exam finished - show results
+    elif st.session_state.mock_finished:
+        results = st.session_state.mock_results
+        total = len(results)
+        correct = sum(1 for r in results if r["correct"])
+        elapsed = st.session_state.mock_answers.get("_elapsed", 0)
+        mins, secs = divmod(int(elapsed), 60)
+
+        # Score display
+        score_pct = (correct / total * 100) if total > 0 else 0
+        grade_color = "#22c55e" if score_pct >= 80 else "#eab308" if score_pct >= 60 else "#ef4444"
+
+        st.markdown(f"""
+        <div style="
+            background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%);
+            border-radius: 16px;
+            padding: 32px;
+            text-align: center;
+            margin: 20px 0;
+        ">
+            <h2 style="margin: 0;">{"測驗完成！" if lang == "zh" else "Exam Complete!"}</h2>
+            <div style="
+                font-size: 3rem;
+                font-weight: bold;
+                color: {grade_color};
+                margin: 20px 0;
+            ">{correct}/{total}</div>
+            <div style="font-size: 1.2rem; color: #a5b4fc;">
+                {score_pct:.0f}% {"正確率" if lang == "zh" else "Accuracy"}
+            </div>
+            <div style="color: #6b7280; margin-top: 12px;">
+                ⏱️ {"完成時間" if lang == "zh" else "Time"}: {mins:02d}:{secs:02d}
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+
+        # Performance breakdown by type
+        type_stats = {}
+        for r in results:
+            qtype = r["type"]
+            if qtype not in type_stats:
+                type_stats[qtype] = {"correct": 0, "total": 0}
+            type_stats[qtype]["total"] += 1
+            if r["correct"]:
+                type_stats[qtype]["correct"] += 1
+
+        type_names = {
+            "equity": ("🎲 權益測驗", "🎲 Equity"),
+            "outs": ("🃏 補牌測驗", "🃏 Outs"),
+            "ev": ("💰 EV 測驗", "💰 EV"),
+            "logic": ("🧠 邏輯測驗", "🧠 Logic"),
+        }
+
+        breakdown_title = "題型分析" if lang == "zh" else "Breakdown by Type"
+        st.markdown(f"### {breakdown_title}")
+
+        cols = st.columns(4)
+        for i, (qtype, stats) in enumerate(type_stats.items()):
+            with cols[i % 4]:
+                name = type_names.get(qtype, (qtype, qtype))[0 if lang == "zh" else 1]
+                pct = (stats["correct"] / stats["total"] * 100) if stats["total"] > 0 else 0
+                color = "#22c55e" if pct >= 80 else "#eab308" if pct >= 60 else "#ef4444"
+                st.markdown(f"""
+                <div style="
+                    background: #1e1b4b;
+                    border-radius: 8px;
+                    padding: 12px;
+                    text-align: center;
+                    border-left: 4px solid {color};
+                ">
+                    <div style="font-size: 0.9rem;">{name}</div>
+                    <div style="font-size: 1.5rem; font-weight: bold; color: {color};">
+                        {stats['correct']}/{stats['total']}
+                    </div>
+                </div>
+                """, unsafe_allow_html=True)
+
+        # Detailed review
+        st.markdown("---")
+        review_title = "詳細檢視" if lang == "zh" else "Detailed Review"
+        with st.expander(review_title, expanded=False):
+            for i, r in enumerate(results):
+                icon = "✅" if r["correct"] else "❌"
+                st.markdown(f"**{icon} Q{i+1}**: {r['question'][:100]}...")
+                if not r["correct"]:
+                    correct_label = "正確答案" if lang == "zh" else "Correct"
+                    your_label = "你的答案" if lang == "zh" else "Your answer"
+                    st.markdown(f"- {your_label}: {r['user_answer']}")
+                    st.markdown(f"- {correct_label}: {r['correct_answer']}")
+                st.markdown("---")
+
+        # Retry button
+        col1, col2, col3 = st.columns([1, 2, 1])
+        with col2:
+            retry_btn = "🔄 重新測驗" if lang == "zh" else "🔄 Retry Exam"
+            if st.button(retry_btn, type="primary", use_container_width=True, key="mock_retry"):
+                st.session_state.mock_active = False
+                st.session_state.mock_finished = False
+                st.session_state.mock_questions = []
+                st.session_state.mock_answers = {}
+                st.session_state.mock_current = 0
+                st.session_state.mock_results = []
+                st.rerun()
+
+
+def _generate_mock_exam():
+    """Generate a mixed set of questions for the mock exam."""
+    import random
+    from trainer.logic_quiz import LogicQuizEngine
+
+    questions = []
+
+    # 1. Equity questions (3)
+    for _ in range(3):
+        q = _generate_equity_question()
+        if q:
+            questions.append({"type": "equity", **q})
+
+    # 2. Outs questions (2)
+    for _ in range(2):
+        q = _generate_outs_question()
+        if q:
+            questions.append({"type": "outs", **q})
+
+    # 3. EV questions (2)
+    for _ in range(2):
+        q = _generate_ev_question()
+        if q:
+            questions.append({"type": "ev", **q})
+
+    # 4. Logic questions (3)
+    if "logic_engine" not in st.session_state:
+        st.session_state.logic_engine = LogicQuizEngine()
+    engine = st.session_state.logic_engine
+
+    for _ in range(3):
+        try:
+            lq = engine.generate_random_question()
+            if lq:
+                options = lq.options
+                random.shuffle(options)
+                questions.append({
+                    "type": "logic",
+                    "question": lq.question_text,
+                    "options": options,
+                    "correct": lq.correct_answer,
+                    "explanation": lq.explanation,
+                })
+        except Exception:
+            pass
+
+    # Shuffle all questions
+    random.shuffle(questions)
+    st.session_state.mock_questions = questions
+
+
+def _generate_equity_question():
+    """Generate an equity quiz question."""
+    import random
+
+    EQUITY_DATA = [
+        ("AA", "KK", 82),
+        ("AA", "AKs", 87),
+        ("KK", "AKs", 66),
+        ("QQ", "AKo", 54),
+        ("JJ", "AKs", 54),
+        ("AKs", "QQ", 46),
+        ("AKo", "JJ", 43),
+        ("TT", "AKs", 43),
+        ("99", "AKo", 43),
+        ("AQs", "KK", 30),
+        ("AJs", "QQ", 30),
+        ("KQs", "AA", 18),
+        ("JTs", "AA", 19),
+        ("77", "AKs", 45),
+        ("66", "AQo", 49),
+        ("55", "JTs", 50),
+        ("AKs", "AKo", 52),
+        ("KQs", "AJo", 57),
+    ]
+
+    try:
+        hand1, hand2, correct_equity = random.choice(EQUITY_DATA)
+
+        # Generate options around the correct answer
+        options = [correct_equity]
+        for offset in [-15, -8, 8, 15]:
+            opt = correct_equity + offset
+            if 5 <= opt <= 95 and opt not in options:
+                options.append(opt)
+
+        while len(options) < 4:
+            opt = random.randint(max(10, correct_equity - 20), min(90, correct_equity + 20))
+            if opt not in options:
+                options.append(opt)
+
+        options = options[:4]
+        random.shuffle(options)
+
+        return {
+            "question": f"{hand1} vs {hand2} 的翻前權益約為多少？",
+            "options": [f"{o}%" for o in options],
+            "correct": f"{correct_equity}%",
+            "explanation": f"{hand1} 對 {hand2} 有約 {correct_equity}% 的權益。",
+        }
+    except Exception:
+        return None
+
+
+def _generate_outs_question():
+    """Generate an outs quiz question."""
+    import random
+
+    OUTS_SCENARIOS = [
+        {"draw": "flush_draw", "outs": 9, "desc_zh": "同花聽牌", "desc_en": "Flush draw"},
+        {"draw": "oesd", "outs": 8, "desc_zh": "兩頭順子聽牌", "desc_en": "Open-ended straight draw"},
+        {"draw": "gutshot", "outs": 4, "desc_zh": "卡順聽牌", "desc_en": "Gutshot straight draw"},
+        {"draw": "flush_oesd", "outs": 15, "desc_zh": "同花+兩頭順子", "desc_en": "Flush + OESD"},
+        {"draw": "overpair_to_set", "outs": 2, "desc_zh": "超對求三條", "desc_en": "Overpair to set"},
+        {"draw": "two_overcards", "outs": 6, "desc_zh": "兩張高牌", "desc_en": "Two overcards"},
+        {"draw": "pair_to_trips", "outs": 2, "desc_zh": "對子求三條", "desc_en": "Pair to trips"},
+        {"draw": "flush_gutshot", "outs": 12, "desc_zh": "同花+卡順", "desc_en": "Flush + gutshot"},
+    ]
+
+    try:
+        scenario = random.choice(OUTS_SCENARIOS)
+        correct = scenario["outs"]
+
+        options = [correct]
+        for offset in [-3, -1, 2, 4]:
+            opt = correct + offset
+            if opt > 0 and opt not in options:
+                options.append(opt)
+
+        while len(options) < 4:
+            opt = random.randint(max(1, correct - 4), correct + 5)
+            if opt not in options:
+                options.append(opt)
+
+        options = options[:4]
+        random.shuffle(options)
+
+        lang = st.session_state.get("language", "zh")
+        desc = scenario["desc_zh"] if lang == "zh" else scenario["desc_en"]
+
+        return {
+            "question": f"{desc} 有多少張 outs？",
+            "options": [str(o) for o in options],
+            "correct": str(correct),
+            "explanation": f"{desc} 有 {correct} 張 outs。",
+        }
+    except Exception:
+        return None
+
+
+def _generate_ev_question():
+    """Generate an EV quiz question."""
+    import random
+
+    try:
+        pot = random.choice([100, 150, 200, 250, 300])
+        bet = random.choice([50, 75, 100, 125, 150])
+        total_pot = pot + bet
+        odds_needed = bet / total_pot * 100
+        win_rate = random.randint(int(odds_needed - 15), int(odds_needed + 15))
+        win_rate = max(10, min(90, win_rate))
+
+        ev = (win_rate / 100) * pot - ((100 - win_rate) / 100) * bet
+        correct_action = "Call" if ev > 0 else "Fold"
+
+        lang = st.session_state.get("language", "zh")
+        if lang == "zh":
+            question = f"底池 ${pot}，對手下注 ${bet}。你的勝率是 {win_rate}%。應該？"
+            options = ["Call (跟注)", "Fold (棄牌)"]
+            correct = "Call (跟注)" if correct_action == "Call" else "Fold (棄牌)"
+            explanation = f"底池賠率需要 {odds_needed:.1f}%，勝率 {win_rate}%，EV {'正' if ev > 0 else '負'} ({ev:.1f})。"
+        else:
+            question = f"Pot ${pot}, opponent bets ${bet}. Your win rate is {win_rate}%. Should you?"
+            options = ["Call", "Fold"]
+            correct = correct_action
+            explanation = f"Pot odds require {odds_needed:.1f}%, win rate {win_rate}%, EV is {'positive' if ev > 0 else 'negative'} ({ev:.1f})."
+
+        random.shuffle(options)
+
+        return {
+            "question": question,
+            "options": options,
+            "correct": correct,
+            "explanation": explanation,
+        }
+    except Exception:
+        return None
+
+
+def _display_mock_question(q, idx, lang):
+    """Display a single mock exam question."""
+    qtype = q["type"]
+
+    type_icons = {
+        "equity": "🎲",
+        "outs": "🃏",
+        "ev": "💰",
+        "logic": "🧠",
+    }
+    type_names = {
+        "equity": ("權益測驗", "Equity"),
+        "outs": ("補牌測驗", "Outs"),
+        "ev": ("EV 測驗", "EV"),
+        "logic": ("邏輯測驗", "Logic"),
+    }
+
+    icon = type_icons.get(qtype, "❓")
+    name = type_names.get(qtype, ("", ""))[0 if lang == "zh" else 1]
+
+    # Question card
+    st.markdown(f"""
+    <div style="
+        background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%);
+        border-radius: 12px;
+        padding: 20px;
+        margin: 16px 0;
+    ">
+        <div style="color: #a5b4fc; font-size: 0.85rem; margin-bottom: 8px;">
+            {icon} {name}
+        </div>
+        <div style="font-size: 1.1rem; font-weight: 500;">
+            {q['question']}
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+    # Options
+    options = q.get("options", [])
+    current_answer = st.session_state.mock_answers.get(idx)
+
+    selected = st.radio(
+        "選擇答案" if lang == "zh" else "Select answer",
+        options=options,
+        index=options.index(current_answer) if current_answer in options else None,
+        key=f"mock_q_{idx}",
+        label_visibility="collapsed",
+    )
+
+    if selected:
+        st.session_state.mock_answers[idx] = selected
+
+
+def _grade_mock_exam():
+    """Grade the mock exam and store results."""
+    import time
+
+    questions = st.session_state.mock_questions
+    answers = st.session_state.mock_answers
+    results = []
+
+    for i, q in enumerate(questions):
+        user_answer = answers.get(i, "")
+        correct_answer = q.get("correct", "")
+        is_correct = user_answer == correct_answer
+
+        results.append({
+            "type": q["type"],
+            "question": q["question"],
+            "user_answer": user_answer,
+            "correct_answer": correct_answer,
+            "correct": is_correct,
+            "explanation": q.get("explanation", ""),
+        })
+
+    # Store elapsed time
+    elapsed = time.time() - st.session_state.mock_start_time
+    st.session_state.mock_answers["_elapsed"] = elapsed
+    st.session_state.mock_results = results
 
 
 def learning_page():
