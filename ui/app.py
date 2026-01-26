@@ -616,6 +616,18 @@ def _display_auth_section(lang: str):
     if not AUTH_AVAILABLE:
         return
 
+    # JavaScript to convert hash fragment to query params (for OAuth callback)
+    # Supabase returns tokens in URL hash which Python can't read
+    components.html("""
+    <script>
+        if (window.location.hash && window.location.hash.includes('access_token')) {
+            const hash = window.location.hash.substring(1);
+            const newUrl = window.location.origin + window.location.pathname + '?' + hash;
+            window.location.replace(newUrl);
+        }
+    </script>
+    """, height=0)
+
     # Handle OAuth callback first
     if handle_oauth_callback():
         st.rerun()
