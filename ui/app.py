@@ -688,7 +688,7 @@ def _display_auth_section(lang: str):
             if google_url:
                 # Google login button with localStorage flag for tracking OAuth attempts
                 st.markdown(f"""
-                <a href="{google_url}" target="_self" onclick="localStorage.setItem('gto_oauth_pending','true')" style="
+                <a href="{google_url}" target="_blank" onclick="localStorage.setItem('gto_oauth_pending','true')" style="
                     display: flex;
                     align-items: center;
                     justify-content: center;
