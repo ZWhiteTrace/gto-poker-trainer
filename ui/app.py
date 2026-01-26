@@ -38,6 +38,7 @@ try:
     from services.auth import (
         is_supabase_configured, get_current_user, is_logged_in,
         login_with_email, signup_with_email, logout,
+        get_google_oauth_url, handle_oauth_callback,
         save_mock_exam_result, load_mock_exam_history, get_user_stats,
         save_user_progress, load_user_progress
     )
@@ -615,6 +616,10 @@ def _display_auth_section(lang: str):
     if not AUTH_AVAILABLE:
         return
 
+    # Handle OAuth callback first
+    if handle_oauth_callback():
+        st.rerun()
+
     user = get_current_user()
 
     if user:
@@ -657,6 +662,40 @@ def _display_auth_section(lang: str):
         # Not logged in - show login form
         login_label = "🔐 登入 / 註冊" if lang == "zh" else "🔐 Login / Sign Up"
         with st.expander(login_label, expanded=False):
+            # Google Login Button (prominent)
+            google_url = get_google_oauth_url()
+            if google_url:
+                st.markdown(f"""
+                <a href="{google_url}" target="_self" style="
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    gap: 10px;
+                    background: white;
+                    color: #333;
+                    padding: 10px 16px;
+                    border-radius: 8px;
+                    text-decoration: none;
+                    font-weight: 500;
+                    margin-bottom: 12px;
+                    border: 1px solid #ddd;
+                ">
+                    <svg width="18" height="18" viewBox="0 0 24 24">
+                        <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                        <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                        <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                        <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                    </svg>
+                    {"使用 Google 登入" if lang == "zh" else "Sign in with Google"}
+                </a>
+                """, unsafe_allow_html=True)
+
+                st.markdown(f"""
+                <div style="text-align: center; color: #6b7280; font-size: 0.8rem; margin: 8px 0;">
+                    {"— 或使用 Email —" if lang == "zh" else "— or use Email —"}
+                </div>
+                """, unsafe_allow_html=True)
+
             tab1, tab2 = st.tabs(["登入" if lang == "zh" else "Login", "註冊" if lang == "zh" else "Sign Up"])
 
             with tab1:

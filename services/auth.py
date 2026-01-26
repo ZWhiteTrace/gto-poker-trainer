@@ -62,25 +62,61 @@ def is_logged_in() -> bool:
     return get_current_user() is not None
 
 
-def login_with_google():
-    """Initiate Google OAuth login."""
+def get_google_oauth_url() -> Optional[str]:
+    """Get the Google OAuth URL for login."""
     client = get_supabase_client()
     if not client:
-        st.error("Supabase not configured")
         return None
 
     try:
-        # Get the OAuth URL for Google
+        redirect_url = os.getenv("REDIRECT_URL", "http://localhost:8501")
         response = client.auth.sign_in_with_oauth({
             "provider": "google",
             "options": {
-                "redirect_to": os.getenv("REDIRECT_URL", "http://localhost:8501")
+                "redirect_to": redirect_url
             }
         })
-        return response
+        return response.url if response else None
     except Exception as e:
-        st.error(f"Login error: {e}")
+        print(f"OAuth URL error: {e}")
         return None
+
+
+def handle_oauth_callback() -> bool:
+    """Handle OAuth callback from URL hash fragment.
+
+    Supabase returns tokens in URL hash, but Streamlit can't read hash directly.
+    We need to use JavaScript to parse and send it back.
+    """
+    # Check if we have tokens in query params (after JS redirect)
+    params = st.query_params
+
+    access_token = params.get("access_token")
+    refresh_token = params.get("refresh_token")
+
+    if access_token:
+        client = get_supabase_client()
+        if client:
+            try:
+                # Set the session with the tokens
+                client.auth.set_session(access_token, refresh_token or "")
+                user_response = client.auth.get_user(access_token)
+
+                if user_response and user_response.user:
+                    user = user_response.user
+                    st.session_state.user = {
+                        "id": user.id,
+                        "email": user.email,
+                        "name": user.user_metadata.get("full_name") or user.user_metadata.get("name") or user.email.split("@")[0],
+                        "avatar": user.user_metadata.get("avatar_url", ""),
+                    }
+                    # Clear tokens from URL
+                    st.query_params.clear()
+                    return True
+            except Exception as e:
+                print(f"OAuth callback error: {e}")
+
+    return False
 
 
 def login_with_email(email: str, password: str) -> Optional[Dict[str, Any]]:
