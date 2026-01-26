@@ -63,8 +63,8 @@ def test_vs_rfi_bb_can_call(evaluator):
         villain_position=Position.UTG,
     )
 
-    # JJ should call vs UTG open from BB
-    action = evaluator.get_correct_action(Hand("JJ"), scenario)
+    # 55 should call vs UTG open from BB (small pairs are calls, not 3bets)
+    action = evaluator.get_correct_action(Hand("55"), scenario)
     assert action == "call"
 
 
