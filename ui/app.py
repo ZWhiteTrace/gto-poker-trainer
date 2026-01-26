@@ -41,6 +41,7 @@ from ui.components.push_fold_chart import (
     display_resteal_chart, display_resteal_drill,
     display_hu_chart, display_hu_drill
 )
+from ui.components.vs_3bet_chart import display_vs_3bet_chart, display_vs_3bet_drill
 from ui.components.hand_review import display_hand_review_page
 from ui.components.hand_analysis import display_hand_analysis_page
 
@@ -59,8 +60,8 @@ except ImportError:
     AUTH_AVAILABLE = False
 
 # Page URL mappings
-PAGE_KEYS = ["drill", "range", "pushfold", "icm", "review", "analysis", "postflop", "equity", "outs", "ev", "logic", "mock", "learning", "stats"]
-PAGE_NAMES = ["Drill Mode", "Range Viewer", "Push/Fold", "ICM Calculator", "Hand Review", "Hand Analysis", "Postflop", "Equity Quiz", "Outs Quiz", "EV Quiz", "Logic Quiz", "Mock Exam", "Learning", "Statistics"]
+PAGE_KEYS = ["drill", "range", "pushfold", "vs3bet", "icm", "review", "analysis", "postflop", "equity", "outs", "ev", "logic", "mock", "learning", "stats"]
+PAGE_NAMES = ["Drill Mode", "Range Viewer", "Push/Fold", "Facing 3bet", "ICM Calculator", "Hand Review", "Hand Analysis", "Postflop", "Equity Quiz", "Outs Quiz", "EV Quiz", "Logic Quiz", "Mock Exam", "Learning", "Statistics"]
 
 # Equity breakdown data for vs 4-bet scenarios
 # Shows equity of common hands against typical 4-bet range hands
@@ -1158,6 +1159,8 @@ def main():
         viewer_page()
     elif page == "Push/Fold":
         push_fold_page()
+    elif page == "Facing 3bet":
+        vs_3bet_page()
     elif page == "ICM Calculator":
         icm_calculator_page()
     elif page == "Hand Review":
@@ -1918,6 +1921,25 @@ def push_fold_page():
     with tab8:
         # HU practice mode
         display_hu_drill(lang)
+
+
+def vs_3bet_page():
+    """Facing 3bet page with chart and practice mode."""
+    lang = st.session_state.language
+
+    # Tabs for chart and practice
+    tab_labels = (
+        ["📊 範圍圖表", "🎯 練習模式"]
+        if lang == "zh"
+        else ["📊 Range Chart", "🎯 Practice Mode"]
+    )
+    tab1, tab2 = st.tabs(tab_labels)
+
+    with tab1:
+        display_vs_3bet_chart(lang)
+
+    with tab2:
+        display_vs_3bet_drill(lang)
 
 
 def icm_calculator_page():

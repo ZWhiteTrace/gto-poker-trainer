@@ -1,0 +1,232 @@
+{
+  "meta": {
+    "version": "1.0",
+    "description": "Facing 3bet response ranges for 6-max cash games (100bb)",
+    "assumptions": {
+      "format": "6max Cash",
+      "stack_depth": "100bb",
+      "villain_3bet_size": "3x open"
+    }
+  },
+  "6max": {
+    "BTN_vs_BB_3bet": {
+      "description": "BTN open, BB 3bet, BTN response",
+      "4bet": [
+        "AA", "KK", "QQ",
+        "AKs", "AKo",
+        "A5s", "A4s"
+      ],
+      "call": [
+        "JJ", "TT", "99", "88", "77", "66",
+        "AQs", "AJs", "ATs", "A9s", "A8s", "A7s", "A6s", "A3s", "A2s",
+        "KQs", "KJs", "KTs", "K9s",
+        "QJs", "QTs", "Q9s",
+        "JTs", "J9s",
+        "T9s", "T8s",
+        "98s", "97s",
+        "87s", "86s",
+        "76s", "75s",
+        "65s", "64s",
+        "54s", "53s",
+        "43s",
+        "AQo", "AJo", "ATo",
+        "KQo", "KJo",
+        "QJo"
+      ]
+    },
+    "BTN_vs_SB_3bet": {
+      "description": "BTN open, SB 3bet, BTN response",
+      "4bet": [
+        "AA", "KK", "QQ", "JJ",
+        "AKs", "AKo",
+        "A5s", "A4s"
+      ],
+      "call": [
+        "TT", "99", "88", "77", "66",
+        "AQs", "AJs", "ATs", "A9s", "A8s", "A7s", "A6s", "A3s", "A2s",
+        "KQs", "KJs", "KTs", "K9s",
+        "QJs", "QTs", "Q9s",
+        "JTs", "J9s",
+        "T9s", "T8s",
+        "98s", "97s",
+        "87s", "86s",
+        "76s", "75s",
+        "65s",
+        "54s",
+        "AQo", "AJo",
+        "KQo"
+      ]
+    },
+    "CO_vs_BTN_3bet": {
+      "description": "CO open, BTN 3bet, CO response",
+      "4bet": [
+        "AA", "KK", "QQ",
+        "AKs", "AKo",
+        "A5s"
+      ],
+      "call": [
+        "JJ", "TT", "99", "88", "77",
+        "AQs", "AJs", "ATs", "A9s", "A4s", "A3s", "A2s",
+        "KQs", "KJs", "KTs",
+        "QJs", "QTs",
+        "JTs", "J9s",
+        "T9s",
+        "98s",
+        "87s",
+        "76s",
+        "65s",
+        "54s",
+        "AQo", "AJo",
+        "KQo"
+      ]
+    },
+    "CO_vs_BB_3bet": {
+      "description": "CO open, BB 3bet, CO response",
+      "4bet": [
+        "AA", "KK", "QQ",
+        "AKs", "AKo",
+        "A5s", "A4s"
+      ],
+      "call": [
+        "JJ", "TT", "99", "88", "77", "66",
+        "AQs", "AJs", "ATs", "A9s", "A8s", "A3s", "A2s",
+        "KQs", "KJs", "KTs", "K9s",
+        "QJs", "QTs",
+        "JTs", "J9s",
+        "T9s",
+        "98s",
+        "87s",
+        "76s",
+        "65s",
+        "54s",
+        "AQo", "AJo",
+        "KQo"
+      ]
+    },
+    "HJ_vs_CO_3bet": {
+      "description": "HJ open, CO 3bet, HJ response",
+      "4bet": [
+        "AA", "KK", "QQ",
+        "AKs", "AKo",
+        "A5s"
+      ],
+      "call": [
+        "JJ", "TT", "99", "88",
+        "AQs", "AJs", "ATs", "A4s",
+        "KQs", "KJs", "KTs",
+        "QJs", "QTs",
+        "JTs",
+        "T9s",
+        "98s",
+        "87s",
+        "76s",
+        "65s",
+        "AQo",
+        "KQo"
+      ]
+    },
+    "HJ_vs_BTN_3bet": {
+      "description": "HJ open, BTN 3bet, HJ response",
+      "4bet": [
+        "AA", "KK", "QQ",
+        "AKs", "AKo",
+        "A5s"
+      ],
+      "call": [
+        "JJ", "TT", "99", "88",
+        "AQs", "AJs", "ATs", "A4s",
+        "KQs", "KJs",
+        "QJs", "QTs",
+        "JTs",
+        "T9s",
+        "98s",
+        "87s",
+        "76s",
+        "65s",
+        "AQo"
+      ]
+    },
+    "HJ_vs_BB_3bet": {
+      "description": "HJ open, BB 3bet, HJ response",
+      "4bet": [
+        "AA", "KK", "QQ",
+        "AKs", "AKo",
+        "A5s", "A4s"
+      ],
+      "call": [
+        "JJ", "TT", "99", "88", "77",
+        "AQs", "AJs", "ATs", "A9s", "A3s",
+        "KQs", "KJs", "KTs",
+        "QJs", "QTs",
+        "JTs", "J9s",
+        "T9s",
+        "98s",
+        "87s",
+        "76s",
+        "65s",
+        "AQo", "AJo",
+        "KQo"
+      ]
+    },
+    "UTG_vs_BTN_3bet": {
+      "description": "UTG open, BTN 3bet, UTG response",
+      "4bet": [
+        "AA", "KK", "QQ",
+        "AKs", "AKo"
+      ],
+      "call": [
+        "JJ", "TT", "99",
+        "AQs", "AJs",
+        "KQs",
+        "QJs",
+        "JTs",
+        "T9s",
+        "AQo"
+      ]
+    },
+    "UTG_vs_BB_3bet": {
+      "description": "UTG open, BB 3bet, UTG response",
+      "4bet": [
+        "AA", "KK", "QQ",
+        "AKs", "AKo",
+        "A5s"
+      ],
+      "call": [
+        "JJ", "TT", "99", "88",
+        "AQs", "AJs", "ATs",
+        "KQs", "KJs",
+        "QJs",
+        "JTs",
+        "T9s",
+        "98s",
+        "AQo"
+      ]
+    },
+    "SB_vs_BB_3bet": {
+      "description": "SB open, BB 3bet, SB response",
+      "4bet": [
+        "AA", "KK", "QQ", "JJ",
+        "AKs", "AKo",
+        "A5s", "A4s", "A3s"
+      ],
+      "call": [
+        "TT", "99", "88", "77", "66", "55",
+        "AQs", "AJs", "ATs", "A9s", "A8s", "A7s", "A6s", "A2s",
+        "KQs", "KJs", "KTs", "K9s", "K8s",
+        "QJs", "QTs", "Q9s",
+        "JTs", "J9s",
+        "T9s", "T8s",
+        "98s", "97s",
+        "87s", "86s",
+        "76s", "75s",
+        "65s", "64s",
+        "54s", "53s",
+        "43s",
+        "AQo", "AJo", "ATo", "A9o",
+        "KQo", "KJo", "KTo",
+        "QJo", "QTo",
+        "JTo"
+      ]
+    }
+  }
+}
