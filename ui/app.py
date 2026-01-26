@@ -243,6 +243,13 @@ st.markdown("""
     .element-container {
         margin-bottom: 0.25rem !important;
     }
+    /* Sidebar title - prevent truncation */
+    section[data-testid="stSidebar"] h1 {
+        font-size: 1.3rem !important;
+        white-space: normal !important;
+        word-wrap: break-word !important;
+        line-height: 1.3 !important;
+    }
 </style>
 """, unsafe_allow_html=True)
 
