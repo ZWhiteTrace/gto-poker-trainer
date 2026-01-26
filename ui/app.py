@@ -35,7 +35,10 @@ from services.progress import (
     sync_progress_on_login
 )
 from ui.components.rfi_chart import display_rfi_charts
-from ui.components.push_fold_chart import display_push_fold_chart, display_push_fold_comparison, display_push_fold_drill
+from ui.components.push_fold_chart import (
+    display_push_fold_chart, display_push_fold_comparison, display_push_fold_drill,
+    display_defense_chart, display_defense_drill
+)
 from ui.components.hand_review import display_hand_review_page
 from ui.components.hand_analysis import display_hand_analysis_page
 
@@ -54,8 +57,8 @@ except ImportError:
     AUTH_AVAILABLE = False
 
 # Page URL mappings
-PAGE_KEYS = ["drill", "range", "pushfold", "review", "analysis", "postflop", "equity", "outs", "ev", "logic", "mock", "learning", "stats"]
-PAGE_NAMES = ["Drill Mode", "Range Viewer", "Push/Fold", "Hand Review", "Hand Analysis", "Postflop", "Equity Quiz", "Outs Quiz", "EV Quiz", "Logic Quiz", "Mock Exam", "Learning", "Statistics"]
+PAGE_KEYS = ["drill", "range", "pushfold", "icm", "review", "analysis", "postflop", "equity", "outs", "ev", "logic", "mock", "learning", "stats"]
+PAGE_NAMES = ["Drill Mode", "Range Viewer", "Push/Fold", "ICM Calculator", "Hand Review", "Hand Analysis", "Postflop", "Equity Quiz", "Outs Quiz", "EV Quiz", "Logic Quiz", "Mock Exam", "Learning", "Statistics"]
 
 # Equity breakdown data for vs 4-bet scenarios
 # Shows equity of common hands against typical 4-bet range hands
@@ -371,6 +374,7 @@ TEXTS = {
         "drill_mode": "練習模式",
         "range_viewer": "範圍查看",
         "push_fold": "MTT 短碼",
+        "icm_calculator": "ICM 計算器",
         "hand_review": "手牌回顧",
         "statistics": "統計分析",
         "settings": "設定",
@@ -480,6 +484,7 @@ TEXTS = {
         "drill_mode": "Drill Mode",
         "range_viewer": "Range Viewer",
         "push_fold": "MTT Short Stack",
+        "icm_calculator": "ICM Calculator",
         "hand_review": "Hand Review",
         "statistics": "Statistics",
         "settings": "Settings",
@@ -860,7 +865,7 @@ def main():
         st.markdown("<div style='height: 5px;'></div>", unsafe_allow_html=True)
 
         # Navigation
-        nav_options = [t("drill_mode"), t("range_viewer"), t("push_fold"), t("hand_review"), t("hand_analysis"), t("postflop"), t("equity_quiz"), t("outs_quiz"), t("ev_quiz"), t("logic_quiz"), t("mock_exam"), t("learning"), t("statistics")]
+        nav_options = [t("drill_mode"), t("range_viewer"), t("push_fold"), t("icm_calculator"), t("hand_review"), t("hand_analysis"), t("postflop"), t("equity_quiz"), t("outs_quiz"), t("ev_quiz"), t("logic_quiz"), t("mock_exam"), t("learning"), t("statistics")]
         page_idx = st.radio(
             "Navigate",
             options=range(len(nav_options)),
@@ -1045,6 +1050,8 @@ def main():
         viewer_page()
     elif page == "Push/Fold":
         push_fold_page()
+    elif page == "ICM Calculator":
+        icm_calculator_page()
     elif page == "Hand Review":
         hand_review_page()
     elif page == "Hand Analysis":
@@ -1761,22 +1768,203 @@ def push_fold_page():
     """MTT Push/Fold chart page with practice mode."""
     lang = st.session_state.language
 
-    # Tabs for chart view and practice mode
-    tab_labels = ["📊 圖表", "🎯 練習"] if lang == "zh" else ["📊 Charts", "🎯 Practice"]
-    tab1, tab2 = st.tabs(tab_labels)
+    # Tabs for Push, Defense, and Practice modes
+    tab_labels = (
+        ["📊 Push 圖表", "🛡️ 防守圖表", "🎯 Push 練習", "🎯 防守練習"]
+        if lang == "zh"
+        else ["📊 Push Charts", "🛡️ Defense Charts", "🎯 Push Practice", "🎯 Defense Practice"]
+    )
+    tab1, tab2, tab3, tab4 = st.tabs(tab_labels)
 
     with tab1:
-        # Main chart
+        # Push chart
         display_push_fold_chart(lang)
-
         st.markdown("---")
-
         # Position comparison
         display_push_fold_comparison(lang)
 
     with tab2:
-        # Practice mode
+        # Defense chart
+        display_defense_chart(lang)
+
+    with tab3:
+        # Push practice mode
         display_push_fold_drill(lang)
+
+    with tab4:
+        # Defense practice mode
+        display_defense_drill(lang)
+
+
+def icm_calculator_page():
+    """ICM Calculator page for tournament equity calculations."""
+    lang = st.session_state.language
+
+    # Title
+    title = "ICM 計算器" if lang == "zh" else "ICM Calculator"
+    st.header(title)
+
+    desc = "計算錦標賽籌碼的真實 $ 價值" if lang == "zh" else "Calculate real $ value of tournament chips"
+    st.caption(desc)
+
+    from core.icm import calculate_icm_equity, chip_ev, icm_vs_chip_ev_diff, calculate_icm_pressure, get_standard_payouts
+
+    # Number of players
+    col1, col2 = st.columns(2)
+
+    with col1:
+        n_players = st.slider(
+            "玩家數" if lang == "zh" else "Number of Players",
+            min_value=2,
+            max_value=9,
+            value=3
+        )
+
+    with col2:
+        total_prize = st.number_input(
+            "總獎池 ($)" if lang == "zh" else "Total Prize Pool ($)",
+            min_value=100,
+            max_value=1000000,
+            value=1000,
+            step=100
+        )
+
+    st.markdown("---")
+
+    # Input chip stacks
+    st.subheader("籌碼分配" if lang == "zh" else "Chip Distribution")
+
+    stacks = []
+    cols = st.columns(min(n_players, 5))
+
+    for i in range(n_players):
+        with cols[i % 5]:
+            default_stack = int(10000 / n_players)
+            stack = st.number_input(
+                f"P{i+1}",
+                min_value=0,
+                max_value=100000,
+                value=default_stack,
+                step=500,
+                key=f"stack_{i}"
+            )
+            stacks.append(stack)
+
+    # Payout structure
+    st.markdown("---")
+    st.subheader("獎金結構" if lang == "zh" else "Payout Structure")
+
+    # Quick presets
+    preset_label = "快速設定" if lang == "zh" else "Quick Preset"
+    preset = st.radio(
+        preset_label,
+        ["自訂", "標準 (50/30/20)", "Winner Take All", "Top 2 Only"],
+        horizontal=True,
+        key="payout_preset"
+    )
+
+    payouts = []
+    pay_spots = min(n_players, 5)
+
+    if preset == "標準 (50/30/20)":
+        pcts = [0.50, 0.30, 0.20, 0.0, 0.0][:pay_spots]
+        payouts = [total_prize * p for p in pcts]
+    elif preset == "Winner Take All":
+        payouts = [total_prize] + [0.0] * (pay_spots - 1)
+    elif preset == "Top 2 Only":
+        payouts = [total_prize * 0.65, total_prize * 0.35] + [0.0] * (pay_spots - 2)
+    else:
+        # Custom input
+        cols = st.columns(pay_spots)
+        for i in range(pay_spots):
+            with cols[i]:
+                default_payout = total_prize * [0.5, 0.3, 0.2, 0.0, 0.0][i] if i < 3 else 0.0
+                payout = st.number_input(
+                    f"#{i+1}",
+                    min_value=0.0,
+                    max_value=float(total_prize),
+                    value=default_payout,
+                    step=10.0,
+                    key=f"payout_{i}"
+                )
+                payouts.append(payout)
+
+    if not payouts:
+        payouts = get_standard_payouts(n_players, total_prize / n_players)
+
+    # Calculate ICM
+    st.markdown("---")
+    st.subheader("ICM 結果" if lang == "zh" else "ICM Results")
+
+    if sum(stacks) == 0:
+        st.warning("請輸入籌碼數量" if lang == "zh" else "Please enter chip stacks")
+    else:
+        result = calculate_icm_equity(stacks, payouts)
+        chip_equities = chip_ev(stacks, sum(payouts))
+
+        # Display results
+        total_chips = sum(stacks)
+
+        # Results table
+        html = '''
+        <div style="overflow-x: auto;">
+        <table style="width: 100%; border-collapse: collapse; background: #1a1a2e;">
+        <thead>
+        <tr style="border-bottom: 2px solid #4a4a5e;">
+        '''
+
+        headers = ["玩家", "籌碼", "籌碼%", "Chip EV", "ICM EV", "差異"] if lang == "zh" else ["Player", "Chips", "Chip%", "Chip EV", "ICM EV", "Diff"]
+        for h in headers:
+            html += f'<th style="padding: 10px; text-align: center; color: white;">{h}</th>'
+        html += '</tr></thead><tbody>'
+
+        for i in range(n_players):
+            chip_pct = stacks[i] / total_chips * 100 if total_chips > 0 else 0
+            diff = result.equities[i] - chip_equities[i]
+            diff_color = "#22c55e" if diff >= 0 else "#ef4444"
+
+            html += f'''
+            <tr style="border-bottom: 1px solid #333;">
+                <td style="padding: 10px; text-align: center; color: white; font-weight: bold;">P{i+1}</td>
+                <td style="padding: 10px; text-align: center; color: #9ca3af;">{stacks[i]:,}</td>
+                <td style="padding: 10px; text-align: center; color: #9ca3af;">{chip_pct:.1f}%</td>
+                <td style="padding: 10px; text-align: center; color: #9ca3af;">${chip_equities[i]:.2f}</td>
+                <td style="padding: 10px; text-align: center; color: #3b82f6; font-weight: bold;">${result.equities[i]:.2f}</td>
+                <td style="padding: 10px; text-align: center; color: {diff_color};">{"+" if diff >= 0 else ""}{diff:.2f}</td>
+            </tr>
+            '''
+
+        html += '</tbody></table></div>'
+        st.markdown(html, unsafe_allow_html=True)
+
+        # Explanation
+        st.markdown("---")
+        st.subheader("💡 " + ("解讀" if lang == "zh" else "Interpretation"))
+
+        if lang == "zh":
+            st.markdown("""
+            - **Chip EV**: 如果籌碼可以直接兌換現金的價值
+            - **ICM EV**: 考慮獎金結構後的真實 $ 價值
+            - **差異 (+)**: ICM 價值 > Chip EV，籌碼的邊際價值較低
+            - **差異 (-)**: ICM 價值 < Chip EV，籌碼的邊際價值較高
+
+            **關鍵洞察：**
+            - 大籌碼的邊際籌碼價值遞減
+            - 短碼面對淘汰風險，ICM 壓力較大
+            - 泡沫期應收緊範圍，避免不必要的對抗
+            """)
+        else:
+            st.markdown("""
+            - **Chip EV**: Value if chips could be directly cashed out
+            - **ICM EV**: Real $ value considering payout structure
+            - **Diff (+)**: ICM > Chip EV, diminishing marginal chip value
+            - **Diff (-)**: ICM < Chip EV, higher marginal chip value
+
+            **Key Insights:**
+            - Big stacks have diminishing marginal chip value
+            - Short stacks face more ICM pressure due to elimination risk
+            - Tighten ranges during bubble to avoid unnecessary confrontations
+            """)
 
 
 def hand_review_page():
