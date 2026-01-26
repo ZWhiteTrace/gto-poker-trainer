@@ -616,22 +616,6 @@ def _display_auth_section(lang: str):
     if not AUTH_AVAILABLE:
         return
 
-    # JavaScript to convert hash fragment to query params (for OAuth callback)
-    # Supabase returns tokens in URL hash which Python can't read
-    components.html("""
-    <script>
-        if (window.location.hash && window.location.hash.includes('access_token')) {
-            const hash = window.location.hash.substring(1);
-            const newUrl = window.location.origin + window.location.pathname + '?' + hash;
-            window.location.replace(newUrl);
-        }
-    </script>
-    """, height=0)
-
-    # Handle OAuth callback first
-    if handle_oauth_callback():
-        st.rerun()
-
     user = get_current_user()
 
     if user:
@@ -741,6 +725,36 @@ def _display_auth_section(lang: str):
 
 def main():
     init_session_state()
+
+    # OAuth callback handler - must run FIRST before any UI
+    # Converts URL hash fragment to query params for token extraction
+    if AUTH_AVAILABLE and is_supabase_configured():
+        components.html("""
+        <script>
+            (function() {
+                // Try multiple location sources (Streamlit can run in different contexts)
+                var locations = [window.location, window.parent.location, window.top.location];
+                for (var i = 0; i < locations.length; i++) {
+                    try {
+                        var loc = locations[i];
+                        if (loc.hash && loc.hash.includes('access_token')) {
+                            console.log('OAuth tokens found in hash, redirecting...');
+                            var hash = loc.hash.substring(1);
+                            var newUrl = loc.origin + loc.pathname + '?' + hash;
+                            loc.replace(newUrl);
+                            return;
+                        }
+                    } catch(e) {
+                        // Cross-origin access denied, try next
+                    }
+                }
+            })();
+        </script>
+        """, height=0)
+
+        # Handle the callback after redirect
+        if handle_oauth_callback():
+            st.rerun()
 
     # Sidebar
     with st.sidebar:
@@ -1803,28 +1817,56 @@ def postflop_page():
         hero_cards_display = scenario.hero_cards
     else:
         # Generate consistent cards based on scenario id
+        # IMPORTANT: Exclude cards that are already on the board to avoid duplicates
         import random
         rng = random.Random(scenario.id)
         hand = scenario.hero_hand
-        suits = ['s', 'h', 'd', 'c']
+        all_suits = ['s', 'h', 'd', 'c']
+
+        # Build set of cards already on board (rank+suit combinations)
+        board_cards = set()
+        for flop_card in scenario.flop:
+            board_cards.add((flop_card.rank, flop_card.suit))
+
+        def get_valid_suit(rank, exclude_suits=None):
+            """Get a suit that doesn't create a duplicate with the board."""
+            available = [s for s in all_suits if (rank, s) not in board_cards]
+            if exclude_suits:
+                available = [s for s in available if s not in exclude_suits]
+            if not available:
+                available = all_suits  # Fallback (shouldn't happen)
+            return rng.choice(available)
 
         if hand.is_pair:
-            chosen_suits = rng.sample(suits, 2)
+            suit1 = get_valid_suit(hand.rank1)
+            suit2 = get_valid_suit(hand.rank2, exclude_suits=[suit1])
             hero_cards_display = [
-                HeroCard(rank=hand.rank1, suit=chosen_suits[0]),
-                HeroCard(rank=hand.rank2, suit=chosen_suits[1]),
+                HeroCard(rank=hand.rank1, suit=suit1),
+                HeroCard(rank=hand.rank2, suit=suit2),
             ]
         elif hand.is_suited:
-            suit = rng.choice(suits)
+            # For suited hands, find a suit where BOTH cards are valid
+            valid_suits = [s for s in all_suits
+                         if (hand.rank1, s) not in board_cards
+                         and (hand.rank2, s) not in board_cards]
+            if not valid_suits:
+                valid_suits = all_suits  # Fallback
+            suit = rng.choice(valid_suits)
             hero_cards_display = [
                 HeroCard(rank=hand.rank1, suit=suit),
                 HeroCard(rank=hand.rank2, suit=suit),
             ]
         else:
-            chosen_suits = rng.sample(suits, 2)
+            suit1 = get_valid_suit(hand.rank1)
+            suit2 = get_valid_suit(hand.rank2)
+            # For offsuit, ensure different suits
+            if suit1 == suit2:
+                other_suits = [s for s in all_suits if s != suit1 and (hand.rank2, s) not in board_cards]
+                if other_suits:
+                    suit2 = rng.choice(other_suits)
             hero_cards_display = [
-                HeroCard(rank=hand.rank1, suit=chosen_suits[0]),
-                HeroCard(rank=hand.rank2, suit=chosen_suits[1]),
+                HeroCard(rank=hand.rank1, suit=suit1),
+                HeroCard(rank=hand.rank2, suit=suit2),
             ]
 
     def get_suit_color(suit):
@@ -3004,36 +3046,48 @@ def mock_exam_page():
 
 
 def _generate_mock_exam():
-    """Generate a mixed set of questions for the mock exam."""
+    """Generate a mixed set of questions for the mock exam (40 questions)."""
     import random
     from trainer.logic_quiz import LogicQuizEngine
 
     questions = []
 
-    # 1. Equity questions (3)
-    for _ in range(3):
+    # 1. Equity questions (6) - with card visuals
+    for _ in range(6):
         q = _generate_equity_question()
         if q:
             questions.append({"type": "equity", **q})
 
-    # 2. Outs questions (2)
-    for _ in range(2):
+    # 2. Outs questions (5) - with board visuals
+    for _ in range(5):
         q = _generate_outs_question()
         if q:
             questions.append({"type": "outs", **q})
 
-    # 3. EV questions (2)
-    for _ in range(2):
+    # 3. EV questions (5)
+    for _ in range(5):
         q = _generate_ev_question()
         if q:
             questions.append({"type": "ev", **q})
 
-    # 4. Preflop Logic questions (2)
+    # 4. Preflop Action questions (8) - new type with visuals
+    for _ in range(8):
+        q = _generate_preflop_action_question()
+        if q:
+            questions.append({"type": "preflop_action", **q})
+
+    # 5. GTO Concept questions (5) - new type
+    for _ in range(5):
+        q = _generate_gto_concept_question()
+        if q:
+            questions.append({"type": "gto_concept", **q})
+
+    # 6. Preflop Logic questions (5)
     if "logic_engine" not in st.session_state:
         st.session_state.logic_engine = LogicQuizEngine()
     engine = st.session_state.logic_engine
 
-    for _ in range(2):
+    for _ in range(5):
         try:
             lq = engine.generate_random_question()
             if lq:
@@ -3049,8 +3103,8 @@ def _generate_mock_exam():
         except Exception:
             pass
 
-    # 5. Postflop Logic questions (2)
-    for _ in range(2):
+    # 7. Postflop Logic questions (6) - with board visuals
+    for _ in range(6):
         try:
             pq = engine.generate_type_e()
             if pq:
@@ -3114,11 +3168,21 @@ def _generate_equity_question():
         options = options[:4]
         random.shuffle(options)
 
+        lang = st.session_state.get("language", "zh")
+        if lang == "zh":
+            question = f"{hand1} vs {hand2} 的翻前權益約為多少？"
+            explanation = f"{hand1} 對 {hand2} 有約 {correct_equity}% 的權益。"
+        else:
+            question = f"What is the preflop equity of {hand1} vs {hand2}?"
+            explanation = f"{hand1} has approximately {correct_equity}% equity against {hand2}."
+
         return {
-            "question": f"{hand1} vs {hand2} 的翻前權益約為多少？",
+            "question": question,
             "options": [f"{o}%" for o in options],
             "correct": f"{correct_equity}%",
-            "explanation": f"{hand1} 對 {hand2} 有約 {correct_equity}% 的權益。",
+            "explanation": explanation,
+            "hand1": hand1,  # For visual display
+            "hand2": hand2,  # For visual display
         }
     except Exception:
         return None
@@ -3209,8 +3273,304 @@ def _generate_ev_question():
         return None
 
 
+def _generate_preflop_action_question():
+    """Generate a preflop action decision question with card visuals."""
+    import random
+
+    # Comprehensive preflop scenarios with GTO actions
+    PREFLOP_SCENARIOS = [
+        # RFI scenarios
+        {"position": "UTG", "hand": "AKs", "scenario": "rfi", "action": "Raise", "reason": "Premium hand, always open from any position"},
+        {"position": "UTG", "hand": "ATo", "action": "Fold", "scenario": "rfi", "reason": "ATo too weak to open UTG, dominated by better Ax"},
+        {"position": "UTG", "hand": "77", "action": "Raise", "scenario": "rfi", "reason": "Medium pair, profitable to open from UTG"},
+        {"position": "UTG", "hand": "KJo", "action": "Fold", "scenario": "rfi", "reason": "KJo not strong enough for UTG open"},
+        {"position": "HJ", "hand": "A5s", "action": "Raise", "scenario": "rfi", "reason": "Suited Ax good blocker and playability from HJ"},
+        {"position": "HJ", "hand": "QTo", "action": "Fold", "scenario": "rfi", "reason": "QTo too weak, easily dominated"},
+        {"position": "CO", "hand": "K9s", "action": "Raise", "scenario": "rfi", "reason": "Suited broadway playable from CO"},
+        {"position": "CO", "hand": "J8s", "action": "Raise", "scenario": "rfi", "reason": "Suited connector playable from late position"},
+        {"position": "BTN", "hand": "Q5s", "action": "Raise", "scenario": "rfi", "reason": "Wide range on BTN, suited queen playable"},
+        {"position": "BTN", "hand": "T7o", "action": "Fold", "scenario": "rfi", "reason": "Even on BTN, offsuit gapper too weak"},
+        {"position": "SB", "hand": "K4s", "action": "Raise", "scenario": "rfi", "reason": "Suited king worth opening vs BB only"},
+        {"position": "SB", "hand": "J6o", "action": "Fold", "scenario": "rfi", "reason": "Offsuit junk not worth opening even vs BB"},
+
+        # vs RFI (facing open)
+        {"position": "CO", "hand": "AQs", "scenario": "vs_utg_open", "action": "3-Bet", "reason": "AQs strong enough to 3-bet vs UTG"},
+        {"position": "CO", "hand": "AJo", "scenario": "vs_utg_open", "action": "Call", "reason": "AJo can flat in position, too weak to 3-bet vs UTG"},
+        {"position": "CO", "hand": "99", "scenario": "vs_utg_open", "action": "Call", "reason": "Set mine in position, not strong enough to 3-bet"},
+        {"position": "BTN", "hand": "KQs", "scenario": "vs_co_open", "action": "3-Bet", "reason": "KQs plays well as 3-bet on BTN vs CO"},
+        {"position": "BTN", "hand": "87s", "scenario": "vs_co_open", "action": "Call", "reason": "Suited connector flats IP for playability"},
+        {"position": "BB", "hand": "A5s", "scenario": "vs_btn_open", "action": "3-Bet", "reason": "A5s good 3-bet bluff candidate vs BTN steal"},
+        {"position": "BB", "hand": "K8o", "scenario": "vs_btn_open", "action": "Call", "reason": "Getting good price, can defend wide vs BTN"},
+        {"position": "BB", "hand": "72o", "scenario": "vs_btn_open", "action": "Fold", "reason": "Even vs BTN, 72o is unplayable"},
+
+        # vs 3-bet
+        {"position": "UTG", "hand": "QQ", "scenario": "vs_3bet", "action": "4-Bet", "reason": "QQ strong enough to 4-bet from UTG"},
+        {"position": "UTG", "hand": "AQo", "scenario": "vs_3bet", "action": "Fold", "reason": "AQo often dominated by 3-bet range from UTG open"},
+        {"position": "CO", "hand": "JJ", "scenario": "vs_btn_3bet", "action": "Call", "reason": "JJ plays well as call vs BTN 3-bet"},
+        {"position": "CO", "hand": "AKs", "scenario": "vs_btn_3bet", "action": "4-Bet", "reason": "AKs always 4-bet vs BTN 3-bet"},
+        {"position": "BTN", "hand": "TT", "scenario": "vs_bb_3bet", "action": "Call", "reason": "TT set mines well vs BB 3-bet in position"},
+    ]
+
+    try:
+        scenario = random.choice(PREFLOP_SCENARIOS)
+        hand = scenario["hand"]
+        position = scenario["position"]
+        action = scenario["action"]
+        scene = scenario["scenario"]
+
+        lang = st.session_state.get("language", "zh")
+
+        # Build scenario description
+        if scene == "rfi":
+            if lang == "zh":
+                question = f"你在 {position}，無人開池，拿到 {hand}。應該？"
+            else:
+                question = f"You're in {position}, folded to you, holding {hand}. What should you do?"
+            if lang == "zh":
+                options = ["Raise (加注)", "Call (跟注)", "Fold (棄牌)"]
+                correct = {"Raise": "Raise (加注)", "Call": "Call (跟注)", "Fold": "Fold (棄牌)"}[action]
+            else:
+                options = ["Raise", "Limp", "Fold"]
+                correct = action if action != "Call" else "Limp"
+        elif scene == "vs_utg_open":
+            if lang == "zh":
+                question = f"UTG 開池加注，你在 {position} 拿到 {hand}。應該？"
+            else:
+                question = f"UTG opens, you're in {position} with {hand}. What should you do?"
+            if lang == "zh":
+                options = ["3-Bet (再加注)", "Call (跟注)", "Fold (棄牌)"]
+                correct = {"3-Bet": "3-Bet (再加注)", "Call": "Call (跟注)", "Fold": "Fold (棄牌)"}[action]
+            else:
+                options = ["3-Bet", "Call", "Fold"]
+                correct = action
+        elif scene == "vs_co_open":
+            if lang == "zh":
+                question = f"CO 開池加注，你在 {position} 拿到 {hand}。應該？"
+            else:
+                question = f"CO opens, you're in {position} with {hand}. What should you do?"
+            if lang == "zh":
+                options = ["3-Bet (再加注)", "Call (跟注)", "Fold (棄牌)"]
+                correct = {"3-Bet": "3-Bet (再加注)", "Call": "Call (跟注)", "Fold": "Fold (棄牌)"}[action]
+            else:
+                options = ["3-Bet", "Call", "Fold"]
+                correct = action
+        elif scene == "vs_btn_open":
+            if lang == "zh":
+                question = f"BTN 開池加注，你在 {position} 拿到 {hand}。應該？"
+            else:
+                question = f"BTN opens, you're in {position} with {hand}. What should you do?"
+            if lang == "zh":
+                options = ["3-Bet (再加注)", "Call (跟注)", "Fold (棄牌)"]
+                correct = {"3-Bet": "3-Bet (再加注)", "Call": "Call (跟注)", "Fold": "Fold (棄牌)"}[action]
+            else:
+                options = ["3-Bet", "Call", "Fold"]
+                correct = action
+        elif scene == "vs_3bet":
+            if lang == "zh":
+                question = f"你在 {position} 開池，被 3-bet。你拿著 {hand}。應該？"
+            else:
+                question = f"You opened from {position}, facing a 3-bet. You have {hand}. What should you do?"
+            if lang == "zh":
+                options = ["4-Bet (再再加注)", "Call (跟注)", "Fold (棄牌)"]
+                correct = {"4-Bet": "4-Bet (再再加注)", "Call": "Call (跟注)", "Fold": "Fold (棄牌)"}[action]
+            else:
+                options = ["4-Bet", "Call", "Fold"]
+                correct = action
+        elif scene == "vs_btn_3bet":
+            if lang == "zh":
+                question = f"你在 {position} 開池，BTN 3-bet。你拿著 {hand}。應該？"
+            else:
+                question = f"You opened from {position}, BTN 3-bets. You have {hand}. What should you do?"
+            if lang == "zh":
+                options = ["4-Bet (再再加注)", "Call (跟注)", "Fold (棄牌)"]
+                correct = {"4-Bet": "4-Bet (再再加注)", "Call": "Call (跟注)", "Fold": "Fold (棄牌)"}[action]
+            else:
+                options = ["4-Bet", "Call", "Fold"]
+                correct = action
+        elif scene == "vs_bb_3bet":
+            if lang == "zh":
+                question = f"你在 {position} 開池，BB 3-bet。你拿著 {hand}。應該？"
+            else:
+                question = f"You opened from {position}, BB 3-bets. You have {hand}. What should you do?"
+            if lang == "zh":
+                options = ["4-Bet (再再加注)", "Call (跟注)", "Fold (棄牌)"]
+                correct = {"4-Bet": "4-Bet (再再加注)", "Call": "Call (跟注)", "Fold": "Fold (棄牌)"}[action]
+            else:
+                options = ["4-Bet", "Call", "Fold"]
+                correct = action
+        else:
+            return None
+
+        random.shuffle(options)
+
+        explanation = scenario["reason"] if lang == "en" else f"{hand} 在此情況 {action}：{scenario['reason']}"
+
+        return {
+            "question": question,
+            "options": options,
+            "correct": correct,
+            "explanation": explanation,
+            "hand": hand,  # For visual display
+        }
+    except Exception:
+        return None
+
+
+def _generate_gto_concept_question():
+    """Generate a GTO concept question (MDF, Alpha, SPR, etc.)."""
+    import random
+
+    lang = st.session_state.get("language", "zh")
+
+    GTO_CONCEPTS = [
+        # MDF (Minimum Defense Frequency)
+        {
+            "concept": "mdf",
+            "question_zh": "對手下注底池的 50%，你的最小防守頻率 (MDF) 是多少？",
+            "question_en": "Opponent bets 50% pot. What is your Minimum Defense Frequency (MDF)?",
+            "correct": "67%",
+            "options": ["50%", "60%", "67%", "75%"],
+            "explanation_zh": "MDF = 1 / (1 + bet/pot) = 1 / (1 + 0.5) = 67%。需要防守 67% 的範圍來阻止對手純利潤詐唬。",
+            "explanation_en": "MDF = 1 / (1 + bet/pot) = 1 / (1 + 0.5) = 67%. You need to defend 67% to prevent opponent from profiting with pure bluffs.",
+        },
+        {
+            "concept": "mdf",
+            "question_zh": "對手下注底池的 100% (全底池)，你的 MDF 是多少？",
+            "question_en": "Opponent bets 100% pot. What is your MDF?",
+            "correct": "50%",
+            "options": ["33%", "40%", "50%", "60%"],
+            "explanation_zh": "MDF = 1 / (1 + 1) = 50%。全底池下注時需要防守一半的範圍。",
+            "explanation_en": "MDF = 1 / (1 + 1) = 50%. Against pot-sized bet, defend half your range.",
+        },
+        {
+            "concept": "mdf",
+            "question_zh": "對手下注底池的 33%，你的 MDF 約為多少？",
+            "question_en": "Opponent bets 33% pot. What is your approximate MDF?",
+            "correct": "75%",
+            "options": ["60%", "67%", "75%", "80%"],
+            "explanation_zh": "MDF = 1 / (1 + 0.33) ≈ 75%。小注需要高頻防守。",
+            "explanation_en": "MDF = 1 / (1 + 0.33) ≈ 75%. Small bets require high defense frequency.",
+        },
+
+        # Alpha (Bluff Frequency)
+        {
+            "concept": "alpha",
+            "question_zh": "你下注 50% 底池，對手需要多少勝率才能 breakeven call？",
+            "question_en": "You bet 50% pot. What win rate does opponent need to breakeven call?",
+            "correct": "25%",
+            "options": ["20%", "25%", "33%", "40%"],
+            "explanation_zh": "所需勝率 = Bet / (Pot + Bet) = 0.5 / (1 + 0.5) = 33%。但如果問賠率，對手跟 0.5 贏 1.5，需要 25% 勝率。",
+            "explanation_en": "Required equity = Bet / (2*Pot + Bet) for calling. Opponent risks 0.5 to win 1.5, needs 25%.",
+        },
+        {
+            "concept": "alpha",
+            "question_zh": "你下注全底池，理論上你的詐唬比例應該是多少？",
+            "question_en": "You bet pot-sized. What should your bluff frequency be theoretically?",
+            "correct": "33%",
+            "options": ["25%", "33%", "40%", "50%"],
+            "explanation_zh": "詐唬頻率 = Bet / (Bet + Pot) = 1 / (1 + 1) = 50%... 但這是下注範圍中的詐唬比例。Alpha = B/(B+P) = 33% 是對手跟注的賠率。",
+            "explanation_en": "Bluff ratio in betting range: theoretically 1:2 value to bluffs for pot bet = 33% bluffs.",
+        },
+
+        # SPR (Stack to Pot Ratio)
+        {
+            "concept": "spr",
+            "question_zh": "翻牌底池 100，雙方有效籌碼 300。SPR 是多少？",
+            "question_en": "Flop pot is 100, effective stacks are 300. What is the SPR?",
+            "correct": "3",
+            "options": ["2", "3", "4", "5"],
+            "explanation_zh": "SPR = Stack / Pot = 300 / 100 = 3。低 SPR 意味著更容易全下。",
+            "explanation_en": "SPR = Stack / Pot = 300 / 100 = 3. Low SPR means easier to commit.",
+        },
+        {
+            "concept": "spr",
+            "question_zh": "低 SPR (< 3) 的情況下，哪種牌力最受益？",
+            "question_en": "In low SPR (< 3) situations, which hand type benefits most?",
+            "correct": "頂對/Top pair" if lang == "zh" else "Top pair",
+            "options": (["頂對", "同花聽牌", "中等對子", "高牌"] if lang == "zh"
+                       else ["Top pair", "Flush draw", "Medium pair", "High card"]),
+            "explanation_zh": "低 SPR 時頂對可以價值全下，不用擔心被逆轉。聽牌在低 SPR 賠率不好。",
+            "explanation_en": "Low SPR favors made hands like top pair that can value shove. Draws get poor implied odds.",
+        },
+
+        # Range Advantage
+        {
+            "concept": "range_adv",
+            "question_zh": "BTN vs BB SRP，A72r 牌面誰有範圍優勢？",
+            "question_en": "BTN vs BB SRP, A72r board. Who has range advantage?",
+            "correct": "BTN",
+            "options": ["BTN", "BB", "差不多" if lang == "zh" else "Even", "要看手牌" if lang == "zh" else "Depends"],
+            "explanation_zh": "BTN 範圍有更多 Ax 組合，BB 的很多 Ax 已經 3-bet 出去了。",
+            "explanation_en": "BTN has more Ax combos, many of BB's Ax would have 3-bet preflop.",
+        },
+        {
+            "concept": "range_adv",
+            "question_zh": "BTN vs BB SRP，876 連接牌面誰有範圍優勢？",
+            "question_en": "BTN vs BB SRP, 876 connected board. Who has range advantage?",
+            "correct": "BB",
+            "options": ["BTN", "BB", "差不多" if lang == "zh" else "Even", "要看手牌" if lang == "zh" else "Depends"],
+            "explanation_zh": "BB 防守範圍有更多 65s, 98s, 54s 等連接牌，更容易擊中這個牌面。",
+            "explanation_en": "BB defending range has more connectors like 65s, 98s, 54s that hit this board.",
+        },
+
+        # Nut Advantage
+        {
+            "concept": "nut_adv",
+            "question_zh": "3-bet pot 中，KK2 牌面誰有堅果優勢？",
+            "question_en": "In a 3-bet pot, KK2 board. Who has the nut advantage?",
+            "correct": "3-bet者" if lang == "zh" else "3-bettor",
+            "options": (["3-bet者", "跟注者", "差不多", "要看位置"] if lang == "zh"
+                       else ["3-bettor", "Caller", "Even", "Depends on position"]),
+            "explanation_zh": "3-bet 範圍有更多 KK, AA，跟注者通常不會有這些牌。",
+            "explanation_en": "3-bet range contains KK, AA while caller typically doesn't have these.",
+        },
+
+        # Polarization
+        {
+            "concept": "polarization",
+            "question_zh": "河牌大注 (>75% pot) 通常代表什麼範圍？",
+            "question_en": "A large river bet (>75% pot) typically represents what range?",
+            "correct": "極化範圍" if lang == "zh" else "Polarized range",
+            "options": (["極化範圍", "線性範圍", "平衡範圍", "弱牌範圍"] if lang == "zh"
+                       else ["Polarized range", "Linear range", "Merged range", "Weak range"]),
+            "explanation_zh": "大注是極化策略：要麼很強(取值)，要麼很弱(詐唬)，中等牌力不會這樣下注。",
+            "explanation_en": "Large bets are polarized: either very strong (value) or weak (bluff), medium hands don't bet big.",
+        },
+        {
+            "concept": "polarization",
+            "question_zh": "小注 (25-33% pot) 通常代表什麼策略？",
+            "question_en": "A small bet (25-33% pot) typically represents what strategy?",
+            "correct": "高頻範圍下注" if lang == "zh" else "High frequency range bet",
+            "options": (["高頻範圍下注", "強價值下注", "純詐唬", "保護性下注"] if lang == "zh"
+                       else ["High frequency range bet", "Strong value bet", "Pure bluff", "Protection bet"]),
+            "explanation_zh": "小注可以用很寬的範圍下注，包括價值牌、聽牌、弱牌，給對手施壓同時保持平衡。",
+            "explanation_en": "Small bets allow wide range betting including value, draws, and weak hands while staying balanced.",
+        },
+    ]
+
+    try:
+        concept = random.choice(GTO_CONCEPTS)
+
+        question = concept["question_zh"] if lang == "zh" else concept["question_en"]
+        explanation = concept["explanation_zh"] if lang == "zh" else concept["explanation_en"]
+        options = list(concept["options"])
+        correct = concept["correct"]
+
+        random.shuffle(options)
+
+        return {
+            "question": question,
+            "options": options,
+            "correct": correct,
+            "explanation": explanation,
+            "concept": concept["concept"],  # For categorization
+        }
+    except Exception:
+        return None
+
+
 def _display_mock_question(q, idx, lang):
-    """Display a single mock exam question."""
+    """Display a single mock exam question with visual support."""
     qtype = q["type"]
 
     type_icons = {
@@ -3219,19 +3579,90 @@ def _display_mock_question(q, idx, lang):
         "ev": "💰",
         "logic": "🧠",
         "postflop": "🎯",
+        "preflop_action": "🎴",
+        "gto_concept": "📊",
     }
     type_names = {
         "equity": ("權益測驗", "Equity"),
         "outs": ("補牌測驗", "Outs"),
         "ev": ("EV 測驗", "EV"),
-        "logic": ("翻前邏輯", "Preflop"),
-        "postflop": ("翻後邏輯", "Postflop"),
+        "logic": ("翻前邏輯", "Preflop Logic"),
+        "postflop": ("翻後邏輯", "Postflop Logic"),
+        "preflop_action": ("翻前動作", "Preflop Action"),
+        "gto_concept": ("GTO 概念", "GTO Concept"),
     }
 
     icon = type_icons.get(qtype, "❓")
     name = type_names.get(qtype, ("", ""))[0 if lang == "zh" else 1]
 
-    # Question card
+    # Helper function to generate card HTML
+    def _get_card_html(hand_str, seed_str):
+        """Generate card visual HTML for a hand string like 'AKs' or 'QQ'."""
+        import random
+        from core.hand import Hand
+
+        try:
+            hand = Hand(hand_str)
+            rng = random.Random(seed_str)
+            suits = ['s', 'h', 'd', 'c']
+
+            if hand.is_pair:
+                chosen = rng.sample(suits, 2)
+                s1, s2 = chosen[0], chosen[1]
+            elif hand.is_suited:
+                s1 = s2 = rng.choice(suits)
+            else:
+                chosen = rng.sample(suits, 2)
+                s1, s2 = chosen[0], chosen[1]
+
+            def get_color(s):
+                return {'s': '#1a1a2e', 'h': '#ef4444', 'd': '#3b82f6', 'c': '#22c55e'}.get(s, '#1a1a2e')
+
+            def get_symbol(s):
+                return {'s': '♠', 'h': '♥', 'd': '♦', 'c': '♣'}.get(s, s)
+
+            def fmt_rank(r):
+                return "10" if r == "T" else r
+
+            html = '<div style="display:flex;gap:4px;justify-content:center;margin:8px 0;">'
+            for rank, suit in [(hand.rank1, s1), (hand.rank2, s2)]:
+                color = get_color(suit)
+                symbol = get_symbol(suit)
+                html += f'''
+                <div style="width:36px;height:50px;background:linear-gradient(145deg,#fff 0%,#f0f0f0 100%);
+                            border-radius:4px;display:flex;flex-direction:column;align-items:center;
+                            justify-content:center;color:{color};font-weight:bold;
+                            box-shadow:0 2px 4px rgba(0,0,0,0.3);">
+                    <span style="font-size:14px;line-height:1;">{fmt_rank(rank)}</span>
+                    <span style="font-size:12px;line-height:1;">{symbol}</span>
+                </div>'''
+            html += '</div>'
+            return html
+        except Exception:
+            return ""
+
+    # Build visual content based on question type
+    visual_html = ""
+    if qtype == "preflop_action" and "hand" in q:
+        visual_html = _get_card_html(q["hand"], f"mock_{idx}_{q['hand']}")
+    elif qtype == "equity" and "hand1" in q:
+        # For equity questions with hands
+        h1_html = _get_card_html(q["hand1"], f"mock_{idx}_h1")
+        h2_html = _get_card_html(q["hand2"], f"mock_{idx}_h2")
+        visual_html = f'''
+        <div style="display:flex;align-items:center;justify-content:center;gap:16px;margin:8px 0;">
+            <div style="text-align:center;">
+                {h1_html}
+                <div style="font-size:0.75rem;color:#94a3b8;">{q["hand1"]}</div>
+            </div>
+            <span style="font-size:1.2rem;color:#fbbf24;">VS</span>
+            <div style="text-align:center;">
+                {h2_html}
+                <div style="font-size:0.75rem;color:#94a3b8;">{q["hand2"]}</div>
+            </div>
+        </div>'''
+
+    # Question card with optional visual
     st.markdown(f"""
     <div style="
         background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%);
@@ -3242,6 +3673,7 @@ def _display_mock_question(q, idx, lang):
         <div style="color: #a5b4fc; font-size: 0.85rem; margin-bottom: 8px;">
             {icon} {name}
         </div>
+        {visual_html}
         <div style="font-size: 1.1rem; font-weight: 500;">
             {q['question']}
         </div>
@@ -6472,17 +6904,33 @@ def equity_quiz_page():
 
         suits = ['s', 'h', 'd', 'c']
 
-        # Generate hero cards
-        def generate_cards_html(hand, rng, card_size="48px", card_height="66px"):
-            if hand.is_pair:
-                chosen = rng.sample(suits, 2)
-                s1, s2 = chosen[0], chosen[1]
-            elif hand.is_suited:
-                s1 = s2 = rng.choice(suits)
-            else:
-                chosen = rng.sample(suits, 2)
-                s1, s2 = chosen[0], chosen[1]
+        # Generate cards avoiding collisions between hero and villain
+        used_cards = set()  # Track (rank, suit) already assigned
 
+        def generate_cards(hand, rng, used):
+            """Generate card suits avoiding used cards."""
+            if hand.is_pair:
+                available1 = [s for s in suits if (hand.rank1, s) not in used]
+                s1 = rng.choice(available1) if available1 else rng.choice(suits)
+                used.add((hand.rank1, s1))
+                available2 = [s for s in suits if (hand.rank2, s) not in used]
+                s2 = rng.choice(available2) if available2 else rng.choice(suits)
+                used.add((hand.rank2, s2))
+            elif hand.is_suited:
+                valid = [s for s in suits if (hand.rank1, s) not in used and (hand.rank2, s) not in used]
+                s1 = s2 = rng.choice(valid) if valid else rng.choice(suits)
+                used.add((hand.rank1, s1))
+                used.add((hand.rank2, s2))
+            else:
+                available1 = [s for s in suits if (hand.rank1, s) not in used]
+                s1 = rng.choice(available1) if available1 else rng.choice(suits)
+                used.add((hand.rank1, s1))
+                available2 = [s for s in suits if (hand.rank2, s) not in used and s != s1]
+                s2 = rng.choice(available2) if available2 else rng.choice([s for s in suits if s != s1])
+                used.add((hand.rank2, s2))
+            return s1, s2
+
+        def cards_to_html(hand, s1, s2, card_size="48px", card_height="66px"):
             html = ""
             for rank, suit in [(hand.rank1, s1), (hand.rank2, s2)]:
                 color = get_suit_color(suit)
@@ -6498,8 +6946,11 @@ def equity_quiz_page():
                 '''
             return html
 
-        villain_cards_html = generate_cards_html(villain_hand, villain_rng)
-        hero_cards_html = generate_cards_html(hero_hand, hero_rng)
+        # Generate hero cards first, then villain avoiding hero's cards
+        hero_s1, hero_s2 = generate_cards(hero_hand, hero_rng, used_cards)
+        villain_s1, villain_s2 = generate_cards(villain_hand, villain_rng, used_cards)
+        hero_cards_html = cards_to_html(hero_hand, hero_s1, hero_s2)
+        villain_cards_html = cards_to_html(villain_hand, villain_s1, villain_s2)
 
         hero_label = "我" if lang == "zh" else "ME"
         villain_label = "對手" if lang == "zh" else "OPP"

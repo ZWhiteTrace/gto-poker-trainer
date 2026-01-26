@@ -180,35 +180,6 @@ def logout():
             del st.session_state[key]
 
 
-def handle_oauth_callback():
-    """Handle OAuth callback from URL parameters."""
-    # Check for access_token in URL fragment (handled by JS) or query params
-    query_params = st.query_params
-
-    # If there's an access token in session storage (set by Supabase JS)
-    # This is a simplified version - full implementation needs JS interop
-    access_token = query_params.get("access_token")
-
-    if access_token:
-        client = get_supabase_client()
-        if client:
-            try:
-                response = client.auth.get_user(access_token)
-                if response.user:
-                    st.session_state.user = {
-                        "id": response.user.id,
-                        "email": response.user.email,
-                        "name": response.user.user_metadata.get("full_name", ""),
-                        "avatar": response.user.user_metadata.get("avatar_url", ""),
-                    }
-                    # Clear the token from URL
-                    st.query_params.clear()
-                    return True
-            except Exception:
-                pass
-    return False
-
-
 # ═══════════════════════════════════════════════════════════════════════════
 # User Data Storage Functions
 # ═══════════════════════════════════════════════════════════════════════════
