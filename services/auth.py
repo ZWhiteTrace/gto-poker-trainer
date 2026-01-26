@@ -190,39 +190,7 @@ def restore_session_from_storage() -> bool:
     if st.session_state.get("user"):
         return True
 
-    # Check if we've already tried to restore this session
-    if st.session_state.get("_session_restore_attempted"):
-        return False
-
-    st.session_state._session_restore_attempted = True
-
-    # Inject JavaScript to check localStorage and post back
-    import streamlit.components.v1 as components
-
-    components.html("""
-    <script>
-        (function() {
-            try {
-                var sessionData = localStorage.getItem('gto_auth_session');
-                if (sessionData) {
-                    var data = JSON.parse(sessionData);
-                    // Store in a way the app can read - use query params
-                    var currentUrl = window.location.href.split('?')[0].split('#')[0];
-                    var newUrl = currentUrl + '?restore_session=' + encodeURIComponent(sessionData);
-
-                    // Only redirect if we haven't already
-                    if (!window.location.search.includes('restore_session')) {
-                        window.location.href = newUrl;
-                    }
-                }
-            } catch (e) {
-                console.error('Failed to restore session:', e);
-            }
-        })();
-    </script>
-    """, height=0)
-
-    # Check if restore_session param is present
+    # Check if restore_session param is present (from JavaScript redirect)
     params = st.query_params
     restore_data = params.get("restore_session")
 
@@ -273,6 +241,31 @@ def restore_session_from_storage() -> bool:
             print(f"Session restore error: {e}")
 
         st.query_params.clear()
+        return False
+
+    # No restore_session param - inject JavaScript to check localStorage and redirect
+    # Only do this once per session to avoid infinite loops
+    if not st.session_state.get("_session_restore_attempted"):
+        st.session_state._session_restore_attempted = True
+
+        import streamlit.components.v1 as components
+        components.html("""
+        <script>
+            (function() {
+                try {
+                    var sessionData = localStorage.getItem('gto_auth_session');
+                    if (sessionData) {
+                        // Session exists in localStorage, redirect to restore it
+                        var currentUrl = window.location.href.split('?')[0].split('#')[0];
+                        var newUrl = currentUrl + '?restore_session=' + encodeURIComponent(sessionData);
+                        window.location.replace(newUrl);
+                    }
+                } catch (e) {
+                    console.error('Failed to check session:', e);
+                }
+            })();
+        </script>
+        """, height=0)
 
     return False
 
