@@ -569,6 +569,7 @@ TEXTS = {
         "drill_mode": "練習模式",
         "range_viewer": "範圍查看",
         "push_fold": "MTT 短碼",
+        "facing_3bet": "面對 3bet",
         "icm_calculator": "ICM 計算器",
         "hand_review": "手牌回顧",
         "statistics": "統計分析",
@@ -679,6 +680,7 @@ TEXTS = {
         "drill_mode": "Drill Mode",
         "range_viewer": "Range Viewer",
         "push_fold": "MTT Short Stack",
+        "facing_3bet": "Facing 3bet",
         "icm_calculator": "ICM Calculator",
         "hand_review": "Hand Review",
         "statistics": "Statistics",
@@ -1060,7 +1062,7 @@ def main():
         st.markdown("<div style='height: 5px;'></div>", unsafe_allow_html=True)
 
         # Navigation
-        nav_options = [t("drill_mode"), t("range_viewer"), t("push_fold"), t("icm_calculator"), t("hand_review"), t("hand_analysis"), t("postflop"), t("equity_quiz"), t("outs_quiz"), t("ev_quiz"), t("logic_quiz"), t("mock_exam"), t("learning"), t("statistics")]
+        nav_options = [t("drill_mode"), t("range_viewer"), t("push_fold"), t("facing_3bet"), t("icm_calculator"), t("hand_review"), t("hand_analysis"), t("postflop"), t("equity_quiz"), t("outs_quiz"), t("ev_quiz"), t("logic_quiz"), t("mock_exam"), t("learning"), t("statistics")]
         page_idx = st.radio(
             "Navigate",
             options=range(len(nav_options)),
