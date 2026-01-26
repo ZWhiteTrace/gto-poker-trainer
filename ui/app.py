@@ -253,6 +253,112 @@ st.markdown("""
         word-wrap: break-word !important;
         line-height: 1.3 !important;
     }
+
+    /* ==================== MOBILE OPTIMIZATION ==================== */
+    @media (max-width: 768px) {
+        /* Larger touch targets for buttons */
+        button[kind="primary"], button[kind="secondary"],
+        .stButton > button {
+            min-height: 48px !important;
+            font-size: 1rem !important;
+            padding: 12px 16px !important;
+        }
+
+        /* Full-width buttons on mobile */
+        [data-testid="stHorizontalBlock"]:has(button) {
+            flex-direction: column !important;
+            gap: 8px !important;
+        }
+        [data-testid="stHorizontalBlock"]:has(button) > div {
+            width: 100% !important;
+            flex: none !important;
+        }
+
+        /* Sidebar navigation - smaller font, better spacing */
+        section[data-testid="stSidebar"] label {
+            font-size: 0.9rem !important;
+            padding: 8px 4px !important;
+        }
+        section[data-testid="stSidebar"] [data-testid="stRadio"] > div {
+            gap: 2px !important;
+        }
+
+        /* Reduce main content padding */
+        .main .block-container {
+            padding-left: 0.5rem !important;
+            padding-right: 0.5rem !important;
+        }
+
+        /* Range grid - ensure it fits */
+        [data-testid="stMarkdown"] > div {
+            overflow-x: auto !important;
+            -webkit-overflow-scrolling: touch !important;
+        }
+
+        /* Cards display - responsive */
+        .hand-display {
+            font-size: 2rem !important;
+            padding: 10px !important;
+        }
+
+        /* Metrics - stack vertically */
+        [data-testid="stMetric"] {
+            padding: 8px !important;
+        }
+        [data-testid="stMetric"] label {
+            font-size: 0.75rem !important;
+        }
+        [data-testid="stMetric"] [data-testid="stMetricValue"] {
+            font-size: 1.2rem !important;
+        }
+
+        /* Tables - horizontal scroll */
+        .stDataFrame, table {
+            overflow-x: auto !important;
+            display: block !important;
+        }
+
+        /* Selectbox/multiselect - larger touch */
+        [data-testid="stSelectbox"], [data-testid="stMultiSelect"] {
+            min-height: 44px !important;
+        }
+
+        /* Expanders - easier to tap */
+        .streamlit-expanderHeader {
+            min-height: 44px !important;
+            padding: 12px !important;
+        }
+
+        /* Hide less important elements on small screens */
+        .main h1 {
+            font-size: 1.5rem !important;
+        }
+        .main h2 {
+            font-size: 1.2rem !important;
+        }
+    }
+
+    /* Extra small screens (phones) */
+    @media (max-width: 480px) {
+        /* Even larger buttons */
+        button[kind="primary"], button[kind="secondary"],
+        .stButton > button {
+            min-height: 52px !important;
+            font-size: 1.1rem !important;
+        }
+
+        /* Sidebar collapses by default - ensure nav is scrollable */
+        section[data-testid="stSidebar"] {
+            max-height: 100vh !important;
+            overflow-y: auto !important;
+        }
+
+        /* Smaller padding */
+        .main .block-container {
+            padding-left: 0.25rem !important;
+            padding-right: 0.25rem !important;
+        }
+    }
 </style>
 """, unsafe_allow_html=True)
 
