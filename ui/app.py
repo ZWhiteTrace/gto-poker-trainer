@@ -686,8 +686,9 @@ def _display_auth_section(lang: str):
             # Google Login Button (prominent)
             google_url = get_google_oauth_url()
             if google_url:
+                # Google login button with localStorage flag for tracking OAuth attempts
                 st.markdown(f"""
-                <a href="{google_url}" target="_self" style="
+                <a href="{google_url}" target="_self" onclick="localStorage.setItem('gto_oauth_pending','true')" style="
                     display: flex;
                     align-items: center;
                     justify-content: center;
@@ -710,6 +711,43 @@ def _display_auth_section(lang: str):
                     {"使用 Google 登入" if lang == "zh" else "Sign in with Google"}
                 </a>
                 """, unsafe_allow_html=True)
+
+                # Check if OAuth was attempted but not completed (hash fragment issue)
+                components.html("""
+                <script>
+                    (function() {
+                        var pending = localStorage.getItem('gto_oauth_pending');
+                        var hash = window.location.hash || '';
+
+                        // If we just came back from OAuth and there's a hash with token
+                        if (pending === 'true' && hash.includes('access_token')) {
+                            // Clear the pending flag
+                            localStorage.removeItem('gto_oauth_pending');
+
+                            // Create redirect URL
+                            var hashParams = hash.substring(1);
+                            var newUrl = window.location.origin + window.location.pathname + '?' + hashParams;
+
+                            // Show completion message
+                            var div = document.createElement('div');
+                            div.id = 'oauth-helper';
+                            div.style.cssText = 'background:linear-gradient(135deg,#1e40af,#7c3aed);color:white;padding:20px;border-radius:12px;margin:10px 0;text-align:center;';
+                            div.innerHTML = '<div style="font-size:1.2rem;margin-bottom:10px;">✅ Google 驗證成功！</div>' +
+                                '<a href="' + newUrl + '" style="display:inline-block;background:#22c55e;color:white;padding:12px 24px;border-radius:8px;text-decoration:none;font-weight:bold;font-size:1rem;">👆 點此完成登入</a>' +
+                                '<div style="font-size:0.8rem;margin-top:10px;opacity:0.8;">（或手動將網址中的 # 改成 ?）</div>';
+
+                            // Insert after the Google button
+                            var container = document.currentScript.parentElement;
+                            if (container) {
+                                container.appendChild(div);
+                            }
+                        } else if (pending === 'true') {
+                            // OAuth was attempted but no token in URL - might have failed
+                            localStorage.removeItem('gto_oauth_pending');
+                        }
+                    })();
+                </script>
+                """, height=0)
 
                 st.markdown(f"""
                 <div style="text-align: center; color: #6b7280; font-size: 0.8rem; margin: 8px 0;">
@@ -767,51 +805,29 @@ def main():
             sync_progress_on_login()
             st.rerun()
 
-        # JavaScript to auto-convert hash to query params
-        # This handles OAuth implicit flow where tokens are in URL hash
+        # JavaScript to handle OAuth hash and show helper UI at the top of the page
         components.html("""
         <script>
             (function() {
-                // Try to access the top-level window
-                var targetWindow = window;
-                try {
-                    // Try parent windows until we find one with the hash
-                    if (window.parent && window.parent !== window) {
-                        targetWindow = window.parent;
-                    }
-                    if (window.top && window.top !== window) {
-                        targetWindow = window.top;
-                    }
-                } catch(e) {
-                    // Cross-origin restriction, use current window
-                    targetWindow = window;
-                }
-
-                // Check for access_token in hash
-                var hash = '';
-                try {
-                    hash = targetWindow.location.hash;
-                } catch(e) {
-                    hash = window.location.hash;
-                }
+                var hash = window.location.hash || '';
 
                 if (hash && hash.includes('access_token')) {
+                    // Create the correct URL with query params
                     var hashParams = hash.substring(1);
-                    var currentUrl = '';
-                    try {
-                        currentUrl = targetWindow.location.origin + targetWindow.location.pathname;
-                    } catch(e) {
-                        currentUrl = window.location.origin + window.location.pathname;
-                    }
-                    var newUrl = currentUrl + '?' + hashParams;
+                    var newUrl = window.location.origin + window.location.pathname + '?' + hashParams;
 
-                    // Redirect the top-level window
-                    try {
-                        targetWindow.location.replace(newUrl);
-                    } catch(e) {
-                        // If we can't redirect parent, try opening in new context
-                        window.open(newUrl, '_top');
-                    }
+                    // Clear OAuth pending flag
+                    localStorage.removeItem('gto_oauth_pending');
+
+                    // Show a prominent helper banner at the top
+                    var banner = document.createElement('div');
+                    banner.id = 'oauth-complete-banner';
+                    banner.style.cssText = 'position:fixed;top:0;left:0;right:0;background:linear-gradient(135deg,#1e40af,#7c3aed);color:white;padding:20px;text-align:center;z-index:999999;font-family:sans-serif;box-shadow:0 4px 20px rgba(0,0,0,0.3);';
+                    banner.innerHTML = '<div style="font-size:1.1rem;margin-bottom:12px;">✅ Google 驗證成功！請點擊下方按鈕完成登入</div>' +
+                        '<a href="' + newUrl + '" style="display:inline-block;background:#22c55e;color:white;padding:14px 32px;border-radius:8px;text-decoration:none;font-weight:bold;font-size:1.1rem;box-shadow:0 2px 10px rgba(34,197,94,0.4);">🚀 完成登入</a>' +
+                        '<div style="font-size:0.75rem;margin-top:10px;opacity:0.8;">如果按鈕無效，請手動將網址中的 <code style="background:rgba(255,255,255,0.2);padding:2px 6px;border-radius:3px;">#</code> 改成 <code style="background:rgba(255,255,255,0.2);padding:2px 6px;border-radius:3px;">?</code></div>';
+
+                    document.body.insertBefore(banner, document.body.firstChild);
                 }
             })();
         </script>
