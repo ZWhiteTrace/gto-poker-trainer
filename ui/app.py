@@ -38,7 +38,8 @@ from ui.components.rfi_chart import display_rfi_charts
 from ui.components.push_fold_chart import (
     display_push_fold_chart, display_push_fold_comparison, display_push_fold_drill,
     display_defense_chart, display_defense_drill,
-    display_resteal_chart, display_resteal_drill
+    display_resteal_chart, display_resteal_drill,
+    display_hu_chart, display_hu_drill
 )
 from ui.components.hand_review import display_hand_review_page
 from ui.components.hand_analysis import display_hand_analysis_page
@@ -1875,13 +1876,13 @@ def push_fold_page():
     """MTT Push/Fold chart page with practice mode."""
     lang = st.session_state.language
 
-    # Tabs for Push, Defense, Resteal, and Practice modes
+    # Tabs for Push, Defense, Resteal, HU, and Practice modes
     tab_labels = (
-        ["📊 Push 圖表", "🛡️ 防守圖表", "🔥 Resteal 圖表", "🎯 Push 練習", "🎯 防守練習", "🎯 Resteal 練習"]
+        ["📊 Push", "🛡️ 防守", "🔥 Resteal", "👥 HU", "🎯 Push練", "🎯 防守練", "🎯 Resteal練", "🎯 HU練"]
         if lang == "zh"
-        else ["📊 Push Charts", "🛡️ Defense Charts", "🔥 Resteal Charts", "🎯 Push Practice", "🎯 Defense Practice", "🎯 Resteal Practice"]
+        else ["📊 Push", "🛡️ Defense", "🔥 Resteal", "👥 HU", "🎯 Push", "🎯 Defense", "🎯 Resteal", "🎯 HU"]
     )
-    tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs(tab_labels)
+    tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8 = st.tabs(tab_labels)
 
     with tab1:
         # Push chart
@@ -1899,16 +1900,24 @@ def push_fold_page():
         display_resteal_chart(lang)
 
     with tab4:
+        # HU chart
+        display_hu_chart(lang)
+
+    with tab5:
         # Push practice mode
         display_push_fold_drill(lang)
 
-    with tab5:
+    with tab6:
         # Defense practice mode
         display_defense_drill(lang)
 
-    with tab6:
+    with tab7:
         # Resteal practice mode
         display_resteal_drill(lang)
+
+    with tab8:
+        # HU practice mode
+        display_hu_drill(lang)
 
 
 def icm_calculator_page():

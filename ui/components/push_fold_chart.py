@@ -9,7 +9,8 @@ from pathlib import Path
 from trainer.push_fold_drill import (
     get_push_fold_drill, PushFoldSpot, STACK_DEPTHS,
     DEFENSE_SCENARIOS, DEFENSE_SCENARIO_LABELS,
-    RESTEAL_SCENARIOS, RESTEAL_SCENARIO_LABELS
+    RESTEAL_SCENARIOS, RESTEAL_SCENARIO_LABELS,
+    HU_SCENARIOS, HU_SCENARIO_LABELS, HU_STACK_DEPTHS
 )
 from ui.components.card_display import display_hand_cards
 
@@ -55,8 +56,23 @@ def load_resteal_data():
         return {}
 
 
+def load_hu_data():
+    """Load HU (Heads Up) push/defense ranges from JSON file."""
+    data_path = Path(__file__).parent.parent.parent / "data" / "ranges" / "mtt" / "hu_push_defense.json"
+    try:
+        with open(data_path, 'r', encoding='utf-8') as f:
+            return json.load(f)
+    except Exception as e:
+        st.error(f"Failed to load HU data: {e}")
+        return {}
+
+
 # Color for resteal (3bet shove)
 COLOR_RESTEAL = "#f97316"  # Orange for 3bet shove
+
+# Color for HU
+COLOR_HU_PUSH = "#a855f7"  # Purple for HU push
+COLOR_HU_CALL = "#06b6d4"  # Cyan for HU call
 
 
 def get_hand_name(row: int, col: int) -> str:
@@ -879,6 +895,309 @@ def _handle_resteal_answer(action: str, lang: str):
 
     result = drill.check_resteal_answer(spot, action)
     st.session_state.rs_result = result
+
+    # Update stats
+    stats["total"] += 1
+    if result.is_correct:
+        stats["correct"] += 1
+        stats["streak"] += 1
+        if stats["streak"] > stats["best_streak"]:
+            stats["best_streak"] = stats["streak"]
+    else:
+        stats["streak"] = 0
+
+    st.rerun()
+
+
+def display_hu_chart(lang: str = "zh"):
+    """Display HU (Heads Up) push/call chart with scenario and stack depth selection."""
+
+    data = load_hu_data()
+    if not data:
+        return
+
+    # Title
+    title = "HU 推/防 範圍" if lang == "zh" else "HU Push/Defense Ranges"
+    st.subheader(title)
+
+    # Description
+    desc = "Heads Up 單挑的 Push 和 Call 範圍" if lang == "zh" else "Push and Call ranges for Heads Up play"
+    st.caption(desc)
+
+    # Controls
+    col1, col2 = st.columns(2)
+
+    with col1:
+        scenario_label = "場景" if lang == "zh" else "Scenario"
+        scenario_display = {}
+        for s in HU_SCENARIOS:
+            labels = HU_SCENARIO_LABELS.get(s, {})
+            scenario_display[s] = labels.get(lang, s)
+
+        selected_scenario = st.selectbox(
+            scenario_label,
+            HU_SCENARIOS,
+            format_func=lambda x: scenario_display[x],
+            index=0,
+            key="hu_scenario_chart"
+        )
+
+    # Get available stack depths for this scenario
+    scenario_data = data.get("hu", {}).get(selected_scenario, {})
+    available_stacks = list(scenario_data.keys())
+
+    with col2:
+        stack_label = "籌碼深度" if lang == "zh" else "Stack Depth"
+        if available_stacks:
+            selected_stack = st.selectbox(
+                stack_label,
+                available_stacks,
+                index=min(4, len(available_stacks) - 1),  # Default to ~10bb
+                key="hu_stack_chart"
+            )
+        else:
+            st.warning("無可用籌碼深度" if lang == "zh" else "No stack depths available")
+            return
+
+    # Get range for selected scenario and stack
+    hu_range = set(scenario_data.get(selected_stack, []))
+    range_count = len(hu_range)
+    total_hands = 169
+    range_pct = (range_count / total_hands) * 100
+
+    # Determine action type based on scenario
+    is_push = selected_scenario == "SB_push"
+    action_word = "Push" if is_push else "Call"
+    color = COLOR_HU_PUSH if is_push else COLOR_HU_CALL
+
+    # Stats
+    stats_text = f"{action_word} 範圍: {range_count} 手牌 ({range_pct:.1f}%)" if lang == "zh" else f"{action_word} range: {range_count} hands ({range_pct:.1f}%)"
+    st.markdown(f"<p style='text-align:center; color:#9ca3af; margin-bottom:10px;'>{stats_text}</p>", unsafe_allow_html=True)
+
+    # Legend
+    legend_html = f'''
+    <div style="display: flex; gap: 20px; justify-content: center; margin: 10px 0;">
+        <span style="display: flex; align-items: center; gap: 6px;">
+            <span style="background: {color}; width: 24px; height: 18px; border-radius: 3px; display: inline-block;"></span>
+            <span style="color: white;">{action_word}</span>
+        </span>
+        <span style="display: flex; align-items: center; gap: 6px;">
+            <span style="background: #374151; width: 24px; height: 18px; border-radius: 3px; display: inline-block;"></span>
+            <span style="color: white;">Fold</span>
+        </span>
+    </div>
+    '''
+    st.markdown(legend_html, unsafe_allow_html=True)
+
+    # Build grid HTML
+    html = '''
+    <div style="width:100%; display:flex; flex-direction:column; align-items:center;">
+    <div style="display:grid; grid-template-columns:repeat(13,minmax(0,1fr)); gap:2px; width:100%; max-width:555px; background:#1a1a2e; padding:8px; border-radius:8px; box-sizing:border-box;">
+    '''
+
+    for i, r1 in enumerate(RANKS):
+        for j, r2 in enumerate(RANKS):
+            hand = get_hand_name(i, j)
+            is_in_range = hand in hu_range
+
+            if is_in_range:
+                bg_color = color
+                text_color = "white"
+            else:
+                bg_color = COLOR_FOLD
+                text_color = "#6b7280"
+
+            cell_style = f"aspect-ratio:1; display:flex; align-items:center; justify-content:center; border-radius:3px; background:{bg_color}; color:{text_color}; font-size:clamp(10px,2.8vw,15px); font-weight:600;"
+            html += f'<div style="{cell_style}">{hand}</div>'
+
+    html += '</div></div>'
+    st.markdown(html, unsafe_allow_html=True)
+
+    # Tips section
+    st.markdown("---")
+    tips_title = "使用提示" if lang == "zh" else "Tips"
+    st.markdown(f"**{tips_title}:**")
+
+    if lang == "zh":
+        if is_push:
+            tips = [
+                "紫色手牌 = SB Push (全下)",
+                "灰色手牌 = Fold",
+                "HU 情況下，SB 的 Push 範圍非常寬",
+                "籌碼越短，Push 範圍越寬",
+                "3bb 時接近 any-two 都可以 Push",
+            ]
+        else:
+            tips = [
+                "青色手牌 = BB Call (跟注)",
+                "灰色手牌 = Fold",
+                "BB 面對 SB 全下時的防守範圍",
+                "籌碼越短，Call 範圍越寬",
+                "需要比 Push 範圍更緊一些（因為要投入更多籌碼）",
+            ]
+    else:
+        if is_push:
+            tips = [
+                "Purple hands = SB Push (All-in)",
+                "Gray hands = Fold",
+                "In HU, SB has very wide push range",
+                "Shorter stacks = wider push range",
+                "At 3bb, almost any-two can be pushed",
+            ]
+        else:
+            tips = [
+                "Cyan hands = BB Call",
+                "Gray hands = Fold",
+                "BB defense range when facing SB shove",
+                "Shorter stacks = wider call range",
+                "Call range is tighter than push range (risking more chips)",
+            ]
+
+    for tip in tips:
+        st.markdown(f"- {tip}")
+
+
+def display_hu_drill(lang: str = "zh"):
+    """Display HU (Heads Up) drill mode for practice."""
+
+    # Initialize session state
+    if "hu_drill" not in st.session_state:
+        st.session_state.hu_drill = get_push_fold_drill()
+    if "hu_spot" not in st.session_state:
+        st.session_state.hu_spot = None
+    if "hu_result" not in st.session_state:
+        st.session_state.hu_result = None
+    if "hu_stats" not in st.session_state:
+        st.session_state.hu_stats = {"total": 0, "correct": 0, "streak": 0, "best_streak": 0}
+
+    drill = st.session_state.hu_drill
+
+    # Title
+    title = "HU 推/防 練習" if lang == "zh" else "HU Push/Defense Practice"
+    st.subheader(title)
+
+    # Settings in expander
+    with st.expander("⚙️ " + ("設定" if lang == "zh" else "Settings"), expanded=False):
+        col1, col2 = st.columns(2)
+
+        with col1:
+            scenario_label = "練習場景" if lang == "zh" else "Practice Scenarios"
+            scenario_display = {}
+            for s in HU_SCENARIOS:
+                labels = HU_SCENARIO_LABELS.get(s, {})
+                scenario_display[s] = labels.get(lang, s)
+
+            selected_scenarios = st.multiselect(
+                scenario_label,
+                HU_SCENARIOS,
+                default=HU_SCENARIOS,  # Default to all scenarios
+                format_func=lambda x: scenario_display[x],
+                key="hu_scenario_select"
+            )
+            if selected_scenarios:
+                drill.set_enabled_hu_scenarios(selected_scenarios)
+
+        with col2:
+            stack_label = "籌碼深度" if lang == "zh" else "Stack Depths"
+            selected_stacks = st.multiselect(
+                stack_label,
+                HU_STACK_DEPTHS,
+                default=["5bb", "8bb", "10bb", "15bb"],
+                key="hu_stack_select"
+            )
+            if selected_stacks:
+                drill.set_enabled_hu_stack_depths(selected_stacks)
+
+    # Stats display
+    stats = st.session_state.hu_stats
+    stats_cols = st.columns(4)
+    with stats_cols[0]:
+        label = "總數" if lang == "zh" else "Total"
+        st.metric(label, stats["total"])
+    with stats_cols[1]:
+        label = "正確" if lang == "zh" else "Correct"
+        pct = (stats["correct"] / stats["total"] * 100) if stats["total"] > 0 else 0
+        st.metric(label, f"{stats['correct']} ({pct:.0f}%)")
+    with stats_cols[2]:
+        label = "連勝" if lang == "zh" else "Streak"
+        st.metric(label, stats["streak"])
+    with stats_cols[3]:
+        label = "最佳" if lang == "zh" else "Best"
+        st.metric(label, stats["best_streak"])
+
+    st.markdown("---")
+
+    # Generate new spot if needed
+    if st.session_state.hu_spot is None:
+        st.session_state.hu_spot = drill.generate_hu_spot()
+        st.session_state.hu_result = None
+
+    spot = st.session_state.hu_spot
+
+    if spot is None:
+        st.warning("無法生成 HU 題目，請檢查設定" if lang == "zh" else "Cannot generate HU spot, please check settings")
+        return
+
+    # Display scenario
+    scenario_label = HU_SCENARIO_LABELS.get(spot.hu_scenario, {}).get(lang, spot.hu_scenario)
+    scenario_text = f"**{scenario_label}** | **{spot.stack_depth.upper()}**"
+    st.markdown(f"<div style='text-align:center; font-size:1.3em; margin-bottom:15px;'>{scenario_text}</div>", unsafe_allow_html=True)
+
+    # Display hand cards
+    display_hand_cards(spot.hand)
+
+    # Determine button labels based on scenario
+    is_push_scenario = spot.hu_scenario == "SB_push"
+
+    # Action buttons
+    if st.session_state.hu_result is None:
+        col1, col2 = st.columns(2)
+        with col1:
+            if is_push_scenario:
+                if st.button("🚀 Push", key="btn_hu_push", use_container_width=True, type="primary"):
+                    _handle_hu_answer("push", lang)
+            else:
+                if st.button("📞 Call", key="btn_hu_call", use_container_width=True, type="primary"):
+                    _handle_hu_answer("call", lang)
+        with col2:
+            if st.button("🃏 Fold", key="btn_hu_fold", use_container_width=True):
+                _handle_hu_answer("fold", lang)
+    else:
+        # Show result
+        result = st.session_state.hu_result
+        if result.is_correct:
+            st.success("✅ " + ("正確！" if lang == "zh" else "Correct!"))
+        else:
+            if is_push_scenario:
+                correct_text = "Push" if result.correct_action == "push" else "Fold"
+            else:
+                correct_text = "Call" if result.correct_action == "call" else "Fold"
+            st.error("❌ " + (f"錯誤！正確答案: {correct_text}" if lang == "zh" else f"Wrong! Correct: {correct_text}"))
+
+        st.info(result.explanation)
+
+        # Show range info
+        action_word = "Push" if is_push_scenario else "Call"
+        range_info = f"該場景 {action_word} 範圍: {result.push_range_count} 手 ({result.push_range_pct:.1f}%)"
+        if lang == "en":
+            range_info = f"{action_word} range at this spot: {result.push_range_count} hands ({result.push_range_pct:.1f}%)"
+        st.caption(range_info)
+
+        # Next button
+        if st.button("➡️ " + ("下一題" if lang == "zh" else "Next"), key="btn_hu_next", use_container_width=True):
+            st.session_state.hu_spot = drill.generate_hu_spot()
+            st.session_state.hu_result = None
+            st.rerun()
+
+
+def _handle_hu_answer(action: str, lang: str):
+    """Handle player's HU answer."""
+    drill = st.session_state.hu_drill
+    spot = st.session_state.hu_spot
+    stats = st.session_state.hu_stats
+
+    result = drill.check_hu_answer(spot, action)
+    st.session_state.hu_result = result
 
     # Update stats
     stats["total"] += 1
