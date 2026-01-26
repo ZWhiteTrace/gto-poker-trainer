@@ -69,7 +69,8 @@ def get_google_oauth_url() -> Optional[str]:
         return None
 
     try:
-        redirect_url = os.getenv("REDIRECT_URL", "http://localhost:8501")
+        # Try os.getenv first (local), then st.secrets (Streamlit Cloud)
+        redirect_url = os.getenv("REDIRECT_URL") or st.secrets.get("REDIRECT_URL", "http://localhost:8501")
         response = client.auth.sign_in_with_oauth({
             "provider": "google",
             "options": {
