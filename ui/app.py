@@ -760,23 +760,53 @@ def main():
             sync_progress_on_login()
             st.rerun()
 
-        # JavaScript to auto-convert hash to query params (run in iframe)
+        # JavaScript to auto-convert hash to query params
+        # This handles OAuth implicit flow where tokens are in URL hash
         components.html("""
         <script>
-            // Auto-redirect if hash contains access_token
-            if (window.location.hash && window.location.hash.includes('access_token')) {
-                var hash = window.location.hash.substring(1);
-                var newUrl = window.location.origin + window.location.pathname + '?' + hash;
-                window.location.href = newUrl;
-            }
-            // Also try parent window
-            try {
-                if (window.parent && window.parent.location.hash && window.parent.location.hash.includes('access_token')) {
-                    var hash = window.parent.location.hash.substring(1);
-                    var newUrl = window.parent.location.origin + window.parent.location.pathname + '?' + hash;
-                    window.parent.location.href = newUrl;
+            (function() {
+                // Try to access the top-level window
+                var targetWindow = window;
+                try {
+                    // Try parent windows until we find one with the hash
+                    if (window.parent && window.parent !== window) {
+                        targetWindow = window.parent;
+                    }
+                    if (window.top && window.top !== window) {
+                        targetWindow = window.top;
+                    }
+                } catch(e) {
+                    // Cross-origin restriction, use current window
+                    targetWindow = window;
                 }
-            } catch(e) {}
+
+                // Check for access_token in hash
+                var hash = '';
+                try {
+                    hash = targetWindow.location.hash;
+                } catch(e) {
+                    hash = window.location.hash;
+                }
+
+                if (hash && hash.includes('access_token')) {
+                    var hashParams = hash.substring(1);
+                    var currentUrl = '';
+                    try {
+                        currentUrl = targetWindow.location.origin + targetWindow.location.pathname;
+                    } catch(e) {
+                        currentUrl = window.location.origin + window.location.pathname;
+                    }
+                    var newUrl = currentUrl + '?' + hashParams;
+
+                    // Redirect the top-level window
+                    try {
+                        targetWindow.location.replace(newUrl);
+                    } catch(e) {
+                        // If we can't redirect parent, try opening in new context
+                        window.open(newUrl, '_top');
+                    }
+                }
+            })();
         </script>
         """, height=0)
 
