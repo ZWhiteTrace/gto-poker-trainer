@@ -42,6 +42,7 @@ from ui.components.push_fold_chart import (
     display_hu_chart, display_hu_drill
 )
 from ui.components.vs_3bet_chart import display_vs_3bet_chart, display_vs_3bet_drill
+from ui.components.article_viewer import display_guides_page
 from ui.components.hand_review import display_hand_review_page
 from ui.components.hand_analysis import display_hand_analysis_page
 
@@ -4350,11 +4351,14 @@ def learning_page():
 
     # Tabs for different topics
     if lang == "zh":
-        tabs = ["RFI 速記表", "RFI 範圍提示", "📝 記憶訣竅", "權益對抗", "Outs 補牌", "賠率表", "起手牌", "SPR 法則", "翻後策略", "資金管理", "位置價值", "Blocker", "常見錯誤", "EV 計算", "🧮 GTO 概念", "📖 Postflop WHY", "📖 Preflop WHY"]
+        tabs = ["📖 完整指南", "RFI 速記表", "RFI 範圍提示", "📝 記憶訣竅", "權益對抗", "Outs 補牌", "賠率表", "起手牌", "SPR 法則", "翻後策略", "資金管理", "位置價值", "Blocker", "常見錯誤", "EV 計算", "🧮 GTO 概念", "📖 Postflop WHY", "📖 Preflop WHY"]
     else:
-        tabs = ["RFI Charts", "RFI Tips", "📝 Mnemonics", "Equity", "Outs", "Pot Odds", "Starting Hands", "SPR", "Post-flop", "Bankroll", "Position", "Blockers", "Mistakes", "EV Calc", "🧮 GTO Concepts", "📖 Postflop WHY", "📖 Preflop WHY"]
+        tabs = ["📖 Guides", "RFI Charts", "RFI Tips", "📝 Mnemonics", "Equity", "Outs", "Pot Odds", "Starting Hands", "SPR", "Post-flop", "Bankroll", "Position", "Blockers", "Mistakes", "EV Calc", "🧮 GTO Concepts", "📖 Postflop WHY", "📖 Preflop WHY"]
 
-    tab0, tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8, tab9, tab10, tab11, tab12, tab13, tab14, tab15, tab16 = st.tabs(tabs)
+    tab_guides, tab0, tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8, tab9, tab10, tab11, tab12, tab13, tab14, tab15, tab16 = st.tabs(tabs)
+
+    with tab_guides:
+        display_guides_page(lang)
 
     with tab0:
         evaluator = Evaluator()
