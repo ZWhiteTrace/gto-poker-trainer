@@ -36,3 +36,5 @@ Preflop ranges based on simplified GTO solutions from:
 
 MIT
 # 2026年 1月14日 週三 00時25分06秒 CST
+# Last deploy: 2026年 1月26日 週一 20時04分38秒 CST
+# Last deploy: 2026年 1月26日 週一 20時04分51秒 CST
