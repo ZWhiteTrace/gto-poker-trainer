@@ -63,7 +63,7 @@ def is_logged_in() -> bool:
 
 
 def get_google_oauth_url() -> Optional[str]:
-    """Get the Google OAuth URL for login."""
+    """Get the Google OAuth URL for login using PKCE flow."""
     client = get_supabase_client()
     if not client:
         return None
@@ -73,7 +73,12 @@ def get_google_oauth_url() -> Optional[str]:
         response = client.auth.sign_in_with_oauth({
             "provider": "google",
             "options": {
-                "redirect_to": redirect_url
+                "redirect_to": redirect_url,
+                "skip_browser_redirect": False,
+                "query_params": {
+                    "access_type": "offline",
+                    "prompt": "consent"
+                }
             }
         })
         return response.url if response else None
@@ -82,15 +87,40 @@ def get_google_oauth_url() -> Optional[str]:
         return None
 
 
-def handle_oauth_callback() -> bool:
-    """Handle OAuth callback from URL hash fragment.
+def exchange_code_for_session(code: str) -> bool:
+    """Exchange authorization code for session (PKCE flow)."""
+    client = get_supabase_client()
+    if not client:
+        return False
 
-    Supabase returns tokens in URL hash, but Streamlit can't read hash directly.
-    We need to use JavaScript to parse and send it back.
-    """
-    # Check if we have tokens in query params (after JS redirect)
+    try:
+        response = client.auth.exchange_code_for_session({"auth_code": code})
+        if response and response.user:
+            user = response.user
+            st.session_state.user = {
+                "id": user.id,
+                "email": user.email,
+                "name": user.user_metadata.get("full_name") or user.user_metadata.get("name") or user.email.split("@")[0],
+                "avatar": user.user_metadata.get("avatar_url", ""),
+            }
+            return True
+    except Exception as e:
+        print(f"Code exchange error: {e}")
+    return False
+
+
+def handle_oauth_callback() -> bool:
+    """Handle OAuth callback - supports both PKCE (code) and implicit (token) flows."""
     params = st.query_params
 
+    # Method 1: PKCE flow - check for authorization code
+    code = params.get("code")
+    if code:
+        if exchange_code_for_session(code):
+            st.query_params.clear()
+            return True
+
+    # Method 2: Implicit flow - check for access_token in query params
     access_token = params.get("access_token")
     refresh_token = params.get("refresh_token")
 
@@ -98,7 +128,6 @@ def handle_oauth_callback() -> bool:
         client = get_supabase_client()
         if client:
             try:
-                # Set the session with the tokens
                 client.auth.set_session(access_token, refresh_token or "")
                 user_response = client.auth.get_user(access_token)
 
@@ -110,7 +139,6 @@ def handle_oauth_callback() -> bool:
                         "name": user.user_metadata.get("full_name") or user.user_metadata.get("name") or user.email.split("@")[0],
                         "avatar": user.user_metadata.get("avatar_url", ""),
                     }
-                    # Clear tokens from URL
                     st.query_params.clear()
                     return True
             except Exception as e:

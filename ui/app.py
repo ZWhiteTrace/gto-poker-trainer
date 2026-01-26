@@ -689,36 +689,6 @@ def _display_auth_section(lang: str):
                 </a>
                 """, unsafe_allow_html=True)
 
-                # Manual token input fallback for when automatic redirect fails
-                with st.expander("🔧 手動完成登入" if lang == "zh" else "🔧 Manual Login Completion", expanded=False):
-                    st.caption("從 Google 返回後，如果沒有自動登入，請複製網址列 # 後面的內容貼到這裡" if lang == "zh" else "If auto-login fails, copy everything after # in URL and paste here")
-                    token_input = st.text_input(
-                        "access_token",
-                        key="manual_token",
-                        placeholder="access_token=xxx&refresh_token=xxx...",
-                        label_visibility="collapsed"
-                    )
-                    if st.button("完成登入" if lang == "zh" else "Complete Login", key="manual_login_btn"):
-                        if token_input:
-                            # Parse the token from the input
-                            import urllib.parse
-                            try:
-                                params = urllib.parse.parse_qs(token_input)
-                                access_token = params.get("access_token", [None])[0]
-                                refresh_token = params.get("refresh_token", [None])[0]
-                                if access_token:
-                                    # Set query params and rerun
-                                    st.query_params["access_token"] = access_token
-                                    if refresh_token:
-                                        st.query_params["refresh_token"] = refresh_token
-                                    st.rerun()
-                                else:
-                                    st.error("找不到 access_token" if lang == "zh" else "No access_token found")
-                            except Exception as e:
-                                st.error(f"解析錯誤: {e}" if lang == "zh" else f"Parse error: {e}")
-                        else:
-                            st.warning("請貼上 token" if lang == "zh" else "Please paste the token")
-
                 st.markdown(f"""
                 <div style="text-align: center; color: #6b7280; font-size: 0.8rem; margin: 8px 0;">
                     {"— 或使用 Email —" if lang == "zh" else "— or use Email —"}
