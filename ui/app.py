@@ -686,6 +686,33 @@ def _display_auth_section(lang: str):
                 </a>
                 """, unsafe_allow_html=True)
 
+                # Fallback: Complete Login button for users returning from Google
+                # This helps when automatic hash conversion fails
+                complete_label = "✓ 完成登入 (從 Google 返回後點此)" if lang == "zh" else "✓ Complete Login (click after Google)"
+                components.html(f"""
+                <button onclick="
+                    if (window.location.hash && window.location.hash.includes('access_token')) {{
+                        var hash = window.location.hash.substring(1);
+                        window.location.href = window.location.origin + window.location.pathname + '?' + hash;
+                    }} else if (window.parent && window.parent.location.hash && window.parent.location.hash.includes('access_token')) {{
+                        var hash = window.parent.location.hash.substring(1);
+                        window.parent.location.href = window.parent.location.origin + window.parent.location.pathname + '?' + hash;
+                    }} else {{
+                        alert('{'請先使用 Google 登入' if lang == 'zh' else 'Please sign in with Google first'}');
+                    }}
+                " style="
+                    width: 100%;
+                    padding: 8px 12px;
+                    background: #22c55e;
+                    color: white;
+                    border: none;
+                    border-radius: 6px;
+                    cursor: pointer;
+                    font-size: 0.85rem;
+                    margin-bottom: 8px;
+                ">{complete_label}</button>
+                """, height=45)
+
                 st.markdown(f"""
                 <div style="text-align: center; color: #6b7280; font-size: 0.8rem; margin: 8px 0;">
                     {"— 或使用 Email —" if lang == "zh" else "— or use Email —"}
@@ -727,34 +754,30 @@ def main():
     init_session_state()
 
     # OAuth callback handler - must run FIRST before any UI
-    # Converts URL hash fragment to query params for token extraction
     if AUTH_AVAILABLE and is_supabase_configured():
-        components.html("""
-        <script>
-            (function() {
-                // Try multiple location sources (Streamlit can run in different contexts)
-                var locations = [window.location, window.parent.location, window.top.location];
-                for (var i = 0; i < locations.length; i++) {
-                    try {
-                        var loc = locations[i];
-                        if (loc.hash && loc.hash.includes('access_token')) {
-                            console.log('OAuth tokens found in hash, redirecting...');
-                            var hash = loc.hash.substring(1);
-                            var newUrl = loc.origin + loc.pathname + '?' + hash;
-                            loc.replace(newUrl);
-                            return;
-                        }
-                    } catch(e) {
-                        // Cross-origin access denied, try next
-                    }
-                }
-            })();
-        </script>
-        """, height=0)
-
-        # Handle the callback after redirect
+        # Handle the callback if tokens are in query params
         if handle_oauth_callback():
             st.rerun()
+
+        # JavaScript to auto-convert hash to query params (run in iframe)
+        components.html("""
+        <script>
+            // Auto-redirect if hash contains access_token
+            if (window.location.hash && window.location.hash.includes('access_token')) {
+                var hash = window.location.hash.substring(1);
+                var newUrl = window.location.origin + window.location.pathname + '?' + hash;
+                window.location.href = newUrl;
+            }
+            // Also try parent window
+            try {
+                if (window.parent && window.parent.location.hash && window.parent.location.hash.includes('access_token')) {
+                    var hash = window.parent.location.hash.substring(1);
+                    var newUrl = window.parent.location.origin + window.parent.location.pathname + '?' + hash;
+                    window.parent.location.href = newUrl;
+                }
+            } catch(e) {}
+        </script>
+        """, height=0)
 
     # Sidebar
     with st.sidebar:
@@ -3103,8 +3126,8 @@ def _generate_mock_exam():
         except Exception:
             pass
 
-    # 7. Postflop Logic questions (6) - with board visuals
-    for _ in range(6):
+    # 7. Postflop C-bet Logic questions (3)
+    for _ in range(3):
         try:
             pq = engine.generate_type_e()
             if pq:
@@ -3112,6 +3135,23 @@ def _generate_mock_exam():
                 random.shuffle(options)
                 questions.append({
                     "type": "postflop",
+                    "question": pq.question_text,
+                    "options": options,
+                    "correct": pq.correct_answer,
+                    "explanation": pq.explanation,
+                })
+        except Exception:
+            pass
+
+    # 8. Postflop Defense Logic questions (3)
+    for _ in range(3):
+        try:
+            pq = engine.generate_type_f()
+            if pq:
+                options = pq.options
+                random.shuffle(options)
+                questions.append({
+                    "type": "postflop_defense",
                     "question": pq.question_text,
                     "options": options,
                     "correct": pq.correct_answer,
@@ -3579,6 +3619,7 @@ def _display_mock_question(q, idx, lang):
         "ev": "💰",
         "logic": "🧠",
         "postflop": "🎯",
+        "postflop_defense": "🛡️",
         "preflop_action": "🎴",
         "gto_concept": "📊",
     }
@@ -3587,7 +3628,8 @@ def _display_mock_question(q, idx, lang):
         "outs": ("補牌測驗", "Outs"),
         "ev": ("EV 測驗", "EV"),
         "logic": ("翻前邏輯", "Preflop Logic"),
-        "postflop": ("翻後邏輯", "Postflop Logic"),
+        "postflop": ("翻後 C-bet", "Postflop C-bet"),
+        "postflop_defense": ("翻後防守", "Postflop Defense"),
         "preflop_action": ("翻前動作", "Preflop Action"),
         "gto_concept": ("GTO 概念", "GTO Concept"),
     }
