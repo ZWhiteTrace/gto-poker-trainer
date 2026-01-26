@@ -28,6 +28,12 @@ from ui.components.table_visual import display_table, display_postflop_table
 from ui.components.card_display import display_hand_cards
 from ui.components.action_flow import display_action_flow, RAISE_SIZES
 from ui.components.storage import save_progress_to_storage, load_progress_from_storage, init_storage_sync
+from services.progress import (
+    init_progress_tracking, update_quiz_progress, update_drill_progress,
+    update_learning_progress, get_quiz_stats, get_all_quiz_stats,
+    get_drill_stats, get_learning_stats, save_all_progress, load_all_progress,
+    sync_progress_on_login
+)
 from ui.components.rfi_chart import display_rfi_charts
 from ui.components.push_fold_chart import display_push_fold_chart, display_push_fold_comparison, display_push_fold_drill
 from ui.components.hand_review import display_hand_review_page
@@ -324,6 +330,9 @@ def init_session_state():
     if 'best_streak' not in st.session_state:
         st.session_state.best_streak = 0
 
+    # Initialize unified progress tracking
+    init_progress_tracking()
+
     # Load saved progress from localStorage (if available)
     saved_progress = load_progress_from_storage()
     if saved_progress:
@@ -333,6 +342,18 @@ def init_session_state():
             st.session_state.total_hands_all_time = saved_progress.get('total_hands_all_time', 0)
         if 'total_correct_all_time' in saved_progress:
             st.session_state.total_correct_all_time = saved_progress.get('total_correct_all_time', 0)
+
+        # Load quiz progress from new unified format
+        if 'quiz_progress' in saved_progress:
+            st.session_state.quiz_progress = saved_progress['quiz_progress']
+        if 'learning_progress' in saved_progress:
+            st.session_state.learning_progress_data = saved_progress['learning_progress']
+            # Restore learning completion sets
+            learning = saved_progress['learning_progress']
+            if 'preflop_completed' in learning:
+                st.session_state.preflop_completed = set(learning['preflop_completed'])
+            if 'postflop_completed' in learning:
+                st.session_state.postflop_completed = set(learning['postflop_completed'])
 
 
 # Translations
@@ -705,6 +726,8 @@ def _display_auth_section(lang: str):
                     if email and password:
                         result = login_with_email(email, password)
                         if result:
+                            # Sync progress from cloud on login
+                            sync_progress_on_login()
                             st.success("登入成功！" if lang == "zh" else "Login successful!")
                             st.rerun()
                     else:
@@ -733,6 +756,8 @@ def main():
     if AUTH_AVAILABLE and is_supabase_configured():
         # Handle the callback if tokens are in query params
         if handle_oauth_callback():
+            # Sync progress from cloud on login
+            sync_progress_on_login()
             st.rerun()
 
         # JavaScript to auto-convert hash to query params (run in iframe)
@@ -1917,6 +1942,8 @@ def postflop_page():
                             st.session_state.postflop_score["total"] += 1
                             if result.is_correct:
                                 st.session_state.postflop_score["correct"] += 1
+                            # Track cumulative progress
+                            update_quiz_progress("postflop", result.is_correct)
                             st.rerun()
         else:
             # Show result in right column
@@ -2029,6 +2056,75 @@ def stats_page():
     by_action_label = t("by_action_type")
 
     st.markdown(f'<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;"><div><div style="color: #f8fafc; font-size: 1rem; font-weight: bold; margin-bottom: 10px;">{by_position_label}</div>{pos_html}</div><div><div style="color: #f8fafc; font-size: 1rem; font-weight: bold; margin-bottom: 10px;">{by_action_label}</div>{action_html}</div></div>', unsafe_allow_html=True)
+
+    # Quiz Progress Section
+    st.markdown("---")
+    quiz_header = "測驗進度" if st.session_state.language == "zh" else "Quiz Progress"
+    st.markdown(f'<div style="color: #f8fafc; font-size: 1.1rem; font-weight: bold; margin-bottom: 12px;">{quiz_header}</div>', unsafe_allow_html=True)
+
+    quiz_stats = get_all_quiz_stats()
+    quiz_names = {
+        "equity": ("權益計算", "Equity"),
+        "outs": ("Outs 計算", "Outs"),
+        "ev": ("EV 決策", "EV"),
+        "logic": ("邏輯思路", "Logic"),
+        "postflop": ("翻後練習", "Postflop")
+    }
+
+    # Build quiz stats grid
+    quiz_grid_html = '<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">'
+    for quiz_type, stats in quiz_stats.items():
+        name = quiz_names[quiz_type][0] if st.session_state.language == "zh" else quiz_names[quiz_type][1]
+        total = stats["total"]
+        correct = stats["correct"]
+        acc = stats["accuracy"]
+        best_acc = stats["best_accuracy"]
+
+        if total == 0:
+            color = "#6b7280"
+            status = "—"
+        else:
+            color = "#10b981" if acc >= 70 else "#f59e0b" if acc >= 50 else "#ef4444"
+            status = f"{correct}/{total} ({acc:.0f}%)"
+
+        quiz_grid_html += f'''
+        <div style="background: #1e293b; padding: 10px; border-radius: 8px;">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                <span style="color: #e2e8f0; font-weight: bold; font-size: 0.9rem;">{name}</span>
+                <span style="color: {color}; font-size: 0.85rem;">{status}</span>
+            </div>
+            <div style="background: #374151; border-radius: 4px; height: 6px; overflow: hidden;">
+                <div style="background: {color}; width: {acc}%; height: 100%;"></div>
+            </div>
+        </div>'''
+
+    quiz_grid_html += '</div>'
+    st.markdown(quiz_grid_html, unsafe_allow_html=True)
+
+    # Learning Progress
+    learning_stats = get_learning_stats()
+    preflop_done = learning_stats["preflop_completed"]
+    postflop_done = learning_stats["postflop_completed"]
+
+    learning_header = "學習進度" if st.session_state.language == "zh" else "Learning Progress"
+    preflop_label = "翻前講義" if st.session_state.language == "zh" else "Preflop Lessons"
+    postflop_label = "翻後講義" if st.session_state.language == "zh" else "Postflop Lessons"
+
+    st.markdown(f'''
+    <div style="margin-top: 12px;">
+        <div style="color: #f8fafc; font-size: 1rem; font-weight: bold; margin-bottom: 8px;">{learning_header}</div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+            <div style="background: #1e293b; padding: 10px; border-radius: 8px; text-align: center;">
+                <div style="color: #22c55e; font-size: 1.3rem; font-weight: bold;">{preflop_done}</div>
+                <div style="color: #94a3b8; font-size: 0.8rem;">{preflop_label}</div>
+            </div>
+            <div style="background: #1e293b; padding: 10px; border-radius: 8px; text-align: center;">
+                <div style="color: #3b82f6; font-size: 1.3rem; font-weight: bold;">{postflop_done}</div>
+                <div style="color: #94a3b8; font-size: 0.8rem;">{postflop_label}</div>
+            </div>
+        </div>
+    </div>
+    ''', unsafe_allow_html=True)
 
     # Mistakes review
     st.markdown("---")
@@ -2525,9 +2621,12 @@ def logic_quiz_page():
                 st.session_state.logic_answered_idx = i
                 st.session_state.logic_show_result = True
                 # Update score
-                if i == question.correct_index:
+                is_correct = i == question.correct_index
+                if is_correct:
                     st.session_state.logic_score["correct"] += 1
                 st.session_state.logic_score["total"] += 1
+                # Track cumulative progress
+                update_quiz_progress("logic", is_correct)
                 st.rerun()
 
     # Show result and explanation
@@ -4108,6 +4207,8 @@ def _display_preflop_why_learning(lang: str):
 
                     if correct_count == len(questions):
                         st.session_state.preflop_completed.add(selected_scenario)
+                        # Track learning progress (cloud sync)
+                        update_learning_progress("preflop", selected_scenario)
                         st.session_state.preflop_quiz_active = False
                         st.session_state.preflop_quiz_questions = []
                         st.session_state.preflop_quiz_answers = {}
@@ -4172,6 +4273,8 @@ def _display_preflop_why_learning(lang: str):
             with col_skip:
                 if st.button("⏭️ 跳過測驗直接完成" if lang == "zh" else "⏭️ Skip Quiz", key="preflop_skip_quiz"):
                     st.session_state.preflop_completed.add(selected_scenario)
+                    # Track learning progress (cloud sync)
+                    update_learning_progress("preflop", selected_scenario)
                     if current_idx < total_lessons - 1:
                         st.session_state.preflop_lesson_idx = current_idx + 1
                     st.rerun()
@@ -4584,6 +4687,8 @@ def _display_postflop_why_learning(lang: str):
 
                     if correct_count == len(questions):
                         st.session_state.postflop_completed.add(lesson_key)
+                        # Track learning progress (cloud sync)
+                        update_learning_progress("postflop", lesson_key)
                         st.session_state.postflop_quiz_active = False
                         st.session_state.postflop_quiz_questions = []
                         st.session_state.postflop_quiz_answers = {}
@@ -4655,6 +4760,8 @@ def _display_postflop_why_learning(lang: str):
             with col_skip:
                 if st.button("⏭️ 跳過測驗直接完成" if lang == "zh" else "⏭️ Skip Quiz", key="postflop_skip_quiz"):
                     st.session_state.postflop_completed.add(lesson_key)
+                    # Track learning progress (cloud sync)
+                    update_learning_progress("postflop", lesson_key)
                     if current_idx < total_lessons - 1:
                         st.session_state.postflop_lesson_idx = current_idx + 1
                     st.rerun()
@@ -7140,8 +7247,11 @@ def equity_quiz_page():
                 if st.button(btn_label, key=f"equity_card_{i}", use_container_width=True):
                     st.session_state.equity_answered_idx = i
                     st.session_state.equity_score["total"] += 1
-                    if choice.is_correct:
+                    is_correct = choice.is_correct
+                    if is_correct:
                         st.session_state.equity_score["correct"] += 1
+                    # Track cumulative progress
+                    update_quiz_progress("equity", is_correct)
                     st.rerun()
                 st.markdown('</div>', unsafe_allow_html=True)
             else:
@@ -7394,8 +7504,11 @@ def outs_quiz_page():
                             st.session_state.outs_show_result = True
                             st.session_state.outs_selected = choice
                             st.session_state.outs_score["total"] += 1
-                            if choice == question.result.total_outs:
+                            is_correct = choice == question.result.total_outs
+                            if is_correct:
                                 st.session_state.outs_score["correct"] += 1
+                            # Track cumulative progress
+                            update_quiz_progress("outs", is_correct)
                             st.rerun()
         else:
             # Show result
@@ -7597,6 +7710,8 @@ def ev_quiz_page():
                     is_correct, _ = quiz.check_answer(question, "call")
                     if is_correct:
                         st.session_state.ev_score["correct"] += 1
+                    # Track cumulative progress
+                    update_quiz_progress("ev", is_correct)
                     st.rerun()
             with col_fold:
                 if st.button(f"❌ {t('ev_fold')}", key="ev_fold_btn", use_container_width=True):
@@ -7606,6 +7721,8 @@ def ev_quiz_page():
                     is_correct, _ = quiz.check_answer(question, "fold")
                     if is_correct:
                         st.session_state.ev_score["correct"] += 1
+                    # Track cumulative progress
+                    update_quiz_progress("ev", is_correct)
                     st.rerun()
 
             # Show hint about pot odds calculation
