@@ -8,7 +8,8 @@ from pathlib import Path
 
 from trainer.push_fold_drill import (
     get_push_fold_drill, PushFoldSpot, STACK_DEPTHS,
-    DEFENSE_SCENARIOS, DEFENSE_SCENARIO_LABELS
+    DEFENSE_SCENARIOS, DEFENSE_SCENARIO_LABELS,
+    RESTEAL_SCENARIOS, RESTEAL_SCENARIO_LABELS
 )
 from ui.components.card_display import display_hand_cards
 
@@ -41,6 +42,21 @@ def load_defense_data():
     except Exception as e:
         st.error(f"Failed to load defense data: {e}")
         return {}
+
+
+def load_resteal_data():
+    """Load resteal (3bet shove) ranges from JSON file."""
+    data_path = Path(__file__).parent.parent.parent / "data" / "ranges" / "mtt" / "resteal.json"
+    try:
+        with open(data_path, 'r', encoding='utf-8') as f:
+            return json.load(f)
+    except Exception as e:
+        st.error(f"Failed to load resteal data: {e}")
+        return {}
+
+
+# Color for resteal (3bet shove)
+COLOR_RESTEAL = "#f97316"  # Orange for 3bet shove
 
 
 def get_hand_name(row: int, col: int) -> str:
@@ -606,6 +622,263 @@ def _handle_defense_answer(action: str, lang: str):
 
     result = drill.check_defense_answer(spot, action)
     st.session_state.df_result = result
+
+    # Update stats
+    stats["total"] += 1
+    if result.is_correct:
+        stats["correct"] += 1
+        stats["streak"] += 1
+        if stats["streak"] > stats["best_streak"]:
+            stats["best_streak"] = stats["streak"]
+    else:
+        stats["streak"] = 0
+
+    st.rerun()
+
+
+def display_resteal_chart(lang: str = "zh"):
+    """Display resteal (3bet shove) chart with scenario and stack depth selection."""
+
+    data = load_resteal_data()
+    if not data:
+        return
+
+    # Title
+    title = "Resteal 範圍 (3bet 全下)" if lang == "zh" else "Resteal Ranges (3bet Shove)"
+    st.subheader(title)
+
+    # Description
+    desc = "對手開池後的 3bet 全下範圍" if lang == "zh" else "3bet shove ranges vs opener"
+    st.caption(desc)
+
+    # Controls
+    col1, col2 = st.columns(2)
+
+    with col1:
+        scenario_label = "場景" if lang == "zh" else "Scenario"
+        scenario_display = {}
+        for s in RESTEAL_SCENARIOS:
+            labels = RESTEAL_SCENARIO_LABELS.get(s, {})
+            scenario_display[s] = labels.get(lang, s)
+
+        selected_scenario = st.selectbox(
+            scenario_label,
+            RESTEAL_SCENARIOS,
+            format_func=lambda x: scenario_display[x],
+            index=0,
+            key="resteal_scenario_chart"
+        )
+
+    # Get available stack depths for this scenario
+    scenario_data = data.get("6max", {}).get(selected_scenario, {})
+    available_stacks = list(scenario_data.keys())
+
+    with col2:
+        stack_label = "籌碼深度" if lang == "zh" else "Stack Depth"
+        if available_stacks:
+            selected_stack = st.selectbox(
+                stack_label,
+                available_stacks,
+                index=min(2, len(available_stacks) - 1),  # Default to ~10bb or middle option
+                key="resteal_stack_chart"
+            )
+        else:
+            st.warning("無可用籌碼深度" if lang == "zh" else "No stack depths available")
+            return
+
+    # Get resteal range for selected scenario and stack
+    resteal_range = set(scenario_data.get(selected_stack, []))
+    resteal_count = len(resteal_range)
+    total_hands = 169
+    resteal_pct = (resteal_count / total_hands) * 100
+
+    # Stats
+    stats_text = f"3bet 全下範圍: {resteal_count} 手牌 ({resteal_pct:.1f}%)" if lang == "zh" else f"3bet shove range: {resteal_count} hands ({resteal_pct:.1f}%)"
+    st.markdown(f"<p style='text-align:center; color:#9ca3af; margin-bottom:10px;'>{stats_text}</p>", unsafe_allow_html=True)
+
+    # Legend
+    legend_html = '''
+    <div style="display: flex; gap: 20px; justify-content: center; margin: 10px 0;">
+        <span style="display: flex; align-items: center; gap: 6px;">
+            <span style="background: #f97316; width: 24px; height: 18px; border-radius: 3px; display: inline-block;"></span>
+            <span style="color: white;">3bet Shove</span>
+        </span>
+        <span style="display: flex; align-items: center; gap: 6px;">
+            <span style="background: #374151; width: 24px; height: 18px; border-radius: 3px; display: inline-block;"></span>
+            <span style="color: white;">Fold</span>
+        </span>
+    </div>
+    '''
+    st.markdown(legend_html, unsafe_allow_html=True)
+
+    # Build grid HTML
+    html = '''
+    <div style="width:100%; display:flex; flex-direction:column; align-items:center;">
+    <div style="display:grid; grid-template-columns:repeat(13,minmax(0,1fr)); gap:2px; width:100%; max-width:555px; background:#1a1a2e; padding:8px; border-radius:8px; box-sizing:border-box;">
+    '''
+
+    for i, r1 in enumerate(RANKS):
+        for j, r2 in enumerate(RANKS):
+            hand = get_hand_name(i, j)
+            is_resteal = hand in resteal_range
+
+            if is_resteal:
+                bg_color = COLOR_RESTEAL
+                text_color = "white"
+            else:
+                bg_color = COLOR_FOLD
+                text_color = "#6b7280"
+
+            cell_style = f"aspect-ratio:1; display:flex; align-items:center; justify-content:center; border-radius:3px; background:{bg_color}; color:{text_color}; font-size:clamp(10px,2.8vw,15px); font-weight:600;"
+            html += f'<div style="{cell_style}">{hand}</div>'
+
+    html += '</div></div>'
+    st.markdown(html, unsafe_allow_html=True)
+
+    # Tips section
+    st.markdown("---")
+    tips_title = "使用提示" if lang == "zh" else "Tips"
+    st.markdown(f"**{tips_title}:**")
+
+    if lang == "zh":
+        tips = [
+            "橘色手牌 = 3bet 全下 (Resteal)",
+            "灰色手牌 = Fold",
+            "Resteal 是指在對手開池後，從盲注位 3bet 全下",
+            "SB vs BTN 的 resteal 範圍最寬（BTN 開池範圍寬）",
+            "對抗更早位置開池，resteal 範圍要收緊",
+            "籌碼越深，resteal 範圍越緊",
+        ]
+    else:
+        tips = [
+            "Orange hands = 3bet Shove (Resteal)",
+            "Gray hands = Fold",
+            "Resteal means 3bet shoving from blinds vs an opener",
+            "SB vs BTN has the widest resteal range (BTN opens wide)",
+            "Tighten your resteal range against earlier position opens",
+            "Deeper stacks require tighter resteal ranges",
+        ]
+
+    for tip in tips:
+        st.markdown(f"- {tip}")
+
+
+def display_resteal_drill(lang: str = "zh"):
+    """Display resteal (3bet shove) drill mode for practice."""
+
+    # Initialize session state
+    if "rs_drill" not in st.session_state:
+        st.session_state.rs_drill = get_push_fold_drill()
+    if "rs_spot" not in st.session_state:
+        st.session_state.rs_spot = None
+    if "rs_result" not in st.session_state:
+        st.session_state.rs_result = None
+    if "rs_stats" not in st.session_state:
+        st.session_state.rs_stats = {"total": 0, "correct": 0, "streak": 0, "best_streak": 0}
+
+    drill = st.session_state.rs_drill
+
+    # Title
+    title = "Resteal 練習 (3bet 全下)" if lang == "zh" else "Resteal Practice (3bet Shove)"
+    st.subheader(title)
+
+    # Settings in expander
+    with st.expander("⚙️ " + ("設定" if lang == "zh" else "Settings"), expanded=False):
+        scenario_label = "練習場景" if lang == "zh" else "Practice Scenarios"
+        scenario_display = {}
+        for s in RESTEAL_SCENARIOS:
+            labels = RESTEAL_SCENARIO_LABELS.get(s, {})
+            scenario_display[s] = labels.get(lang, s)
+
+        selected_scenarios = st.multiselect(
+            scenario_label,
+            RESTEAL_SCENARIOS,
+            default=RESTEAL_SCENARIOS[:3],  # Default to first 3 scenarios
+            format_func=lambda x: scenario_display[x],
+            key="rs_scenario_select"
+        )
+        if selected_scenarios:
+            drill.set_enabled_resteal_scenarios(selected_scenarios)
+
+    # Stats display
+    stats = st.session_state.rs_stats
+    stats_cols = st.columns(4)
+    with stats_cols[0]:
+        label = "總數" if lang == "zh" else "Total"
+        st.metric(label, stats["total"])
+    with stats_cols[1]:
+        label = "正確" if lang == "zh" else "Correct"
+        pct = (stats["correct"] / stats["total"] * 100) if stats["total"] > 0 else 0
+        st.metric(label, f"{stats['correct']} ({pct:.0f}%)")
+    with stats_cols[2]:
+        label = "連勝" if lang == "zh" else "Streak"
+        st.metric(label, stats["streak"])
+    with stats_cols[3]:
+        label = "最佳" if lang == "zh" else "Best"
+        st.metric(label, stats["best_streak"])
+
+    st.markdown("---")
+
+    # Generate new spot if needed
+    if st.session_state.rs_spot is None:
+        st.session_state.rs_spot = drill.generate_resteal_spot()
+        st.session_state.rs_result = None
+
+    spot = st.session_state.rs_spot
+
+    if spot is None:
+        st.warning("無法生成 Resteal 題目，請檢查設定" if lang == "zh" else "Cannot generate resteal spot, please check settings")
+        return
+
+    # Display scenario
+    scenario_label = RESTEAL_SCENARIO_LABELS.get(spot.resteal_scenario, {}).get(lang, spot.resteal_scenario)
+    scenario_text = f"**{scenario_label}** | **{spot.stack_depth.upper()}**"
+    st.markdown(f"<div style='text-align:center; font-size:1.3em; margin-bottom:15px;'>{scenario_text}</div>", unsafe_allow_html=True)
+
+    # Display hand cards
+    display_hand_cards(spot.hand)
+
+    # Action buttons
+    if st.session_state.rs_result is None:
+        col1, col2 = st.columns(2)
+        with col1:
+            if st.button("🚀 3bet Shove", key="btn_resteal", use_container_width=True, type="primary"):
+                _handle_resteal_answer("shove", lang)
+        with col2:
+            if st.button("🃏 Fold", key="btn_rs_fold", use_container_width=True):
+                _handle_resteal_answer("fold", lang)
+    else:
+        # Show result
+        result = st.session_state.rs_result
+        if result.is_correct:
+            st.success("✅ " + ("正確！" if lang == "zh" else "Correct!"))
+        else:
+            correct_text = "3bet Shove" if result.correct_action == "shove" else "Fold"
+            st.error("❌ " + (f"錯誤！正確答案: {correct_text}" if lang == "zh" else f"Wrong! Correct: {correct_text}"))
+
+        st.info(result.explanation)
+
+        # Show range info
+        range_info = f"該場景 3bet 全下範圍: {result.push_range_count} 手 ({result.push_range_pct:.1f}%)"
+        if lang == "en":
+            range_info = f"3bet shove range at this spot: {result.push_range_count} hands ({result.push_range_pct:.1f}%)"
+        st.caption(range_info)
+
+        # Next button
+        if st.button("➡️ " + ("下一題" if lang == "zh" else "Next"), key="btn_rs_next", use_container_width=True):
+            st.session_state.rs_spot = drill.generate_resteal_spot()
+            st.session_state.rs_result = None
+            st.rerun()
+
+
+def _handle_resteal_answer(action: str, lang: str):
+    """Handle player's resteal answer."""
+    drill = st.session_state.rs_drill
+    spot = st.session_state.rs_spot
+    stats = st.session_state.rs_stats
+
+    result = drill.check_resteal_answer(spot, action)
+    st.session_state.rs_result = result
 
     # Update stats
     stats["total"] += 1
