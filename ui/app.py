@@ -620,30 +620,33 @@ def _display_auth_section(lang: str):
 
     if user:
         # Logged in - show user info
-        name = user.get("name", user.get("email", "User"))
+        name = user.get("name", "User")
+        email = user.get("email", "")
         avatar = user.get("avatar", "")
+        display_initial = name[0].upper() if name else (email[0].upper() if email else "U")
 
         st.markdown(f"""
         <div style="
             background: linear-gradient(135deg, #1e3a5f 0%, #0d1b2a 100%);
             border-radius: 8px;
-            padding: 10px;
+            padding: 12px;
             margin-bottom: 8px;
         ">
             <div style="display: flex; align-items: center; gap: 10px;">
                 <div style="
-                    width: 32px; height: 32px;
-                    background: #4a90d9;
+                    width: 36px; height: 36px;
+                    background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
                     border-radius: 50%;
                     display: flex;
                     align-items: center;
                     justify-content: center;
                     font-weight: bold;
                     color: white;
-                ">{name[0].upper() if name else "U"}</div>
-                <div>
-                    <div style="font-weight: 500; font-size: 0.9rem;">{name}</div>
-                    <div style="font-size: 0.75rem; color: #6b7280;">{"已登入" if lang == "zh" else "Logged in"}</div>
+                    font-size: 1rem;
+                ">{display_initial}</div>
+                <div style="flex: 1; min-width: 0;">
+                    <div style="font-weight: 600; font-size: 0.9rem; color: #f0f0f0;">{name}</div>
+                    <div style="font-size: 0.7rem; color: #94a3b8; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{email}</div>
                 </div>
             </div>
         </div>
