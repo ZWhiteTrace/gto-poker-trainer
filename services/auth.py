@@ -119,6 +119,8 @@ def handle_oauth_callback() -> bool:
     if code:
         if exchange_code_for_session(code):
             st.query_params.clear()
+            # Save session for persistence
+            _save_session_to_storage()
             return True
 
     # Method 2: Implicit flow - check for access_token in query params
@@ -140,12 +142,155 @@ def handle_oauth_callback() -> bool:
                         "name": user.user_metadata.get("full_name") or user.user_metadata.get("name") or user.email.split("@")[0],
                         "avatar": user.user_metadata.get("avatar_url", ""),
                     }
+                    # Store tokens for session persistence
+                    st.session_state._auth_tokens = {
+                        "access_token": access_token,
+                        "refresh_token": refresh_token or ""
+                    }
                     st.query_params.clear()
+                    # Save session for persistence
+                    _save_session_to_storage()
                     return True
             except Exception as e:
                 print(f"OAuth callback error: {e}")
 
     return False
+
+
+def _save_session_to_storage():
+    """Save current session to localStorage for persistence."""
+    import streamlit.components.v1 as components
+    import json
+
+    user = st.session_state.get("user")
+    tokens = st.session_state.get("_auth_tokens", {})
+
+    if user and tokens:
+        session_data = {
+            "user": user,
+            "tokens": tokens
+        }
+        json_data = json.dumps(json.dumps(session_data))
+
+        components.html(f"""
+        <script>
+            try {{
+                localStorage.setItem('gto_auth_session', {json_data});
+                console.log('Session saved to localStorage');
+            }} catch (e) {{
+                console.error('Failed to save session:', e);
+            }}
+        </script>
+        """, height=0)
+
+
+def restore_session_from_storage() -> bool:
+    """Try to restore session from localStorage. Called on app startup."""
+    # Check if already logged in
+    if st.session_state.get("user"):
+        return True
+
+    # Check if we've already tried to restore this session
+    if st.session_state.get("_session_restore_attempted"):
+        return False
+
+    st.session_state._session_restore_attempted = True
+
+    # Inject JavaScript to check localStorage and post back
+    import streamlit.components.v1 as components
+
+    components.html("""
+    <script>
+        (function() {
+            try {
+                var sessionData = localStorage.getItem('gto_auth_session');
+                if (sessionData) {
+                    var data = JSON.parse(sessionData);
+                    // Store in a way the app can read - use query params
+                    var currentUrl = window.location.href.split('?')[0].split('#')[0];
+                    var newUrl = currentUrl + '?restore_session=' + encodeURIComponent(sessionData);
+
+                    // Only redirect if we haven't already
+                    if (!window.location.search.includes('restore_session')) {
+                        window.location.href = newUrl;
+                    }
+                }
+            } catch (e) {
+                console.error('Failed to restore session:', e);
+            }
+        })();
+    </script>
+    """, height=0)
+
+    # Check if restore_session param is present
+    params = st.query_params
+    restore_data = params.get("restore_session")
+
+    if restore_data:
+        try:
+            import json
+            session_data = json.loads(restore_data)
+            user = session_data.get("user")
+            tokens = session_data.get("tokens", {})
+
+            if user and tokens.get("access_token"):
+                # Verify the token is still valid
+                client = get_supabase_client()
+                if client:
+                    try:
+                        user_response = client.auth.get_user(tokens["access_token"])
+                        if user_response and user_response.user:
+                            # Token is valid, restore session
+                            st.session_state.user = user
+                            st.session_state._auth_tokens = tokens
+                            st.query_params.clear()
+                            return True
+                    except Exception:
+                        # Token expired, try to refresh
+                        if tokens.get("refresh_token"):
+                            try:
+                                response = client.auth.refresh_session(tokens["refresh_token"])
+                                if response and response.user:
+                                    st.session_state.user = {
+                                        "id": response.user.id,
+                                        "email": response.user.email,
+                                        "name": response.user.user_metadata.get("full_name") or response.user.user_metadata.get("name") or response.user.email.split("@")[0],
+                                        "avatar": response.user.user_metadata.get("avatar_url", ""),
+                                    }
+                                    st.session_state._auth_tokens = {
+                                        "access_token": response.session.access_token,
+                                        "refresh_token": response.session.refresh_token
+                                    }
+                                    st.query_params.clear()
+                                    _save_session_to_storage()
+                                    return True
+                            except Exception as e:
+                                print(f"Token refresh error: {e}")
+
+                        # Clear invalid session from storage
+                        _clear_session_from_storage()
+        except Exception as e:
+            print(f"Session restore error: {e}")
+
+        st.query_params.clear()
+
+    return False
+
+
+def _clear_session_from_storage():
+    """Clear saved session from localStorage."""
+    import streamlit.components.v1 as components
+
+    components.html("""
+    <script>
+        try {
+            localStorage.removeItem('gto_auth_session');
+            console.log('Session cleared from localStorage');
+        } catch (e) {
+            console.error('Failed to clear session:', e);
+        }
+    </script>
+    """, height=0)
 
 
 def login_with_email(email: str, password: str) -> Optional[Dict[str, Any]]:
@@ -202,11 +347,18 @@ def logout():
     if "user" in st.session_state:
         del st.session_state.user
 
+    # Clear auth tokens
+    if "_auth_tokens" in st.session_state:
+        del st.session_state._auth_tokens
+
     # Clear user-specific data
     keys_to_clear = ["mock_history", "preflop_completed", "postflop_completed"]
     for key in keys_to_clear:
         if key in st.session_state:
             del st.session_state[key]
+
+    # Clear session from localStorage
+    _clear_session_from_storage()
 
 
 # ═══════════════════════════════════════════════════════════════════════════

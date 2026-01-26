@@ -46,7 +46,8 @@ try:
         login_with_email, signup_with_email, logout,
         get_google_oauth_url, handle_oauth_callback,
         save_mock_exam_result, load_mock_exam_history, get_user_stats,
-        save_user_progress, load_user_progress
+        save_user_progress, load_user_progress,
+        restore_session_from_storage
     )
     AUTH_AVAILABLE = True
 except ImportError:
@@ -751,6 +752,12 @@ def _display_auth_section(lang: str):
 
 def main():
     init_session_state()
+
+    # Try to restore session from localStorage (remember login)
+    if AUTH_AVAILABLE and is_supabase_configured():
+        if restore_session_from_storage():
+            # Session restored, sync progress
+            sync_progress_on_login()
 
     # OAuth callback handler - must run FIRST before any UI
     if AUTH_AVAILABLE and is_supabase_configured():
