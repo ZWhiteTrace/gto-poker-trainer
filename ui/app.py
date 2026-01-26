@@ -177,11 +177,96 @@ def get_equity_breakdown_html(hand_str: str, lang: str = "zh") -> str:
 
 # Page config
 st.set_page_config(
-    page_title="GTO Poker Trainer",
+    page_title="GTO Poker Trainer - 免費撲克訓練工具",
     page_icon="🃏",
     layout="wide",
     initial_sidebar_state="expanded",
 )
+
+# SEO Meta Tags (inject into head via components)
+SEO_META = """
+<script>
+    // SEO: Update document head with meta tags
+    if (!document.querySelector('meta[name="description"]')) {
+        const meta = document.createElement('meta');
+        meta.name = 'description';
+        meta.content = '免費 GTO 撲克訓練器：翻前範圍圖表、Push/Fold 策略、ICM 計算器、Equity 練習。支援繁體中文，適合 MTT 和現金桌玩家。';
+        document.head.appendChild(meta);
+    }
+    if (!document.querySelector('meta[name="keywords"]')) {
+        const meta = document.createElement('meta');
+        meta.name = 'keywords';
+        meta.content = 'GTO poker, 撲克訓練, push fold chart, ICM calculator, preflop range, 翻前範圍, poker trainer, 德州撲克';
+        document.head.appendChild(meta);
+    }
+    if (!document.querySelector('meta[property="og:title"]')) {
+        const og = document.createElement('meta');
+        og.setAttribute('property', 'og:title');
+        og.content = 'GTO Poker Trainer - 免費撲克訓練工具';
+        document.head.appendChild(og);
+    }
+    if (!document.querySelector('meta[property="og:description"]')) {
+        const og = document.createElement('meta');
+        og.setAttribute('property', 'og:description');
+        og.content = '學習 GTO 策略：RFI 範圍、3bet 回應、短碼 Push/Fold、ICM 計算。完全免費，支援繁體中文。';
+        document.head.appendChild(og);
+    }
+    if (!document.querySelector('meta[property="og:type"]')) {
+        const og = document.createElement('meta');
+        og.setAttribute('property', 'og:type');
+        og.content = 'website';
+        document.head.appendChild(og);
+    }
+    if (!document.querySelector('meta[property="og:url"]')) {
+        const og = document.createElement('meta');
+        og.setAttribute('property', 'og:url');
+        og.content = 'https://gto-trainer.streamlit.app/';
+        document.head.appendChild(og);
+    }
+    if (!document.querySelector('link[rel="canonical"]')) {
+        const link = document.createElement('link');
+        link.rel = 'canonical';
+        link.href = 'https://gto-trainer.streamlit.app/';
+        document.head.appendChild(link);
+    }
+</script>
+"""
+components.html(SEO_META, height=0)
+
+# Google Analytics 4 Tracking (placeholder - replace G-XXXXXXX with actual Measurement ID)
+GA_TRACKING = """
+<script>
+    // Google Analytics 4 - Only load once
+    if (!window.gtag && !document.querySelector('script[src*="googletagmanager"]')) {
+        // Load gtag.js
+        const script = document.createElement('script');
+        script.async = true;
+        script.src = 'https://www.googletagmanager.com/gtag/js?id=G-XXXXXXX';
+        document.head.appendChild(script);
+
+        // Initialize gtag
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        window.gtag = gtag;
+        gtag('js', new Date());
+        gtag('config', 'G-XXXXXXX');
+
+        // Track page views on hash/query changes (for Streamlit SPA)
+        let lastUrl = location.href;
+        new MutationObserver(() => {
+            if (location.href !== lastUrl) {
+                lastUrl = location.href;
+                gtag('event', 'page_view', {
+                    page_location: location.href,
+                    page_title: document.title
+                });
+            }
+        }).observe(document, {subtree: true, childList: true});
+    }
+</script>
+"""
+# Uncomment when ready to enable analytics:
+# components.html(GA_TRACKING, height=0)
 
 # Custom CSS
 st.markdown("""
