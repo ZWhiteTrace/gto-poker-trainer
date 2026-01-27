@@ -12,10 +12,17 @@ import sentry_sdk
 from sentry_sdk.integrations.fastapi import FastApiIntegration
 from sentry_sdk.integrations.starlette import StarletteIntegration
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
+from slowapi import Limiter, _rate_limit_exceeded_handler
+from slowapi.util import get_remote_address
+from slowapi.errors import RateLimitExceeded
 
 from routers import drill, evaluate, ranges, mtt, postflop, analyze
+
+# Initialize rate limiter
+limiter = Limiter(key_func=get_remote_address, default_limits=["100/minute"])
 
 # Initialize Sentry
 sentry_dsn = os.getenv("SENTRY_DSN")
@@ -39,6 +46,10 @@ app = FastAPI(
     description="Backend API for GTO poker training application",
     version="2.1.0",
 )
+
+# Add rate limiter to app state
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
 # CORS for Next.js frontend
 app.add_middleware(

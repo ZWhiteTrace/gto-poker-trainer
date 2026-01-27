@@ -1,7 +1,7 @@
 """
 Hand history analysis endpoints.
 """
-from fastapi import APIRouter, UploadFile, File, HTTPException
+from fastapi import APIRouter, UploadFile, File, HTTPException, Request
 from pydantic import BaseModel
 from typing import Dict, List, Optional
 import sys
@@ -10,10 +10,14 @@ import os
 # Add parent directory to path for imports
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
+from slowapi import Limiter
+from slowapi.util import get_remote_address
+
 from analyzer.hand_parser import GGPokerParser
 from analyzer.preflop_analyzer import PreflopAnalyzer
 
 router = APIRouter()
+limiter = Limiter(key_func=get_remote_address)
 
 
 class PositionStat(BaseModel):
@@ -69,7 +73,8 @@ class DemoResponse(BaseModel):
 
 
 @router.post("/upload", response_model=AnalysisResponse)
-async def analyze_hand_history(file: UploadFile = File(...)):
+@limiter.limit("20/minute")
+async def analyze_hand_history(request: Request, file: UploadFile = File(...)):
     """
     Analyze uploaded hand history file.
     Currently supports GGPoker format.
@@ -381,26 +386,27 @@ def generate_overall_assessment(
 
 
 @router.post("/ai-review", response_model=AIReviewResponse)
-def get_ai_review(request: AIReviewRequest):
+@limiter.limit("10/minute")
+def get_ai_review(request: Request, data: AIReviewRequest):
     """Generate AI-powered insights based on hand analysis."""
 
     # Determine skill level
-    skill_level = determine_skill_level(request.mistake_rate, request.total_hands)
+    skill_level = determine_skill_level(data.mistake_rate, data.total_hands)
 
     # Generate insights
     insights = generate_ai_insights(
-        request.position_stats,
-        request.top_leaks,
-        request.mistake_rate,
-        request.total_ev_loss
+        data.position_stats,
+        data.top_leaks,
+        data.mistake_rate,
+        data.total_ev_loss
     )
 
     # Generate overall assessment
     overall_en, overall_zh = generate_overall_assessment(
-        request.mistake_rate,
-        request.total_ev_loss,
+        data.mistake_rate,
+        data.total_ev_loss,
         skill_level,
-        request.top_leaks
+        data.top_leaks
     )
 
     # Determine focus areas

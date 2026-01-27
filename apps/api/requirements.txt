@@ -12,3 +12,6 @@ sentry-sdk[fastapi]>=1.39.0
 
 # Production
 gunicorn>=21.0.0
+
+# Rate Limiting
+slowapi>=0.1.9
