@@ -17,6 +17,28 @@ export const metadata: Metadata = {
     default: "GTO Poker Trainer - Master Poker Strategy",
     template: "%s | GTO Poker Trainer",
   },
+  manifest: "/manifest.webmanifest",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "GTO Trainer",
+  },
+  formatDetection: {
+    telephone: false,
+  },
+  icons: {
+    icon: [
+      { url: "/favicon.ico", sizes: "any" },
+      { url: "/icon-192.png", sizes: "192x192", type: "image/png" },
+      { url: "/icon-512.png", sizes: "512x512", type: "image/png" },
+    ],
+    apple: [
+      { url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
+    ],
+  },
+  other: {
+    "mobile-web-app-capable": "yes",
+  },
   description:
     "Free GTO poker trainer: preflop range charts, push/fold strategy, ICM calculator. Master game theory optimal poker strategy.",
   keywords: [
@@ -25,13 +47,70 @@ export const metadata: Metadata = {
     "preflop range",
     "push fold chart",
     "poker strategy",
+    "poker GTO",
+    "撲克訓練",
+    "翻前範圍",
   ],
   openGraph: {
     type: "website",
     locale: "en_US",
+    url: "https://gto-trainer.com",
     siteName: "GTO Poker Trainer",
+    title: "GTO Poker Trainer - Master Poker Strategy",
+    description: "Free GTO poker trainer: preflop range charts, push/fold strategy, ICM calculator.",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "GTO Poker Trainer",
+    description: "Free GTO poker trainer: preflop range charts, push/fold strategy, ICM calculator.",
+  },
+  alternates: {
+    canonical: "https://gto-trainer.com",
+  },
+  verification: {
+    google: "your-google-verification-code", // Replace with actual code
   },
 };
+
+function WebsiteJsonLd() {
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    name: "GTO Poker Trainer",
+    url: "https://gto-trainer.com",
+    description: "Free GTO poker trainer for mastering preflop ranges and poker strategy",
+    potentialAction: {
+      "@type": "SearchAction",
+      target: "https://gto-trainer.com/learn?q={search_term_string}",
+      "query-input": "required name=search_term_string",
+    },
+  };
+
+  return (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+    />
+  );
+}
+
+function OrganizationJsonLd() {
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    name: "GTO Poker Trainer",
+    url: "https://gto-trainer.com",
+    logo: "https://gto-trainer.com/icon-512.png",
+    sameAs: [],
+  };
+
+  return (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+    />
+  );
+}
 
 export default async function RootLayout({
   children,
@@ -43,6 +122,10 @@ export default async function RootLayout({
 
   return (
     <html lang={locale} className="dark" suppressHydrationWarning>
+      <head>
+        <WebsiteJsonLd />
+        <OrganizationJsonLd />
+      </head>
       <body className={`${inter.variable} font-sans antialiased`}>
         <NextIntlClientProvider messages={messages}>
           <AuthProvider>

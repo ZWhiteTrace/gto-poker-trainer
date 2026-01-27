@@ -7,11 +7,20 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft, BookOpen } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
+const BASE_URL = "https://gto-trainer.com";
+
 const categoryLabels: Record<string, string> = {
   preflop: "翻前策略",
   mtt: "MTT 策略",
   postflop: "翻後策略",
   fundamentals: "基礎概念",
+};
+
+const categoryLabelsEn: Record<string, string> = {
+  preflop: "Preflop Strategy",
+  mtt: "MTT Strategy",
+  postflop: "Postflop Strategy",
+  fundamentals: "Fundamentals",
 };
 
 interface Props {
@@ -36,9 +45,66 @@ export async function generateMetadata({ params }: Props) {
   }
 
   return {
-    title: `${guide.title} - GTO Poker Trainer`,
+    title: `${guide.title}`,
     description: guide.description,
+    openGraph: {
+      title: guide.title,
+      description: guide.description,
+      type: "article",
+      url: `${BASE_URL}/learn/${slug}`,
+      siteName: "GTO Poker Trainer",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: guide.title,
+      description: guide.description,
+    },
+    alternates: {
+      canonical: `${BASE_URL}/learn/${slug}`,
+    },
   };
+}
+
+function ArticleJsonLd({
+  title,
+  description,
+  slug,
+  category,
+}: {
+  title: string;
+  description: string;
+  slug: string;
+  category: string;
+}) {
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: title,
+    description: description,
+    author: {
+      "@type": "Organization",
+      name: "GTO Poker Trainer",
+      url: BASE_URL,
+    },
+    publisher: {
+      "@type": "Organization",
+      name: "GTO Poker Trainer",
+      url: BASE_URL,
+    },
+    mainEntityOfPage: {
+      "@type": "WebPage",
+      "@id": `${BASE_URL}/learn/${slug}`,
+    },
+    articleSection: categoryLabelsEn[category] || category,
+    inLanguage: "zh-TW",
+  };
+
+  return (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+    />
+  );
 }
 
 export default async function GuidePage({ params }: Props) {
@@ -50,17 +116,24 @@ export default async function GuidePage({ params }: Props) {
   }
 
   return (
-    <div className="container max-w-3xl py-8">
-      <div className="mb-6">
-        <Link href="/learn">
-          <Button variant="ghost" size="sm" className="gap-2">
-            <ArrowLeft className="h-4 w-4" />
-            返回學習中心
-          </Button>
-        </Link>
-      </div>
+    <>
+      <ArticleJsonLd
+        title={guide.title}
+        description={guide.description}
+        slug={slug}
+        category={guide.category}
+      />
+      <div className="container max-w-3xl py-8">
+        <div className="mb-6">
+          <Link href="/learn">
+            <Button variant="ghost" size="sm" className="gap-2">
+              <ArrowLeft className="h-4 w-4" />
+              返回學習中心
+            </Button>
+          </Link>
+        </div>
 
-      <article className="prose prose-neutral dark:prose-invert max-w-none">
+        <article className="prose prose-neutral dark:prose-invert max-w-none">
         <div className="not-prose mb-6">
           <Badge variant="secondary" className="mb-4">
             <BookOpen className="h-3 w-3 mr-1" />
@@ -190,6 +263,7 @@ export default async function GuidePage({ params }: Props) {
           </Link>
         </div>
       </div>
-    </div>
+      </div>
+    </>
   );
 }
