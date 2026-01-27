@@ -22,6 +22,11 @@ export function Navbar() {
     { href: "/drill/vs-4bet", label: t("nav.vs4betDrill") },
   ];
 
+  const mttItems = [
+    { href: "/mtt/push-fold", label: t("nav.pushFold") },
+    { href: "/mtt/icm", label: t("nav.icm") },
+  ];
+
   const navItems = [
     { href: "/range", label: t("nav.ranges") },
     { href: "/quiz", label: t("nav.quiz") },
@@ -47,6 +52,25 @@ export function Navbar() {
               <div className="absolute left-0 mt-2 w-48 rounded-md shadow-lg bg-background border opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50">
                 <div className="py-1">
                   {drillItems.map((item) => (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      className="block px-4 py-2 text-sm text-muted-foreground hover:bg-muted hover:text-primary"
+                    >
+                      {item.label}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            </div>
+            {/* MTT dropdown */}
+            <div className="relative group">
+              <span className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary cursor-pointer">
+                {t("nav.mtt")}
+              </span>
+              <div className="absolute left-0 mt-2 w-48 rounded-md shadow-lg bg-background border opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50">
+                <div className="py-1">
+                  {mttItems.map((item) => (
                     <Link
                       key={item.href}
                       href={item.href}
@@ -132,6 +156,20 @@ export function Navbar() {
                   {t("nav.practice")}
                 </div>
                 {drillItems.map((item) => (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    onClick={() => setIsOpen(false)}
+                    className="text-lg font-medium transition-colors hover:text-primary pl-2"
+                  >
+                    {item.label}
+                  </Link>
+                ))}
+                <hr className="my-2" />
+                <div className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
+                  {t("nav.mtt")}
+                </div>
+                {mttItems.map((item) => (
                   <Link
                     key={item.href}
                     href={item.href}

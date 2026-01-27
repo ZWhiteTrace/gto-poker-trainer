@@ -21,10 +21,13 @@
     "ranges": "範圍",
     "quiz": "測驗",
     "learn": "學習",
+    "mtt": "MTT 工具",
     "rfiDrill": "RFI 練習",
     "vsRfiDrill": "VS RFI 練習",
     "vs3betDrill": "VS 3-Bet 練習",
-    "vs4betDrill": "VS 4-Bet 練習"
+    "vs4betDrill": "VS 4-Bet 練習",
+    "pushFold": "Push/Fold 圖表",
+    "icm": "ICM 計算器"
   },
   "home": {
     "badge": "免費 GTO 訓練",
@@ -213,6 +216,41 @@
       "explainPotOdds": "跟注 {bet} 進入 {total} 的底池，需要 {bet}/{total} = {result}% 勝率",
       "explainDecision": "需要 {required}% 勝率，你有 {yours}%",
       "explainImplied": "當籌碼深且有強聽牌時，隱含賠率可以彌補直接賠率不足"
+    }
+  },
+  "mtt": {
+    "pushFold": {
+      "title": "MTT Push/Fold 圖表",
+      "description": "短籌碼 MTT 的 Nash 均衡推/棄範圍",
+      "pushTab": "Push 範圍",
+      "defenseTab": "防守範圍",
+      "pushDesc": "當籌碼短時應該全下的手牌",
+      "defenseDesc": "面對全下時應該跟注的手牌",
+      "selectPosition": "選擇位置",
+      "selectStack": "選擇籌碼深度",
+      "selectScenario": "選擇場景",
+      "hands": "手牌",
+      "tipsTitle": "Push/Fold 要點",
+      "tip1": "籌碼越短，推的範圍越寬。3bb 時幾乎推任何兩張牌。",
+      "tip2": "位置越靠後，推的範圍越寬。BTN 和 SB 是最佳偷盲位置。",
+      "tip3": "防守時考慮底池賠率。面對 SB 全下時 BB 應該寬跟。"
+    },
+    "icm": {
+      "title": "ICM 計算器",
+      "description": "計算錦標賽中的真實籌碼價值",
+      "stacks": "籌碼量",
+      "payouts": "獎金結構",
+      "addPlayer": "添加玩家",
+      "removePlayer": "移除",
+      "calculate": "計算 ICM",
+      "chipEquity": "籌碼 EV",
+      "icmEquity": "ICM EV",
+      "difference": "差異",
+      "player": "玩家",
+      "tipsTitle": "ICM 要點",
+      "tip1": "ICM 考慮錦標賽獎金結構，籌碼價值非線性。",
+      "tip2": "大籌碼的邊際價值遞減，小籌碼的生存價值高。",
+      "tip3": "泡沫期和決賽桌附近 ICM 壓力最大。"
     }
   },
   "footer": {

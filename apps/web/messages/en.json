@@ -21,10 +21,13 @@
     "ranges": "Ranges",
     "quiz": "Quiz",
     "learn": "Learn",
+    "mtt": "MTT Tools",
     "rfiDrill": "RFI Drill",
     "vsRfiDrill": "VS RFI Drill",
     "vs3betDrill": "VS 3-Bet Drill",
-    "vs4betDrill": "VS 4-Bet Drill"
+    "vs4betDrill": "VS 4-Bet Drill",
+    "pushFold": "Push/Fold Charts",
+    "icm": "ICM Calculator"
   },
   "home": {
     "badge": "Free GTO Training",
@@ -213,6 +216,41 @@
       "explainPotOdds": "Calling {bet} into a pot of {total}, need {bet}/{total} = {result}% equity",
       "explainDecision": "Need {required}% equity, you have {yours}%",
       "explainImplied": "With deep stacks and strong draws, implied odds can make up for insufficient direct odds"
+    }
+  },
+  "mtt": {
+    "pushFold": {
+      "title": "MTT Push/Fold Charts",
+      "description": "Nash equilibrium push/fold ranges for short-stacked MTT play",
+      "pushTab": "Push Ranges",
+      "defenseTab": "Defense Ranges",
+      "pushDesc": "Hands to shove all-in when short-stacked",
+      "defenseDesc": "Hands to call when facing an all-in",
+      "selectPosition": "Select Position",
+      "selectStack": "Select Stack Depth",
+      "selectScenario": "Select Scenario",
+      "hands": "hands",
+      "tipsTitle": "Push/Fold Tips",
+      "tip1": "The shorter your stack, the wider you should push. At 3bb, shove almost any two cards.",
+      "tip2": "Later positions can push wider. BTN and SB are prime stealing spots.",
+      "tip3": "Consider pot odds when defending. BB should call wide vs SB shove."
+    },
+    "icm": {
+      "title": "ICM Calculator",
+      "description": "Calculate real chip values in tournament scenarios",
+      "stacks": "Stack Sizes",
+      "payouts": "Payout Structure",
+      "addPlayer": "Add Player",
+      "removePlayer": "Remove",
+      "calculate": "Calculate ICM",
+      "chipEquity": "Chip EV",
+      "icmEquity": "ICM EV",
+      "difference": "Difference",
+      "player": "Player",
+      "tipsTitle": "ICM Tips",
+      "tip1": "ICM considers tournament payout structure - chip value is non-linear.",
+      "tip2": "Big stacks have diminishing marginal value, small stacks have high survival value.",
+      "tip3": "ICM pressure is highest near the bubble and at final tables."
     }
   },
   "footer": {
