@@ -21,6 +21,7 @@ export function Navbar() {
     { href: "/drill/vs-3bet", label: t("nav.vs3betDrill") },
     { href: "/drill/vs-4bet", label: t("nav.vs4betDrill") },
     { href: "/drill/postflop", label: t("nav.postflopDrill") },
+    { href: "/drill/gto-practice", label: t("nav.gtoPractice") },
   ];
 
   const mttItems = [

@@ -28,6 +28,7 @@
     "vs3betDrill": "VS 3-Bet Drill",
     "vs4betDrill": "VS 4-Bet Drill",
     "postflopDrill": "Postflop C-bet",
+    "gtoPractice": "GTO Practice",
     "pushFold": "Push/Fold Charts",
     "icm": "ICM Calculator"
   },
@@ -149,6 +150,28 @@
         "defense": "Defense",
         "resteal": "Resteal",
         "hu": "Heads Up"
+      }
+    },
+    "gtoPractice": {
+      "title": "GTO Practice Mode",
+      "description": "Practice preflop against a GTO AI opponent",
+      "selectPosition": "Select your position",
+      "startGame": "Start Game",
+      "btnVsBb": "BTN vs BB Heads Up",
+      "preflop": "Preflop Action",
+      "gameOver": "Game Over",
+      "pot": "Pot",
+      "you": "You",
+      "youWin": "You Win!",
+      "aiWins": "AI Wins",
+      "nextHand": "Next Hand",
+      "reset": "Reset",
+      "tips": {
+        "title": "How to Play",
+        "tip1": "BTN vs BB heads-up preflop practice",
+        "tip2": "AI makes decisions based on GTO frequencies",
+        "tip3": "GTO advice shown after each hand",
+        "tip4": "Practice preflop strategy from different positions"
       }
     }
   },

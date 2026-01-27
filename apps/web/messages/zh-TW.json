@@ -28,6 +28,7 @@
     "vs3betDrill": "VS 3-Bet 練習",
     "vs4betDrill": "VS 4-Bet 練習",
     "postflopDrill": "翻後 C-bet",
+    "gtoPractice": "GTO 對練",
     "pushFold": "Push/Fold 圖表",
     "icm": "ICM 計算器"
   },
@@ -149,6 +150,28 @@
         "defense": "防守",
         "resteal": "Resteal",
         "hu": "單挑"
+      }
+    },
+    "gtoPractice": {
+      "title": "GTO 對練模式",
+      "description": "與 GTO AI 進行翻前對練",
+      "selectPosition": "選擇你的位置",
+      "startGame": "開始遊戲",
+      "btnVsBb": "BTN vs BB 單挑",
+      "preflop": "翻前行動",
+      "gameOver": "本局結束",
+      "pot": "底池",
+      "you": "你",
+      "youWin": "你贏了！",
+      "aiWins": "AI 贏了",
+      "nextHand": "下一局",
+      "reset": "重置",
+      "tips": {
+        "title": "遊戲說明",
+        "tip1": "BTN vs BB 單挑翻前練習",
+        "tip2": "AI 根據 GTO 頻率做決策",
+        "tip3": "每局結束後會顯示 GTO 建議",
+        "tip4": "練習不同位置的翻前策略"
       }
     }
   },
