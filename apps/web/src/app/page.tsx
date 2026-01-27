@@ -1,6 +1,15 @@
+"use client";
+
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import {
   Spade,
@@ -9,40 +18,58 @@ import {
   TrendingUp,
   Zap,
   CheckCircle2,
-  ArrowRight
+  ArrowRight,
 } from "lucide-react";
 
-const features = [
-  {
-    icon: Target,
-    title: "Preflop Mastery",
-    description: "Master RFI, 3-bet, and 4-bet ranges with instant feedback and GTO-based evaluation.",
-  },
-  {
-    icon: Brain,
-    title: "Understand WHY",
-    description: "Don't just memorize frequencies. Learn the logic behind every GTO decision.",
-  },
-  {
-    icon: TrendingUp,
-    title: "Track Progress",
-    description: "Identify weak spots in your game with detailed analytics and weakness detection.",
-  },
-  {
-    icon: Zap,
-    title: "Practice Anywhere",
-    description: "Mobile-optimized interface. Train your poker brain during commute or breaks.",
-  },
-];
-
-const drillTypes = [
-  { name: "RFI Drill", description: "Opening ranges from each position", href: "/drill/rfi" },
-  { name: "VS RFI", description: "Respond to opens with 3-bet/call/fold", href: "/drill/vs-rfi" },
-  { name: "VS 3-Bet", description: "Face 3-bets and make correct decisions", href: "/drill/vs-3bet" },
-  { name: "Range Viewer", description: "Explore full GTO ranges visually", href: "/range" },
-];
-
 export default function Home() {
+  const t = useTranslations();
+
+  const features = [
+    {
+      icon: Target,
+      title: t("home.features.preflopMastery.title"),
+      description: t("home.features.preflopMastery.description"),
+    },
+    {
+      icon: Brain,
+      title: t("home.features.understandWhy.title"),
+      description: t("home.features.understandWhy.description"),
+    },
+    {
+      icon: TrendingUp,
+      title: t("home.features.trackProgress.title"),
+      description: t("home.features.trackProgress.description"),
+    },
+    {
+      icon: Zap,
+      title: t("home.features.practiceAnywhere.title"),
+      description: t("home.features.practiceAnywhere.description"),
+    },
+  ];
+
+  const drillTypes = [
+    {
+      name: t("home.drills.rfi.name"),
+      description: t("home.drills.rfi.description"),
+      href: "/drill/rfi",
+    },
+    {
+      name: t("home.drills.vsRfi.name"),
+      description: t("home.drills.vsRfi.description"),
+      href: "/drill/vs-rfi",
+    },
+    {
+      name: t("home.drills.vs3bet.name"),
+      description: t("home.drills.vs3bet.description"),
+      href: "/drill/vs-3bet",
+    },
+    {
+      name: t("home.drills.rangeViewer.name"),
+      description: t("home.drills.rangeViewer.description"),
+      href: "/range",
+    },
+  ];
+
   return (
     <div className="flex flex-col">
       {/* Hero Section */}
@@ -50,24 +77,25 @@ export default function Home() {
         <div className="container relative z-10">
           <div className="mx-auto max-w-3xl text-center">
             <Badge variant="secondary" className="mb-4">
-              Free GTO Training
+              {t("home.badge")}
             </Badge>
             <h1 className="mb-6 text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl">
-              Master <span className="text-primary">GTO Poker</span> Strategy
+              {t("home.title")}{" "}
+              <span className="text-primary">{t("home.titleHighlight")}</span>{" "}
+              {t("home.titleSuffix")}
             </h1>
             <p className="mb-8 text-lg text-muted-foreground md:text-xl">
-              Stop guessing, start crushing. Train your preflop decisions with
-              instant GTO feedback. Understand the WHY behind every play.
+              {t("home.subtitle")}
             </p>
             <div className="flex flex-col gap-4 sm:flex-row sm:justify-center">
               <Button size="lg" asChild>
                 <Link href="/drill/rfi">
-                  Start Training
+                  {t("home.startTraining")}
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
               </Button>
               <Button size="lg" variant="outline" asChild>
-                <Link href="/range">View Ranges</Link>
+                <Link href="/range">{t("home.viewRanges")}</Link>
               </Button>
             </div>
           </div>
@@ -83,16 +111,15 @@ export default function Home() {
       <section className="py-20">
         <div className="container">
           <div className="mx-auto mb-12 max-w-2xl text-center">
-            <h2 className="mb-4 text-3xl font-bold">
-              Why GTO Trainer?
-            </h2>
-            <p className="text-muted-foreground">
-              Built by poker players, for poker players. Focus on understanding, not memorization.
-            </p>
+            <h2 className="mb-4 text-3xl font-bold">{t("home.whyTitle")}</h2>
+            <p className="text-muted-foreground">{t("home.whySubtitle")}</p>
           </div>
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
             {features.map((feature) => (
-              <Card key={feature.title} className="border-2 transition-colors hover:border-primary/50">
+              <Card
+                key={feature.title}
+                className="border-2 transition-colors hover:border-primary/50"
+              >
                 <CardHeader>
                   <feature.icon className="mb-2 h-10 w-10 text-primary" />
                   <CardTitle className="text-lg">{feature.title}</CardTitle>
@@ -111,10 +138,10 @@ export default function Home() {
         <div className="container">
           <div className="mx-auto mb-12 max-w-2xl text-center">
             <h2 className="mb-4 text-3xl font-bold">
-              Practice Modes
+              {t("home.practiceModesTitle")}
             </h2>
             <p className="text-muted-foreground">
-              Comprehensive preflop training covering all common scenarios.
+              {t("home.practiceModesSubtitle")}
             </p>
           </div>
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
@@ -142,26 +169,24 @@ export default function Home() {
         <div className="container">
           <Card className="border-2 border-primary/20 bg-gradient-to-r from-primary/5 to-primary/10">
             <CardContent className="flex flex-col items-center gap-6 py-12 text-center">
-              <h2 className="text-3xl font-bold">
-                Ready to Level Up Your Game?
-              </h2>
+              <h2 className="text-3xl font-bold">{t("home.ctaTitle")}</h2>
               <ul className="flex flex-col gap-2 text-muted-foreground md:flex-row md:gap-6">
                 <li className="flex items-center gap-2">
                   <CheckCircle2 className="h-5 w-5 text-green-500" />
-                  100% Free to Start
+                  {t("home.ctaFeatures.free")}
                 </li>
                 <li className="flex items-center gap-2">
                   <CheckCircle2 className="h-5 w-5 text-green-500" />
-                  No Credit Card Required
+                  {t("home.ctaFeatures.noCard")}
                 </li>
                 <li className="flex items-center gap-2">
                   <CheckCircle2 className="h-5 w-5 text-green-500" />
-                  Instant Feedback
+                  {t("home.ctaFeatures.instant")}
                 </li>
               </ul>
               <Button size="lg" asChild>
                 <Link href="/drill/rfi">
-                  Start Free Training
+                  {t("home.startFreeTraining")}
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
               </Button>

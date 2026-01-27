@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -10,7 +11,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Badge } from "@/components/ui/badge";
 import { RangeGrid } from "@/components/poker/RangeGrid";
 import { api, RangeResponse } from "@/lib/api";
 import { Loader2 } from "lucide-react";
@@ -36,6 +36,7 @@ const VS_RFI_MATCHUPS = [
 ];
 
 export default function RangeViewerPage() {
+  const t = useTranslations();
   const [activeTab, setActiveTab] = useState<"rfi" | "vs_rfi">("rfi");
   const [selectedPosition, setSelectedPosition] = useState("UTG");
   const [selectedMatchup, setSelectedMatchup] = useState(VS_RFI_MATCHUPS[0]);
@@ -63,7 +64,7 @@ export default function RangeViewerPage() {
         }
         setRangeData(data);
       } catch (err) {
-        setError(err instanceof Error ? err.message : "Failed to load range");
+        setError(err instanceof Error ? err.message : t("common.error"));
         setRangeData(null);
       } finally {
         setIsLoading(false);
@@ -71,15 +72,13 @@ export default function RangeViewerPage() {
     };
 
     fetchRange();
-  }, [activeTab, selectedPosition, selectedMatchup]);
+  }, [activeTab, selectedPosition, selectedMatchup, t]);
 
   return (
     <div className="container max-w-6xl py-8">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold">Range Viewer</h1>
-        <p className="text-muted-foreground">
-          Explore GTO preflop ranges for 6-max cash games
-        </p>
+        <h1 className="text-3xl font-bold">{t("range.title")}</h1>
+        <p className="text-muted-foreground">{t("range.description")}</p>
       </div>
 
       <Tabs
@@ -87,18 +86,16 @@ export default function RangeViewerPage() {
         onValueChange={(v) => setActiveTab(v as "rfi" | "vs_rfi")}
       >
         <TabsList className="mb-6">
-          <TabsTrigger value="rfi">RFI Ranges</TabsTrigger>
-          <TabsTrigger value="vs_rfi">vs RFI Ranges</TabsTrigger>
+          <TabsTrigger value="rfi">{t("range.rfiRanges")}</TabsTrigger>
+          <TabsTrigger value="vs_rfi">{t("range.vsRfiRanges")}</TabsTrigger>
         </TabsList>
 
         <TabsContent value="rfi" className="space-y-6">
           {/* Position Selector */}
           <Card>
             <CardHeader>
-              <CardTitle>Select Position</CardTitle>
-              <CardDescription>
-                View the opening range (Raise First In) for each position
-              </CardDescription>
+              <CardTitle>{t("range.selectPosition")}</CardTitle>
+              <CardDescription>{t("range.selectPositionDesc")}</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="flex flex-wrap gap-2">
@@ -117,8 +114,8 @@ export default function RangeViewerPage() {
 
           {/* Range Display */}
           <RangeCard
-            title={`${selectedPosition} Open Range`}
-            description={`RFI range when action folds to ${selectedPosition}`}
+            title={`${selectedPosition} ${t("range.openRange", { position: selectedPosition }).split(selectedPosition)[1] || "Open Range"}`}
+            description={t("range.openRangeDesc", { position: selectedPosition })}
             rangeData={rangeData}
             isLoading={isLoading}
             error={error}
@@ -131,10 +128,8 @@ export default function RangeViewerPage() {
           {/* Matchup Selector */}
           <Card>
             <CardHeader>
-              <CardTitle>Select Matchup</CardTitle>
-              <CardDescription>
-                View the defending range against an open raise
-              </CardDescription>
+              <CardTitle>{t("range.selectMatchup")}</CardTitle>
+              <CardDescription>{t("range.selectMatchupDesc")}</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="flex flex-wrap gap-2">
@@ -159,8 +154,11 @@ export default function RangeViewerPage() {
 
           {/* Range Display */}
           <RangeCard
-            title={`${selectedMatchup.hero} vs ${selectedMatchup.villain} Open`}
-            description={`Defense range for ${selectedMatchup.hero} facing ${selectedMatchup.villain} RFI`}
+            title={`${selectedMatchup.hero} vs ${selectedMatchup.villain}`}
+            description={t("range.vsRangeDesc", {
+              hero: selectedMatchup.hero,
+              villain: selectedMatchup.villain,
+            })}
             rangeData={rangeData}
             isLoading={isLoading}
             error={error}
@@ -172,22 +170,7 @@ export default function RangeViewerPage() {
 
       {/* Range Stats */}
       {rangeData && (
-        <Card className="mt-6">
-          <CardHeader>
-            <CardTitle>Range Statistics</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <StatItem label="Total Hands" value={rangeData.total_hands} />
-              <StatItem
-                label="Drillable Hands"
-                value={rangeData.drillable.length}
-              />
-              <StatItem label="Position" value={rangeData.position} />
-              <StatItem label="Action Type" value={rangeData.action_type} />
-            </div>
-          </CardContent>
-        </Card>
+        <RangeStats rangeData={rangeData} />
       )}
     </div>
   );
@@ -212,6 +195,8 @@ function RangeCard({
   selectedHand,
   onHandClick,
 }: RangeCardProps) {
+  const t = useTranslations();
+
   return (
     <Card>
       <CardHeader>
@@ -233,9 +218,32 @@ function RangeCard({
           />
         ) : (
           <div className="text-center py-12 text-muted-foreground">
-            Select a position to view the range
+            {t("range.selectToView")}
           </div>
         )}
+      </CardContent>
+    </Card>
+  );
+}
+
+function RangeStats({ rangeData }: { rangeData: RangeResponse }) {
+  const t = useTranslations();
+
+  return (
+    <Card className="mt-6">
+      <CardHeader>
+        <CardTitle>{t("range.stats.title")}</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <StatItem label={t("range.stats.totalHands")} value={rangeData.total_hands} />
+          <StatItem
+            label={t("range.stats.drillableHands")}
+            value={rangeData.drillable.length}
+          />
+          <StatItem label={t("range.stats.position")} value={rangeData.position} />
+          <StatItem label={t("range.stats.actionType")} value={rangeData.action_type} />
+        </div>
       </CardContent>
     </Card>
   );

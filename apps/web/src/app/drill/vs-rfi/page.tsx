@@ -6,8 +6,8 @@ export default function VsRfiDrillPage() {
   return (
     <DrillSession
       drillType="vs_rfi"
-      title="VS RFI Drill"
-      description="Practice defending against open raises"
+      titleKey="drill.vsRfi.title"
+      descriptionKey="drill.vsRfi.description"
       positions={["HJ", "CO", "BTN", "SB", "BB"]}
     />
   );

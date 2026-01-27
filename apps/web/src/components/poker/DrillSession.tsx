@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -24,10 +25,9 @@ type DrillType = "rfi" | "vs_rfi" | "vs_3bet" | "vs_4bet";
 
 interface DrillSessionProps {
   drillType: DrillType;
-  title: string;
-  description: string;
+  titleKey: string;
+  descriptionKey: string;
   positions?: string[];
-  defaultVillainPosition?: string;
 }
 
 interface SessionStats {
@@ -48,11 +48,11 @@ const initialStats: SessionStats = {
 
 export function DrillSession({
   drillType,
-  title,
-  description,
+  titleKey,
+  descriptionKey,
   positions = ["UTG", "HJ", "CO", "BTN", "SB", "BB"],
-  defaultVillainPosition,
 }: DrillSessionProps) {
+  const t = useTranslations();
   const [currentSpot, setCurrentSpot] = useState<SpotResponse | null>(null);
   const [lastResult, setLastResult] = useState<EvaluateResponse | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -73,7 +73,7 @@ export function DrillSession({
       });
       setCurrentSpot(spot);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to generate spot");
+      setError(err instanceof Error ? err.message : t("common.error"));
     } finally {
       setIsLoading(false);
     }
@@ -111,7 +111,7 @@ export function DrillSession({
       setSessionStats(newStats);
       setLastResult(result);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to evaluate");
+      setError(err instanceof Error ? err.message : t("common.error"));
     } finally {
       setIsLoading(false);
     }
@@ -146,13 +146,23 @@ export function DrillSession({
         )
       : 0;
 
+  const getActionLabel = (action: string) => {
+    const actionMap: Record<string, string> = {
+      raise: t("drill.actions.raise"),
+      call: t("drill.actions.call"),
+      fold: t("drill.actions.fold"),
+      allin: t("drill.actions.allin"),
+    };
+    return actionMap[action] || action;
+  };
+
   return (
     <div className="container max-w-4xl py-8">
       {/* Header */}
       <div className="mb-8 flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold">{title}</h1>
-          <p className="text-muted-foreground">{description}</p>
+          <h1 className="text-3xl font-bold">{t(titleKey)}</h1>
+          <p className="text-muted-foreground">{t(descriptionKey)}</p>
         </div>
         <div className="flex gap-2">
           <Button
@@ -164,7 +174,7 @@ export function DrillSession({
           </Button>
           <Button variant="outline" onClick={resetSession}>
             <RotateCcw className="mr-2 h-4 w-4" />
-            Reset
+            {t("common.reset")}
           </Button>
         </div>
       </div>
@@ -173,10 +183,8 @@ export function DrillSession({
       {showSettings && (
         <Card className="mb-6">
           <CardHeader>
-            <CardTitle className="text-lg">Position Filter</CardTitle>
-            <CardDescription>
-              Select which positions to practice
-            </CardDescription>
+            <CardTitle className="text-lg">{t("drill.positionFilter")}</CardTitle>
+            <CardDescription>{t("drill.selectPositions")}</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="flex flex-wrap gap-2">
@@ -203,7 +211,7 @@ export function DrillSession({
               {sessionStats.total}
             </div>
             <div className="text-xs sm:text-sm text-muted-foreground">
-              Total
+              {t("common.total")}
             </div>
           </CardContent>
         </Card>
@@ -213,7 +221,7 @@ export function DrillSession({
               {sessionStats.correct}
             </div>
             <div className="text-xs sm:text-sm text-muted-foreground">
-              Correct
+              {t("common.correct")}
             </div>
           </CardContent>
         </Card>
@@ -221,7 +229,7 @@ export function DrillSession({
           <CardContent className="p-3 sm:p-4 text-center">
             <div className="text-xl sm:text-2xl font-bold">{accuracy}%</div>
             <div className="text-xs sm:text-sm text-muted-foreground">
-              Accuracy
+              {t("common.accuracy")}
             </div>
           </CardContent>
         </Card>
@@ -231,7 +239,7 @@ export function DrillSession({
               {sessionStats.streak}
             </div>
             <div className="text-xs sm:text-sm text-muted-foreground">
-              Streak
+              {t("common.streak")}
             </div>
           </CardContent>
         </Card>
@@ -240,10 +248,8 @@ export function DrillSession({
       {/* Main Drill Area */}
       <Card className="mb-8">
         <CardHeader>
-          <CardTitle>What&apos;s Your Play?</CardTitle>
-          <CardDescription>
-            Choose the correct action for this hand
-          </CardDescription>
+          <CardTitle>{t("drill.whatsYourPlay")}</CardTitle>
+          <CardDescription>{t("drill.chooseAction")}</CardDescription>
         </CardHeader>
         <CardContent>
           {error && (
@@ -274,7 +280,7 @@ export function DrillSession({
                     {currentSpot.hand}
                   </div>
                   <div className="mt-2 text-sm text-muted-foreground">
-                    Your Hand
+                    {t("drill.yourHand")}
                   </div>
                 </div>
                 <div className="text-center">
@@ -285,7 +291,7 @@ export function DrillSession({
                     {currentSpot.hero_position}
                   </Badge>
                   <div className="mt-2 text-sm text-muted-foreground">
-                    Position
+                    {t("drill.position")}
                   </div>
                 </div>
               </div>
@@ -306,28 +312,29 @@ export function DrillSession({
                       <>
                         <CheckCircle2 className="h-5 w-5 text-green-500" />
                         <span className="font-semibold text-green-500">
-                          Correct!
+                          {t("drill.result.correct")}
                         </span>
                       </>
                     ) : lastResult.is_acceptable ? (
                       <>
                         <AlertCircle className="h-5 w-5 text-yellow-500" />
                         <span className="font-semibold text-yellow-500">
-                          Acceptable
+                          {t("drill.result.acceptable")}
                         </span>
                       </>
                     ) : (
                       <>
                         <XCircle className="h-5 w-5 text-red-500" />
                         <span className="font-semibold text-red-500">
-                          Incorrect
+                          {t("drill.result.incorrect")}
                         </span>
                       </>
                     )}
                   </div>
                   <p className="text-sm">
-                    GTO: <strong>{lastResult.correct_action}</strong> (
-                    {lastResult.frequency}%)
+                    {t("drill.gto")}:{" "}
+                    <strong>{getActionLabel(lastResult.correct_action)}</strong>{" "}
+                    ({lastResult.frequency}%)
                   </p>
                   <p className="text-sm text-muted-foreground mt-1">
                     {lastResult.explanation_zh || lastResult.explanation}
@@ -349,12 +356,12 @@ export function DrillSession({
                       }
                       onClick={() => submitAnswer(action)}
                       disabled={isLoading}
-                      className="h-14 sm:h-16 text-base sm:text-lg capitalize"
+                      className="h-14 sm:h-16 text-base sm:text-lg"
                     >
                       {isLoading ? (
                         <Loader2 className="h-5 w-5 animate-spin" />
                       ) : (
-                        action
+                        getActionLabel(action)
                       )}
                     </Button>
                   ))}
@@ -365,15 +372,15 @@ export function DrillSession({
                   onClick={generateSpot}
                   className="w-full h-14 sm:h-16 text-base sm:text-lg"
                 >
-                  Next Hand →
+                  {t("drill.nextHand")}
                 </Button>
               )}
             </div>
           ) : (
             <div className="text-center py-12 text-muted-foreground">
-              Click below to start
+              {t("drill.clickToStart")}
               <Button onClick={generateSpot} className="mt-4 block mx-auto">
-                Start Drill
+                {t("drill.startDrill")}
               </Button>
             </div>
           )}
@@ -383,7 +390,7 @@ export function DrillSession({
       {/* Position Reference */}
       <Card>
         <CardHeader>
-          <CardTitle>Position Reference</CardTitle>
+          <CardTitle>{t("drill.positionReference")}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="flex flex-wrap gap-2">

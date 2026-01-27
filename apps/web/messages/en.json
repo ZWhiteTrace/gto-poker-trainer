@@ -1,0 +1,170 @@
+{
+  "common": {
+    "appName": "GTO Poker Trainer",
+    "signIn": "Sign In",
+    "signOut": "Sign Out",
+    "getStarted": "Get Started",
+    "loading": "Loading...",
+    "error": "An error occurred",
+    "save": "Save",
+    "cancel": "Cancel",
+    "reset": "Reset",
+    "next": "Next",
+    "previous": "Previous",
+    "total": "Total",
+    "correct": "Correct",
+    "accuracy": "Accuracy",
+    "streak": "Streak"
+  },
+  "nav": {
+    "practice": "Practice",
+    "ranges": "Ranges",
+    "quiz": "Quiz",
+    "learn": "Learn",
+    "rfiDrill": "RFI Drill",
+    "vsRfiDrill": "VS RFI Drill",
+    "vs3betDrill": "VS 3-Bet Drill"
+  },
+  "home": {
+    "badge": "Free GTO Training",
+    "title": "Master",
+    "titleHighlight": "GTO Poker",
+    "titleSuffix": "Strategy",
+    "subtitle": "Stop guessing, start crushing. Train your preflop decisions with instant GTO feedback. Understand the WHY behind every play.",
+    "startTraining": "Start Training",
+    "viewRanges": "View Ranges",
+    "whyTitle": "Why GTO Trainer?",
+    "whySubtitle": "Built by poker players, for poker players. Focus on understanding, not memorization.",
+    "features": {
+      "preflopMastery": {
+        "title": "Preflop Mastery",
+        "description": "Master RFI, 3-bet, and 4-bet ranges with instant feedback and GTO-based evaluation."
+      },
+      "understandWhy": {
+        "title": "Understand WHY",
+        "description": "Don't just memorize frequencies. Learn the logic behind every GTO decision."
+      },
+      "trackProgress": {
+        "title": "Track Progress",
+        "description": "Identify weak spots in your game with detailed analytics and weakness detection."
+      },
+      "practiceAnywhere": {
+        "title": "Practice Anywhere",
+        "description": "Mobile-optimized interface. Train your poker brain during commute or breaks."
+      }
+    },
+    "practiceModesTitle": "Practice Modes",
+    "practiceModesSubtitle": "Comprehensive preflop training covering all common scenarios.",
+    "drills": {
+      "rfi": {
+        "name": "RFI Drill",
+        "description": "Opening ranges from each position"
+      },
+      "vsRfi": {
+        "name": "VS RFI",
+        "description": "Respond to opens with 3-bet/call/fold"
+      },
+      "vs3bet": {
+        "name": "VS 3-Bet",
+        "description": "Face 3-bets and make correct decisions"
+      },
+      "rangeViewer": {
+        "name": "Range Viewer",
+        "description": "Explore full GTO ranges visually"
+      }
+    },
+    "ctaTitle": "Ready to Level Up Your Game?",
+    "ctaFeatures": {
+      "free": "100% Free to Start",
+      "noCard": "No Credit Card Required",
+      "instant": "Instant Feedback"
+    },
+    "startFreeTraining": "Start Free Training"
+  },
+  "drill": {
+    "rfi": {
+      "title": "RFI Drill",
+      "description": "Practice opening ranges from each position"
+    },
+    "vsRfi": {
+      "title": "VS RFI Drill",
+      "description": "Practice defending against open raises"
+    },
+    "vs3bet": {
+      "title": "VS 3-Bet Drill",
+      "description": "Practice responding to 3-bets after you open raise"
+    },
+    "whatsYourPlay": "What's Your Play?",
+    "chooseAction": "Choose the correct action for this hand",
+    "yourHand": "Your Hand",
+    "position": "Position",
+    "villainOpens": "{position} opens",
+    "result": {
+      "correct": "Correct!",
+      "acceptable": "Acceptable",
+      "incorrect": "Incorrect"
+    },
+    "gto": "GTO",
+    "nextHand": "Next Hand →",
+    "startDrill": "Start Drill",
+    "clickToStart": "Click below to start",
+    "positionReference": "Position Reference",
+    "positionFilter": "Position Filter",
+    "selectPositions": "Select which positions to practice",
+    "actions": {
+      "raise": "Raise",
+      "call": "Call",
+      "fold": "Fold",
+      "allin": "All-in"
+    }
+  },
+  "range": {
+    "title": "Range Viewer",
+    "description": "Explore GTO preflop ranges for 6-max cash games",
+    "rfiRanges": "RFI Ranges",
+    "vsRfiRanges": "vs RFI Ranges",
+    "selectPosition": "Select Position",
+    "selectPositionDesc": "View the opening range (Raise First In) for each position",
+    "selectMatchup": "Select Matchup",
+    "selectMatchupDesc": "View the defending range against an open raise",
+    "openRange": "{position} Open Range",
+    "openRangeDesc": "RFI range when action folds to {position}",
+    "vsRange": "{hero} vs {villain} Open",
+    "vsRangeDesc": "Defense range for {hero} facing {villain} RFI",
+    "stats": {
+      "title": "Range Statistics",
+      "totalHands": "Total Hands",
+      "drillableHands": "Drillable Hands",
+      "position": "Position",
+      "actionType": "Action Type"
+    },
+    "legend": {
+      "raise": "Raise",
+      "call": "Call",
+      "allin": "All-in",
+      "fold": "Fold"
+    },
+    "noData": "No data",
+    "selectToView": "Select a position to view the range"
+  },
+  "footer": {
+    "description": "Free GTO poker trainer: preflop range charts, push/fold strategy, ICM calculator. Master game theory optimal poker strategy.",
+    "training": "Training",
+    "resources": "Resources",
+    "company": "Company",
+    "links": {
+      "rfiDrill": "RFI Drill",
+      "vsRfiDrill": "VS RFI Drill",
+      "vs3betDrill": "VS 3-Bet Drill",
+      "rangeViewer": "Range Viewer",
+      "blog": "Blog",
+      "guides": "Guides",
+      "gtoBasics": "GTO Basics",
+      "about": "About Us",
+      "contact": "Contact",
+      "privacy": "Privacy Policy",
+      "terms": "Terms of Service"
+    },
+    "copyright": "© {year} GTO Poker Trainer. All rights reserved."
+  }
+}

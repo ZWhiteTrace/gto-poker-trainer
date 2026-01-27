@@ -1,0 +1,170 @@
+{
+  "common": {
+    "appName": "GTO 撲克訓練器",
+    "signIn": "登入",
+    "signOut": "登出",
+    "getStarted": "開始使用",
+    "loading": "載入中...",
+    "error": "發生錯誤",
+    "save": "儲存",
+    "cancel": "取消",
+    "reset": "重置",
+    "next": "下一個",
+    "previous": "上一個",
+    "total": "總計",
+    "correct": "正確",
+    "accuracy": "準確率",
+    "streak": "連續"
+  },
+  "nav": {
+    "practice": "練習",
+    "ranges": "範圍",
+    "quiz": "測驗",
+    "learn": "學習",
+    "rfiDrill": "RFI 練習",
+    "vsRfiDrill": "VS RFI 練習",
+    "vs3betDrill": "VS 3-Bet 練習"
+  },
+  "home": {
+    "badge": "免費 GTO 訓練",
+    "title": "掌握",
+    "titleHighlight": "GTO 撲克",
+    "titleSuffix": "策略",
+    "subtitle": "停止猜測，開始壓制。用即時 GTO 反饋訓練你的翻前決策。理解每個打法背後的原因。",
+    "startTraining": "開始訓練",
+    "viewRanges": "查看範圍",
+    "whyTitle": "為什麼選擇 GTO 訓練器？",
+    "whySubtitle": "由撲克玩家為撲克玩家打造。專注於理解，而非死記。",
+    "features": {
+      "preflopMastery": {
+        "title": "翻前精通",
+        "description": "掌握 RFI、3-bet 和 4-bet 範圍，獲得即時反饋和基於 GTO 的評估。"
+      },
+      "understandWhy": {
+        "title": "理解原因",
+        "description": "不只是記住頻率。學習每個 GTO 決策背後的邏輯。"
+      },
+      "trackProgress": {
+        "title": "追蹤進度",
+        "description": "通過詳細的分析和弱點檢測，找出你遊戲中的弱項。"
+      },
+      "practiceAnywhere": {
+        "title": "隨處練習",
+        "description": "手機優化界面。在通勤或休息時訓練你的撲克大腦。"
+      }
+    },
+    "practiceModesTitle": "練習模式",
+    "practiceModesSubtitle": "涵蓋所有常見場景的全面翻前訓練。",
+    "drills": {
+      "rfi": {
+        "name": "RFI 練習",
+        "description": "各位置的開牌範圍"
+      },
+      "vsRfi": {
+        "name": "VS RFI",
+        "description": "用 3-bet/跟注/棄牌回應開牌"
+      },
+      "vs3bet": {
+        "name": "VS 3-Bet",
+        "description": "面對 3-bet 做出正確決策"
+      },
+      "rangeViewer": {
+        "name": "範圍查看器",
+        "description": "以視覺方式探索完整 GTO 範圍"
+      }
+    },
+    "ctaTitle": "準備好提升你的遊戲了嗎？",
+    "ctaFeatures": {
+      "free": "100% 免費開始",
+      "noCard": "無需信用卡",
+      "instant": "即時反饋"
+    },
+    "startFreeTraining": "開始免費訓練"
+  },
+  "drill": {
+    "rfi": {
+      "title": "RFI 練習",
+      "description": "練習各位置的開牌範圍"
+    },
+    "vsRfi": {
+      "title": "VS RFI 練習",
+      "description": "練習防守對手的開牌加注"
+    },
+    "vs3bet": {
+      "title": "VS 3-Bet 練習",
+      "description": "練習在開牌加注後面對 3-bet 的回應"
+    },
+    "whatsYourPlay": "你怎麼打？",
+    "chooseAction": "為這手牌選擇正確的動作",
+    "yourHand": "你的手牌",
+    "position": "位置",
+    "villainOpens": "{position} 開牌",
+    "result": {
+      "correct": "正確！",
+      "acceptable": "可接受",
+      "incorrect": "錯誤"
+    },
+    "gto": "GTO",
+    "nextHand": "下一手 →",
+    "startDrill": "開始練習",
+    "clickToStart": "點擊下方開始",
+    "positionReference": "位置參考",
+    "positionFilter": "位置篩選",
+    "selectPositions": "選擇要練習的位置",
+    "actions": {
+      "raise": "加注",
+      "call": "跟注",
+      "fold": "棄牌",
+      "allin": "全下"
+    }
+  },
+  "range": {
+    "title": "範圍查看器",
+    "description": "探索 6-max 現金局的 GTO 翻前範圍",
+    "rfiRanges": "RFI 範圍",
+    "vsRfiRanges": "VS RFI 範圍",
+    "selectPosition": "選擇位置",
+    "selectPositionDesc": "查看每個位置的開牌範圍（首次加注）",
+    "selectMatchup": "選擇對局",
+    "selectMatchupDesc": "查看面對開牌加注的防守範圍",
+    "openRange": "{position} 開牌範圍",
+    "openRangeDesc": "行動棄牌到 {position} 時的 RFI 範圍",
+    "vsRange": "{hero} vs {villain} 開牌",
+    "vsRangeDesc": "{hero} 面對 {villain} RFI 的防守範圍",
+    "stats": {
+      "title": "範圍統計",
+      "totalHands": "總手牌數",
+      "drillableHands": "可練習手牌",
+      "position": "位置",
+      "actionType": "動作類型"
+    },
+    "legend": {
+      "raise": "加注",
+      "call": "跟注",
+      "allin": "全下",
+      "fold": "棄牌"
+    },
+    "noData": "無數據",
+    "selectToView": "選擇位置查看範圍"
+  },
+  "footer": {
+    "description": "免費 GTO 撲克訓練器：翻前範圍圖表、推/棄策略、ICM 計算器。掌握遊戲理論最優撲克策略。",
+    "training": "訓練",
+    "resources": "資源",
+    "company": "公司",
+    "links": {
+      "rfiDrill": "RFI 練習",
+      "vsRfiDrill": "VS RFI 練習",
+      "vs3betDrill": "VS 3-Bet 練習",
+      "rangeViewer": "範圍查看器",
+      "blog": "部落格",
+      "guides": "指南",
+      "gtoBasics": "GTO 基礎",
+      "about": "關於我們",
+      "contact": "聯繫我們",
+      "privacy": "隱私政策",
+      "terms": "服務條款"
+    },
+    "copyright": "© {year} GTO 撲克訓練器。保留所有權利。"
+  }
+}
