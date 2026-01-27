@@ -17,7 +17,7 @@ import { Coins, Users, Target, Shield, Zap, UserRound } from "lucide-react";
 
 const RANKS = ["A", "K", "Q", "J", "T", "9", "8", "7", "6", "5", "4", "3", "2"];
 
-const STACK_DEPTHS = ["3bb", "5bb", "8bb", "10bb", "12bb", "15bb", "18bb", "20bb", "25bb"];
+const STACK_DEPTHS = ["3bb", "4bb", "5bb", "8bb", "10bb", "12bb", "15bb", "20bb", "25bb"];
 
 const POSITIONS = ["UTG", "HJ", "CO", "BTN", "SB"];
 
@@ -37,6 +37,8 @@ const RESTEAL_SCENARIOS = [
   { key: "BB_resteal_vs_HJ", label: "BB vs HJ Open", hero: "BB", villain: "HJ" },
 ];
 
+const DEFENSE_STACKS = ["3bb", "5bb", "8bb", "10bb", "12bb", "15bb", "20bb"];
+
 const RESTEAL_STACKS = ["10bb", "12bb", "15bb", "18bb", "20bb"];
 
 const HU_SCENARIOS = [
@@ -44,7 +46,7 @@ const HU_SCENARIOS = [
   { key: "BB_call_vs_SB_shove", label: "BB Call vs SB", hero: "BB", action: "Call" },
 ];
 
-const HU_STACKS = ["3bb", "4bb", "5bb", "6bb", "8bb", "10bb", "12bb", "15bb"];
+const HU_STACKS = ["3bb", "4bb", "5bb", "6bb", "8bb", "10bb", "12bb", "15bb", "20bb"];
 
 // Generate hand key from grid position
 function getHandKey(row: number, col: number): string {
@@ -379,7 +381,7 @@ export default function PushFoldPage() {
               <div className="mb-6">
                 <div className="text-sm text-muted-foreground mb-2">{t("mtt.pushFold.selectStack")}</div>
                 <div className="flex flex-wrap gap-2">
-                  {STACK_DEPTHS.slice(0, 6).map((depth) => (
+                  {DEFENSE_STACKS.map((depth) => (
                     <Button
                       key={depth}
                       variant={stackDepth === depth ? "default" : "outline"}
