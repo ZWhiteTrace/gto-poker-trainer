@@ -15,7 +15,7 @@ from routers import drill, evaluate, ranges
 app = FastAPI(
     title="GTO Poker Trainer API",
     description="Backend API for GTO poker training application",
-    version="2.0.0",
+    version="2.1.0",
 )
 
 # CORS for Next.js frontend
