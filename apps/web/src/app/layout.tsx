@@ -7,6 +7,7 @@ import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { AuthProvider } from "@/components/providers/AuthProvider";
 import { ServiceWorkerProvider } from "@/components/providers/ServiceWorkerProvider";
+import { AchievementToast } from "@/components/AchievementToast";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -216,6 +217,7 @@ export default async function RootLayout({
               <Footer />
             </div>
             <ServiceWorkerProvider />
+            <AchievementToast />
           </AuthProvider>
         </NextIntlClientProvider>
       </body>

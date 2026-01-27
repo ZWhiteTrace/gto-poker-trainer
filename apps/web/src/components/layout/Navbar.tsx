@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useTranslations, useLocale } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { Menu, Spade, User, LogOut, BarChart3 } from "lucide-react";
+import { Menu, Spade, User, LogOut, BarChart3, Trophy, Award } from "lucide-react";
 import { useState } from "react";
 import { LanguageSwitcher } from "./LanguageSwitcher";
 import { useAuthStore } from "@/stores/authStore";
@@ -36,6 +36,7 @@ export function Navbar() {
     { href: "/exam", label: t("exam.title") || "Mock Exam" },
     { href: "/learn", label: t("nav.learn") },
     { href: "/analyze", label: t("nav.analyze") },
+    { href: "/leaderboard", label: t("leaderboard.title") || "Leaderboard" },
     { href: "/stats", label: t("stats.title") || "Stats" },
   ];
 
@@ -149,12 +150,28 @@ export function Navbar() {
                       </div>
                     </div>
                     <Link
-                      href="/progress"
+                      href="/stats"
                       onClick={() => setIsOpen(false)}
                       className="flex items-center gap-2 text-lg font-medium transition-colors hover:text-primary"
                     >
                       <BarChart3 className="h-5 w-5" />
-                      Progress
+                      {t("stats.title") || "Stats"}
+                    </Link>
+                    <Link
+                      href="/achievements"
+                      onClick={() => setIsOpen(false)}
+                      className="flex items-center gap-2 text-lg font-medium transition-colors hover:text-primary"
+                    >
+                      <Award className="h-5 w-5" />
+                      {t("achievements.title") || "Achievements"}
+                    </Link>
+                    <Link
+                      href="/leaderboard"
+                      onClick={() => setIsOpen(false)}
+                      className="flex items-center gap-2 text-lg font-medium transition-colors hover:text-primary"
+                    >
+                      <Trophy className="h-5 w-5" />
+                      {t("leaderboard.title") || "Leaderboard"}
                     </Link>
                     <hr className="my-2" />
                   </>
@@ -268,11 +285,25 @@ function UserMenu({ user, signOut }: UserMenuProps) {
             <p className="text-xs text-muted-foreground truncate">{user.email}</p>
           </div>
           <Link
-            href="/progress"
+            href="/stats"
             className="flex items-center gap-2 px-4 py-2 text-sm text-muted-foreground hover:bg-muted hover:text-primary"
           >
             <BarChart3 className="h-4 w-4" />
-            Progress
+            {t("stats.title") || "Stats"}
+          </Link>
+          <Link
+            href="/achievements"
+            className="flex items-center gap-2 px-4 py-2 text-sm text-muted-foreground hover:bg-muted hover:text-primary"
+          >
+            <Award className="h-4 w-4" />
+            {t("achievements.title") || "Achievements"}
+          </Link>
+          <Link
+            href="/leaderboard"
+            className="flex items-center gap-2 px-4 py-2 text-sm text-muted-foreground hover:bg-muted hover:text-primary"
+          >
+            <Trophy className="h-4 w-4" />
+            {t("leaderboard.title") || "Leaderboard"}
           </Link>
           <button
             onClick={signOut}

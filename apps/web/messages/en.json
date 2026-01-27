@@ -495,6 +495,37 @@
     "drillStats": "Drill Statistics",
     "quizStats": "Quiz Statistics"
   },
+  "leaderboard": {
+    "title": "Leaderboard",
+    "description": "See how you rank against other players",
+    "yourRank": "Your Rank",
+    "rankings": "Rankings",
+    "totalDesc": "Top players by total hands practiced",
+    "weeklyDesc": "This week's most active players",
+    "streakDesc": "Players with the longest winning streaks",
+    "accuracyDesc": "Highest accuracy (min 100 hands)",
+    "noData": "No rankings yet. Be the first!",
+    "minRequirement": "Minimum 10 hands required to appear on leaderboard",
+    "updateFrequency": "Rankings update in real-time"
+  },
+  "achievements": {
+    "title": "Achievements",
+    "description": "Unlock achievements as you progress",
+    "loginRequired": "Login Required",
+    "loginRequiredDesc": "Sign in to track your achievements",
+    "unlocked": "Unlocked",
+    "totalPoints": "Total Points",
+    "total": "Total",
+    "completion": "Completion",
+    "keepPracticing": "Keep practicing to unlock more achievements!",
+    "newUnlock": "Achievement Unlocked!",
+    "categories": {
+      "milestone": "Milestones",
+      "streak": "Streaks",
+      "accuracy": "Accuracy",
+      "special": "Special"
+    }
+  },
   "footer": {
     "description": "Free GTO poker trainer: preflop range charts, push/fold strategy, ICM calculator. Master game theory optimal poker strategy.",
     "training": "Training",

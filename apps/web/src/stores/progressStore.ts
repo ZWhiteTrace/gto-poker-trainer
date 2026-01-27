@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { createClient } from "@/lib/supabase/client";
+import { updateLeaderboardStats, type Achievement } from "@/lib/supabase/leaderboard";
 
 type DrillType = "rfi" | "vs_rfi" | "vs_3bet" | "vs_4bet";
 type QuizType = "equity" | "outs" | "ev" | "logic" | "exploit";
@@ -190,6 +191,8 @@ export const useProgressStore = create<ProgressState>()(
         if (userId) {
           try {
             const supabase = createClient();
+
+            // Save drill result
             await supabase.from("drill_results").insert({
               user_id: userId,
               drill_type: result.drill_type,
@@ -202,6 +205,19 @@ export const useProgressStore = create<ProgressState>()(
               is_acceptable: result.is_acceptable,
               frequency: result.frequency,
             });
+
+            // Update leaderboard stats and check achievements
+            const isCorrect = result.is_correct || result.is_acceptable;
+            const leaderboardResult = await updateLeaderboardStats(userId, isCorrect);
+
+            // If new achievements were unlocked, dispatch a custom event
+            if (leaderboardResult?.newAchievements?.length) {
+              window.dispatchEvent(
+                new CustomEvent("achievement-unlocked", {
+                  detail: leaderboardResult.newAchievements,
+                })
+              );
+            }
           } catch (error) {
             console.error("Failed to sync result to cloud:", error);
           }

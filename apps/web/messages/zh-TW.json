@@ -495,6 +495,37 @@
     "drillStats": "練習統計",
     "quizStats": "測驗統計"
   },
+  "leaderboard": {
+    "title": "排行榜",
+    "description": "查看你在玩家中的排名",
+    "yourRank": "你的排名",
+    "rankings": "排名",
+    "totalDesc": "總練習手數最高的玩家",
+    "weeklyDesc": "本週最活躍的玩家",
+    "streakDesc": "連勝紀錄最長的玩家",
+    "accuracyDesc": "準確率最高的玩家（至少 100 手）",
+    "noData": "尚無排名。成為第一個！",
+    "minRequirement": "至少需要 10 手才能出現在排行榜",
+    "updateFrequency": "排名即時更新"
+  },
+  "achievements": {
+    "title": "成就",
+    "description": "隨著進度解鎖成就",
+    "loginRequired": "需要登入",
+    "loginRequiredDesc": "登入以追蹤你的成就",
+    "unlocked": "已解鎖",
+    "totalPoints": "總點數",
+    "total": "總計",
+    "completion": "完成度",
+    "keepPracticing": "繼續練習以解鎖更多成就！",
+    "newUnlock": "成就解鎖！",
+    "categories": {
+      "milestone": "里程碑",
+      "streak": "連勝",
+      "accuracy": "準確率",
+      "special": "特殊"
+    }
+  },
   "footer": {
     "description": "免費 GTO 撲克訓練器：翻前範圍圖表、推/棄策略、ICM 計算器。掌握遊戲理論最優撲克策略。",
     "training": "訓練",
