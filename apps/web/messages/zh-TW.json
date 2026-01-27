@@ -121,6 +121,7 @@
     "positionReference": "位置參考",
     "positionFilter": "位置篩選",
     "selectPositions": "選擇要練習的位置",
+    "allTime": "累計",
     "actions": {
       "raise": "加注",
       "call": "跟注",

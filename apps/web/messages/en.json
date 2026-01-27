@@ -121,6 +121,7 @@
     "positionReference": "Position Reference",
     "positionFilter": "Position Filter",
     "selectPositions": "Select which positions to practice",
+    "allTime": "All-time",
     "actions": {
       "raise": "Raise",
       "call": "Call",

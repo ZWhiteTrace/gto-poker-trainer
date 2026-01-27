@@ -20,6 +20,8 @@ import {
   RotateCcw,
   Settings,
 } from "lucide-react";
+import { useProgressStore } from "@/stores/progressStore";
+import { useAuthStore } from "@/stores/authStore";
 
 type DrillType = "rfi" | "vs_rfi" | "vs_3bet" | "vs_4bet";
 
@@ -61,6 +63,11 @@ export function DrillSession({
   const [enabledPositions, setEnabledPositions] = useState<string[]>(positions);
   const [showSettings, setShowSettings] = useState(false);
 
+  // Progress persistence
+  const { stats, recordResult } = useProgressStore();
+  const { user } = useAuthStore();
+  const cumulativeStats = stats[drillType];
+
   const generateSpot = async () => {
     setIsLoading(true);
     setError(null);
@@ -92,7 +99,7 @@ export function DrillSession({
         action,
       });
 
-      // Update stats
+      // Update session stats (for current session display)
       const newStats = { ...sessionStats };
       newStats.total += 1;
 
@@ -110,6 +117,22 @@ export function DrillSession({
 
       setSessionStats(newStats);
       setLastResult(result);
+
+      // Persist to progressStore (localStorage + Supabase if logged in)
+      await recordResult(
+        {
+          drill_type: drillType,
+          hand: currentSpot.hand,
+          hero_position: currentSpot.hero_position,
+          villain_position: currentSpot.villain_position,
+          player_action: action,
+          correct_action: result.correct_action,
+          is_correct: result.is_correct,
+          is_acceptable: result.is_acceptable,
+          frequency: result.frequency,
+        },
+        user?.id
+      );
     } catch (err) {
       setError(err instanceof Error ? err.message : t("common.error"));
     } finally {
@@ -142,6 +165,15 @@ export function DrillSession({
       ? Math.round(
           ((sessionStats.correct + sessionStats.acceptable) /
             sessionStats.total) *
+            100
+        )
+      : 0;
+
+  const cumulativeAccuracy =
+    cumulativeStats.total > 0
+      ? Math.round(
+          ((cumulativeStats.correct + cumulativeStats.acceptable) /
+            cumulativeStats.total) *
             100
         )
       : 0;
@@ -203,8 +235,8 @@ export function DrillSession({
         </Card>
       )}
 
-      {/* Stats Bar */}
-      <div className="mb-8 grid grid-cols-4 gap-2 sm:gap-4">
+      {/* Session Stats Bar */}
+      <div className="mb-4 grid grid-cols-4 gap-2 sm:gap-4">
         <Card>
           <CardContent className="p-3 sm:p-4 text-center">
             <div className="text-xl sm:text-2xl font-bold">
@@ -244,6 +276,17 @@ export function DrillSession({
           </CardContent>
         </Card>
       </div>
+
+      {/* Cumulative Stats (All-time) */}
+      {cumulativeStats.total > 0 && (
+        <div className="mb-8 p-3 rounded-lg bg-muted/50 flex items-center justify-between text-sm">
+          <span className="text-muted-foreground">{t("drill.allTime")}:</span>
+          <div className="flex gap-4">
+            <span>{cumulativeStats.total} {t("common.total")}</span>
+            <span className="text-green-500">{cumulativeAccuracy}% {t("common.accuracy")}</span>
+          </div>
+        </div>
+      )}
 
       {/* Main Drill Area */}
       <Card className="mb-8">
