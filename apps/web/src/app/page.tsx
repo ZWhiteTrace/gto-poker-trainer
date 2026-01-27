@@ -19,6 +19,54 @@ import {
   ArrowRight,
 } from "lucide-react";
 
+function FAQPageJsonLd() {
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: [
+      {
+        "@type": "Question",
+        name: "What is GTO poker strategy?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "GTO (Game Theory Optimal) poker is a strategy based on mathematical principles that makes your play unexploitable. It involves balanced ranges and frequencies that prevent opponents from gaining an edge against you.",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "How do I use the preflop range trainer?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "Select your position and the drill type (RFI, VS RFI, VS 3-Bet). The trainer will show you random hands and you choose the correct action. It tracks your accuracy and identifies weak spots in your game.",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "Is this poker trainer free?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "Yes! GTO Poker Trainer is completely free to use. All features including preflop drills, push/fold charts, and progress tracking are available at no cost.",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "What is push/fold strategy in poker tournaments?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "Push/fold strategy is used in tournaments when stack sizes become short (typically under 15 big blinds). Instead of raising small, you either go all-in (push) or fold. Our trainer teaches optimal push/fold ranges based on position and stack depth.",
+        },
+      },
+    ],
+  };
+
+  return (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+    />
+  );
+}
+
 export default async function Home() {
   const t = await getTranslations();
 
@@ -69,8 +117,10 @@ export default async function Home() {
   ];
 
   return (
-    <div className="flex flex-col">
-      {/* Hero Section */}
+    <>
+      <FAQPageJsonLd />
+      <div className="flex flex-col">
+        {/* Hero Section */}
       <section className="relative overflow-hidden bg-gradient-to-b from-background to-muted/30 py-20 md:py-32">
         <div className="container relative z-10">
           <div className="mx-auto max-w-3xl text-center">
@@ -192,6 +242,7 @@ export default async function Home() {
           </Card>
         </div>
       </section>
-    </div>
+      </div>
+    </>
   );
 }

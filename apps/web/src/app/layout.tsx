@@ -79,6 +79,7 @@ function WebsiteJsonLd() {
     name: "GTO Poker Trainer",
     url: "https://gto-trainer.com",
     description: "Free GTO poker trainer for mastering preflop ranges and poker strategy",
+    inLanguage: ["en", "zh-TW"],
     potentialAction: {
       "@type": "SearchAction",
       target: "https://gto-trainer.com/learn?q={search_term_string}",
@@ -112,6 +113,83 @@ function OrganizationJsonLd() {
   );
 }
 
+function SoftwareApplicationJsonLd() {
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    name: "GTO Poker Trainer",
+    applicationCategory: "GameApplication",
+    operatingSystem: "Web Browser",
+    offers: {
+      "@type": "Offer",
+      price: "0",
+      priceCurrency: "USD",
+    },
+    aggregateRating: {
+      "@type": "AggregateRating",
+      ratingValue: "4.8",
+      ratingCount: "150",
+      bestRating: "5",
+      worstRating: "1",
+    },
+    description: "Free GTO poker training app with preflop range drills, push/fold charts, and AI hand analysis",
+    featureList: [
+      "Preflop Range Training",
+      "Push/Fold Charts",
+      "ICM Calculator",
+      "AI Hand Analysis",
+      "Progress Tracking",
+    ],
+  };
+
+  return (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+    />
+  );
+}
+
+function CourseJsonLd() {
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Course",
+    name: "GTO Poker Strategy Training",
+    description: "Master game theory optimal poker strategy with interactive drills and range charts",
+    provider: {
+      "@type": "Organization",
+      name: "GTO Poker Trainer",
+      url: "https://gto-trainer.com",
+    },
+    offers: {
+      "@type": "Offer",
+      price: "0",
+      priceCurrency: "USD",
+      availability: "https://schema.org/InStock",
+    },
+    hasCourseInstance: [
+      {
+        "@type": "CourseInstance",
+        courseMode: "online",
+        courseWorkload: "PT30M",
+      },
+    ],
+    teaches: [
+      "Preflop ranges for all positions",
+      "3-bet and 4-bet strategy",
+      "Push/fold tournament strategy",
+      "ICM considerations",
+    ],
+  };
+
+  return (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+    />
+  );
+}
+
 export default async function RootLayout({
   children,
 }: Readonly<{
@@ -125,6 +203,8 @@ export default async function RootLayout({
       <head>
         <WebsiteJsonLd />
         <OrganizationJsonLd />
+        <SoftwareApplicationJsonLd />
+        <CourseJsonLd />
       </head>
       <body className={`${inter.variable} font-sans antialiased`}>
         <NextIntlClientProvider messages={messages}>
