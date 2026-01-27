@@ -1,0 +1,123 @@
+{
+  "meta": {
+    "format": "6max",
+    "stack_depth": "100bb",
+    "raise_size": "2.5bb (SB 3bb)",
+    "source": "Mixed - GTOWizard / Freebetrange",
+    "note": "Frequencies in rfi_frequencies.json, 75%+ hands listed as raise"
+  },
+  "UTG": {
+    "raise": [
+      "AA", "KK", "QQ", "JJ", "TT", "99", "88", "77", "55",
+      "AKs", "AQs", "AJs", "ATs", "A9s", "A8s", "A7s", "A6s", "A5s", "A4s", "A3s", "A2s",
+      "KQs", "KJs", "KTs", "K9s", "K8s",
+      "QJs", "QTs", "Q9s",
+      "JTs", "J9s",
+      "T9s",
+      "AKo", "AQo", "AJo", "ATo",
+      "KQo", "KJo"
+    ],
+    "comments": {
+      "note": "Cash 6-max 100bb: A2s+, K8s+, Q9s+, KJo",
+      "mixed_50pct": ["66", "44", "33", "22", "K7s", "K6s", "Q8s", "T8s", "98s", "87s", "76s", "65s", "54s", "KTo", "QJo"]
+    }
+  },
+  "HJ": {
+    "raise": [
+      "AA", "KK", "QQ", "JJ", "TT", "99", "88", "77", "66", "55", "44", "33",
+      "AKs", "AQs", "AJs", "ATs", "A9s", "A8s", "A7s", "A6s", "A5s", "A4s", "A3s", "A2s",
+      "KQs", "KJs", "KTs", "K9s", "K8s", "K7s",
+      "QJs", "QTs", "Q9s",
+      "JTs", "J9s",
+      "T9s", "T8s",
+      "98s",
+      "87s",
+      "76s",
+      "65s",
+      "54s",
+      "AKo", "AQo", "AJo", "ATo",
+      "KQo", "KJo",
+      "QJo"
+    ],
+    "comments": {
+      "note": "HJ: A2s+, K7s+(不打K6s), Q9s+, J9s+, T8s可打, 44/33可打",
+      "not_played": ["K6s", "A9o", "KTo", "QTo"]
+    }
+  },
+  "CO": {
+    "raise": [
+      "AA", "KK", "QQ", "JJ", "TT", "99", "88", "77", "66", "55", "44", "33", "22",
+      "AKs", "AQs", "AJs", "ATs", "A9s", "A8s", "A7s", "A6s", "A5s", "A4s", "A3s", "A2s",
+      "KQs", "KJs", "KTs", "K9s", "K8s", "K7s", "K6s", "K5s", "K4s", "K3s",
+      "QJs", "QTs", "Q9s", "Q8s", "Q7s", "Q6s",
+      "JTs", "J9s", "J8s", "J7s",
+      "T9s", "T8s", "T7s",
+      "98s", "97s",
+      "87s", "86s",
+      "76s",
+      "65s",
+      "54s",
+      "AKo", "AQo", "AJo", "ATo", "A9o",
+      "KQo", "KJo", "KTo",
+      "QJo", "QTo"
+    ],
+    "comments": {
+      "note": "CO: K3s+(不打K2s), T7s可打, 86s可打, 22可打, 不打A5o"
+    }
+  },
+  "BTN": {
+    "raise": [
+      "AA", "KK", "QQ", "JJ", "TT", "99", "88", "77", "66", "55", "44", "33", "22",
+      "AKs", "AQs", "AJs", "ATs", "A9s", "A8s", "A7s", "A6s", "A5s", "A4s", "A3s", "A2s",
+      "KQs", "KJs", "KTs", "K9s", "K8s", "K7s", "K6s", "K5s", "K4s", "K3s", "K2s",
+      "QJs", "QTs", "Q9s", "Q8s", "Q7s", "Q6s", "Q5s", "Q4s", "Q3s", "Q2s",
+      "JTs", "J9s", "J8s", "J7s", "J6s", "J5s", "J4s",
+      "T9s", "T8s", "T7s", "T6s",
+      "98s", "97s", "96s",
+      "87s", "86s", "85s",
+      "76s", "75s",
+      "65s", "64s",
+      "43s",
+      "A7o", "A6o", "A5o", "A4o",
+      "AKo", "AQo", "AJo", "ATo", "A9o", "A8o",
+      "KQo", "KJo", "KTo", "K9o", "K8o",
+      "QJo", "QTo", "Q9o",
+      "JTo", "J9o", "J8o",
+      "T9o", "T8o",
+      "98o"
+    ],
+    "comments": {
+      "note": "BTN: 不打J3s/T5s/95s/74s/53s/54s, 不打A3o/A2o/K7o/Q8o/T7o/97o/87o/86o/76o/65o",
+      "not_played": ["J3s", "T5s", "95s", "74s", "53s", "54s", "A3o", "A2o", "K7o", "Q8o", "T7o", "97o", "87o", "86o", "76o", "65o"]
+    }
+  },
+  "SB": {
+    "raise": [
+      "AA", "KK", "QQ", "JJ", "TT", "99", "88", "77", "66", "55", "44", "33", "22",
+      "AKs", "AQs", "AJs", "ATs", "A9s", "A8s", "A7s", "A6s", "A5s", "A4s", "A3s",
+      "KQs", "KJs", "KTs", "K9s", "K8s", "K7s", "K6s", "K5s", "K4s", "K3s",
+      "QJs", "QTs", "Q9s", "Q8s", "Q7s", "Q6s", "Q5s", "Q4s",
+      "JTs", "J9s", "J8s", "J7s", "J6s", "J5s", "J4s",
+      "T9s", "T8s", "T7s", "T6s", "T5s",
+      "98s", "97s", "96s",
+      "87s", "86s", "85s",
+      "76s", "75s", "74s",
+      "65s", "64s",
+      "54s", "53s",
+      "43s",
+      "A7o", "A6o", "A5o", "A4o", "A3o",
+      "AKo", "AQo", "AJo", "ATo", "A9o", "A8o",
+      "KQo", "KJo", "KTo", "K9o", "K8o", "K7o",
+      "QJo", "QTo", "Q9o", "Q8o",
+      "JTo", "J9o", "J8o",
+      "T9o", "T8o",
+      "98o", "97o",
+      "87o",
+      "76o"
+    ],
+    "comments": {
+      "note": "47.2% VPIP (626/1326) - Freebetrange SB",
+      "vs_weak_bb": ["A2s", "K2s", "Q3s", "33", "32s"]
+    }
+  }
+}

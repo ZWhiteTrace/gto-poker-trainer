@@ -1,0 +1,312 @@
+{
+  "meta": {
+    "format": "6max",
+    "stack_depth": "100bb",
+    "betting_mode": "GTO Simplified+",
+    "4bet_size": "20-25bb",
+    "5bet_size": "All-in",
+    "source": "GTO Wizard + 千算Poker 合併修正",
+    "note": "You 3bet, villain 4bets. Updated with fold boundaries for TT/99/AQs. Mixed strategies simplified to majority action.",
+    "version": "5.0",
+    "last_updated": "2026-01-22"
+  },
+  "HJ_vs_UTG": {
+    "frequencies": {
+      "AA": {"5bet": 100},
+      "KK": {"5bet": 100},
+      "QQ": {"call": 100},
+      "AKs": {"call": 100},
+      "AKo": {"call": 100},
+      "JJ": {"fold": 100},
+      "TT": {"fold": 100},
+      "AQs": {"fold": 100}
+    },
+    "stats": {
+      "5bet_hands": 2,
+      "call_hands": 3,
+      "fold_boundary_hands": 3,
+      "note": "HJ vs UTG 4bet: Very tight. JJ/TT/AQs all fold vs EP 4bet."
+    }
+  },
+  "CO_vs_UTG": {
+    "frequencies": {
+      "AA": {"5bet": 100},
+      "KK": {"5bet": 100},
+      "QQ": {"call": 100},
+      "AKs": {"call": 100},
+      "AKo": {"call": 100},
+      "JJ": {"fold": 100},
+      "TT": {"fold": 100},
+      "AQs": {"fold": 100}
+    },
+    "stats": {
+      "5bet_hands": 2,
+      "call_hands": 3,
+      "fold_boundary_hands": 3,
+      "note": "CO vs UTG 4bet: Very tight."
+    }
+  },
+  "CO_vs_HJ": {
+    "frequencies": {
+      "AA": {"5bet": 100},
+      "KK": {"5bet": 100},
+      "QQ": {"call": 100},
+      "JJ": {"call": 100},
+      "AKs": {"call": 100},
+      "AKo": {"call": 100},
+      "TT": {"fold": 100},
+      "AQs": {"fold": 100},
+      "99": {"fold": 100}
+    },
+    "stats": {
+      "5bet_hands": 2,
+      "call_hands": 4,
+      "fold_boundary_hands": 3,
+      "note": "CO vs HJ 4bet: Tight. JJ calls, TT/AQs fold."
+    }
+  },
+  "BTN_vs_UTG": {
+    "frequencies": {
+      "AA": {"5bet": 100},
+      "KK": {"5bet": 100},
+      "QQ": {"call": 100},
+      "JJ": {"call": 100},
+      "AKs": {"call": 100},
+      "AKo": {"call": 100},
+      "TT": {"fold": 100},
+      "AQs": {"fold": 100},
+      "99": {"fold": 100}
+    },
+    "stats": {
+      "5bet_hands": 2,
+      "call_hands": 4,
+      "fold_boundary_hands": 3,
+      "note": "BTN vs UTG 4bet: Still tight vs EP. JJ calls, TT folds."
+    }
+  },
+  "BTN_vs_HJ": {
+    "frequencies": {
+      "AA": {"5bet": 100},
+      "KK": {"5bet": 100},
+      "QQ": {"call": 100},
+      "JJ": {"call": 100},
+      "AKs": {"call": 100},
+      "AKo": {"call": 100},
+      "TT": {"call": 50, "fold": 50},
+      "AQs": {"fold": 100},
+      "99": {"fold": 100}
+    },
+    "stats": {
+      "5bet_hands": 2,
+      "call_hands": 4,
+      "mixed_hands": 1,
+      "fold_boundary_hands": 2,
+      "note": "BTN vs HJ 4bet: Medium. TT is borderline (simplified to fold)."
+    }
+  },
+  "BTN_vs_CO": {
+    "frequencies": {
+      "AA": {"5bet": 100},
+      "KK": {"5bet": 100},
+      "QQ": {"call": 100},
+      "JJ": {"call": 100},
+      "TT": {"call": 100},
+      "AKs": {"call": 100},
+      "AKo": {"call": 100},
+      "AQs": {"call": 70, "fold": 30},
+      "99": {"fold": 100},
+      "AQo": {"fold": 100}
+    },
+    "stats": {
+      "5bet_hands": 2,
+      "call_hands": 6,
+      "mixed_hands": 1,
+      "fold_boundary_hands": 2,
+      "note": "BTN vs CO 4bet: Wider. TT calls, AQs is borderline (lean call)."
+    }
+  },
+  "SB_vs_UTG": {
+    "frequencies": {
+      "AA": {"5bet": 100},
+      "KK": {"5bet": 100},
+      "QQ": {"call": 100},
+      "AKs": {"call": 100},
+      "AKo": {"call": 100},
+      "JJ": {"fold": 100},
+      "TT": {"fold": 100},
+      "AQs": {"fold": 100}
+    },
+    "stats": {
+      "5bet_hands": 2,
+      "call_hands": 3,
+      "fold_boundary_hands": 3,
+      "note": "SB vs UTG 4bet: Very tight, even OOP."
+    }
+  },
+  "SB_vs_HJ": {
+    "frequencies": {
+      "AA": {"5bet": 100},
+      "KK": {"5bet": 100},
+      "QQ": {"call": 100},
+      "JJ": {"call": 100},
+      "AKs": {"call": 100},
+      "AKo": {"call": 100},
+      "TT": {"fold": 100},
+      "AQs": {"fold": 100},
+      "99": {"fold": 100}
+    },
+    "stats": {
+      "5bet_hands": 2,
+      "call_hands": 4,
+      "fold_boundary_hands": 3,
+      "note": "SB vs HJ 4bet: Tight."
+    }
+  },
+  "SB_vs_CO": {
+    "frequencies": {
+      "AA": {"5bet": 100},
+      "KK": {"5bet": 100},
+      "QQ": {"call": 100},
+      "JJ": {"call": 100},
+      "AKs": {"call": 100},
+      "AKo": {"call": 100},
+      "TT": {"fold": 100},
+      "AQs": {"fold": 100},
+      "99": {"fold": 100}
+    },
+    "stats": {
+      "5bet_hands": 2,
+      "call_hands": 4,
+      "fold_boundary_hands": 3,
+      "note": "SB vs CO 4bet: Medium."
+    }
+  },
+  "SB_vs_BTN": {
+    "frequencies": {
+      "AA": {"5bet": 100},
+      "KK": {"5bet": 100},
+      "QQ": {"5bet": 100},
+      "AKs": {"5bet": 100},
+      "JJ": {"call": 100},
+      "TT": {"call": 100},
+      "AKo": {"call": 100},
+      "AQs": {"call": 100},
+      "99": {"call": 50, "fold": 50},
+      "AQo": {"fold": 100},
+      "AJs": {"fold": 100}
+    },
+    "stats": {
+      "5bet_hands": 4,
+      "call_hands": 4,
+      "mixed_hands": 1,
+      "fold_boundary_hands": 2,
+      "note": "SB vs BTN 4bet: Wide. 99 is borderline."
+    }
+  },
+  "BB_vs_UTG": {
+    "frequencies": {
+      "AA": {"5bet": 100},
+      "KK": {"5bet": 100},
+      "QQ": {"call": 100},
+      "AKs": {"call": 100},
+      "AKo": {"call": 100},
+      "JJ": {"fold": 100},
+      "TT": {"fold": 100},
+      "AQs": {"fold": 100}
+    },
+    "stats": {
+      "5bet_hands": 2,
+      "call_hands": 3,
+      "fold_boundary_hands": 3,
+      "note": "BB vs UTG 4bet: Very tight."
+    }
+  },
+  "BB_vs_HJ": {
+    "frequencies": {
+      "AA": {"5bet": 100},
+      "KK": {"5bet": 100},
+      "QQ": {"call": 100},
+      "JJ": {"call": 100},
+      "AKs": {"call": 100},
+      "AKo": {"call": 100},
+      "TT": {"fold": 100},
+      "AQs": {"fold": 100},
+      "99": {"fold": 100}
+    },
+    "stats": {
+      "5bet_hands": 2,
+      "call_hands": 4,
+      "fold_boundary_hands": 3,
+      "note": "BB vs HJ 4bet: Tight."
+    }
+  },
+  "BB_vs_CO": {
+    "frequencies": {
+      "AA": {"5bet": 100},
+      "KK": {"5bet": 100},
+      "QQ": {"call": 100},
+      "JJ": {"call": 100},
+      "AKs": {"call": 100},
+      "AKo": {"call": 100},
+      "TT": {"call": 50, "fold": 50},
+      "AQs": {"fold": 100},
+      "99": {"fold": 100}
+    },
+    "stats": {
+      "5bet_hands": 2,
+      "call_hands": 4,
+      "mixed_hands": 1,
+      "fold_boundary_hands": 2,
+      "note": "BB vs CO 4bet: Medium. TT is borderline."
+    }
+  },
+  "BB_vs_BTN": {
+    "frequencies": {
+      "AA": {"5bet": 100},
+      "KK": {"5bet": 100},
+      "QQ": {"5bet": 100},
+      "AKs": {"5bet": 100},
+      "JJ": {"call": 100},
+      "TT": {"call": 100},
+      "AKo": {"call": 100},
+      "AQs": {"call": 100},
+      "99": {"call": 50, "fold": 50},
+      "AQo": {"fold": 100},
+      "AJs": {"fold": 100}
+    },
+    "stats": {
+      "5bet_hands": 4,
+      "call_hands": 4,
+      "mixed_hands": 1,
+      "fold_boundary_hands": 2,
+      "note": "BB vs BTN 4bet: Wide. 99 is borderline."
+    }
+  },
+  "BB_vs_SB": {
+    "frequencies": {
+      "AA": {"5bet": 100},
+      "KK": {"5bet": 100},
+      "QQ": {"5bet": 100},
+      "JJ": {"5bet": 100},
+      "AKs": {"5bet": 100},
+      "AQs": {"5bet": 100},
+      "A5s": {"5bet": 100},
+      "TT": {"call": 100},
+      "99": {"call": 100},
+      "AKo": {"call": 100},
+      "AQo": {"call": 100},
+      "AJs": {"call": 100},
+      "88": {"call": 50, "fold": 50},
+      "KQs": {"fold": 100},
+      "ATs": {"fold": 100},
+      "77": {"fold": 100}
+    },
+    "stats": {
+      "5bet_hands": 7,
+      "call_hands": 5,
+      "mixed_hands": 1,
+      "fold_boundary_hands": 3,
+      "note": "BB vs SB 4bet: Blind war, widest. 88 borderline, 77/KQs fold."
+    }
+  }
+}

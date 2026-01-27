@@ -1,0 +1,259 @@
+{
+  "meta": {
+    "version": "1.0",
+    "description": "MTT Resteal 範圍：對手開池後的 3bet 全下範圍",
+    "assumptions": {
+      "format": "6max MTT",
+      "villain_open_size": "2.2-2.5bb",
+      "icm": "chip_ev"
+    }
+  },
+  "6max": {
+    "SB_resteal_vs_BTN": {
+      "10bb": [
+        "AA", "KK", "QQ", "JJ", "TT", "99", "88", "77", "66",
+        "AKs", "AQs", "AJs", "ATs", "A9s", "A8s", "A7s", "A6s", "A5s", "A4s", "A3s", "A2s",
+        "KQs", "KJs", "KTs", "K9s", "K8s",
+        "QJs", "QTs", "Q9s",
+        "JTs", "J9s",
+        "T9s",
+        "98s",
+        "87s",
+        "76s",
+        "AKo", "AQo", "AJo", "ATo", "A9o",
+        "KQo", "KJo",
+        "QJo"
+      ],
+      "12bb": [
+        "AA", "KK", "QQ", "JJ", "TT", "99", "88", "77",
+        "AKs", "AQs", "AJs", "ATs", "A9s", "A8s", "A7s", "A5s", "A4s",
+        "KQs", "KJs", "KTs", "K9s",
+        "QJs", "QTs",
+        "JTs", "J9s",
+        "T9s",
+        "98s",
+        "87s",
+        "AKo", "AQo", "AJo", "ATo",
+        "KQo", "KJo"
+      ],
+      "15bb": [
+        "AA", "KK", "QQ", "JJ", "TT", "99", "88",
+        "AKs", "AQs", "AJs", "ATs", "A9s", "A5s",
+        "KQs", "KJs", "KTs",
+        "QJs", "QTs",
+        "JTs",
+        "T9s",
+        "AKo", "AQo", "AJo",
+        "KQo"
+      ],
+      "18bb": [
+        "AA", "KK", "QQ", "JJ", "TT", "99",
+        "AKs", "AQs", "AJs", "ATs", "A5s",
+        "KQs", "KJs",
+        "QJs",
+        "JTs",
+        "AKo", "AQo",
+        "KQo"
+      ],
+      "20bb": [
+        "AA", "KK", "QQ", "JJ", "TT",
+        "AKs", "AQs", "AJs", "A5s",
+        "KQs", "KJs",
+        "QJs",
+        "AKo", "AQo"
+      ]
+    },
+    "BB_resteal_vs_BTN": {
+      "10bb": [
+        "AA", "KK", "QQ", "JJ", "TT", "99", "88", "77", "66", "55",
+        "AKs", "AQs", "AJs", "ATs", "A9s", "A8s", "A7s", "A6s", "A5s", "A4s", "A3s", "A2s",
+        "KQs", "KJs", "KTs", "K9s", "K8s", "K7s",
+        "QJs", "QTs", "Q9s", "Q8s",
+        "JTs", "J9s", "J8s",
+        "T9s", "T8s",
+        "98s", "97s",
+        "87s", "86s",
+        "76s", "75s",
+        "65s",
+        "54s",
+        "AKo", "AQo", "AJo", "ATo", "A9o", "A8o",
+        "KQo", "KJo", "KTo",
+        "QJo", "QTo",
+        "JTo"
+      ],
+      "12bb": [
+        "AA", "KK", "QQ", "JJ", "TT", "99", "88", "77", "66",
+        "AKs", "AQs", "AJs", "ATs", "A9s", "A8s", "A7s", "A5s", "A4s", "A3s",
+        "KQs", "KJs", "KTs", "K9s", "K8s",
+        "QJs", "QTs", "Q9s",
+        "JTs", "J9s",
+        "T9s", "T8s",
+        "98s",
+        "87s",
+        "76s",
+        "65s",
+        "AKo", "AQo", "AJo", "ATo", "A9o",
+        "KQo", "KJo", "KTo",
+        "QJo"
+      ],
+      "15bb": [
+        "AA", "KK", "QQ", "JJ", "TT", "99", "88", "77",
+        "AKs", "AQs", "AJs", "ATs", "A9s", "A8s", "A5s", "A4s",
+        "KQs", "KJs", "KTs", "K9s",
+        "QJs", "QTs", "Q9s",
+        "JTs", "J9s",
+        "T9s",
+        "98s",
+        "87s",
+        "AKo", "AQo", "AJo", "ATo",
+        "KQo", "KJo"
+      ],
+      "18bb": [
+        "AA", "KK", "QQ", "JJ", "TT", "99", "88",
+        "AKs", "AQs", "AJs", "ATs", "A9s", "A5s",
+        "KQs", "KJs", "KTs",
+        "QJs", "QTs",
+        "JTs",
+        "T9s",
+        "AKo", "AQo", "AJo",
+        "KQo"
+      ],
+      "20bb": [
+        "AA", "KK", "QQ", "JJ", "TT", "99",
+        "AKs", "AQs", "AJs", "ATs", "A5s",
+        "KQs", "KJs",
+        "QJs",
+        "JTs",
+        "AKo", "AQo",
+        "KQo"
+      ]
+    },
+    "BB_resteal_vs_CO": {
+      "10bb": [
+        "AA", "KK", "QQ", "JJ", "TT", "99", "88", "77",
+        "AKs", "AQs", "AJs", "ATs", "A9s", "A8s", "A5s", "A4s",
+        "KQs", "KJs", "KTs", "K9s",
+        "QJs", "QTs", "Q9s",
+        "JTs", "J9s",
+        "T9s",
+        "98s",
+        "87s",
+        "76s",
+        "AKo", "AQo", "AJo", "ATo",
+        "KQo", "KJo"
+      ],
+      "12bb": [
+        "AA", "KK", "QQ", "JJ", "TT", "99", "88",
+        "AKs", "AQs", "AJs", "ATs", "A9s", "A5s",
+        "KQs", "KJs", "KTs",
+        "QJs", "QTs",
+        "JTs", "J9s",
+        "T9s",
+        "98s",
+        "AKo", "AQo", "AJo",
+        "KQo", "KJo"
+      ],
+      "15bb": [
+        "AA", "KK", "QQ", "JJ", "TT", "99",
+        "AKs", "AQs", "AJs", "ATs", "A5s",
+        "KQs", "KJs",
+        "QJs", "QTs",
+        "JTs",
+        "AKo", "AQo", "AJo",
+        "KQo"
+      ],
+      "18bb": [
+        "AA", "KK", "QQ", "JJ", "TT",
+        "AKs", "AQs", "AJs", "A5s",
+        "KQs", "KJs",
+        "QJs",
+        "AKo", "AQo"
+      ],
+      "20bb": [
+        "AA", "KK", "QQ", "JJ",
+        "AKs", "AQs", "AJs",
+        "KQs",
+        "AKo", "AQo"
+      ]
+    },
+    "BB_resteal_vs_HJ": {
+      "10bb": [
+        "AA", "KK", "QQ", "JJ", "TT", "99",
+        "AKs", "AQs", "AJs", "ATs", "A5s",
+        "KQs", "KJs", "KTs",
+        "QJs", "QTs",
+        "JTs",
+        "T9s",
+        "AKo", "AQo", "AJo",
+        "KQo"
+      ],
+      "12bb": [
+        "AA", "KK", "QQ", "JJ", "TT",
+        "AKs", "AQs", "AJs", "A5s",
+        "KQs", "KJs",
+        "QJs",
+        "JTs",
+        "AKo", "AQo"
+      ],
+      "15bb": [
+        "AA", "KK", "QQ", "JJ",
+        "AKs", "AQs", "AJs",
+        "KQs",
+        "AKo", "AQo"
+      ],
+      "18bb": [
+        "AA", "KK", "QQ", "JJ",
+        "AKs", "AQs",
+        "AKo"
+      ],
+      "20bb": [
+        "AA", "KK", "QQ",
+        "AKs",
+        "AKo"
+      ]
+    },
+    "SB_resteal_vs_CO": {
+      "10bb": [
+        "AA", "KK", "QQ", "JJ", "TT", "99", "88",
+        "AKs", "AQs", "AJs", "ATs", "A9s", "A5s", "A4s",
+        "KQs", "KJs", "KTs",
+        "QJs", "QTs",
+        "JTs", "J9s",
+        "T9s",
+        "98s",
+        "87s",
+        "AKo", "AQo", "AJo", "ATo",
+        "KQo", "KJo"
+      ],
+      "12bb": [
+        "AA", "KK", "QQ", "JJ", "TT", "99",
+        "AKs", "AQs", "AJs", "ATs", "A5s",
+        "KQs", "KJs", "KTs",
+        "QJs", "QTs",
+        "JTs",
+        "T9s",
+        "AKo", "AQo", "AJo",
+        "KQo"
+      ],
+      "15bb": [
+        "AA", "KK", "QQ", "JJ", "TT",
+        "AKs", "AQs", "AJs", "A5s",
+        "KQs", "KJs",
+        "QJs",
+        "JTs",
+        "AKo", "AQo"
+      ],
+      "18bb": [
+        "AA", "KK", "QQ", "JJ",
+        "AKs", "AQs", "AJs",
+        "KQs",
+        "AKo", "AQo"
+      ],
+      "20bb": [
+        "AA", "KK", "QQ", "JJ",
+        "AKs", "AQs",
+        "AKo"
+      ]
+    }
+  }
+}
