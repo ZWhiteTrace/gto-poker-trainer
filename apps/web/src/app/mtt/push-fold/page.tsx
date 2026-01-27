@@ -115,21 +115,52 @@ function PushFoldGrid({ hands, colorType, onHandClick }: PushFoldGridProps) {
   );
 }
 
+const STORAGE_KEY = "push-fold-selections";
+
+function getStoredSelections() {
+  if (typeof window === "undefined") return null;
+  try {
+    const stored = localStorage.getItem(STORAGE_KEY);
+    return stored ? JSON.parse(stored) : null;
+  } catch {
+    return null;
+  }
+}
+
 export default function PushFoldPage() {
   const t = useTranslations();
-  const [activeTab, setActiveTab] = useState("push");
-  const [position, setPosition] = useState("BTN");
-  const [stackDepth, setStackDepth] = useState("10bb");
-  const [defenseScenario, setDefenseScenario] = useState("BB_vs_SB_shove");
+  const stored = getStoredSelections();
+
+  const [activeTab, setActiveTab] = useState(stored?.activeTab || "push");
+  const [position, setPosition] = useState(stored?.position || "BTN");
+  const [stackDepth, setStackDepth] = useState(stored?.stackDepth || "10bb");
+  const [defenseScenario, setDefenseScenario] = useState(stored?.defenseScenario || "BB_vs_SB_shove");
   const [pushHands, setPushHands] = useState<string[]>([]);
   const [defenseHands, setDefenseHands] = useState<string[]>([]);
-  const [restealScenario, setRestealScenario] = useState("SB_resteal_vs_BTN");
-  const [restealStack, setRestealStack] = useState("10bb");
+  const [restealScenario, setRestealScenario] = useState(stored?.restealScenario || "SB_resteal_vs_BTN");
+  const [restealStack, setRestealStack] = useState(stored?.restealStack || "10bb");
   const [restealHands, setRestealHands] = useState<string[]>([]);
-  const [huScenario, setHuScenario] = useState("SB_push");
-  const [huStack, setHuStack] = useState("5bb");
+  const [huScenario, setHuScenario] = useState(stored?.huScenario || "SB_push");
+  const [huStack, setHuStack] = useState(stored?.huStack || "5bb");
   const [huHands, setHuHands] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
+
+  // Persist selections to localStorage
+  useEffect(() => {
+    localStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify({
+        activeTab,
+        position,
+        stackDepth,
+        defenseScenario,
+        restealScenario,
+        restealStack,
+        huScenario,
+        huStack,
+      })
+    );
+  }, [activeTab, position, stackDepth, defenseScenario, restealScenario, restealStack, huScenario, huStack]);
 
   // Fetch push/fold data
   useEffect(() => {
