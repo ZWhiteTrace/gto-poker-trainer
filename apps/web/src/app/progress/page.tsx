@@ -24,11 +24,11 @@ import {
 
 type DrillType = "rfi" | "vs_rfi" | "vs_3bet" | "vs_4bet";
 
-const drillTypeLabels: Record<DrillType, string> = {
-  rfi: "RFI Drill",
-  vs_rfi: "VS RFI Drill",
-  vs_3bet: "VS 3-Bet Drill",
-  vs_4bet: "VS 4-Bet Drill",
+const drillTypeLabels: Record<DrillType, { en: string; zh: string }> = {
+  rfi: { en: "RFI Drill", zh: "RFI 開池練習" },
+  vs_rfi: { en: "VS RFI Drill", zh: "VS RFI 練習" },
+  vs_3bet: { en: "VS 3-Bet Drill", zh: "VS 3-Bet 練習" },
+  vs_4bet: { en: "VS 4-Bet Drill", zh: "VS 4-Bet 練習" },
 };
 
 export default function ProgressPage() {
@@ -77,9 +77,9 @@ export default function ProgressPage() {
       {/* Header */}
       <div className="mb-8 flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold">Progress</h1>
+          <h1 className="text-3xl font-bold">{t("progress.title")}</h1>
           <p className="text-muted-foreground">
-            Track your training progress and identify weak spots
+            {t("progress.description")}
           </p>
         </div>
         <Button
@@ -90,7 +90,7 @@ export default function ProgressPage() {
           <RefreshCw
             className={`h-4 w-4 mr-2 ${isSyncing ? "animate-spin" : ""}`}
           />
-          Sync
+          {t("progress.sync")}
         </Button>
       </div>
 
@@ -99,7 +99,7 @@ export default function ProgressPage() {
         <Card>
           <CardContent className="p-4 text-center">
             <div className="text-3xl font-bold">{totalStats.total}</div>
-            <div className="text-sm text-muted-foreground">Total Hands</div>
+            <div className="text-sm text-muted-foreground">{t("progress.totalHands")}</div>
           </CardContent>
         </Card>
         <Card>
@@ -107,7 +107,7 @@ export default function ProgressPage() {
             <div className="text-3xl font-bold text-green-500">
               {totalStats.correct}
             </div>
-            <div className="text-sm text-muted-foreground">Correct</div>
+            <div className="text-sm text-muted-foreground">{t("progress.correct")}</div>
           </CardContent>
         </Card>
         <Card>
@@ -115,7 +115,7 @@ export default function ProgressPage() {
             <div className="text-3xl font-bold text-yellow-500">
               {totalStats.acceptable}
             </div>
-            <div className="text-sm text-muted-foreground">Acceptable</div>
+            <div className="text-sm text-muted-foreground">{t("progress.acceptable")}</div>
           </CardContent>
         </Card>
         <Card>
@@ -123,7 +123,7 @@ export default function ProgressPage() {
             <div className="text-3xl font-bold text-primary">
               {overallAccuracy}%
             </div>
-            <div className="text-sm text-muted-foreground">Accuracy</div>
+            <div className="text-sm text-muted-foreground">{t("progress.accuracy")}</div>
           </CardContent>
         </Card>
       </div>
@@ -147,12 +147,12 @@ export default function ProgressPage() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Target className="h-5 w-5 text-primary" />
-                  {drillTypeLabels[drillType]}
+                  {drillTypeLabels[drillType].zh}
                 </CardTitle>
                 <CardDescription>
                   {drillStats.total > 0
-                    ? `Last practiced: ${drillStats.lastPracticed ? new Date(drillStats.lastPracticed).toLocaleDateString() : "N/A"}`
-                    : "Not practiced yet"}
+                    ? `${t("progress.lastPracticed")}: ${drillStats.lastPracticed ? new Date(drillStats.lastPracticed).toLocaleDateString() : "N/A"}`
+                    : t("progress.notPracticed")}
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -161,14 +161,14 @@ export default function ProgressPage() {
                   <div className="grid grid-cols-3 gap-4 text-center">
                     <div>
                       <div className="text-2xl font-bold">{drillStats.total}</div>
-                      <div className="text-xs text-muted-foreground">Hands</div>
+                      <div className="text-xs text-muted-foreground">{t("progress.hands")}</div>
                     </div>
                     <div>
                       <div className="text-2xl font-bold text-green-500">
                         {accuracy}%
                       </div>
                       <div className="text-xs text-muted-foreground">
-                        Accuracy
+                        {t("progress.accuracy")}
                       </div>
                     </div>
                     <div>
@@ -176,7 +176,7 @@ export default function ProgressPage() {
                         {Object.keys(drillStats.byPosition).length}
                       </div>
                       <div className="text-xs text-muted-foreground">
-                        Positions
+                        {t("progress.positions")}
                       </div>
                     </div>
                   </div>
@@ -185,7 +185,7 @@ export default function ProgressPage() {
                   {Object.keys(drillStats.byPosition).length > 0 && (
                     <div>
                       <div className="text-sm font-medium mb-2">
-                        Position Breakdown
+                        {t("progress.positionBreakdown")}
                       </div>
                       <div className="flex flex-wrap gap-2">
                         {Object.entries(drillStats.byPosition).map(
@@ -224,10 +224,10 @@ export default function ProgressPage() {
                       <AlertTriangle className="h-5 w-5 text-destructive flex-shrink-0 mt-0.5" />
                       <div>
                         <div className="text-sm font-medium">
-                          Needs Improvement
+                          {t("progress.needsImprovement")}
                         </div>
                         <div className="text-sm text-muted-foreground">
-                          Focus on: {weakPositions.join(", ")}
+                          {t("progress.focusOn")}: {weakPositions.join(", ")}
                         </div>
                       </div>
                     </div>
@@ -242,7 +242,7 @@ export default function ProgressPage() {
                       )
                     }
                   >
-                    Practice Now
+                    {t("progress.practiceNow")}
                   </Button>
                 </div>
               </CardContent>
@@ -254,7 +254,7 @@ export default function ProgressPage() {
       {/* Last synced */}
       {lastSyncedAt && (
         <div className="mt-8 text-center text-sm text-muted-foreground">
-          Last synced: {new Date(lastSyncedAt).toLocaleString()}
+          {t("stats.lastSynced")}: {new Date(lastSyncedAt).toLocaleString()}
         </div>
       )}
     </div>

@@ -445,6 +445,23 @@
     "noRecentActivity": "沒有最近的活動。開始練習吧！",
     "lastSynced": "上次同步"
   },
+  "progress": {
+    "title": "學習進度",
+    "description": "追蹤你的訓練進度並找出弱點",
+    "sync": "同步",
+    "totalHands": "總手數",
+    "correct": "正確",
+    "acceptable": "可接受",
+    "accuracy": "準確率",
+    "hands": "手",
+    "positions": "位置",
+    "lastPracticed": "上次練習",
+    "notPracticed": "尚未練習",
+    "positionBreakdown": "位置分佈",
+    "needsImprovement": "需要改進",
+    "focusOn": "專注於",
+    "practiceNow": "立即練習"
+  },
   "footer": {
     "description": "免費 GTO 撲克訓練器：翻前範圍圖表、推/棄策略、ICM 計算器。掌握遊戲理論最優撲克策略。",
     "training": "訓練",

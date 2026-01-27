@@ -445,6 +445,23 @@
     "noRecentActivity": "No recent activity. Start practicing!",
     "lastSynced": "Last synced"
   },
+  "progress": {
+    "title": "Progress",
+    "description": "Track your training progress and identify weak spots",
+    "sync": "Sync",
+    "totalHands": "Total Hands",
+    "correct": "Correct",
+    "acceptable": "Acceptable",
+    "accuracy": "Accuracy",
+    "hands": "Hands",
+    "positions": "Positions",
+    "lastPracticed": "Last practiced",
+    "notPracticed": "Not practiced yet",
+    "positionBreakdown": "Position Breakdown",
+    "needsImprovement": "Needs Improvement",
+    "focusOn": "Focus on",
+    "practiceNow": "Practice Now"
+  },
   "footer": {
     "description": "Free GTO poker trainer: preflop range charts, push/fold strategy, ICM calculator. Master game theory optimal poker strategy.",
     "training": "Training",
