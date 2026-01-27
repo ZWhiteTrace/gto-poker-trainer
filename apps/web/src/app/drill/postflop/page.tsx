@@ -27,11 +27,12 @@ const SUIT_SYMBOLS: Record<string, string> = {
   c: "♣",
 };
 
+// 四色牌顏色：黑桃黑色、紅心紅色、方塊藍色、梅花綠色
 const SUIT_COLORS: Record<string, string> = {
-  s: "text-gray-800 dark:text-gray-200",
-  h: "text-red-500",
-  d: "text-blue-500",
-  c: "text-green-600",
+  s: "text-slate-900 dark:text-slate-100", // 黑桃：深黑/亮白
+  h: "text-red-500", // 紅心：紅色
+  d: "text-blue-500", // 方塊：藍色
+  c: "text-green-600", // 梅花：綠色
 };
 
 interface BaseScenario {
@@ -89,18 +90,26 @@ function HeroHand({ hand }: { hand: string }) {
   const rank2 = hand[1];
   const suited = hand.endsWith("s");
 
+  // 同花用紅心，不同花用黑桃/梅花（與公牌顏色一致）
+  const suit1 = suited ? "h" : "s";
+  const suit2 = suited ? "h" : "c";
+
   return (
     <div className="flex gap-2">
       <div className="bg-white dark:bg-gray-100 rounded-lg shadow-md w-12 h-16 sm:w-14 sm:h-20 flex flex-col items-center justify-center border-2 border-primary">
-        <span className="text-xl sm:text-2xl font-bold text-gray-800">{rank1}</span>
-        <span className={cn("text-lg", suited ? "text-red-500" : "text-gray-800")}>
-          {suited ? "♥" : "♠"}
+        <span className={cn("text-xl sm:text-2xl font-bold", SUIT_COLORS[suit1])}>
+          {rank1}
+        </span>
+        <span className={cn("text-lg", SUIT_COLORS[suit1])}>
+          {SUIT_SYMBOLS[suit1]}
         </span>
       </div>
       <div className="bg-white dark:bg-gray-100 rounded-lg shadow-md w-12 h-16 sm:w-14 sm:h-20 flex flex-col items-center justify-center border-2 border-primary">
-        <span className="text-xl sm:text-2xl font-bold text-gray-800">{rank2}</span>
-        <span className={cn("text-lg", suited ? "text-red-500" : "text-gray-600")}>
-          {suited ? "♥" : "♣"}
+        <span className={cn("text-xl sm:text-2xl font-bold", SUIT_COLORS[suit2])}>
+          {rank2}
+        </span>
+        <span className={cn("text-lg", SUIT_COLORS[suit2])}>
+          {SUIT_SYMBOLS[suit2]}
         </span>
       </div>
     </div>
@@ -510,16 +519,16 @@ export default function PostflopDrillPage() {
           )}
           {street === "turn" && (
             <>
-              <p>轉牌持續下注需要考慮翻牌動作帶來的範圍變化</p>
-              <p>「好」的轉牌通常是高張或完成你的聽牌</p>
-              <p>控池過牌有時候比強行 barrel 更好</p>
+              <p>{t("postflop.turn.tip1")}</p>
+              <p>{t("postflop.turn.tip2")}</p>
+              <p>{t("postflop.turn.tip3")}</p>
             </>
           )}
           {street === "river" && (
             <>
-              <p>河牌是最後的決策點，沒有後續改進機會</p>
-              <p>考慮對手的範圍：什麼牌會跟注？什麼牌會棄牌？</p>
-              <p>Blocker 效應在河牌 bluff 決策中非常重要</p>
+              <p>{t("postflop.river.tip1")}</p>
+              <p>{t("postflop.river.tip2")}</p>
+              <p>{t("postflop.river.tip3")}</p>
             </>
           )}
         </CardContent>

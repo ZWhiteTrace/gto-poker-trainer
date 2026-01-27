@@ -51,7 +51,16 @@ interface GameState {
   actions: { player: "user" | "ai"; action: Action; amount?: number; street?: string }[];
   winner: "user" | "ai" | "tie" | null;
   showdown: boolean;
+  aiThinking: boolean; // AI 思考中
 }
+
+// 下注尺寸選項
+const BET_SIZES = [
+  { label: "33%", multiplier: 0.33 },
+  { label: "50%", multiplier: 0.5 },
+  { label: "75%", multiplier: 0.75 },
+  { label: "100%", multiplier: 1 },
+];
 
 // GTO Range data (simplified for BTN vs BB)
 const GTO_RANGES = {
@@ -205,11 +214,12 @@ function evaluateHandStrength(hand: [CardType, CardType], board: CardType[]): nu
 // Card display component
 function PlayingCard({ card, hidden = false, small = false }: { card: CardType; hidden?: boolean; small?: boolean }) {
   const suitSymbols: Record<Suit, string> = { h: "♥", d: "♦", c: "♣", s: "♠" };
+  // 四色牌：黑桃黑色、紅心紅色、方塊藍色、梅花綠色
   const suitColors: Record<Suit, string> = {
-    h: "text-red-500",
-    d: "text-blue-500",
-    c: "text-green-600",
-    s: "text-gray-800 dark:text-gray-200",
+    h: "text-red-500", // 紅心
+    d: "text-blue-500", // 方塊
+    c: "text-green-600", // 梅花
+    s: "text-slate-900 dark:text-slate-100", // 黑桃
   };
 
   const sizeClass = small ? "w-10 h-14" : "w-14 h-20";
@@ -248,6 +258,7 @@ const initialState: GameState = {
   actions: [],
   winner: null,
   showdown: false,
+  aiThinking: false,
 };
 
 export default function GTOPracticePage() {
@@ -256,6 +267,8 @@ export default function GTOPracticePage() {
   const [stats, setStats] = useState({ wins: 0, losses: 0, ties: 0 });
   const [lastAIAction, setLastAIAction] = useState<string | null>(null);
   const [gtoAdvice, setGtoAdvice] = useState<string | null>(null);
+  const [showBetSizing, setShowBetSizing] = useState(false);
+  const [pendingAction, setPendingAction] = useState<"bet" | "raise" | null>(null);
 
   const startGame = useCallback(() => {
     const deck = shuffleDeck(createDeck());
@@ -319,6 +332,61 @@ export default function GTOPracticePage() {
     return "tie";
   }, []);
 
+  // AI 延遲行動 helper
+  const aiActionWithDelay = useCallback((
+    callback: () => void,
+    delay: number = 800
+  ) => {
+    setGameState(prev => ({ ...prev, aiThinking: true }));
+    setTimeout(() => {
+      setGameState(prev => ({ ...prev, aiThinking: false }));
+      callback();
+    }, delay);
+  }, []);
+
+  // 處理下注尺寸選擇
+  const handleBetWithSize = useCallback((multiplier: number) => {
+    setShowBetSizing(false);
+    const betSize = Math.round(gameState.pot * multiplier);
+
+    let newState = { ...gameState };
+    const action = pendingAction || "bet";
+    newState.actions = [...gameState.actions, { player: "user", action, amount: betSize, street: gameState.phase }];
+
+    // 更新籌碼
+    newState.userStack -= betSize;
+    newState.pot += betSize;
+    newState.currentBet = betSize;
+
+    // AI 反應（帶延遲）
+    setGameState({ ...newState, aiThinking: true });
+
+    setTimeout(() => {
+      const callFreq = action === "raise"
+        ? (gameState.phase === "flop" ? 40 : gameState.phase === "turn" ? 35 : 30)
+        : (gameState.phase === "flop" ? 60 : gameState.phase === "turn" ? 50 : 45);
+      const aiCalls = Math.random() * 100 < callFreq;
+
+      if (aiCalls) {
+        newState.aiStack -= betSize;
+        newState.pot += betSize;
+        newState.actions.push({ player: "ai", action: "call", street: gameState.phase });
+        setLastAIAction("call");
+        newState = advanceStreet(newState);
+      } else {
+        newState.actions.push({ player: "ai", action: "fold", street: gameState.phase });
+        setLastAIAction("fold");
+        newState.phase = "result";
+        newState.winner = "user";
+        setStats(s => ({ ...s, wins: s.wins + 1 }));
+      }
+      newState.aiThinking = false;
+      setGameState(newState);
+    }, 800);
+
+    setPendingAction(null);
+  }, [gameState, pendingAction, advanceStreet]);
+
   const handleUserAction = useCallback((action: Action) => {
     if (!gameState.userHand || !gameState.aiHand) return;
     const userHandNotation = getHandNotation(gameState.userHand);
@@ -330,11 +398,15 @@ export default function GTOPracticePage() {
     // Preflop logic
     if (gameState.phase === "preflop") {
       if (gameState.userPosition === "BTN") {
+        // 檢查是否面對 3-bet
+        const facing3bet = gameState.actions.some(a => a.player === "ai" && a.action === "3bet");
+
         if (action === "fold") {
           newState.phase = "result";
           newState.winner = "ai";
           setStats(s => ({ ...s, losses: s.losses + 1 }));
-        } else if (action === "raise") {
+        } else if (action === "raise" && !facing3bet) {
+          // BTN 首次加注
           const aiResponse = getGTOAction(aiHandNotation, GTO_RANGES.BB_VS_BTN);
           newState.actions.push({ player: "ai", action: aiResponse, street: "preflop" });
           setLastAIAction(aiResponse);
@@ -351,6 +423,15 @@ export default function GTOPracticePage() {
             newState.currentBet = 9;
             newState.toAct = "user";
           }
+        } else if (action === "call" && facing3bet) {
+          // BTN call BB 的 3-bet
+          newState.pot = 20; // BTN 補齊 3-bet
+          newState = advanceStreet(newState);
+        } else if (action === "4bet" && facing3bet) {
+          // BTN 4-bet，直接攤牌
+          newState.pot = 40;
+          newState.phase = "result";
+          newState.showdown = true;
         }
       } else {
         // User is BB
@@ -387,8 +468,16 @@ export default function GTOPracticePage() {
         newState.winner = "ai";
         setStats(s => ({ ...s, losses: s.losses + 1 }));
       } else if (action === "check") {
-        if (newState.toAct === "user") {
-          // User checks, AI acts
+        // 檢查 AI 是否已經在此街 check 過
+        const aiCheckedThisStreet = gameState.actions.some(
+          a => a.player === "ai" && a.action === "check" && a.street === gameState.phase
+        );
+
+        if (aiCheckedThisStreet) {
+          // AI 已 check，玩家也 check，直接進入下一街
+          newState = advanceStreet(newState);
+        } else if (newState.toAct === "user") {
+          // 玩家先行動 check，AI 決定是否下注
           const cbetFreq = gameState.phase === "flop" ? 65 : gameState.phase === "turn" ? 50 : 40;
           const aiBets = Math.random() * 100 < cbetFreq;
 
@@ -405,29 +494,15 @@ export default function GTOPracticePage() {
           }
         }
       } else if (action === "call") {
+        // 更新籌碼
+        newState.userStack -= newState.currentBet;
         newState.pot += newState.currentBet;
         newState = advanceStreet(newState);
-      } else if (action === "bet") {
-        const betSize = Math.round(newState.pot * 0.66);
-        newState.pot += betSize;
-        newState.currentBet = betSize;
-
-        // AI response to bet
-        const callFreq = gameState.phase === "flop" ? 60 : gameState.phase === "turn" ? 50 : 45;
-        const aiCalls = Math.random() * 100 < callFreq;
-
-        if (aiCalls) {
-          newState.pot += betSize;
-          newState.actions.push({ player: "ai", action: "call", street: gameState.phase });
-          setLastAIAction("call");
-          newState = advanceStreet(newState);
-        } else {
-          newState.actions.push({ player: "ai", action: "fold", street: gameState.phase });
-          setLastAIAction("fold");
-          newState.phase = "result";
-          newState.winner = "user";
-          setStats(s => ({ ...s, wins: s.wins + 1 }));
-        }
+      } else if (action === "bet" || action === "raise") {
+        // 顯示下注尺寸選擇介面
+        setPendingAction(action);
+        setShowBetSizing(true);
+        return; // 等待玩家選擇尺寸
       }
     }
 
@@ -483,31 +558,40 @@ export default function GTOPracticePage() {
     }
   }, [gameState.phase, gameState.userPosition, gameState.toAct, gameState.aiHand]);
 
-  // AI acts first postflop when BTN
+  // AI acts first postflop when BTN (with delay)
   useEffect(() => {
-    if (["flop", "turn", "river"].includes(gameState.phase) && gameState.toAct === "ai") {
+    if (["flop", "turn", "river"].includes(gameState.phase) && gameState.toAct === "ai" && !gameState.aiThinking) {
+      // 先顯示思考中
+      setGameState(prev => ({ ...prev, aiThinking: true }));
+
       const cbetFreq = gameState.phase === "flop" ? 65 : gameState.phase === "turn" ? 50 : 40;
       const aiBets = Math.random() * 100 < cbetFreq;
 
-      if (aiBets) {
-        const betSize = Math.round(gameState.pot * 0.66);
-        setLastAIAction(`bet ${betSize}`);
-        setGameState(prev => ({
-          ...prev,
-          actions: [...prev.actions, { player: "ai", action: "bet", amount: betSize, street: prev.phase }],
-          currentBet: betSize,
-          toAct: "user",
-        }));
-      } else {
-        setLastAIAction("check");
-        setGameState(prev => ({
-          ...prev,
-          actions: [...prev.actions, { player: "ai", action: "check", street: prev.phase }],
-          toAct: "user",
-        }));
-      }
+      // 延遲後執行 AI 行動
+      setTimeout(() => {
+        if (aiBets) {
+          const betSize = Math.round(gameState.pot * 0.66);
+          setLastAIAction(`bet ${betSize}`);
+          setGameState(prev => ({
+            ...prev,
+            aiThinking: false,
+            aiStack: prev.aiStack - betSize,
+            actions: [...prev.actions, { player: "ai", action: "bet", amount: betSize, street: prev.phase }],
+            currentBet: betSize,
+            toAct: "user",
+          }));
+        } else {
+          setLastAIAction("check");
+          setGameState(prev => ({
+            ...prev,
+            aiThinking: false,
+            actions: [...prev.actions, { player: "ai", action: "check", street: prev.phase }],
+            toAct: "user",
+          }));
+        }
+      }, 800);
     }
-  }, [gameState.phase, gameState.toAct, gameState.pot]);
+  }, [gameState.phase, gameState.toAct, gameState.pot, gameState.aiThinking]);
 
   const getPhaseLabel = (phase: GamePhase) => {
     switch (phase) {
@@ -522,9 +606,17 @@ export default function GTOPracticePage() {
 
   const getAvailableActions = (): Action[] => {
     if (gameState.phase === "preflop") {
+      // 檢查是否面對 3-bet
+      const facing3bet = gameState.actions.some(a => a.player === "ai" && a.action === "3bet");
+
       if (gameState.userPosition === "BTN") {
+        if (facing3bet) {
+          // BTN 面對 BB 的 3-bet：可以 fold, call, 或 4-bet
+          return ["fold", "call", "4bet"];
+        }
         return ["fold", "raise"];
       } else {
+        // User is BB
         if (gameState.actions.some(a => a.player === "ai" && a.action === "raise")) {
           return ["fold", "call", "raise"];
         }
@@ -533,7 +625,7 @@ export default function GTOPracticePage() {
     }
     // Postflop
     if (gameState.currentBet > 0) {
-      return ["fold", "call"];
+      return ["fold", "call", "raise"]; // 加入 raise 選項
     }
     return ["check", "bet"];
   };
@@ -623,7 +715,13 @@ export default function GTOPracticePage() {
                   <span className="text-sm font-medium">
                     AI ({gameState.userPosition === "BTN" ? "BB" : "BTN"})
                   </span>
+                  <Badge variant="outline" className="text-xs">
+                    {gameState.aiStack.toFixed(1)} BB
+                  </Badge>
                   {lastAIAction && <Badge variant="secondary">{lastAIAction}</Badge>}
+                  {gameState.aiThinking && (
+                    <Badge variant="secondary" className="animate-pulse">思考中...</Badge>
+                  )}
                 </div>
                 <div className="flex justify-center gap-2">
                   {gameState.aiHand && (
@@ -666,11 +764,30 @@ export default function GTOPracticePage() {
                 </div>
               )}
 
+              {/* Action History */}
+              {gameState.actions.length > 0 && (
+                <div className="flex flex-wrap justify-center gap-1 text-xs">
+                  {gameState.actions.map((a, i) => (
+                    <Badge
+                      key={i}
+                      variant={a.player === "user" ? "default" : "secondary"}
+                      className="text-xs"
+                    >
+                      {a.player === "user" ? "You" : "AI"}: {a.action}
+                      {a.amount ? ` ${a.amount}` : ""}
+                    </Badge>
+                  ))}
+                </div>
+              )}
+
               {/* User Hand */}
               <div className="text-center">
                 <div className="flex items-center justify-center gap-2 mb-2">
                   <User className="h-4 w-4" />
                   <span className="text-sm font-medium">{t("drill.gtoPractice.you")} ({gameState.userPosition})</span>
+                  <Badge variant="outline" className="text-xs">
+                    {gameState.userStack.toFixed(1)} BB
+                  </Badge>
                 </div>
                 <div className="flex justify-center gap-2">
                   {gameState.userHand && (
@@ -685,8 +802,44 @@ export default function GTOPracticePage() {
                 )}
               </div>
 
+              {/* Bet Sizing Selection */}
+              {showBetSizing && (
+                <div className="p-4 bg-muted/50 rounded-lg space-y-3">
+                  <p className="text-sm text-center font-medium">
+                    選擇下注尺寸 ({pendingAction === "raise" ? "Raise" : "Bet"})
+                  </p>
+                  <div className="flex justify-center gap-2 flex-wrap">
+                    {BET_SIZES.map((size) => (
+                      <Button
+                        key={size.label}
+                        variant="outline"
+                        onClick={() => handleBetWithSize(size.multiplier)}
+                        className="w-20"
+                      >
+                        {size.label}
+                        <span className="text-xs text-muted-foreground ml-1">
+                          ({Math.round(gameState.pot * size.multiplier)})
+                        </span>
+                      </Button>
+                    ))}
+                  </div>
+                  <div className="text-center">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => {
+                        setShowBetSizing(false);
+                        setPendingAction(null);
+                      }}
+                    >
+                      取消
+                    </Button>
+                  </div>
+                </div>
+              )}
+
               {/* Actions */}
-              {gameState.phase !== "result" && gameState.toAct === "user" && (
+              {gameState.phase !== "result" && gameState.toAct === "user" && !showBetSizing && !gameState.aiThinking && (
                 <div className="flex justify-center gap-3 flex-wrap">
                   {getAvailableActions().map((action) => (
                     <Button
@@ -697,7 +850,12 @@ export default function GTOPracticePage() {
                     >
                       {action === "fold" && t("drill.actions.fold")}
                       {action === "call" && `${t("drill.actions.call")} ${gameState.currentBet}`}
-                      {action === "raise" && (gameState.userPosition === "BTN" && gameState.phase === "preflop" ? t("drill.actions.raise") : "3-Bet")}
+                      {action === "raise" && (
+                        gameState.phase === "preflop"
+                          ? (gameState.userPosition === "BTN" ? t("drill.actions.raise") : "3-Bet")
+                          : "Raise"
+                      )}
+                      {action === "4bet" && "4-Bet"}
                       {action === "check" && "Check"}
                       {action === "bet" && "Bet"}
                     </Button>

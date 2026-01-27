@@ -292,11 +292,12 @@ function PlayingCard({ card, size = "normal" }: { card: CardType; size?: "normal
     s: "♠",
   };
 
+  // 四色牌：黑桃黑色、紅心紅色、方塊藍色、梅花綠色
   const suitColors: Record<Suit, string> = {
-    h: "text-red-500",
-    d: "text-blue-500",
-    c: "text-green-600",
-    s: "text-gray-800 dark:text-gray-200",
+    h: "text-red-500", // 紅心
+    d: "text-blue-500", // 方塊
+    c: "text-green-600", // 梅花
+    s: "text-slate-900 dark:text-slate-100", // 黑桃
   };
 
   return (
