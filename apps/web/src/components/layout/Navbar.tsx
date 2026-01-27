@@ -6,11 +6,14 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Menu, Spade } from "lucide-react";
 import { useState } from "react";
 
+const drillItems = [
+  { href: "/drill/rfi", label: "RFI Drill" },
+  { href: "/drill/vs-rfi", label: "VS RFI Drill" },
+  { href: "/drill/vs-3bet", label: "VS 3-Bet Drill" },
+];
+
 const navItems = [
-  { href: "/drill", label: "Practice" },
   { href: "/range", label: "Ranges" },
-  { href: "/quiz", label: "Quiz" },
-  { href: "/learn", label: "Learn" },
 ];
 
 export function Navbar() {
@@ -30,6 +33,25 @@ export function Navbar() {
         {/* Desktop Navigation */}
         <nav className="hidden md:flex md:flex-1 md:items-center md:justify-between">
           <div className="flex items-center space-x-6">
+            {/* Drill dropdown */}
+            <div className="relative group">
+              <span className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary cursor-pointer">
+                Practice
+              </span>
+              <div className="absolute left-0 mt-2 w-48 rounded-md shadow-lg bg-background border opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50">
+                <div className="py-1">
+                  {drillItems.map((item) => (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      className="block px-4 py-2 text-sm text-muted-foreground hover:bg-muted hover:text-primary"
+                    >
+                      {item.label}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            </div>
             {navItems.map((item) => (
               <Link
                 key={item.href}
@@ -59,6 +81,20 @@ export function Navbar() {
             </SheetTrigger>
             <SheetContent side="right" className="w-[300px]">
               <nav className="flex flex-col space-y-4 mt-8">
+                <div className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
+                  Practice
+                </div>
+                {drillItems.map((item) => (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    onClick={() => setIsOpen(false)}
+                    className="text-lg font-medium transition-colors hover:text-primary pl-2"
+                  >
+                    {item.label}
+                  </Link>
+                ))}
+                <hr className="my-2" />
                 {navItems.map((item) => (
                   <Link
                     key={item.href}
