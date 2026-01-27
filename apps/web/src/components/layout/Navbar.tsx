@@ -32,6 +32,7 @@ export function Navbar() {
     { href: "/range", label: t("nav.ranges") },
     { href: "/quiz", label: t("nav.quiz") },
     { href: "/learn", label: t("nav.learn") },
+    { href: "/analyze", label: t("nav.analyze") },
   ];
 
   return (
