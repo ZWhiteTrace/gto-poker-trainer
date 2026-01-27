@@ -114,19 +114,37 @@ const guideMetadata: Record<string, Omit<GuideMetadata, "slug">> = {
     category: "fundamentals",
     order: 16,
   },
+  "free-gto-resources": {
+    title: "免費 GTO 撲克資源完整指南",
+    description: "所有免費 GTO 學習資源整理：範圍圖表、訓練工具、學習路線",
+    category: "fundamentals",
+    order: 17,
+  },
 
   // === PREFLOP (翻前策略) ===
+  "6max-preflop-chart": {
+    title: "6-Max 翻前範圍圖表完整指南",
+    description: "六人桌翻前開池範圍速查表：各位置 RFI 頻率和關鍵手牌",
+    category: "preflop",
+    order: 19,
+  },
   "rfi-ranges-guide": {
     title: "RFI 翻前開池範圍完全指南",
     description: "掌握各位置的標準開池範圍，從 UTG 到 BTN 的完整策略",
     category: "preflop",
     order: 20,
   },
+  "pocket-pairs-strategy": {
+    title: "口袋對子完整策略指南",
+    description: "從 AA 到 22：如何在各種情況下正確處理口袋對子",
+    category: "preflop",
+    order: 21,
+  },
   "3bet-ranges-construction": {
     title: "3-Bet 範圍構建指南",
     description: "建立平衡的 3-Bet 範圍：價值牌和詐唬牌的比例",
     category: "preflop",
-    order: 21,
+    order: 22,
   },
   "facing-3bet-strategy": {
     title: "面對 3-Bet 完全策略指南",
