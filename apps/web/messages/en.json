@@ -192,6 +192,27 @@
       "tipOesd": "Open-Ended Straight Draw (OESD) = 8 outs",
       "tipGutshot": "Gutshot Straight Draw = 4 outs",
       "tipCombo": "Combo draws subtract overlapping cards (e.g., flush + straight)"
+    },
+    "ev": {
+      "title": "EV Quiz",
+      "description": "Test your pot odds and expected value calculations",
+      "questionPotOdds": "What equity do you need to call?",
+      "questionDecision": "Should you call or fold?",
+      "questionEV": "What is the EV of calling?",
+      "questionImplied": "Considering implied odds, should you call or fold?",
+      "pot": "Pot",
+      "villainBet": "Villain Bet",
+      "yourEquity": "Your Equity",
+      "effectiveStack": "Effective Stack",
+      "call": "Call",
+      "fold": "Fold",
+      "tipsTitle": "EV Calculation Rules",
+      "tipPotOdds": "Pot Odds = Call Amount ÷ (Pot + Villain Bet + Call Amount)",
+      "tipEV": "EV = (Equity × Win Amount) - ((1-Equity) × Loss Amount)",
+      "tipImplied": "Implied odds consider chips you may win in future streets",
+      "explainPotOdds": "Calling {bet} into a pot of {total}, need {bet}/{total} = {result}% equity",
+      "explainDecision": "Need {required}% equity, you have {yours}%",
+      "explainImplied": "With deep stacks and strong draws, implied odds can make up for insufficient direct odds"
     }
   },
   "footer": {

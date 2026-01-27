@@ -192,6 +192,27 @@
       "tipOesd": "兩頭順子聽牌 (OESD) = 8 outs",
       "tipGutshot": "內順子聽牌 (Gutshot) = 4 outs",
       "tipCombo": "組合聽牌需減去重疊牌 (如同花+順子)"
+    },
+    "ev": {
+      "title": "EV 測驗",
+      "description": "測試你的底池賠率和期望值計算能力",
+      "questionPotOdds": "跟注需要多少勝率？",
+      "questionDecision": "你應該跟注還是棄牌？",
+      "questionEV": "跟注的期望值是多少？",
+      "questionImplied": "考慮隱含賠率，你應該跟注還是棄牌？",
+      "pot": "底池",
+      "villainBet": "對手下注",
+      "yourEquity": "你的勝率",
+      "effectiveStack": "有效籌碼",
+      "call": "跟注",
+      "fold": "棄牌",
+      "tipsTitle": "EV 計算規則",
+      "tipPotOdds": "底池賠率 = 跟注金額 ÷ (底池 + 對手下注 + 跟注金額)",
+      "tipEV": "EV = (勝率 × 贏的金額) - (敗率 × 輸的金額)",
+      "tipImplied": "隱含賠率考慮後續可能贏得的籌碼",
+      "explainPotOdds": "跟注 {bet} 進入 {total} 的底池，需要 {bet}/{total} = {result}% 勝率",
+      "explainDecision": "需要 {required}% 勝率，你有 {yours}%",
+      "explainImplied": "當籌碼深且有強聽牌時，隱含賠率可以彌補直接賠率不足"
     }
   },
   "footer": {

@@ -30,7 +30,7 @@ const quizTypes = [
     id: "ev",
     icon: TrendingUp,
     difficulty: "medium",
-    available: false, // Coming soon
+    available: true,
   },
   {
     id: "logic",
@@ -88,7 +88,7 @@ export default function QuizIndexPage() {
                     : quiz.id === "outs"
                     ? t("quiz.outs.title")
                     : quiz.id === "ev"
-                    ? "EV 測驗"
+                    ? t("quiz.ev.title")
                     : "邏輯測驗"}
                 </CardTitle>
                 <CardDescription>
@@ -97,7 +97,7 @@ export default function QuizIndexPage() {
                     : quiz.id === "outs"
                     ? t("quiz.outs.description")
                     : quiz.id === "ev"
-                    ? "底池賠率與 EV 決策"
+                    ? t("quiz.ev.description")
                     : "GTO 原理推理"}
                 </CardDescription>
               </CardHeader>
