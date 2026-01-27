@@ -26,6 +26,7 @@
     "vsRfiDrill": "VS RFI 練習",
     "vs3betDrill": "VS 3-Bet 練習",
     "vs4betDrill": "VS 4-Bet 練習",
+    "postflopDrill": "翻後 C-bet",
     "pushFold": "Push/Fold 圖表",
     "icm": "ICM 計算器"
   },
@@ -216,6 +217,23 @@
       "explainPotOdds": "跟注 {bet} 進入 {total} 的底池，需要 {bet}/{total} = {result}% 勝率",
       "explainDecision": "需要 {required}% 勝率，你有 {yours}%",
       "explainImplied": "當籌碼深且有強聽牌時，隱含賠率可以彌補直接賠率不足"
+    },
+    "logic": {
+      "title": "GTO 邏輯測驗",
+      "description": "測試你對 GTO 原理的理解",
+      "progress": "已完成 {used}/{total} 題"
+    }
+  },
+  "postflop": {
+    "cbet": {
+      "title": "翻後 C-bet 練習",
+      "description": "練習在不同牌面結構做出正確的 C-bet 決策",
+      "question": "你應該怎麼打？",
+      "yourHand": "你的手牌",
+      "tipsTitle": "C-bet 策略要點",
+      "tip1": "乾燥牌面（如 A72r）適合高頻小注 C-bet，因為你有範圍優勢。",
+      "tip2": "濕潤牌面（如 JT9ss）需要更謹慎，對手有更多強牌和聽牌。",
+      "tip3": "考慮你的手牌在這個牌面的 equity 和 playability。"
     }
   },
   "mtt": {

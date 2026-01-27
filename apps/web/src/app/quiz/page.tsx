@@ -36,7 +36,7 @@ const quizTypes = [
     id: "logic",
     icon: Lightbulb,
     difficulty: "hard",
-    available: false, // Coming soon
+    available: true,
   },
 ];
 
@@ -89,7 +89,7 @@ export default function QuizIndexPage() {
                     ? t("quiz.outs.title")
                     : quiz.id === "ev"
                     ? t("quiz.ev.title")
-                    : "邏輯測驗"}
+                    : t("quiz.logic.title")}
                 </CardTitle>
                 <CardDescription>
                   {quiz.id === "equity"
@@ -98,7 +98,7 @@ export default function QuizIndexPage() {
                     ? t("quiz.outs.description")
                     : quiz.id === "ev"
                     ? t("quiz.ev.description")
-                    : "GTO 原理推理"}
+                    : t("quiz.logic.description")}
                 </CardDescription>
               </CardHeader>
               <CardContent>

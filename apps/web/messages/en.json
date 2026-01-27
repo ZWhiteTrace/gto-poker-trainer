@@ -26,6 +26,7 @@
     "vsRfiDrill": "VS RFI Drill",
     "vs3betDrill": "VS 3-Bet Drill",
     "vs4betDrill": "VS 4-Bet Drill",
+    "postflopDrill": "Postflop C-bet",
     "pushFold": "Push/Fold Charts",
     "icm": "ICM Calculator"
   },
@@ -216,6 +217,23 @@
       "explainPotOdds": "Calling {bet} into a pot of {total}, need {bet}/{total} = {result}% equity",
       "explainDecision": "Need {required}% equity, you have {yours}%",
       "explainImplied": "With deep stacks and strong draws, implied odds can make up for insufficient direct odds"
+    },
+    "logic": {
+      "title": "GTO Logic Quiz",
+      "description": "Test your understanding of GTO principles",
+      "progress": "Completed {used}/{total} questions"
+    }
+  },
+  "postflop": {
+    "cbet": {
+      "title": "Postflop C-bet Practice",
+      "description": "Practice making correct C-bet decisions on different board textures",
+      "question": "What's your play?",
+      "yourHand": "Your Hand",
+      "tipsTitle": "C-bet Strategy Tips",
+      "tip1": "Dry boards (like A72r) are good for high-frequency small c-bets due to range advantage.",
+      "tip2": "Wet boards (like JT9ss) require more caution - opponents have more strong hands and draws.",
+      "tip3": "Consider your hand's equity and playability on this specific board."
     }
   },
   "mtt": {

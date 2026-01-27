@@ -20,6 +20,7 @@ export function Navbar() {
     { href: "/drill/vs-rfi", label: t("nav.vsRfiDrill") },
     { href: "/drill/vs-3bet", label: t("nav.vs3betDrill") },
     { href: "/drill/vs-4bet", label: t("nav.vs4betDrill") },
+    { href: "/drill/postflop", label: t("nav.postflopDrill") },
   ];
 
   const mttItems = [
