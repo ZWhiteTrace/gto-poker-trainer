@@ -13,6 +13,8 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { RefreshCw, CheckCircle2, XCircle, Trophy } from "lucide-react";
+import { useProgressStore } from "@/stores/progressStore";
+import { useAuthStore } from "@/stores/authStore";
 
 // Equity matchup data (subset for MVP)
 const EQUITY_DATA = {
@@ -175,6 +177,10 @@ export default function EquityQuizPage() {
   const [score, setScore] = useState({ correct: 0, total: 0 });
   const [category, setCategory] = useState<Category | undefined>(undefined);
 
+  const { quizStats, recordQuizResult } = useProgressStore();
+  const { user } = useAuthStore();
+  const cumulativeStats = quizStats.equity;
+
   const generateNewQuestion = useCallback(() => {
     const newQuestion = getRandomQuestion(category);
     setQuestion(newQuestion);
@@ -186,7 +192,7 @@ export default function EquityQuizPage() {
     generateNewQuestion();
   }, [generateNewQuestion]);
 
-  const handleChoice = (index: number) => {
+  const handleChoice = async (index: number) => {
     if (selectedIndex !== null) return; // Already answered
 
     setSelectedIndex(index);
@@ -195,6 +201,11 @@ export default function EquityQuizPage() {
       correct: prev.correct + (isCorrect ? 1 : 0),
       total: prev.total + 1,
     }));
+
+    // Record to progress store
+    if (question) {
+      await recordQuizResult("equity", question.category, isCorrect, user?.id);
+    }
   };
 
   const accuracy =
@@ -228,6 +239,11 @@ export default function EquityQuizPage() {
             {score.correct}/{score.total}
           </Badge>
           <span className="text-muted-foreground">{accuracy}%</span>
+          {cumulativeStats.total > 0 && (
+            <span className="text-xs text-muted-foreground">
+              ({t("drill.allTime")}: {cumulativeStats.correct}/{cumulativeStats.total})
+            </span>
+          )}
         </div>
         <select
           className="bg-muted px-3 py-1.5 rounded-md text-sm"

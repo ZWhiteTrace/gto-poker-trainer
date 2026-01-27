@@ -13,6 +13,8 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { RefreshCw, CheckCircle2, XCircle, Trophy, Lightbulb } from "lucide-react";
+import { useProgressStore } from "@/stores/progressStore";
+import { useAuthStore } from "@/stores/authStore";
 
 // GTO Logic Questions
 const LOGIC_QUESTIONS = [
@@ -199,6 +201,10 @@ export default function LogicQuizPage() {
   const [category, setCategory] = useState<Category | "all">("all");
   const [usedQuestions, setUsedQuestions] = useState<Set<string>>(new Set());
 
+  const { quizStats, recordQuizResult } = useProgressStore();
+  const { user } = useAuthStore();
+  const cumulativeStats = quizStats.logic;
+
   const getRandomQuestion = useCallback(() => {
     let available = LOGIC_QUESTIONS.filter((q) => !usedQuestions.has(q.id));
 
@@ -238,7 +244,7 @@ export default function LogicQuizPage() {
     setSelectedAnswer(null);
   }, [category]);
 
-  const handleAnswer = (key: string) => {
+  const handleAnswer = async (key: string) => {
     if (selectedAnswer) return;
 
     setSelectedAnswer(key);
@@ -247,6 +253,11 @@ export default function LogicQuizPage() {
       correct: prev.correct + (isCorrect ? 1 : 0),
       total: prev.total + 1,
     }));
+
+    // Record to progress store
+    if (question) {
+      await recordQuizResult("logic", question.category, isCorrect, user?.id);
+    }
   };
 
   const accuracy = score.total > 0 ? Math.round((score.correct / score.total) * 100) : 0;
@@ -277,6 +288,11 @@ export default function LogicQuizPage() {
             {score.correct}/{score.total}
           </Badge>
           <span className="text-muted-foreground">{accuracy}%</span>
+          {cumulativeStats.total > 0 && (
+            <span className="text-xs text-muted-foreground">
+              ({t("drill.allTime")}: {cumulativeStats.correct}/{cumulativeStats.total})
+            </span>
+          )}
         </div>
         <select
           className="bg-muted px-3 py-1.5 rounded-md text-sm"

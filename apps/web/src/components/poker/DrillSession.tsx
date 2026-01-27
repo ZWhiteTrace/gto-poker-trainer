@@ -124,7 +124,7 @@ export function DrillSession({
           drill_type: drillType,
           hand: currentSpot.hand,
           hero_position: currentSpot.hero_position,
-          villain_position: currentSpot.villain_position,
+          villain_position: currentSpot.villain_position ?? undefined,
           player_action: action,
           correct_action: result.correct_action,
           is_correct: result.is_correct,

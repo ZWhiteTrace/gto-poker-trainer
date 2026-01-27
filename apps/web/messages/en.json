@@ -455,12 +455,16 @@
     "accuracy": "Accuracy",
     "hands": "Hands",
     "positions": "Positions",
+    "questions": "Questions",
     "lastPracticed": "Last practiced",
     "notPracticed": "Not practiced yet",
     "positionBreakdown": "Position Breakdown",
+    "categoryBreakdown": "Category Breakdown",
     "needsImprovement": "Needs Improvement",
     "focusOn": "Focus on",
-    "practiceNow": "Practice Now"
+    "practiceNow": "Practice Now",
+    "drillStats": "Drill Statistics",
+    "quizStats": "Quiz Statistics"
   },
   "footer": {
     "description": "Free GTO poker trainer: preflop range charts, push/fold strategy, ICM calculator. Master game theory optimal poker strategy.",

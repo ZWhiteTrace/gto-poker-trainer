@@ -13,6 +13,8 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { RefreshCw, CheckCircle2, XCircle, Trophy, Coins } from "lucide-react";
+import { useProgressStore } from "@/stores/progressStore";
+import { useAuthStore } from "@/stores/authStore";
 
 // Question types
 type QuestionType = "pot_odds" | "call_decision" | "ev_calculation" | "implied_odds";
@@ -246,6 +248,10 @@ export default function EVQuizPage() {
   const [score, setScore] = useState({ correct: 0, total: 0 });
   const [category, setCategory] = useState<QuestionType | "all">("all");
 
+  const { quizStats, recordQuizResult } = useProgressStore();
+  const { user } = useAuthStore();
+  const cumulativeStats = quizStats.ev;
+
   const generateNewQuestion = useCallback(() => {
     const newQuestion = generateQuestion(category === "all" ? undefined : category);
     setQuestion(newQuestion);
@@ -266,7 +272,7 @@ export default function EVQuizPage() {
     generateNewQuestion();
   }, [generateNewQuestion]);
 
-  const handleChoice = (answer: string | number) => {
+  const handleChoice = async (answer: string | number) => {
     if (selectedAnswer !== null) return;
 
     setSelectedAnswer(answer);
@@ -275,6 +281,11 @@ export default function EVQuizPage() {
       correct: prev.correct + (isCorrect ? 1 : 0),
       total: prev.total + 1,
     }));
+
+    // Record to progress store
+    if (question) {
+      await recordQuizResult("ev", question.type, isCorrect, user?.id);
+    }
   };
 
   const accuracy = score.total > 0 ? Math.round((score.correct / score.total) * 100) : 0;
@@ -307,6 +318,11 @@ export default function EVQuizPage() {
             {score.correct}/{score.total}
           </Badge>
           <span className="text-muted-foreground">{accuracy}%</span>
+          {cumulativeStats.total > 0 && (
+            <span className="text-xs text-muted-foreground">
+              ({t("drill.allTime")}: {cumulativeStats.correct}/{cumulativeStats.total})
+            </span>
+          )}
         </div>
         <select
           className="bg-muted px-3 py-1.5 rounded-md text-sm"

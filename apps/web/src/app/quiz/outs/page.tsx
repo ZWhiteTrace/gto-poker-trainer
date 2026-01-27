@@ -13,6 +13,8 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { RefreshCw, CheckCircle2, XCircle, Trophy } from "lucide-react";
+import { useProgressStore } from "@/stores/progressStore";
+import { useAuthStore } from "@/stores/authStore";
 
 // Card suits and ranks
 const SUITS = ["h", "d", "c", "s"] as const;
@@ -333,6 +335,10 @@ export default function OutsQuizPage() {
   const [score, setScore] = useState({ correct: 0, total: 0 });
   const [category, setCategory] = useState<DrawType | "all">("all");
 
+  const { quizStats, recordQuizResult } = useProgressStore();
+  const { user } = useAuthStore();
+  const cumulativeStats = quizStats.outs;
+
   const generateNewQuestion = useCallback(() => {
     const drawTypes = Object.keys(DRAW_TYPES) as DrawType[];
     const selectedType =
@@ -350,7 +356,7 @@ export default function OutsQuizPage() {
     generateNewQuestion();
   }, [generateNewQuestion]);
 
-  const handleChoice = (outs: number) => {
+  const handleChoice = async (outs: number) => {
     if (selectedAnswer !== null) return;
 
     setSelectedAnswer(outs);
@@ -359,6 +365,11 @@ export default function OutsQuizPage() {
       correct: prev.correct + (isCorrect ? 1 : 0),
       total: prev.total + 1,
     }));
+
+    // Record to progress store
+    if (question) {
+      await recordQuizResult("outs", question.drawType, isCorrect, user?.id);
+    }
   };
 
   const accuracy =
@@ -392,6 +403,11 @@ export default function OutsQuizPage() {
             {score.correct}/{score.total}
           </Badge>
           <span className="text-muted-foreground">{accuracy}%</span>
+          {cumulativeStats.total > 0 && (
+            <span className="text-xs text-muted-foreground">
+              ({t("drill.allTime")}: {cumulativeStats.correct}/{cumulativeStats.total})
+            </span>
+          )}
         </div>
         <select
           className="bg-muted px-3 py-1.5 rounded-md text-sm"

@@ -265,7 +265,7 @@ export default function MockExamPage() {
         .filter(([_, r]) => !r.isCorrect)
         .map(([id, r]) => ({
           questionId: id,
-          userAnswer: r.answer,
+          userAnswer: r.selectedAnswer,
         }));
 
       await supabase.from("mock_exam_history").insert({
