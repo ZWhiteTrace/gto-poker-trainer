@@ -75,11 +75,7 @@ export default function QuizIndexPage() {
                         : "destructive"
                     }
                   >
-                    {quiz.difficulty === "easy"
-                      ? "簡單"
-                      : quiz.difficulty === "medium"
-                      ? "中等"
-                      : "困難"}
+                    {t(`quiz.difficulty.${quiz.difficulty}`)}
                   </Badge>
                 </div>
                 <CardTitle className="mt-2">
@@ -104,11 +100,11 @@ export default function QuizIndexPage() {
               <CardContent>
                 {quiz.available ? (
                   <Link href={`/quiz/${quiz.id}`}>
-                    <Button className="w-full">開始測驗</Button>
+                    <Button className="w-full">{t("quiz.startQuiz")}</Button>
                   </Link>
                 ) : (
                   <Button className="w-full" disabled>
-                    即將推出
+                    {t("quiz.comingSoon")}
                   </Button>
                 )}
               </CardContent>

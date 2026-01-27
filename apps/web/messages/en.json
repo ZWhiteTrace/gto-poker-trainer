@@ -174,6 +174,13 @@
     "title": "Quiz",
     "allCategories": "All Categories",
     "correctAnswer": "Correct answer",
+    "startQuiz": "Start Quiz",
+    "comingSoon": "Coming Soon",
+    "difficulty": {
+      "easy": "Easy",
+      "medium": "Medium",
+      "hard": "Hard"
+    },
     "equity": {
       "title": "Equity Quiz",
       "description": "Test your knowledge of preflop hand equities",
@@ -269,6 +276,19 @@
       "tip1": "ICM considers tournament payout structure - chip value is non-linear.",
       "tip2": "Big stacks have diminishing marginal value, small stacks have high survival value.",
       "tip3": "ICM pressure is highest near the bubble and at final tables."
+    }
+  },
+  "learn": {
+    "title": "Learning Center",
+    "subtitle": "Deep dive into GTO poker strategy, from basics to advanced",
+    "backToList": "Back to Learning Center",
+    "readArticle": "Read Article",
+    "startPractice": "Start Practice",
+    "categories": {
+      "preflop": "Preflop Strategy",
+      "mtt": "MTT Strategy",
+      "postflop": "Postflop Strategy",
+      "fundamentals": "Fundamentals"
     }
   },
   "footer": {

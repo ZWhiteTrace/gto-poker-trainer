@@ -31,6 +31,7 @@ export function Navbar() {
   const navItems = [
     { href: "/range", label: t("nav.ranges") },
     { href: "/quiz", label: t("nav.quiz") },
+    { href: "/learn", label: t("nav.learn") },
   ];
 
   return (
