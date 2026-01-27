@@ -1,26 +1,38 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useTranslations } from "next-intl";
+import { Button } from "@/components/ui/button";
 
 const RANKS = ["A", "K", "Q", "J", "T", "9", "8", "7", "6", "5", "4", "3", "2"];
+
+// Premium hands for highlighting
+const PREMIUM_T1 = ["AA", "KK", "QQ", "AKs", "AKo"]; // Gold border
+const PREMIUM_T2 = ["JJ", "TT", "AQs", "AQo", "AJs", "KQs"]; // White border
+const PREMIUM_T3 = ["99", "88", "KJs", "QJs", "ATs", "AJo", "KQo"]; // Light border
 
 interface HandData {
   raise?: number;
   call?: number;
   fold?: number;
   allin?: number;
+  "3bet"?: number;
+  "4bet"?: number;
   [key: string]: number | undefined;
 }
 
+type ActionFilter = "all" | "raise" | "call" | "fold" | "mixed";
+
 interface RangeGridProps {
   hands: Record<string, HandData>;
+  drillableHands?: string[];
   selectedHand?: string | null;
   onHandClick?: (hand: string) => void;
-  highlightAction?: "raise" | "call" | "fold" | "allin";
   className?: string;
   compact?: boolean;
+  showFilters?: boolean;
+  showStats?: boolean;
 }
 
 function getHandKey(row: number, col: number): string {
@@ -28,63 +40,74 @@ function getHandKey(row: number, col: number): string {
   const rank2 = RANKS[col];
 
   if (row === col) {
-    // Pairs on diagonal
     return `${rank1}${rank2}`;
   } else if (row < col) {
-    // Suited hands above diagonal
     return `${rank1}${rank2}s`;
   } else {
-    // Offsuit hands below diagonal
     return `${rank2}${rank1}o`;
   }
 }
 
 // Color constants matching GTOWizard style
-const COLOR_RAISE = "#ef4444"; // Red for raise/3bet/4bet
-const COLOR_CALL = "#22c55e";  // Green for call
-const COLOR_FOLD = "#1e293b";  // Dark slate for fold (empty)
+const COLOR_RAISE = "#ef4444";
+const COLOR_CALL = "#22c55e";
+const COLOR_FOLD = "#1e293b";
 
-function getActionColorStyle(handData: HandData | undefined): React.CSSProperties {
-  if (!handData) return { backgroundColor: COLOR_FOLD };
+function getHandFrequencies(handData: HandData | undefined) {
+  if (!handData) return { raise: 0, call: 0, fold: 100, allin: 0 };
 
-  // Get frequencies for each action type
-  const raiseFreq = handData.raise || handData["3bet"] || handData["4bet"] || 0;
-  const callFreq = handData.call || 0;
-  const foldFreq = handData.fold || 0;
-  const allinFreq = handData.allin || 0;
+  const raise = (handData.raise || 0) + (handData["3bet"] || 0) + (handData["4bet"] || 0);
+  const call = handData.call || 0;
+  const allin = handData.allin || 0;
+  const fold = handData.fold || Math.max(0, 100 - raise - call - allin);
 
-  // No action data = not in range
-  if (raiseFreq === 0 && callFreq === 0 && allinFreq === 0) {
+  return { raise: raise + allin, call, fold, allin };
+}
+
+function getActionColorStyle(handData: HandData | undefined, filter: ActionFilter): React.CSSProperties {
+  const { raise, call, fold } = getHandFrequencies(handData);
+
+  // Apply filter opacity
+  if (filter !== "all") {
+    const matchesFilter =
+      (filter === "raise" && raise > 0) ||
+      (filter === "call" && call > 0) ||
+      (filter === "fold" && raise === 0 && call === 0) ||
+      (filter === "mixed" && raise > 0 && raise < 100 && (call > 0 || fold > 0));
+
+    if (!matchesFilter) {
+      return { backgroundColor: COLOR_FOLD, opacity: 0.3 };
+    }
+  }
+
+  if (raise === 0 && call === 0) {
     return { backgroundColor: COLOR_FOLD };
   }
 
-  // Pure actions (100%) - solid color
-  if (raiseFreq >= 100 || allinFreq >= 100) {
+  if (raise >= 100) {
     return { backgroundColor: COLOR_RAISE };
   }
-  if (callFreq >= 100) {
+  if (call >= 100) {
     return { backgroundColor: COLOR_CALL };
   }
 
-  // Mixed strategy - build proportional gradient
+  // Mixed strategy gradient
   const stops: string[] = [];
   let currentPos = 0;
 
-  // Order: Raise (red) → Call (green) → Fold (dark)
-  if (raiseFreq > 0 || allinFreq > 0) {
-    const rFreq = raiseFreq + allinFreq;
+  if (raise > 0) {
     stops.push(`${COLOR_RAISE} ${currentPos}%`);
-    currentPos += rFreq;
+    currentPos += raise;
     stops.push(`${COLOR_RAISE} ${currentPos}%`);
   }
 
-  if (callFreq > 0) {
+  if (call > 0) {
     stops.push(`${COLOR_CALL} ${currentPos}%`);
-    currentPos += callFreq;
+    currentPos += call;
     stops.push(`${COLOR_CALL} ${currentPos}%`);
   }
 
-  if (foldFreq > 0 || currentPos < 100) {
+  if (currentPos < 100) {
     stops.push(`${COLOR_FOLD} ${currentPos}%`);
     stops.push(`${COLOR_FOLD} 100%`);
   }
@@ -94,28 +117,108 @@ function getActionColorStyle(handData: HandData | undefined): React.CSSPropertie
   };
 }
 
+function getPremiumClass(hand: string): string {
+  if (PREMIUM_T1.includes(hand)) return "ring-2 ring-yellow-400";
+  if (PREMIUM_T2.includes(hand)) return "ring-1 ring-white/60";
+  if (PREMIUM_T3.includes(hand)) return "ring-1 ring-white/30";
+  return "";
+}
 
 export function RangeGrid({
   hands,
+  drillableHands,
   selectedHand,
   onHandClick,
-  highlightAction,
   className,
   compact = false,
+  showFilters = true,
+  showStats = true,
 }: RangeGridProps) {
   const t = useTranslations();
   const [hoveredHand, setHoveredHand] = useState<string | null>(null);
+  const [filter, setFilter] = useState<ActionFilter>("all");
+
+  // Calculate statistics
+  const stats = useMemo(() => {
+    let raiseCount = 0;
+    let callCount = 0;
+    let foldCount = 0;
+    let mixedCount = 0;
+
+    Object.values(hands).forEach((handData) => {
+      const { raise, call } = getHandFrequencies(handData);
+      if (raise >= 100) raiseCount++;
+      else if (call >= 100) callCount++;
+      else if (raise === 0 && call === 0) foldCount++;
+      else {
+        mixedCount++;
+        // Count partial contributions
+        if (raise > 0) raiseCount += raise / 100;
+        if (call > 0) callCount += call / 100;
+      }
+    });
+
+    const total = Object.keys(hands).length || 169;
+    const vpip = raiseCount + callCount;
+
+    return {
+      raise: { count: Math.round(raiseCount), pct: Math.round((raiseCount / 169) * 100) },
+      call: { count: Math.round(callCount), pct: Math.round((callCount / 169) * 100) },
+      fold: { count: 169 - Math.round(vpip), pct: Math.round(((169 - vpip) / 169) * 100) },
+      vpip: { count: Math.round(vpip), pct: Math.round((vpip / 169) * 100) },
+      mixed: mixedCount,
+    };
+  }, [hands]);
+
+  const filterButtons: { key: ActionFilter; label: string; color: string }[] = [
+    { key: "all", label: t("range.filter.all"), color: "bg-muted" },
+    { key: "raise", label: t("range.filter.raise"), color: "bg-red-500" },
+    { key: "call", label: t("range.filter.call"), color: "bg-green-500" },
+    { key: "mixed", label: t("range.filter.mixed"), color: "bg-purple-500" },
+    { key: "fold", label: t("range.filter.fold"), color: "bg-slate-600" },
+  ];
 
   return (
     <div className={cn("w-full max-w-2xl mx-auto", className)}>
+      {/* Filter Buttons */}
+      {showFilters && !compact && (
+        <div className="flex flex-wrap justify-center gap-2 mb-4">
+          {filterButtons.map((btn) => (
+            <Button
+              key={btn.key}
+              variant={filter === btn.key ? "default" : "outline"}
+              size="sm"
+              onClick={() => setFilter(btn.key)}
+              className={cn(
+                "gap-1.5",
+                filter === btn.key && btn.key !== "all" && btn.color
+              )}
+            >
+              {btn.key !== "all" && (
+                <div
+                  className="w-3 h-3 rounded-sm"
+                  style={{
+                    backgroundColor:
+                      btn.key === "raise" ? COLOR_RAISE :
+                      btn.key === "call" ? COLOR_CALL :
+                      btn.key === "mixed" ? "#a855f7" :
+                      COLOR_FOLD
+                  }}
+                />
+              )}
+              {btn.label}
+            </Button>
+          ))}
+        </div>
+      )}
+
+      {/* Range Grid */}
       <div
         className={cn(
           "grid gap-[1px] bg-border rounded-lg overflow-hidden",
           "grid-cols-13"
         )}
-        style={{
-          gridTemplateColumns: "repeat(13, 1fr)",
-        }}
+        style={{ gridTemplateColumns: "repeat(13, 1fr)" }}
       >
         {RANKS.map((_, rowIndex) =>
           RANKS.map((_, colIndex) => {
@@ -124,19 +227,23 @@ export function RangeGrid({
             const isSelected = selectedHand === hand;
             const isHovered = hoveredHand === hand;
             const isPair = rowIndex === colIndex;
+            const isDrillable = drillableHands?.includes(hand);
+            const premiumClass = getPremiumClass(hand);
 
             return (
               <button
                 key={hand}
                 className={cn(
-                  "aspect-square flex items-center justify-center",
+                  "aspect-square flex items-center justify-center relative",
                   "text-[10px] sm:text-xs md:text-sm font-medium transition-all",
-                  "hover:ring-2 hover:ring-primary hover:z-10",
-                  isSelected && "ring-2 ring-primary",
-                  isHovered && "ring-2 ring-primary/50",
-                  isPair && "font-bold"
+                  "hover:scale-110 hover:z-20",
+                  isSelected && "ring-2 ring-primary z-10",
+                  isHovered && "ring-2 ring-primary/50 z-10",
+                  isPair && "font-bold",
+                  premiumClass,
+                  isDrillable && "after:absolute after:bottom-0.5 after:right-0.5 after:w-1.5 after:h-1.5 after:bg-yellow-400 after:rounded-full"
                 )}
-                style={getActionColorStyle(handData)}
+                style={getActionColorStyle(handData, filter)}
                 onClick={() => onHandClick?.(hand)}
                 onMouseEnter={() => setHoveredHand(hand)}
                 onMouseLeave={() => setHoveredHand(null)}
@@ -165,20 +272,70 @@ export function RangeGrid({
             <div className="w-4 h-4 rounded" style={{ backgroundColor: COLOR_FOLD }} />
             <span>{t("range.legend.fold")}</span>
           </div>
+          {drillableHands && drillableHands.length > 0 && (
+            <div className="flex items-center gap-1.5">
+              <div className="w-3 h-3 rounded-full bg-yellow-400" />
+              <span>{t("range.legend.drillable")}</span>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Statistics */}
+      {showStats && !compact && (
+        <div className="grid grid-cols-4 gap-2 mt-4">
+          <StatBox
+            label="RAISE"
+            count={stats.raise.count}
+            pct={stats.raise.pct}
+            color="text-red-400"
+          />
+          <StatBox
+            label="CALL"
+            count={stats.call.count}
+            pct={stats.call.pct}
+            color="text-green-400"
+          />
+          <StatBox
+            label="FOLD"
+            count={stats.fold.count}
+            pct={stats.fold.pct}
+            color="text-slate-400"
+          />
+          <StatBox
+            label="VPIP"
+            count={stats.vpip.count}
+            pct={stats.vpip.pct}
+            color="text-amber-400"
+          />
         </div>
       )}
 
       {/* Hover/Selected Hand Details */}
       {(hoveredHand || selectedHand) && (
         <div className="mt-4 p-3 rounded-lg bg-muted/50 text-sm">
-          <div className="font-bold text-lg mb-2">
-            {hoveredHand || selectedHand}
+          <div className="flex items-center gap-2 mb-2">
+            <span className="font-bold text-lg">{hoveredHand || selectedHand}</span>
+            {PREMIUM_T1.includes(hoveredHand || selectedHand || "") && (
+              <span className="text-xs px-1.5 py-0.5 rounded bg-yellow-500/20 text-yellow-400">Premium</span>
+            )}
+            {drillableHands?.includes(hoveredHand || selectedHand || "") && (
+              <span className="text-xs px-1.5 py-0.5 rounded bg-yellow-500/20 text-yellow-400">Drillable</span>
+            )}
           </div>
-          <HandDetails
-            handData={hands[hoveredHand || selectedHand || ""] || {}}
-          />
+          <HandDetails handData={hands[hoveredHand || selectedHand || ""] || {}} />
         </div>
       )}
+    </div>
+  );
+}
+
+function StatBox({ label, count, pct, color }: { label: string; count: number; pct: number; color: string }) {
+  return (
+    <div className="text-center p-2 rounded-lg bg-muted/30">
+      <div className={cn("text-xl font-bold", color)}>{count}</div>
+      <div className="text-xs text-muted-foreground">{label}</div>
+      <div className="text-xs text-muted-foreground">{pct}%</div>
     </div>
   );
 }

@@ -153,6 +153,14 @@
       "raise": "Raise",
       "call": "Call",
       "allin": "All-in",
+      "fold": "Fold",
+      "drillable": "Drillable"
+    },
+    "filter": {
+      "all": "All",
+      "raise": "Raise",
+      "call": "Call",
+      "mixed": "Mixed",
       "fold": "Fold"
     },
     "noData": "No data",

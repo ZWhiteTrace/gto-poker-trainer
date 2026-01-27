@@ -153,6 +153,14 @@
       "raise": "加注",
       "call": "跟注",
       "allin": "全下",
+      "fold": "棄牌",
+      "drillable": "可練習"
+    },
+    "filter": {
+      "all": "全部",
+      "raise": "加注",
+      "call": "跟注",
+      "mixed": "混合",
       "fold": "棄牌"
     },
     "noData": "無數據",
