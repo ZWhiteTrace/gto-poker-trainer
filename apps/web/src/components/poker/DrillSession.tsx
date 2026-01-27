@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
+import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -11,6 +12,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
 import { api, SpotResponse, EvaluateResponse } from "@/lib/api";
 import {
   Loader2,
@@ -302,8 +304,26 @@ export function DrillSession({
           )}
 
           {isLoading && !currentSpot ? (
-            <div className="flex items-center justify-center py-12">
-              <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+            <div className="space-y-6">
+              {/* Skeleton for scenario */}
+              <Skeleton className="h-10 w-32 mx-auto" />
+              {/* Skeleton for hand and position */}
+              <div className="flex items-center justify-center gap-6 sm:gap-8">
+                <div className="text-center">
+                  <Skeleton className="h-16 w-24 mx-auto mb-2" />
+                  <Skeleton className="h-4 w-16 mx-auto" />
+                </div>
+                <div className="text-center">
+                  <Skeleton className="h-10 w-16 mx-auto mb-2" />
+                  <Skeleton className="h-4 w-12 mx-auto" />
+                </div>
+              </div>
+              {/* Skeleton for buttons */}
+              <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-4">
+                {[1, 2, 3, 4].map((i) => (
+                  <Skeleton key={i} className="h-14 sm:h-16 w-full" />
+                ))}
+              </div>
             </div>
           ) : currentSpot ? (
             <div className="space-y-6">
@@ -317,31 +337,53 @@ export function DrillSession({
               )}
 
               {/* Hand & Position Display */}
-              <div className="flex items-center justify-center gap-6 sm:gap-8">
+              <motion.div
+                key={currentSpot.hand + currentSpot.hero_position}
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.3, ease: "easeOut" }}
+                className="flex items-center justify-center gap-6 sm:gap-8"
+              >
                 <div className="text-center">
-                  <div className="text-4xl sm:text-6xl font-bold">
+                  <motion.div
+                    initial={{ y: 20, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    transition={{ delay: 0.1 }}
+                    className="text-4xl sm:text-6xl font-bold"
+                  >
                     {currentSpot.hand}
-                  </div>
+                  </motion.div>
                   <div className="mt-2 text-sm text-muted-foreground">
                     {t("drill.yourHand")}
                   </div>
                 </div>
                 <div className="text-center">
-                  <Badge
-                    variant="secondary"
-                    className="text-base sm:text-lg px-3 sm:px-4 py-1 sm:py-2"
+                  <motion.div
+                    initial={{ y: 20, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    transition={{ delay: 0.2 }}
                   >
-                    {currentSpot.hero_position}
-                  </Badge>
+                    <Badge
+                      variant="secondary"
+                      className="text-base sm:text-lg px-3 sm:px-4 py-1 sm:py-2"
+                    >
+                      {currentSpot.hero_position}
+                    </Badge>
+                  </motion.div>
                   <div className="mt-2 text-sm text-muted-foreground">
                     {t("drill.position")}
                   </div>
                 </div>
-              </div>
+              </motion.div>
 
               {/* Result Display */}
+              <AnimatePresence mode="wait">
               {lastResult && (
-                <div
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.2 }}
                   className={`rounded-lg p-4 ${
                     lastResult.is_correct
                       ? "bg-green-500/10 border border-green-500/20"
@@ -382,8 +424,9 @@ export function DrillSession({
                   <p className="text-sm text-muted-foreground mt-1">
                     {lastResult.explanation_zh || lastResult.explanation}
                   </p>
-                </div>
+                </motion.div>
               )}
+              </AnimatePresence>
 
               {/* Action Buttons */}
               {!lastResult ? (
