@@ -180,6 +180,18 @@
       "overpair": "高對子 vs 低對子 ≈ 82% vs 18%",
       "coinflip": "對子 vs 兩高張 ≈ 55% vs 45% (經典翻硬幣)",
       "domination": "壓制手牌 (如 AK vs AQ) ≈ 70% vs 30%"
+    },
+    "outs": {
+      "title": "Outs 測驗",
+      "description": "測試你計算翻後 outs 的能力",
+      "question": "這個聽牌有多少 outs？",
+      "yourHand": "你的手牌",
+      "board": "公共牌",
+      "tipsTitle": "常見 Outs 規則",
+      "tipFlush": "同花聽牌 = 9 outs (13張同花 - 4張已見)",
+      "tipOesd": "兩頭順子聽牌 (OESD) = 8 outs",
+      "tipGutshot": "內順子聽牌 (Gutshot) = 4 outs",
+      "tipCombo": "組合聽牌需減去重疊牌 (如同花+順子)"
     }
   },
   "footer": {

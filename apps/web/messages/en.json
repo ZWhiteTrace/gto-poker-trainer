@@ -180,6 +180,18 @@
       "overpair": "Overpair vs Underpair ≈ 82% vs 18%",
       "coinflip": "Pair vs Two Overcards ≈ 55% vs 45% (classic coinflip)",
       "domination": "Dominated hands (e.g., AK vs AQ) ≈ 70% vs 30%"
+    },
+    "outs": {
+      "title": "Outs Quiz",
+      "description": "Test your ability to count outs on the flop",
+      "question": "How many outs does this draw have?",
+      "yourHand": "Your Hand",
+      "board": "Board",
+      "tipsTitle": "Common Outs Rules",
+      "tipFlush": "Flush Draw = 9 outs (13 suited - 4 seen)",
+      "tipOesd": "Open-Ended Straight Draw (OESD) = 8 outs",
+      "tipGutshot": "Gutshot Straight Draw = 4 outs",
+      "tipCombo": "Combo draws subtract overlapping cards (e.g., flush + straight)"
     }
   },
   "footer": {

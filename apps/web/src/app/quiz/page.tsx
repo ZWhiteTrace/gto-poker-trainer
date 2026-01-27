@@ -24,7 +24,7 @@ const quizTypes = [
     id: "outs",
     icon: Brain,
     difficulty: "medium",
-    available: false, // Coming soon
+    available: true,
   },
   {
     id: "ev",
@@ -86,7 +86,7 @@ export default function QuizIndexPage() {
                   {quiz.id === "equity"
                     ? t("quiz.equity.title")
                     : quiz.id === "outs"
-                    ? "Outs 測驗"
+                    ? t("quiz.outs.title")
                     : quiz.id === "ev"
                     ? "EV 測驗"
                     : "邏輯測驗"}
@@ -95,7 +95,7 @@ export default function QuizIndexPage() {
                   {quiz.id === "equity"
                     ? t("quiz.equity.description")
                     : quiz.id === "outs"
-                    ? "計算翻後 outs 數量"
+                    ? t("quiz.outs.description")
                     : quiz.id === "ev"
                     ? "底池賠率與 EV 決策"
                     : "GTO 原理推理"}
