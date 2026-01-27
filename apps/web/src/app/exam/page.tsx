@@ -24,6 +24,8 @@ import {
   Flag,
   RefreshCw,
 } from "lucide-react";
+import { useAuthStore } from "@/stores/authStore";
+import { createClient } from "@/lib/supabase/client";
 
 // Question types for the exam
 type QuestionType = "logic" | "equity" | "position" | "push_fold";
@@ -243,12 +245,42 @@ interface ExamResult {
 
 export default function MockExamPage() {
   const t = useTranslations();
+  const { user } = useAuthStore();
   const [examState, setExamState] = useState<ExamState>("intro");
   const [questions, setQuestions] = useState<ExamQuestion[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [results, setResults] = useState<Map<string, ExamResult>>(new Map());
   const [timeLeft, setTimeLeft] = useState(EXAM_CONFIG.timeLimit);
+  const [isSaving, setIsSaving] = useState(false);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Save exam results to Supabase
+  const saveExamResults = async (finalScore: number, totalQuestions: number, timeTaken: number) => {
+    if (!user) return;
+
+    setIsSaving(true);
+    try {
+      const supabase = createClient();
+      const wrongAnswers = Array.from(results.entries())
+        .filter(([_, r]) => !r.isCorrect)
+        .map(([id, r]) => ({
+          questionId: id,
+          userAnswer: r.answer,
+        }));
+
+      await supabase.from("mock_exam_history").insert({
+        user_id: user.id,
+        score: finalScore,
+        total: totalQuestions,
+        time_taken: timeTaken,
+        wrong_answers: wrongAnswers,
+      });
+    } catch (error) {
+      console.error("Failed to save exam results:", error);
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
   // Shuffle and select questions
   const initializeExam = useCallback(() => {
@@ -315,6 +347,12 @@ export default function MockExamPage() {
     if (timerRef.current) {
       clearInterval(timerRef.current);
     }
+
+    // Calculate and save results
+    const finalScore = Array.from(results.values()).filter((r) => r.isCorrect).length;
+    const timeTaken = EXAM_CONFIG.timeLimit - timeLeft;
+    saveExamResults(finalScore, questions.length, timeTaken);
+
     setExamState("review");
   };
 
