@@ -162,6 +162,60 @@ export function DrillSession({
     }
   }, []);
 
+  // Keyboard shortcuts
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Ignore if user is typing in an input
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) {
+        return;
+      }
+
+      // If showing result, Space/Enter goes to next hand
+      if (lastResult) {
+        if (e.key === " " || e.key === "Enter") {
+          e.preventDefault();
+          generateSpot();
+        }
+        return;
+      }
+
+      // If no spot or loading, ignore
+      if (!currentSpot || isLoading) return;
+
+      const actions = currentSpot.available_actions;
+      let action: string | null = null;
+
+      switch (e.key.toLowerCase()) {
+        case "r":
+          if (actions.includes("raise")) action = "raise";
+          break;
+        case "c":
+          if (actions.includes("call")) action = "call";
+          break;
+        case "f":
+          if (actions.includes("fold")) action = "fold";
+          break;
+        case "a":
+          if (actions.includes("allin")) action = "allin";
+          break;
+        case "3":
+          if (actions.includes("raise")) action = "raise"; // 3-bet
+          break;
+        case "4":
+          if (actions.includes("allin")) action = "allin"; // 4-bet/all-in
+          break;
+      }
+
+      if (action) {
+        e.preventDefault();
+        submitAnswer(action);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [currentSpot, lastResult, isLoading]);
+
   const accuracy =
     sessionStats.total > 0
       ? Math.round(
@@ -430,36 +484,56 @@ export function DrillSession({
 
               {/* Action Buttons */}
               {!lastResult ? (
-                <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-4">
-                  {currentSpot.available_actions.map((action) => (
-                    <Button
-                      key={action}
-                      size="lg"
-                      variant={
-                        action === "raise" || action === "allin"
-                          ? "default"
-                          : "outline"
-                      }
-                      onClick={() => submitAnswer(action)}
-                      disabled={isLoading}
-                      className="h-14 sm:h-16 text-base sm:text-lg"
-                    >
-                      {isLoading ? (
-                        <Loader2 className="h-5 w-5 animate-spin" />
-                      ) : (
-                        getActionLabel(action)
-                      )}
-                    </Button>
-                  ))}
+                <div className="space-y-3">
+                  <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-4">
+                    {currentSpot.available_actions.map((action) => {
+                      const shortcutKey = action === "raise" ? "R" : action === "call" ? "C" : action === "fold" ? "F" : action === "allin" ? "A" : "";
+                      return (
+                        <Button
+                          key={action}
+                          size="lg"
+                          variant={
+                            action === "raise" || action === "allin"
+                              ? "default"
+                              : "outline"
+                          }
+                          onClick={() => submitAnswer(action)}
+                          disabled={isLoading}
+                          className="h-14 sm:h-16 text-base sm:text-lg relative"
+                        >
+                          {isLoading ? (
+                            <Loader2 className="h-5 w-5 animate-spin" />
+                          ) : (
+                            <>
+                              {getActionLabel(action)}
+                              {shortcutKey && (
+                                <kbd className="absolute top-1 right-1 hidden sm:inline-flex h-5 w-5 items-center justify-center rounded border bg-muted text-[10px] font-medium text-muted-foreground">
+                                  {shortcutKey}
+                                </kbd>
+                              )}
+                            </>
+                          )}
+                        </Button>
+                      );
+                    })}
+                  </div>
+                  <p className="text-xs text-center text-muted-foreground hidden sm:block">
+                    {t("drill.keyboardShortcuts")}: R = Raise, C = Call, F = Fold, A = All-in
+                  </p>
                 </div>
               ) : (
-                <Button
-                  size="lg"
-                  onClick={generateSpot}
-                  className="w-full h-14 sm:h-16 text-base sm:text-lg"
-                >
-                  {t("drill.nextHand")}
-                </Button>
+                <div className="space-y-3">
+                  <Button
+                    size="lg"
+                    onClick={generateSpot}
+                    className="w-full h-14 sm:h-16 text-base sm:text-lg"
+                  >
+                    {t("drill.nextHand")}
+                    <kbd className="ml-2 hidden sm:inline-flex h-5 px-1.5 items-center justify-center rounded border bg-muted text-[10px] font-medium text-muted-foreground">
+                      Space
+                    </kbd>
+                  </Button>
+                </div>
               )}
             </div>
           ) : (
