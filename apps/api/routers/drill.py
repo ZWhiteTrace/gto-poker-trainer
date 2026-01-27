@@ -5,10 +5,10 @@ from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 from typing import Optional, List
 
-from ..core.hand import Hand, random_hand
-from ..core.position import Position, POSITIONS_6MAX
-from ..core.scenario import Scenario, ActionType
-from ..trainer.drill import PreflopDrill
+from core.hand import Hand, random_hand
+from core.position import Position, POSITIONS_6MAX
+from core.scenario import Scenario, ActionType
+from trainer.drill import PreflopDrill
 
 router = APIRouter()
 
@@ -47,12 +47,26 @@ def get_drill(drill_type: str, positions: List[str] = None) -> PreflopDrill:
         if not action_type:
             raise ValueError(f"Unknown drill type: {drill_type}")
 
-        enabled_positions = [Position[p] for p in positions] if positions else POSITIONS_6MAX
-        _drill_cache[cache_key] = PreflopDrill(
-            enabled_action_types=[action_type],
-            enabled_positions=enabled_positions,
-        )
+        # Create drill and configure it
+        drill = PreflopDrill(format="6max")
+        drill.enabled_action_types = [action_type]
+
+        if positions:
+            drill.enabled_positions = [Position[p] for p in positions]
+
+        _drill_cache[cache_key] = drill
     return _drill_cache[cache_key]
+
+
+def get_available_actions(action_type: ActionType) -> List[str]:
+    """Get available actions based on action type."""
+    if action_type == ActionType.RFI:
+        return ["raise", "fold"]
+    elif action_type in [ActionType.VS_RFI, ActionType.VS_3BET]:
+        return ["raise", "call", "fold"]
+    elif action_type == ActionType.VS_4BET:
+        return ["call", "fold", "allin"]
+    return ["raise", "call", "fold"]
 
 
 @router.post("/generate", response_model=SpotResponse)
@@ -70,7 +84,7 @@ def generate_spot(request: DrillRequest):
             hero_position=spot.scenario.hero_position.name,
             villain_position=spot.scenario.villain_position.name if spot.scenario.villain_position else None,
             action_type=spot.scenario.action_type.value,
-            available_actions=spot.available_actions,
+            available_actions=get_available_actions(spot.scenario.action_type),
             scenario_key=spot.scenario.scenario_key,
         )
     except Exception as e:

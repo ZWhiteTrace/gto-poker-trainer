@@ -6,10 +6,10 @@ from pydantic import BaseModel
 from typing import Optional, Dict
 from pathlib import Path
 
-from ..core.hand import Hand
-from ..core.position import Position
-from ..core.scenario import Scenario, ActionType
-from ..core.evaluator import Evaluator, EvalResult
+from core.hand import Hand
+from core.position import Position
+from core.scenario import Scenario, ActionType
+from core.evaluator import Evaluator, EvalResult
 
 router = APIRouter()
 

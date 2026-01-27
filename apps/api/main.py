@@ -1,10 +1,16 @@
 """
 GTO Poker Trainer - FastAPI Backend
 """
+import sys
+from pathlib import Path
+
+# Add api directory to path for imports
+sys.path.insert(0, str(Path(__file__).parent))
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from .routers import drill, evaluate, ranges
+from routers import drill, evaluate, ranges
 
 app = FastAPI(
     title="GTO Poker Trainer API",
