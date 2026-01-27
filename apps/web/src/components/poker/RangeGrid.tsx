@@ -56,7 +56,7 @@ const COLOR_FOLD = "#1e293b";
 function getHandFrequencies(handData: HandData | undefined) {
   if (!handData) return { raise: 0, call: 0, fold: 100, allin: 0 };
 
-  const raise = (handData.raise || 0) + (handData["3bet"] || 0) + (handData["4bet"] || 0);
+  const raise = (handData.raise || 0) + (handData["3bet"] || 0) + (handData["4bet"] || 0) + (handData["5bet"] || 0);
   const call = handData.call || 0;
   const allin = handData.allin || 0;
   const fold = handData.fold || Math.max(0, 100 - raise - call - allin);
@@ -355,6 +355,7 @@ function HandDetails({ handData }: { handData: HandData }) {
       raise: t("range.legend.raise"),
       "3bet": "3-Bet",
       "4bet": "4-Bet",
+      "5bet": "5-Bet",
       call: t("range.legend.call"),
       fold: t("range.legend.fold"),
       allin: t("range.legend.allin"),
@@ -363,7 +364,7 @@ function HandDetails({ handData }: { handData: HandData }) {
   };
 
   const getActionColor = (action: string): string => {
-    if (action === "raise" || action === "3bet" || action === "4bet" || action === "allin") {
+    if (action === "raise" || action === "3bet" || action === "4bet" || action === "5bet" || action === "allin") {
       return COLOR_RAISE;
     }
     if (action === "call") return COLOR_CALL;

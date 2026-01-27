@@ -5,10 +5,7 @@ import { withSentryConfig } from "@sentry/nextjs";
 const withNextIntl = createNextIntlPlugin("./src/i18n/request.ts");
 
 const nextConfig: NextConfig = {
-  // Enable instrumentation hook for Sentry
-  experimental: {
-    instrumentationHook: true,
-  },
+  // Next.js 14+ has instrumentation enabled by default
 };
 
 // Sentry configuration options

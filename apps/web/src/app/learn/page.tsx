@@ -14,17 +14,17 @@ const categoryConfig: Record<
   string,
   { label: string; labelEn: string; icon: typeof BookOpen; color: string }
 > = {
+  fundamentals: {
+    label: "基礎概念",
+    labelEn: "Fundamentals",
+    icon: BookOpen,
+    color: "bg-purple-500/10 text-purple-500",
+  },
   preflop: {
     label: "翻前策略",
     labelEn: "Preflop",
     icon: Target,
     color: "bg-blue-500/10 text-blue-500",
-  },
-  mtt: {
-    label: "MTT 策略",
-    labelEn: "MTT",
-    icon: Trophy,
-    color: "bg-amber-500/10 text-amber-500",
   },
   postflop: {
     label: "翻後策略",
@@ -32,11 +32,17 @@ const categoryConfig: Record<
     icon: Layers,
     color: "bg-green-500/10 text-green-500",
   },
-  fundamentals: {
-    label: "基礎概念",
-    labelEn: "Fundamentals",
-    icon: BookOpen,
-    color: "bg-purple-500/10 text-purple-500",
+  mtt: {
+    label: "MTT 策略",
+    labelEn: "MTT",
+    icon: Trophy,
+    color: "bg-amber-500/10 text-amber-500",
+  },
+  advanced: {
+    label: "進階概念",
+    labelEn: "Advanced",
+    icon: Target,
+    color: "bg-red-500/10 text-red-500",
   },
 };
 
