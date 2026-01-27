@@ -20,6 +20,21 @@ GUIDES = {
         "zh": "RFI 開池範圍指南",
         "en": "RFI Ranges Guide",
         "file": "rfi-ranges-guide.md"
+    },
+    "facing-3bet": {
+        "zh": "面對 3-Bet 策略指南",
+        "en": "Facing 3-Bet Strategy Guide",
+        "file": "facing-3bet-strategy.md"
+    },
+    "cbet": {
+        "zh": "翻後 C-Bet 指南",
+        "en": "Postflop C-Bet Guide",
+        "file": "postflop-cbet-guide.md"
+    },
+    "common-mistakes": {
+        "zh": "撲克常見錯誤解析",
+        "en": "Common Poker Mistakes",
+        "file": "common-mistakes.md"
     }
 }
 

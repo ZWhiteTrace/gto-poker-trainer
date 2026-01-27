@@ -294,8 +294,10 @@ class HandResult:
     # Fold to C-Bet stats (only valid if faced c-bet)
     faced_cbet_flop: bool = False
     fold_to_cbet_flop: Optional[bool] = None
+    call_cbet_flop: Optional[bool] = None  # CCB: Called (not raised) the c-bet
     faced_cbet_turn: bool = False
     fold_to_cbet_turn: Optional[bool] = None
+    call_cbet_turn: Optional[bool] = None  # CCB: Called (not raised) the c-bet
 
     # Check-raise stats
     check_raise_flop: bool = False
@@ -532,19 +534,21 @@ class BatchAnalyzer:
         # ============================================
         faced_cbet_flop = False
         fold_to_cbet_flop = None
+        call_cbet_flop = None
         faced_cbet_turn = False
         fold_to_cbet_turn = None
+        call_cbet_turn = None
 
         # Find preflop aggressor (if not hero)
         pf_aggressor = last_raiser if last_raiser != hero_name else None
 
         if saw_flop and pf_aggressor:
-            faced_cbet_flop, fold_to_cbet_flop = self._check_faced_cbet(
+            faced_cbet_flop, fold_to_cbet_flop, call_cbet_flop = self._check_faced_cbet(
                 hand.flop_actions, hero_name, pf_aggressor
             )
 
         if saw_turn and pf_aggressor:
-            faced_cbet_turn, fold_to_cbet_turn = self._check_faced_cbet(
+            faced_cbet_turn, fold_to_cbet_turn, call_cbet_turn = self._check_faced_cbet(
                 hand.turn_actions, hero_name, pf_aggressor
             )
 
@@ -616,8 +620,10 @@ class BatchAnalyzer:
             # Fold to C-bet stats
             faced_cbet_flop=faced_cbet_flop,
             fold_to_cbet_flop=fold_to_cbet_flop,
+            call_cbet_flop=call_cbet_flop,
             faced_cbet_turn=faced_cbet_turn,
             fold_to_cbet_turn=fold_to_cbet_turn,
+            call_cbet_turn=call_cbet_turn,
             # Check-raise stats
             check_raise_flop=check_raise_flop,
             check_raise_turn=check_raise_turn,
@@ -644,7 +650,7 @@ class BatchAnalyzer:
         Check if hero faced a c-bet and how they responded.
 
         Returns:
-            (faced_cbet: bool, folded_to_cbet: Optional[bool])
+            (faced_cbet: bool, folded_to_cbet: Optional[bool], called_cbet: Optional[bool])
         """
         aggressor_bet = False
 
@@ -656,11 +662,13 @@ class BatchAnalyzer:
             # After aggressor bet, check hero's response
             if aggressor_bet and action.player == hero_name:
                 if action.action_type == ActionType.FOLD:
-                    return True, True
-                elif action.action_type in [ActionType.CALL, ActionType.RAISE]:
-                    return True, False
+                    return True, True, False  # faced, folded, didn't call
+                elif action.action_type == ActionType.CALL:
+                    return True, False, True  # faced, didn't fold, called
+                elif action.action_type == ActionType.RAISE:
+                    return True, False, False  # faced, didn't fold, raised (not call)
 
-        return aggressor_bet, None
+        return aggressor_bet, None, None
 
     def _check_check_raise(self, actions: List[Action], hero_name: str) -> bool:
         """Check if hero check-raised on this street."""

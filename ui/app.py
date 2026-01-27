@@ -3222,13 +3222,16 @@ def mock_exam_page():
 
             | 題型 | 題數 | 內容 |
             |------|------|------|
-            | 🎲 權益測驗 | 3 題 | 手牌對抗權益估算 |
-            | 🃏 補牌測驗 | 2 題 | Outs 計算 |
-            | 💰 EV 測驗 | 2 題 | 底池賠率決策 |
-            | 🧠 翻前邏輯 | 2 題 | 翻前 GTO 推理 |
-            | 🎯 翻後邏輯 | 2 題 | 翻後決策推理 |
+            | 🎲 權益測驗 | 8 題 | 手牌對抗權益估算 |
+            | 🃏 補牌測驗 | 6 題 | Outs 計算 |
+            | 💰 EV 測驗 | 6 題 | 底池賠率決策 |
+            | 🎴 翻前動作 | 6 題 | RFI/3bet 決策 |
+            | 📊 GTO 概念 | 4 題 | 理論知識測試 |
+            | 🧠 翻前邏輯 | 4 題 | 翻前 GTO 推理 |
+            | 🎯 C-bet 決策 | 3 題 | 翻後主動下注 |
+            | 🛡️ 防守決策 | 3 題 | 翻後防守策略 |
 
-            **總題數**: 11 題
+            **總題數**: 40 題
 
             **計時**: 測驗會記錄完成時間
 
@@ -3243,13 +3246,16 @@ def mock_exam_page():
 
             | Type | Questions | Content |
             |------|-----------|---------|
-            | 🎲 Equity Quiz | 3 | Hand vs hand equity |
-            | 🃏 Outs Quiz | 2 | Counting outs |
-            | 💰 EV Quiz | 2 | Pot odds decisions |
-            | 🧠 Preflop Logic | 2 | Preflop GTO reasoning |
-            | 🎯 Postflop Logic | 2 | Postflop decision logic |
+            | 🎲 Equity Quiz | 8 | Hand vs hand equity |
+            | 🃏 Outs Quiz | 6 | Counting outs |
+            | 💰 EV Quiz | 6 | Pot odds decisions |
+            | 🎴 Preflop Action | 6 | RFI/3bet decisions |
+            | 📊 GTO Concepts | 4 | Theory knowledge |
+            | 🧠 Preflop Logic | 4 | Preflop GTO reasoning |
+            | 🎯 C-bet Decisions | 3 | Postflop aggression |
+            | 🛡️ Defense Decisions | 3 | Postflop defense |
 
-            **Total**: 11 questions
+            **Total**: 40 questions
 
             **Timer**: Your completion time will be recorded
 
@@ -3632,32 +3638,32 @@ def _generate_mock_exam():
 
     questions = []
 
-    # 1. Equity questions (6) - with card visuals
-    for _ in range(6):
+    # 1. Equity questions (8) - with card visuals
+    for _ in range(8):
         q = _generate_equity_question()
         if q:
             questions.append({"type": "equity", **q})
 
-    # 2. Outs questions (5) - with board visuals
-    for _ in range(5):
+    # 2. Outs questions (6) - with board visuals
+    for _ in range(6):
         q = _generate_outs_question()
         if q:
             questions.append({"type": "outs", **q})
 
-    # 3. EV questions (5)
-    for _ in range(5):
+    # 3. EV questions (6)
+    for _ in range(6):
         q = _generate_ev_question()
         if q:
             questions.append({"type": "ev", **q})
 
-    # 4. Preflop Action questions (8) - new type with visuals
-    for _ in range(8):
+    # 4. Preflop Action questions (6) - new type with visuals
+    for _ in range(6):
         q = _generate_preflop_action_question()
         if q:
             questions.append({"type": "preflop_action", **q})
 
-    # 5. GTO Concept questions (5) - new type
-    for _ in range(5):
+    # 5. GTO Concept questions (4) - new type
+    for _ in range(4):
         q = _generate_gto_concept_question()
         if q:
             questions.append({"type": "gto_concept", **q})
@@ -3667,7 +3673,7 @@ def _generate_mock_exam():
         st.session_state.logic_engine = LogicQuizEngine()
     engine = st.session_state.logic_engine
 
-    for _ in range(5):
+    for _ in range(4):
         try:
             lq = engine.generate_random_question()
             if lq:
