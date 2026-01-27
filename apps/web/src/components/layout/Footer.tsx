@@ -37,6 +37,11 @@ export function Footer() {
                 </Link>
               </li>
               <li>
+                <Link href="/drill/vs-4bet" className="hover:text-primary">
+                  VS 4-Bet
+                </Link>
+              </li>
+              <li>
                 <Link href="/range" className="hover:text-primary">
                   Range Viewer
                 </Link>

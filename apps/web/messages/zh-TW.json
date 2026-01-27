@@ -23,7 +23,8 @@
     "learn": "學習",
     "rfiDrill": "RFI 練習",
     "vsRfiDrill": "VS RFI 練習",
-    "vs3betDrill": "VS 3-Bet 練習"
+    "vs3betDrill": "VS 3-Bet 練習",
+    "vs4betDrill": "VS 4-Bet 練習"
   },
   "home": {
     "badge": "免費 GTO 訓練",
@@ -94,6 +95,10 @@
       "title": "VS 3-Bet 練習",
       "description": "練習在開牌加注後面對 3-bet 的回應"
     },
+    "vs4bet": {
+      "title": "VS 4-Bet 練習",
+      "description": "練習在 3-bet 後面對 4-bet 的回應"
+    },
     "whatsYourPlay": "你怎麼打？",
     "chooseAction": "為這手牌選擇正確的動作",
     "yourHand": "你的手牌",
@@ -122,15 +127,21 @@
     "title": "範圍查看器",
     "description": "探索 6-max 現金局的 GTO 翻前範圍",
     "rfiRanges": "RFI 範圍",
-    "vsRfiRanges": "VS RFI 範圍",
+    "vsRfiRanges": "VS RFI",
+    "vs3betRanges": "VS 3-Bet",
+    "vs4betRanges": "VS 4-Bet",
     "selectPosition": "選擇位置",
     "selectPositionDesc": "查看每個位置的開牌範圍（首次加注）",
     "selectMatchup": "選擇對局",
-    "selectMatchupDesc": "查看面對開牌加注的防守範圍",
+    "vsRfiDesc": "你在後位，對手開牌加注，你該如何回應",
+    "vs3betDesc": "你開牌加注後，對手 3-bet，你該如何回應",
+    "vs4betDesc": "你 3-bet 後，對手 4-bet，你該如何回應",
     "openRange": "{position} 開牌範圍",
     "openRangeDesc": "行動棄牌到 {position} 時的 RFI 範圍",
     "vsRange": "{hero} vs {villain} 開牌",
     "vsRangeDesc": "{hero} 面對 {villain} RFI 的防守範圍",
+    "vs3betRangeDesc": "{hero} 開牌後面對 {villain} 3-bet 的回應範圍",
+    "vs4betRangeDesc": "{hero} 3-bet 後面對 {villain} 4-bet 的回應範圍",
     "stats": {
       "title": "範圍統計",
       "totalHands": "總手牌數",

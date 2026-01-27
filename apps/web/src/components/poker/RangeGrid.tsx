@@ -39,86 +39,61 @@ function getHandKey(row: number, col: number): string {
   }
 }
 
-function getActionColor(
-  handData: HandData | undefined,
-  action?: string
-): string {
-  if (!handData) return "bg-muted/30";
+// Color constants matching GTOWizard style
+const COLOR_RAISE = "#ef4444"; // Red for raise/3bet/4bet
+const COLOR_CALL = "#22c55e";  // Green for call
+const COLOR_FOLD = "#1e293b";  // Dark slate for fold (empty)
 
-  // Get the primary action (highest frequency)
-  const actions = Object.entries(handData).filter(
-    ([key, val]) => val !== undefined && val > 0
-  );
+function getActionColorStyle(handData: HandData | undefined): React.CSSProperties {
+  if (!handData) return { backgroundColor: COLOR_FOLD };
 
-  if (actions.length === 0) return "bg-muted/30";
+  // Get frequencies for each action type
+  const raiseFreq = handData.raise || handData["3bet"] || handData["4bet"] || 0;
+  const callFreq = handData.call || 0;
+  const foldFreq = handData.fold || 0;
+  const allinFreq = handData.allin || 0;
 
-  // If highlighting a specific action
-  if (action && handData[action]) {
-    const freq = handData[action] || 0;
-    if (freq >= 80) return getActionBgColor(action, "high");
-    if (freq >= 50) return getActionBgColor(action, "medium");
-    if (freq > 0) return getActionBgColor(action, "low");
+  // No action data = not in range
+  if (raiseFreq === 0 && callFreq === 0 && allinFreq === 0) {
+    return { backgroundColor: COLOR_FOLD };
   }
 
-  // Otherwise, show the dominant action
-  const [primaryAction, primaryFreq] = actions.reduce((a, b) =>
-    (b[1] || 0) > (a[1] || 0) ? b : a
-  );
+  // Pure actions (100%) - solid color
+  if (raiseFreq >= 100 || allinFreq >= 100) {
+    return { backgroundColor: COLOR_RAISE };
+  }
+  if (callFreq >= 100) {
+    return { backgroundColor: COLOR_CALL };
+  }
 
-  if ((primaryFreq || 0) >= 80) return getActionBgColor(primaryAction, "high");
-  if ((primaryFreq || 0) >= 50)
-    return getActionBgColor(primaryAction, "medium");
-  if ((primaryFreq || 0) > 0) return getActionBgColor(primaryAction, "low");
+  // Mixed strategy - build proportional gradient
+  const stops: string[] = [];
+  let currentPos = 0;
 
-  return "bg-muted/30";
-}
+  // Order: Raise (red) → Call (green) → Fold (dark)
+  if (raiseFreq > 0 || allinFreq > 0) {
+    const rFreq = raiseFreq + allinFreq;
+    stops.push(`${COLOR_RAISE} ${currentPos}%`);
+    currentPos += rFreq;
+    stops.push(`${COLOR_RAISE} ${currentPos}%`);
+  }
 
-function getActionBgColor(
-  action: string,
-  intensity: "high" | "medium" | "low"
-): string {
-  const colors: Record<string, Record<string, string>> = {
-    raise: {
-      high: "bg-red-500/90",
-      medium: "bg-red-500/60",
-      low: "bg-red-500/30",
-    },
-    call: {
-      high: "bg-green-500/90",
-      medium: "bg-green-500/60",
-      low: "bg-green-500/30",
-    },
-    fold: {
-      high: "bg-slate-500/90",
-      medium: "bg-slate-500/60",
-      low: "bg-slate-500/30",
-    },
-    allin: {
-      high: "bg-purple-500/90",
-      medium: "bg-purple-500/60",
-      low: "bg-purple-500/30",
-    },
+  if (callFreq > 0) {
+    stops.push(`${COLOR_CALL} ${currentPos}%`);
+    currentPos += callFreq;
+    stops.push(`${COLOR_CALL} ${currentPos}%`);
+  }
+
+  if (foldFreq > 0 || currentPos < 100) {
+    stops.push(`${COLOR_FOLD} ${currentPos}%`);
+    stops.push(`${COLOR_FOLD} 100%`);
+  }
+
+  return {
+    background: `linear-gradient(to right, ${stops.join(", ")})`,
   };
-
-  return colors[action]?.[intensity] || "bg-muted/30";
 }
 
-function getFrequencyText(handData: HandData | undefined): string {
-  if (!handData) return "";
-
-  const entries = Object.entries(handData).filter(
-    ([_, val]) => val !== undefined && val > 0
-  );
-
-  if (entries.length === 0) return "";
-
-  // Show the highest frequency
-  const [_, maxFreq] = entries.reduce((a, b) =>
-    (b[1] || 0) > (a[1] || 0) ? b : a
-  );
-
-  return `${maxFreq}%`;
-}
 
 export function RangeGrid({
   hands,
@@ -154,28 +129,21 @@ export function RangeGrid({
               <button
                 key={hand}
                 className={cn(
-                  "aspect-square flex flex-col items-center justify-center",
+                  "aspect-square flex items-center justify-center",
                   "text-[10px] sm:text-xs md:text-sm font-medium transition-all",
                   "hover:ring-2 hover:ring-primary hover:z-10",
-                  getActionColor(handData, highlightAction),
                   isSelected && "ring-2 ring-primary",
                   isHovered && "ring-2 ring-primary/50",
-                  isPair && "font-bold",
-                  !compact && "p-0.5 sm:p-1"
+                  isPair && "font-bold"
                 )}
+                style={getActionColorStyle(handData)}
                 onClick={() => onHandClick?.(hand)}
                 onMouseEnter={() => setHoveredHand(hand)}
                 onMouseLeave={() => setHoveredHand(null)}
-                title={`${hand}: ${JSON.stringify(handData || {})}`}
               >
-                <span className={cn(isPair && "text-primary-foreground")}>
+                <span className="text-white drop-shadow-[0_1px_1px_rgba(0,0,0,0.8)]">
                   {hand}
                 </span>
-                {!compact && handData && (
-                  <span className="text-[8px] sm:text-[10px] md:text-xs opacity-80">
-                    {getFrequencyText(handData)}
-                  </span>
-                )}
               </button>
             );
           })
@@ -186,19 +154,15 @@ export function RangeGrid({
       {!compact && (
         <div className="flex flex-wrap justify-center gap-4 mt-4 text-sm">
           <div className="flex items-center gap-1.5">
-            <div className="w-4 h-4 rounded bg-red-500/80" />
+            <div className="w-4 h-4 rounded" style={{ backgroundColor: COLOR_RAISE }} />
             <span>{t("range.legend.raise")}</span>
           </div>
           <div className="flex items-center gap-1.5">
-            <div className="w-4 h-4 rounded bg-green-500/80" />
+            <div className="w-4 h-4 rounded" style={{ backgroundColor: COLOR_CALL }} />
             <span>{t("range.legend.call")}</span>
           </div>
           <div className="flex items-center gap-1.5">
-            <div className="w-4 h-4 rounded bg-purple-500/80" />
-            <span>{t("range.legend.allin")}</span>
-          </div>
-          <div className="flex items-center gap-1.5">
-            <div className="w-4 h-4 rounded bg-slate-500/80" />
+            <div className="w-4 h-4 rounded" style={{ backgroundColor: COLOR_FOLD }} />
             <span>{t("range.legend.fold")}</span>
           </div>
         </div>
@@ -232,6 +196,8 @@ function HandDetails({ handData }: { handData: HandData }) {
   const getActionLabel = (action: string) => {
     const map: Record<string, string> = {
       raise: t("range.legend.raise"),
+      "3bet": "3-Bet",
+      "4bet": "4-Bet",
       call: t("range.legend.call"),
       fold: t("range.legend.fold"),
       allin: t("range.legend.allin"),
@@ -239,18 +205,21 @@ function HandDetails({ handData }: { handData: HandData }) {
     return map[action] || action;
   };
 
+  const getActionColor = (action: string): string => {
+    if (action === "raise" || action === "3bet" || action === "4bet" || action === "allin") {
+      return COLOR_RAISE;
+    }
+    if (action === "call") return COLOR_CALL;
+    return COLOR_FOLD;
+  };
+
   return (
     <div className="flex flex-wrap gap-3">
       {actions.map(([action, freq]) => (
         <div key={action} className="flex items-center gap-1.5">
           <div
-            className={cn(
-              "w-3 h-3 rounded",
-              action === "raise" && "bg-red-500",
-              action === "call" && "bg-green-500",
-              action === "fold" && "bg-slate-500",
-              action === "allin" && "bg-purple-500"
-            )}
+            className="w-3 h-3 rounded"
+            style={{ backgroundColor: getActionColor(action) }}
           />
           <span>{getActionLabel(action)}:</span>
           <span className="font-medium">{freq}%</span>

@@ -108,6 +108,26 @@ class ApiClient {
     );
   }
 
+  async getVs3betRange(
+    heroPosition: string,
+    villainPosition: string,
+    format: string = "6max"
+  ): Promise<RangeResponse> {
+    return this.fetch<RangeResponse>(
+      `/api/ranges/vs_3bet/${heroPosition}/${villainPosition}?format=${format}`
+    );
+  }
+
+  async getVs4betRange(
+    heroPosition: string,
+    villainPosition: string,
+    format: string = "6max"
+  ): Promise<RangeResponse> {
+    return this.fetch<RangeResponse>(
+      `/api/ranges/vs_4bet/${heroPosition}/${villainPosition}?format=${format}`
+    );
+  }
+
   async listRanges(format: string = "6max") {
     return this.fetch<{ format: string; available: Record<string, string[]> }>(
       `/api/ranges/list?format=${format}`

@@ -23,7 +23,8 @@
     "learn": "Learn",
     "rfiDrill": "RFI Drill",
     "vsRfiDrill": "VS RFI Drill",
-    "vs3betDrill": "VS 3-Bet Drill"
+    "vs3betDrill": "VS 3-Bet Drill",
+    "vs4betDrill": "VS 4-Bet Drill"
   },
   "home": {
     "badge": "Free GTO Training",
@@ -94,6 +95,10 @@
       "title": "VS 3-Bet Drill",
       "description": "Practice responding to 3-bets after you open raise"
     },
+    "vs4bet": {
+      "title": "VS 4-Bet Drill",
+      "description": "Practice responding to 4-bets after you 3-bet"
+    },
     "whatsYourPlay": "What's Your Play?",
     "chooseAction": "Choose the correct action for this hand",
     "yourHand": "Your Hand",
@@ -122,15 +127,21 @@
     "title": "Range Viewer",
     "description": "Explore GTO preflop ranges for 6-max cash games",
     "rfiRanges": "RFI Ranges",
-    "vsRfiRanges": "vs RFI Ranges",
+    "vsRfiRanges": "VS RFI",
+    "vs3betRanges": "VS 3-Bet",
+    "vs4betRanges": "VS 4-Bet",
     "selectPosition": "Select Position",
     "selectPositionDesc": "View the opening range (Raise First In) for each position",
     "selectMatchup": "Select Matchup",
-    "selectMatchupDesc": "View the defending range against an open raise",
+    "vsRfiDesc": "You're in position, opponent opens, how do you respond",
+    "vs3betDesc": "You opened, opponent 3-bets, how do you respond",
+    "vs4betDesc": "You 3-bet, opponent 4-bets, how do you respond",
     "openRange": "{position} Open Range",
     "openRangeDesc": "RFI range when action folds to {position}",
     "vsRange": "{hero} vs {villain} Open",
     "vsRangeDesc": "Defense range for {hero} facing {villain} RFI",
+    "vs3betRangeDesc": "{hero} response range facing {villain} 3-bet after opening",
+    "vs4betRangeDesc": "{hero} response range facing {villain} 4-bet after 3-betting",
     "stats": {
       "title": "Range Statistics",
       "totalHands": "Total Hands",

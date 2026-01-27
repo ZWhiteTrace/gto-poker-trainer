@@ -125,6 +125,76 @@ def get_vs_rfi_range(
         raise HTTPException(status_code=500, detail=str(e))
 
 
+@router.get("/vs_3bet/{hero_position}/{villain_position}", response_model=RangeResponse)
+def get_vs_3bet_range(
+    hero_position: str,
+    villain_position: str,
+    format: str = Query(default="6max", description="Game format"),
+):
+    """Get VS 3-bet range for a specific matchup (original raiser facing 3-bet)."""
+    try:
+        data = get_range_data(format)
+        if "vs_3bet" not in data:
+            raise HTTPException(status_code=404, detail="VS 3-bet data not found")
+
+        vs_3bet_data = data["vs_3bet"]
+        key = f"{hero_position}_vs_{villain_position}"
+
+        if key not in vs_3bet_data:
+            raise HTTPException(status_code=404, detail=f"Matchup {key} not found")
+
+        matchup_data = vs_3bet_data[key]
+        frequencies = matchup_data.get("frequencies", {})
+        drillable = matchup_data.get("drillable", [])
+
+        return RangeResponse(
+            position=hero_position,
+            action_type="vs_3bet",
+            hands=frequencies,
+            drillable=drillable,
+            total_hands=len(frequencies),
+        )
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/vs_4bet/{hero_position}/{villain_position}", response_model=RangeResponse)
+def get_vs_4bet_range(
+    hero_position: str,
+    villain_position: str,
+    format: str = Query(default="6max", description="Game format"),
+):
+    """Get VS 4-bet range for a specific matchup (3-bettor facing 4-bet)."""
+    try:
+        data = get_range_data(format)
+        if "vs_4bet" not in data:
+            raise HTTPException(status_code=404, detail="VS 4-bet data not found")
+
+        vs_4bet_data = data["vs_4bet"]
+        key = f"{hero_position}_vs_{villain_position}"
+
+        if key not in vs_4bet_data:
+            raise HTTPException(status_code=404, detail=f"Matchup {key} not found")
+
+        matchup_data = vs_4bet_data[key]
+        frequencies = matchup_data.get("frequencies", {})
+        drillable = matchup_data.get("drillable", [])
+
+        return RangeResponse(
+            position=hero_position,
+            action_type="vs_4bet",
+            hands=frequencies,
+            drillable=drillable,
+            total_hands=len(frequencies),
+        )
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 @router.get("/list")
 def list_available_ranges(
     format: str = Query(default="6max", description="Game format"),
