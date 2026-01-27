@@ -123,3 +123,8 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Container with better padding */
+.container {
+  @apply px-4 sm:px-6 lg:px-8;
+}

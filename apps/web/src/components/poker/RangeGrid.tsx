@@ -2,6 +2,7 @@
 
 import { cn } from "@/lib/utils";
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 
 const RANKS = ["A", "K", "Q", "J", "T", "9", "8", "7", "6", "5", "4", "3", "2"];
 
@@ -127,10 +128,11 @@ export function RangeGrid({
   className,
   compact = false,
 }: RangeGridProps) {
+  const t = useTranslations();
   const [hoveredHand, setHoveredHand] = useState<string | null>(null);
 
   return (
-    <div className={cn("w-full", className)}>
+    <div className={cn("w-full max-w-2xl mx-auto", className)}>
       <div
         className={cn(
           "grid gap-[1px] bg-border rounded-lg overflow-hidden",
@@ -147,20 +149,19 @@ export function RangeGrid({
             const isSelected = selectedHand === hand;
             const isHovered = hoveredHand === hand;
             const isPair = rowIndex === colIndex;
-            const isSuited = rowIndex < colIndex;
 
             return (
               <button
                 key={hand}
                 className={cn(
                   "aspect-square flex flex-col items-center justify-center",
-                  "text-[9px] sm:text-xs font-medium transition-all",
+                  "text-[10px] sm:text-xs md:text-sm font-medium transition-all",
                   "hover:ring-2 hover:ring-primary hover:z-10",
                   getActionColor(handData, highlightAction),
                   isSelected && "ring-2 ring-primary",
                   isHovered && "ring-2 ring-primary/50",
                   isPair && "font-bold",
-                  !compact && "p-0.5"
+                  !compact && "p-0.5 sm:p-1"
                 )}
                 onClick={() => onHandClick?.(hand)}
                 onMouseEnter={() => setHoveredHand(hand)}
@@ -171,7 +172,7 @@ export function RangeGrid({
                   {hand}
                 </span>
                 {!compact && handData && (
-                  <span className="text-[7px] sm:text-[9px] opacity-70">
+                  <span className="text-[8px] sm:text-[10px] md:text-xs opacity-80">
                     {getFrequencyText(handData)}
                   </span>
                 )}
@@ -183,22 +184,22 @@ export function RangeGrid({
 
       {/* Legend */}
       {!compact && (
-        <div className="flex flex-wrap justify-center gap-4 mt-4 text-xs">
-          <div className="flex items-center gap-1">
+        <div className="flex flex-wrap justify-center gap-4 mt-4 text-sm">
+          <div className="flex items-center gap-1.5">
             <div className="w-4 h-4 rounded bg-red-500/80" />
-            <span>Raise</span>
+            <span>{t("range.legend.raise")}</span>
           </div>
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-1.5">
             <div className="w-4 h-4 rounded bg-green-500/80" />
-            <span>Call</span>
+            <span>{t("range.legend.call")}</span>
           </div>
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-1.5">
             <div className="w-4 h-4 rounded bg-purple-500/80" />
-            <span>All-in</span>
+            <span>{t("range.legend.allin")}</span>
           </div>
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-1.5">
             <div className="w-4 h-4 rounded bg-slate-500/80" />
-            <span>Fold</span>
+            <span>{t("range.legend.fold")}</span>
           </div>
         </div>
       )}
@@ -219,18 +220,29 @@ export function RangeGrid({
 }
 
 function HandDetails({ handData }: { handData: HandData }) {
+  const t = useTranslations();
   const actions = Object.entries(handData).filter(
     ([_, val]) => val !== undefined && val > 0
   );
 
   if (actions.length === 0) {
-    return <span className="text-muted-foreground">No data</span>;
+    return <span className="text-muted-foreground">{t("range.noData")}</span>;
   }
+
+  const getActionLabel = (action: string) => {
+    const map: Record<string, string> = {
+      raise: t("range.legend.raise"),
+      call: t("range.legend.call"),
+      fold: t("range.legend.fold"),
+      allin: t("range.legend.allin"),
+    };
+    return map[action] || action;
+  };
 
   return (
     <div className="flex flex-wrap gap-3">
       {actions.map(([action, freq]) => (
-        <div key={action} className="flex items-center gap-1">
+        <div key={action} className="flex items-center gap-1.5">
           <div
             className={cn(
               "w-3 h-3 rounded",
@@ -240,7 +252,7 @@ function HandDetails({ handData }: { handData: HandData }) {
               action === "allin" && "bg-purple-500"
             )}
           />
-          <span className="capitalize">{action}:</span>
+          <span>{getActionLabel(action)}:</span>
           <span className="font-medium">{freq}%</span>
         </div>
       ))}
