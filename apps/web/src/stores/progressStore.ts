@@ -40,6 +40,12 @@ interface QuizStats {
   lastPracticed?: string;
 }
 
+interface DailyRecord {
+  date: string; // YYYY-MM-DD
+  total: number;
+  correct: number;
+}
+
 interface ProgressState {
   // Stats by drill type
   stats: Record<DrillType, DrillStats>;
@@ -49,6 +55,9 @@ interface ProgressState {
 
   // Recent results (local cache)
   recentResults: DrillResult[];
+
+  // Daily history for trend charts (last 30 days)
+  dailyHistory: DailyRecord[];
 
   // Sync status
   isSyncing: boolean;
@@ -65,6 +74,7 @@ interface ProgressState {
   syncToCloud: (userId: string) => Promise<void>;
   loadFromCloud: (userId: string) => Promise<void>;
   getWeakPositions: (drillType: DrillType) => string[];
+  getDailyHistory: (days: number) => DailyRecord[];
   resetStats: () => void;
 }
 
@@ -96,9 +106,42 @@ const initialState = {
     exploit: { ...initialQuizStats },
   },
   recentResults: [],
+  dailyHistory: [],
   isSyncing: false,
   lastSyncedAt: null,
 };
+
+// Helper to get today's date string
+function getTodayDate(): string {
+  return new Date().toISOString().split("T")[0];
+}
+
+// Helper to update daily history
+function updateDailyHistory(
+  history: DailyRecord[],
+  isCorrect: boolean
+): DailyRecord[] {
+  const today = getTodayDate();
+  const existingIndex = history.findIndex((r) => r.date === today);
+
+  let newHistory: DailyRecord[];
+  if (existingIndex >= 0) {
+    newHistory = [...history];
+    newHistory[existingIndex] = {
+      ...newHistory[existingIndex],
+      total: newHistory[existingIndex].total + 1,
+      correct: newHistory[existingIndex].correct + (isCorrect ? 1 : 0),
+    };
+  } else {
+    newHistory = [
+      ...history,
+      { date: today, total: 1, correct: isCorrect ? 1 : 0 },
+    ];
+  }
+
+  // Keep only last 30 days
+  return newHistory.slice(-30);
+}
 
 export const useProgressStore = create<ProgressState>()(
   persist(
@@ -106,7 +149,7 @@ export const useProgressStore = create<ProgressState>()(
       ...initialState,
 
       recordResult: async (result: DrillResult, userId?: string) => {
-        const { stats, recentResults } = get();
+        const { stats, recentResults, dailyHistory } = get();
         const drillStats = stats[result.drill_type];
 
         // Update local stats
@@ -131,9 +174,16 @@ export const useProgressStore = create<ProgressState>()(
         // Add to recent results (keep last 100)
         const newResults = [result, ...recentResults].slice(0, 100);
 
+        // Update daily history
+        const newDailyHistory = updateDailyHistory(
+          dailyHistory,
+          result.is_correct || result.is_acceptable
+        );
+
         set({
           stats: { ...stats, [result.drill_type]: newStats },
           recentResults: newResults,
+          dailyHistory: newDailyHistory,
         });
 
         // Sync to cloud if user is logged in
@@ -164,7 +214,7 @@ export const useProgressStore = create<ProgressState>()(
         isCorrect: boolean,
         userId?: string
       ) => {
-        const { quizStats } = get();
+        const { quizStats, dailyHistory } = get();
         const currentStats = quizStats[quizType] || { ...initialQuizStats };
 
         // Update local stats
@@ -179,8 +229,12 @@ export const useProgressStore = create<ProgressState>()(
         if (isCorrect) catStats.correct += 1;
         newStats.byCategory[category] = catStats;
 
+        // Update daily history
+        const newDailyHistory = updateDailyHistory(dailyHistory, isCorrect);
+
         set({
           quizStats: { ...quizStats, [quizType]: newStats },
+          dailyHistory: newDailyHistory,
         });
 
         // Sync to cloud if user is logged in
@@ -288,6 +342,24 @@ export const useProgressStore = create<ProgressState>()(
           .map(([pos]) => pos);
       },
 
+      getDailyHistory: (days: number) => {
+        const { dailyHistory } = get();
+        const today = new Date();
+        const result: DailyRecord[] = [];
+
+        // Generate last N days with data (fill gaps with zeros)
+        for (let i = days - 1; i >= 0; i--) {
+          const date = new Date(today);
+          date.setDate(date.getDate() - i);
+          const dateStr = date.toISOString().split("T")[0];
+
+          const existing = dailyHistory.find((r) => r.date === dateStr);
+          result.push(existing || { date: dateStr, total: 0, correct: 0 });
+        }
+
+        return result;
+      },
+
       resetStats: () => {
         set(initialState);
       },
@@ -298,6 +370,7 @@ export const useProgressStore = create<ProgressState>()(
         stats: state.stats,
         quizStats: state.quizStats,
         recentResults: state.recentResults,
+        dailyHistory: state.dailyHistory,
         lastSyncedAt: state.lastSyncedAt,
       }),
     }

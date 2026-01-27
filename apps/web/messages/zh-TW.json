@@ -466,7 +466,12 @@
     "recentActivity": "最近活動",
     "recentActivityDesc": "你最近的 20 手練習",
     "noRecentActivity": "沒有最近的活動。開始練習吧！",
-    "lastSynced": "上次同步"
+    "lastSynced": "上次同步",
+    "weeklyTrend": "7 天活動趨勢",
+    "weeklyTrendDesc": "過去一週的練習活動",
+    "drillDistribution": "練習分佈",
+    "drillDistributionDesc": "按練習類型分佈",
+    "noDataYet": "尚無數據。開始練習吧！"
   },
   "progress": {
     "title": "學習進度",

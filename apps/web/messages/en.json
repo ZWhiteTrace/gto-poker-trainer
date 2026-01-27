@@ -466,7 +466,12 @@
     "recentActivity": "Recent Activity",
     "recentActivityDesc": "Your last 20 practice hands",
     "noRecentActivity": "No recent activity. Start practicing!",
-    "lastSynced": "Last synced"
+    "lastSynced": "Last synced",
+    "weeklyTrend": "7-Day Activity",
+    "weeklyTrendDesc": "Your practice activity over the last week",
+    "drillDistribution": "Practice Distribution",
+    "drillDistributionDesc": "Breakdown by drill type",
+    "noDataYet": "No data yet. Start practicing!"
   },
   "progress": {
     "title": "Progress",

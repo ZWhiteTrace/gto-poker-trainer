@@ -21,8 +21,22 @@ import {
   Activity,
   BarChart3,
   Clock,
+  PieChart as PieChartIcon,
 } from "lucide-react";
 import Link from "next/link";
+import {
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  PieChart,
+  Pie,
+  Cell,
+  Legend,
+} from "recharts";
 
 type DrillType = "rfi" | "vs_rfi" | "vs_3bet" | "vs_4bet";
 
@@ -35,10 +49,28 @@ const DRILL_LABELS: Record<DrillType, { en: string; zh: string }> = {
 
 const POSITIONS = ["UTG", "HJ", "CO", "BTN", "SB", "BB"];
 
+const CHART_COLORS = ["#22c55e", "#3b82f6", "#f59e0b", "#ef4444", "#8b5cf6"];
+
 export default function StatsPage() {
   const t = useTranslations();
-  const { stats, recentResults, lastSyncedAt, resetStats, getWeakPositions } =
+  const { stats, recentResults, lastSyncedAt, resetStats, getWeakPositions, getDailyHistory } =
     useProgressStore();
+
+  // Get 7-day trend data
+  const trendData = getDailyHistory(7).map((day) => ({
+    date: day.date.slice(5), // MM-DD format
+    total: day.total,
+    correct: day.correct,
+    accuracy: day.total > 0 ? Math.round((day.correct / day.total) * 100) : 0,
+  }));
+
+  // Pie chart data for drill distribution
+  const pieData = (Object.keys(stats) as DrillType[])
+    .map((drill) => ({
+      name: DRILL_LABELS[drill].en,
+      value: stats[drill].total,
+    }))
+    .filter((d) => d.value > 0);
 
   // Calculate overall stats
   const totalHands = Object.values(stats).reduce((sum, s) => sum + s.total, 0);
@@ -163,6 +195,137 @@ export default function StatsPage() {
             <div className="text-sm text-muted-foreground">
               {t("stats.correctAnswers") || "Correct Answers"}
             </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Trend Charts */}
+      <div className="mb-8 grid gap-6 md:grid-cols-2">
+        {/* 7-Day Activity Trend */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <TrendingUp className="h-5 w-5" />
+              {t("stats.weeklyTrend") || "7-Day Activity"}
+            </CardTitle>
+            <CardDescription>
+              {t("stats.weeklyTrendDesc") || "Your practice activity over the last week"}
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            {trendData.some((d) => d.total > 0) ? (
+              <div className="h-[200px] w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <AreaChart data={trendData}>
+                    <defs>
+                      <linearGradient id="colorTotal" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3} />
+                        <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
+                      </linearGradient>
+                      <linearGradient id="colorCorrect" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="#22c55e" stopOpacity={0.3} />
+                        <stop offset="95%" stopColor="#22c55e" stopOpacity={0} />
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
+                    <XAxis
+                      dataKey="date"
+                      fontSize={12}
+                      tickLine={false}
+                      axisLine={false}
+                      className="text-muted-foreground"
+                    />
+                    <YAxis
+                      fontSize={12}
+                      tickLine={false}
+                      axisLine={false}
+                      className="text-muted-foreground"
+                    />
+                    <Tooltip
+                      contentStyle={{
+                        backgroundColor: "hsl(var(--card))",
+                        border: "1px solid hsl(var(--border))",
+                        borderRadius: "8px",
+                      }}
+                    />
+                    <Area
+                      type="monotone"
+                      dataKey="total"
+                      name={t("stats.totalHands") || "Total"}
+                      stroke="#3b82f6"
+                      fillOpacity={1}
+                      fill="url(#colorTotal)"
+                    />
+                    <Area
+                      type="monotone"
+                      dataKey="correct"
+                      name={t("stats.correctAnswers") || "Correct"}
+                      stroke="#22c55e"
+                      fillOpacity={1}
+                      fill="url(#colorCorrect)"
+                    />
+                  </AreaChart>
+                </ResponsiveContainer>
+              </div>
+            ) : (
+              <div className="h-[200px] flex items-center justify-center text-muted-foreground">
+                {t("stats.noDataYet") || "No data yet. Start practicing!"}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Drill Distribution Pie Chart */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <PieChartIcon className="h-5 w-5" />
+              {t("stats.drillDistribution") || "Practice Distribution"}
+            </CardTitle>
+            <CardDescription>
+              {t("stats.drillDistributionDesc") || "Breakdown by drill type"}
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            {pieData.length > 0 ? (
+              <div className="h-[200px] w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
+                      data={pieData}
+                      cx="50%"
+                      cy="50%"
+                      innerRadius={40}
+                      outerRadius={70}
+                      paddingAngle={2}
+                      dataKey="value"
+                      label={({ name, percent }) =>
+                        `${name} ${((percent ?? 0) * 100).toFixed(0)}%`
+                      }
+                      labelLine={false}
+                    >
+                      {pieData.map((_, index) => (
+                        <Cell
+                          key={`cell-${index}`}
+                          fill={CHART_COLORS[index % CHART_COLORS.length]}
+                        />
+                      ))}
+                    </Pie>
+                    <Tooltip
+                      contentStyle={{
+                        backgroundColor: "hsl(var(--card))",
+                        border: "1px solid hsl(var(--border))",
+                        borderRadius: "8px",
+                      }}
+                    />
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
+            ) : (
+              <div className="h-[200px] flex items-center justify-center text-muted-foreground">
+                {t("stats.noDataYet") || "No data yet. Start practicing!"}
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>
