@@ -5,7 +5,48 @@ import { withSentryConfig } from "@sentry/nextjs";
 const withNextIntl = createNextIntlPlugin("./src/i18n/request.ts");
 
 const nextConfig: NextConfig = {
-  // Next.js 14+ has instrumentation enabled by default
+  // Performance optimizations
+  images: {
+    formats: ["image/avif", "image/webp"],
+    minimumCacheTTL: 60 * 60 * 24 * 30, // 30 days
+  },
+
+  // Experimental features for better performance
+  experimental: {
+    optimizeCss: true,
+  },
+
+  // Enable compression
+  compress: true,
+
+  // Reduce bundle size by removing console.log in production
+  compiler: {
+    removeConsole: process.env.NODE_ENV === "production",
+  },
+
+  // Headers for caching static assets
+  async headers() {
+    return [
+      {
+        source: "/:all*(svg|jpg|jpeg|png|webp|avif|gif|ico|woff|woff2)",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=31536000, immutable",
+          },
+        ],
+      },
+      {
+        source: "/_next/static/:path*",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=31536000, immutable",
+          },
+        ],
+      },
+    ];
+  },
 };
 
 // Sentry configuration options
