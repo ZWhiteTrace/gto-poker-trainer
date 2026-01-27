@@ -47,6 +47,17 @@ const nextConfig: NextConfig = {
       },
     ];
   },
+
+  // Redirects for common typos/old URLs
+  async redirects() {
+    return [
+      {
+        source: "/ranges",
+        destination: "/range",
+        permanent: true,
+      },
+    ];
+  },
 };
 
 // Sentry configuration options
