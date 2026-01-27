@@ -158,6 +158,22 @@
     "noData": "無數據",
     "selectToView": "選擇位置查看範圍"
   },
+  "quiz": {
+    "title": "測驗",
+    "allCategories": "所有類別",
+    "correctAnswer": "正確答案",
+    "equity": {
+      "title": "勝率測驗",
+      "description": "測試你對翻前手牌勝率的理解",
+      "question": "這兩手牌全押的勝率大約是多少？"
+    },
+    "tips": {
+      "title": "常見勝率規則",
+      "overpair": "高對子 vs 低對子 ≈ 82% vs 18%",
+      "coinflip": "對子 vs 兩高張 ≈ 55% vs 45% (經典翻硬幣)",
+      "domination": "壓制手牌 (如 AK vs AQ) ≈ 70% vs 30%"
+    }
+  },
   "footer": {
     "description": "免費 GTO 撲克訓練器：翻前範圍圖表、推/棄策略、ICM 計算器。掌握遊戲理論最優撲克策略。",
     "training": "訓練",

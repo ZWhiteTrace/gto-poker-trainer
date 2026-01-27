@@ -158,6 +158,22 @@
     "noData": "No data",
     "selectToView": "Select a position to view the range"
   },
+  "quiz": {
+    "title": "Quiz",
+    "allCategories": "All Categories",
+    "correctAnswer": "Correct answer",
+    "equity": {
+      "title": "Equity Quiz",
+      "description": "Test your knowledge of preflop hand equities",
+      "question": "What's the approximate all-in equity for these two hands?"
+    },
+    "tips": {
+      "title": "Common Equity Rules",
+      "overpair": "Overpair vs Underpair ≈ 82% vs 18%",
+      "coinflip": "Pair vs Two Overcards ≈ 55% vs 45% (classic coinflip)",
+      "domination": "Dominated hands (e.g., AK vs AQ) ≈ 70% vs 30%"
+    }
+  },
   "footer": {
     "description": "Free GTO poker trainer: preflop range charts, push/fold strategy, ICM calculator. Master game theory optimal poker strategy.",
     "training": "Training",

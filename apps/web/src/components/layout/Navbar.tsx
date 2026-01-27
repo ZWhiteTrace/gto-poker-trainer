@@ -22,7 +22,10 @@ export function Navbar() {
     { href: "/drill/vs-4bet", label: t("nav.vs4betDrill") },
   ];
 
-  const navItems = [{ href: "/range", label: t("nav.ranges") }];
+  const navItems = [
+    { href: "/range", label: t("nav.ranges") },
+    { href: "/quiz", label: t("nav.quiz") },
+  ];
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
