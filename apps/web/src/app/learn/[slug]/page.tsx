@@ -14,6 +14,7 @@ const categoryLabels: Record<string, string> = {
   mtt: "MTT 策略",
   postflop: "翻後策略",
   fundamentals: "基礎概念",
+  advanced: "進階概念",
 };
 
 const categoryLabelsEn: Record<string, string> = {
@@ -21,6 +22,7 @@ const categoryLabelsEn: Record<string, string> = {
   mtt: "MTT Strategy",
   postflop: "Postflop Strategy",
   fundamentals: "Fundamentals",
+  advanced: "Advanced",
 };
 
 interface Props {
@@ -257,6 +259,16 @@ export default async function GuidePage({ params }: Props) {
             <Link href="/drill/postflop">
               <Button variant="outline">C-Bet 練習</Button>
             </Link>
+          )}
+          {guide.category === "advanced" && (
+            <>
+              <Link href="/quiz/logic">
+                <Button variant="outline">邏輯測驗</Button>
+              </Link>
+              <Link href="/quiz/equity">
+                <Button variant="outline">Equity 測驗</Button>
+              </Link>
+            </>
           )}
           <Link href="/range">
             <Button variant="outline">範圍查看器</Button>
