@@ -32,8 +32,10 @@ export function Navbar() {
   const navItems = [
     { href: "/range", label: t("nav.ranges") },
     { href: "/quiz", label: t("nav.quiz") },
+    { href: "/exam", label: t("exam.title") || "Mock Exam" },
     { href: "/learn", label: t("nav.learn") },
     { href: "/analyze", label: t("nav.analyze") },
+    { href: "/stats", label: t("stats.title") || "Stats" },
   ];
 
   return (
