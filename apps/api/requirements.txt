@@ -7,5 +7,8 @@ python-multipart>=0.0.6
 # Core dependencies
 python-dotenv>=1.0.0
 
+# Error Monitoring
+sentry-sdk[fastapi]>=1.39.0
+
 # Production
 gunicorn>=21.0.0
