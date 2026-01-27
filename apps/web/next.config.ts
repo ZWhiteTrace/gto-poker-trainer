@@ -73,7 +73,7 @@ const sentryWebpackPluginOptions = {
   disableSourcemapUpload: !process.env.SENTRY_AUTH_TOKEN,
 };
 
-// Apply plugins: first next-intl, then Sentry
+// Apply plugins: next-intl → Sentry
 export default withSentryConfig(
   withNextIntl(nextConfig),
   sentryWebpackPluginOptions
