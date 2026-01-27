@@ -150,6 +150,14 @@ export function Navbar() {
                       </div>
                     </div>
                     <Link
+                      href="/profile"
+                      onClick={() => setIsOpen(false)}
+                      className="flex items-center gap-2 text-lg font-medium transition-colors hover:text-primary"
+                    >
+                      <User className="h-5 w-5" />
+                      {t("profile.title") || "Profile"}
+                    </Link>
+                    <Link
                       href="/stats"
                       onClick={() => setIsOpen(false)}
                       className="flex items-center gap-2 text-lg font-medium transition-colors hover:text-primary"
@@ -284,6 +292,13 @@ function UserMenu({ user, signOut }: UserMenuProps) {
             </p>
             <p className="text-xs text-muted-foreground truncate">{user.email}</p>
           </div>
+          <Link
+            href="/profile"
+            className="flex items-center gap-2 px-4 py-2 text-sm text-muted-foreground hover:bg-muted hover:text-primary"
+          >
+            <User className="h-4 w-4" />
+            {t("profile.title") || "Profile"}
+          </Link>
           <Link
             href="/stats"
             className="flex items-center gap-2 px-4 py-2 text-sm text-muted-foreground hover:bg-muted hover:text-primary"

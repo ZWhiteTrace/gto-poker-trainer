@@ -137,7 +137,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: "monthly",
       priority: 0.8,
     },
-    // Leaderboard & Achievements
+    // Leaderboard, Achievements & Profile
     {
       url: `${BASE_URL}/leaderboard`,
       lastModified: new Date(),
@@ -149,6 +149,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
       lastModified: new Date(),
       changeFrequency: "monthly",
       priority: 0.6,
+    },
+    {
+      url: `${BASE_URL}/profile`,
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.5,
     },
     // Blog
     {
