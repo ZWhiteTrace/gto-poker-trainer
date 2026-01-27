@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -19,7 +19,15 @@ import {
   Target,
   ChevronDown,
   ChevronRight,
+  Sparkles,
+  Brain,
+  Lightbulb,
+  ArrowRight,
+  CheckCircle,
+  AlertTriangle,
 } from "lucide-react";
+import Link from "next/link";
+import { api, AIInsight, AIReviewResponse } from "@/lib/api";
 import { cn } from "@/lib/utils";
 
 interface PositionStat {
@@ -67,12 +75,16 @@ const POSITIONS = ["UTG", "HJ", "CO", "BTN", "SB", "BB"];
 
 export default function AnalyzePage() {
   const t = useTranslations();
+  const locale = useLocale();
   const [file, setFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<AnalysisResult | null>(null);
   const [showDetailed, setShowDetailed] = useState(false);
   const [expandedLeaks, setExpandedLeaks] = useState<Set<number>>(new Set());
+  const [aiReview, setAiReview] = useState<AIReviewResponse | null>(null);
+  const [aiLoading, setAiLoading] = useState(false);
+  const [showAiReview, setShowAiReview] = useState(false);
 
   const handleFileChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -173,6 +185,66 @@ export default function AnalyzePage() {
       newExpanded.add(index);
     }
     setExpandedLeaks(newExpanded);
+  };
+
+  const fetchAiReview = async () => {
+    if (!result) return;
+
+    setAiLoading(true);
+    try {
+      const review = await api.getAIReview({
+        position_stats: result.position_stats,
+        top_leaks: result.top_leaks,
+        total_hands: result.total_hands,
+        analyzed_hands: result.analyzed_hands,
+        mistakes: result.mistakes,
+        mistake_rate: result.mistake_rate,
+        total_ev_loss: result.total_ev_loss,
+      });
+      setAiReview(review);
+      setShowAiReview(true);
+    } catch (err) {
+      console.error("AI Review error:", err);
+    } finally {
+      setAiLoading(false);
+    }
+  };
+
+  const getCategoryIcon = (category: string) => {
+    switch (category) {
+      case "weakness":
+        return <AlertTriangle className="h-5 w-5 text-destructive" />;
+      case "strength":
+        return <CheckCircle className="h-5 w-5 text-green-500" />;
+      case "recommendation":
+        return <Lightbulb className="h-5 w-5 text-yellow-500" />;
+      case "drill":
+        return <Target className="h-5 w-5 text-primary" />;
+      default:
+        return <Brain className="h-5 w-5" />;
+    }
+  };
+
+  const getSkillLevelBadge = (level: string) => {
+    const styles: Record<string, string> = {
+      expert: "bg-purple-500/20 text-purple-400 border-purple-500/30",
+      advanced: "bg-blue-500/20 text-blue-400 border-blue-500/30",
+      intermediate: "bg-yellow-500/20 text-yellow-400 border-yellow-500/30",
+      beginner: "bg-orange-500/20 text-orange-400 border-orange-500/30",
+      insufficient_data: "bg-gray-500/20 text-gray-400 border-gray-500/30",
+    };
+    const labels: Record<string, string> = {
+      expert: t("analyze.ai.levelExpert"),
+      advanced: t("analyze.ai.levelAdvanced"),
+      intermediate: t("analyze.ai.levelIntermediate"),
+      beginner: t("analyze.ai.levelBeginner"),
+      insufficient_data: t("analyze.ai.levelInsufficient"),
+    };
+    return (
+      <span className={cn("px-3 py-1 rounded-full text-sm border", styles[level] || styles.intermediate)}>
+        {labels[level] || level}
+      </span>
+    );
   };
 
   return (
@@ -453,6 +525,97 @@ export default function AnalyzePage() {
               </CardContent>
             </Card>
           )}
+
+          {/* AI Review Section */}
+          <Card className="mb-6">
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <CardTitle className="flex items-center gap-2">
+                  <Sparkles className="h-5 w-5 text-primary" />
+                  {t("analyze.ai.title")}
+                </CardTitle>
+                {!aiReview && (
+                  <Button
+                    onClick={fetchAiReview}
+                    disabled={aiLoading}
+                    size="sm"
+                  >
+                    {aiLoading ? t("common.loading") : t("analyze.ai.generate")}
+                  </Button>
+                )}
+              </div>
+              <CardDescription>{t("analyze.ai.description")}</CardDescription>
+            </CardHeader>
+
+            {aiReview && (
+              <CardContent className="space-y-6">
+                {/* Overall Assessment */}
+                <div className="p-4 bg-muted/50 rounded-lg">
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="text-sm text-muted-foreground">
+                      {t("analyze.ai.skillLevel")}
+                    </span>
+                    {getSkillLevelBadge(aiReview.skill_level)}
+                  </div>
+                  <p className="text-sm leading-relaxed">
+                    {locale === "zh-TW"
+                      ? aiReview.overall_assessment_zh
+                      : aiReview.overall_assessment}
+                  </p>
+                </div>
+
+                {/* Insights */}
+                <div className="space-y-3">
+                  <h4 className="font-medium">{t("analyze.ai.insights")}</h4>
+                  {aiReview.insights.map((insight, index) => (
+                    <div
+                      key={index}
+                      className="border rounded-lg p-4 hover:bg-muted/30 transition-colors"
+                    >
+                      <div className="flex items-start gap-3">
+                        <div className="mt-0.5">{getCategoryIcon(insight.category)}</div>
+                        <div className="flex-1 min-w-0">
+                          <h5 className="font-medium mb-1">
+                            {locale === "zh-TW" ? insight.title_zh : insight.title}
+                          </h5>
+                          <p className="text-sm text-muted-foreground">
+                            {locale === "zh-TW"
+                              ? insight.description_zh
+                              : insight.description}
+                          </p>
+                          {insight.drill_link && (
+                            <Link
+                              href={insight.drill_link}
+                              className="inline-flex items-center gap-1 mt-2 text-sm text-primary hover:underline"
+                            >
+                              {t("analyze.ai.practiceNow")}
+                              <ArrowRight className="h-3 w-3" />
+                            </Link>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Focus Areas */}
+                {aiReview.focus_areas.length > 0 && (
+                  <div>
+                    <h4 className="font-medium mb-3">{t("analyze.ai.focusAreas")}</h4>
+                    <div className="flex flex-wrap gap-2">
+                      {aiReview.focus_areas.map((area, index) => (
+                        <Link key={index} href={area}>
+                          <Badge variant="outline" className="cursor-pointer hover:bg-primary/10">
+                            {area.replace("/drill/", "").replace("/quiz/", "").toUpperCase()}
+                          </Badge>
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </CardContent>
+            )}
+          </Card>
 
           {/* Detailed Mistakes Toggle */}
           {result.decisions && result.decisions.length > 0 && (

@@ -125,7 +125,30 @@
       "raise": "加注",
       "call": "跟注",
       "fold": "棄牌",
-      "allin": "全下"
+      "allin": "全下",
+      "push": "全下",
+      "shove": "全下"
+    },
+    "settings": "練習設定",
+    "pushFold": {
+      "title": "Push/Fold 練習",
+      "description": "練習 MTT 短籌碼全下決策",
+      "stackDepth": "籌碼深度",
+      "scenarios": "場景",
+      "scenariosHint": "留空則包含所有場景",
+      "stack": "籌碼",
+      "rangeSize": "範圍",
+      "reference": "Push/Fold 參考",
+      "referenceDesc": "Push/Fold 圖表基於錦標賽的 Nash 均衡範圍。正確決策取決於你的籌碼量、位置和之前的行動。",
+      "stackTip1": "< 10bb: 通常只有推或棄",
+      "stackTip2": "10-15bb: 標準短籌碼",
+      "stackTip3": "> 15bb: 可考慮加注/棄牌",
+      "modes": {
+        "push": "開池全下",
+        "defense": "防守",
+        "resteal": "Resteal",
+        "hu": "單挑"
+      }
     }
   },
   "range": {
@@ -230,9 +253,21 @@
       "title": "GTO 邏輯測驗",
       "description": "測試你對 GTO 原理的理解",
       "progress": "已完成 {used}/{total} 題"
+    },
+    "exploit": {
+      "title": "剝削測驗",
+      "description": "學習根據對手類型調整 GTO 策略",
+      "tips": "剝削技巧",
+      "tip1": "1. 跟注站：永遠不要 bluff，價值下注要更大",
+      "tip2": "2. 緊弱型：面對他們的攻擊棄掉邊緣牌，多偷盲",
+      "tip3": "3. 激進魚：用強牌設陷阱，減少 bluff",
+      "tip4": "4. 高 Rake：收緊範圍，避免邊緣場景"
     }
   },
   "postflop": {
+    "title": "翻後街道練習",
+    "description": "練習 Flop C-bet、Turn Barrel、River Decision 的 GTO 策略",
+    "tipsTitle": "策略要點",
     "cbet": {
       "title": "翻後 C-bet 練習",
       "description": "練習在不同牌面結構做出正確的 C-bet 決策",
@@ -242,6 +277,18 @@
       "tip1": "乾燥牌面（如 A72r）適合高頻小注 C-bet，因為你有範圍優勢。",
       "tip2": "濕潤牌面（如 JT9ss）需要更謹慎，對手有更多強牌和聽牌。",
       "tip3": "考慮你的手牌在這個牌面的 equity 和 playability。"
+    },
+    "turn": {
+      "tipsTitle": "Turn Barrel 策略要點",
+      "tip1": "轉牌持續下注需要考慮翻牌動作帶來的範圍變化",
+      "tip2": "「好」的轉牌通常是高張或完成你的聽牌",
+      "tip3": "控池過牌有時候比強行 barrel 更好"
+    },
+    "river": {
+      "tipsTitle": "River 決策要點",
+      "tip1": "河牌是最後的決策點，沒有後續改進機會",
+      "tip2": "考慮對手的範圍：什麼牌會跟注？什麼牌會棄牌？",
+      "tip3": "Blocker 效應在河牌 bluff 決策中非常重要"
     }
   },
   "mtt": {
@@ -323,7 +370,21 @@
     "newAnalysis": "新分析",
     "errorFormat": "只支援 .txt 檔案",
     "errorAnalysis": "分析手牌歷史失敗",
-    "errorDemo": "載入範例數據失敗"
+    "errorDemo": "載入範例數據失敗",
+    "ai": {
+      "title": "AI 教練分析",
+      "description": "根據你的分析結果獲取個人化建議",
+      "generate": "生成分析",
+      "skillLevel": "技術等級",
+      "levelExpert": "專家",
+      "levelAdvanced": "進階",
+      "levelIntermediate": "中級",
+      "levelBeginner": "初學者",
+      "levelInsufficient": "資料不足",
+      "insights": "個人化建議",
+      "focusAreas": "建議練習項目",
+      "practiceNow": "立即練習"
+    }
   },
   "learn": {
     "title": "學習中心",
@@ -337,6 +398,51 @@
       "postflop": "翻後策略",
       "fundamentals": "基礎概念"
     }
+  },
+  "exam": {
+    "title": "GTO 模擬考",
+    "description": "用綜合計時測驗檢驗你的 GTO 知識",
+    "questions": "題目",
+    "minutes": "分鐘",
+    "instruction1": "本考試涵蓋：",
+    "topic1": "GTO 邏輯與理論",
+    "topic2": "手牌勝率",
+    "topic3": "位置策略",
+    "topic4": "Push/Fold 決策",
+    "startExam": "開始考試",
+    "yourScore": "你的分數",
+    "resultExcellent": "太棒了！",
+    "resultGood": "做得好！",
+    "resultKeepPracticing": "繼續加油！",
+    "incorrect": "錯誤",
+    "timeTaken": "用時",
+    "tryAgain": "再試一次",
+    "reviewAnswers": "回顧你的答案",
+    "yourAnswer": "你的答案",
+    "noAnswer": "未作答",
+    "answered": "已答",
+    "submit": "提交"
+  },
+  "stats": {
+    "title": "統計數據",
+    "description": "追蹤你的進度並找出弱點",
+    "totalHands": "總手數",
+    "overallAccuracy": "整體準確率",
+    "bestStreak": "最佳連勝",
+    "correctAnswers": "正確回答",
+    "byDrillType": "按練習類型",
+    "byDrillTypeDesc": "各練習類型的準確率分佈",
+    "hands": "手",
+    "weakSpots": "弱點區域",
+    "weakSpotsDesc": "需要更多練習的區域（準確率 < 70%）",
+    "noWeakSpots": "太棒了！沒有檢測到弱點。",
+    "startPracticing": "開始練習以查看你的弱點",
+    "positionMatrix": "位置準確率矩陣",
+    "positionMatrixDesc": "按位置和練習類型的準確率",
+    "recentActivity": "最近活動",
+    "recentActivityDesc": "你最近的 20 手練習",
+    "noRecentActivity": "沒有最近的活動。開始練習吧！",
+    "lastSynced": "上次同步"
   },
   "footer": {
     "description": "免費 GTO 撲克訓練器：翻前範圍圖表、推/棄策略、ICM 計算器。掌握遊戲理論最優撲克策略。",

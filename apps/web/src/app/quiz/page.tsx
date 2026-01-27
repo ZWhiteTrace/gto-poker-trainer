@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Calculator, Brain, TrendingUp, Lightbulb } from "lucide-react";
+import { Calculator, Brain, TrendingUp, Lightbulb, Target } from "lucide-react";
 
 const quizTypes = [
   {
@@ -35,6 +35,12 @@ const quizTypes = [
   {
     id: "logic",
     icon: Lightbulb,
+    difficulty: "hard",
+    available: true,
+  },
+  {
+    id: "exploit",
+    icon: Target,
     difficulty: "hard",
     available: true,
   },
@@ -85,6 +91,8 @@ export default function QuizIndexPage() {
                     ? t("quiz.outs.title")
                     : quiz.id === "ev"
                     ? t("quiz.ev.title")
+                    : quiz.id === "exploit"
+                    ? t("quiz.exploit.title")
                     : t("quiz.logic.title")}
                 </CardTitle>
                 <CardDescription>
@@ -94,6 +102,8 @@ export default function QuizIndexPage() {
                     ? t("quiz.outs.description")
                     : quiz.id === "ev"
                     ? t("quiz.ev.description")
+                    : quiz.id === "exploit"
+                    ? t("quiz.exploit.description")
                     : t("quiz.logic.description")}
                 </CardDescription>
               </CardHeader>

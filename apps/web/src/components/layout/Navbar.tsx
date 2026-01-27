@@ -24,6 +24,7 @@ export function Navbar() {
   ];
 
   const mttItems = [
+    { href: "/drill/push-fold", label: t("drill.pushFold.title") || "Push/Fold Drill" },
     { href: "/mtt/push-fold", label: t("nav.pushFold") },
     { href: "/mtt/icm", label: t("nav.icm") },
   ];

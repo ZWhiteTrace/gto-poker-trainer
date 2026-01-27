@@ -1,16 +1,38 @@
 """
 GTO Poker Trainer - FastAPI Backend
 """
+import os
 import sys
 from pathlib import Path
 
 # Add api directory to path for imports
 sys.path.insert(0, str(Path(__file__).parent))
 
+import sentry_sdk
+from sentry_sdk.integrations.fastapi import FastApiIntegration
+from sentry_sdk.integrations.starlette import StarletteIntegration
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from routers import drill, evaluate, ranges, mtt, postflop, analyze
+
+# Initialize Sentry
+sentry_dsn = os.getenv("SENTRY_DSN")
+if sentry_dsn:
+    sentry_sdk.init(
+        dsn=sentry_dsn,
+        integrations=[
+            StarletteIntegration(),
+            FastApiIntegration(),
+        ],
+        # Performance monitoring
+        traces_sample_rate=0.1,
+        # Environment
+        environment=os.getenv("ENVIRONMENT", "development"),
+        # Send PII only if explicitly enabled
+        send_default_pii=False,
+    )
 
 app = FastAPI(
     title="GTO Poker Trainer API",
@@ -49,3 +71,12 @@ def root():
 @app.get("/health")
 def health_check():
     return {"status": "healthy"}
+
+
+@app.get("/sentry-debug")
+def trigger_error():
+    """Debug endpoint to test Sentry integration. Only works in development."""
+    if os.getenv("ENVIRONMENT") == "production":
+        return {"error": "Not available in production"}
+    division_by_zero = 1 / 0
+    return {"this": "never happens"}

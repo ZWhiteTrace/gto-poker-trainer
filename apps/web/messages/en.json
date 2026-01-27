@@ -125,7 +125,30 @@
       "raise": "Raise",
       "call": "Call",
       "fold": "Fold",
-      "allin": "All-in"
+      "allin": "All-in",
+      "push": "Push",
+      "shove": "Shove"
+    },
+    "settings": "Drill Settings",
+    "pushFold": {
+      "title": "Push/Fold Drill",
+      "description": "Practice MTT short stack all-in decisions",
+      "stackDepth": "Stack Depths",
+      "scenarios": "Scenarios",
+      "scenariosHint": "Leave empty to include all scenarios",
+      "stack": "Stack",
+      "rangeSize": "Range",
+      "reference": "Push/Fold Reference",
+      "referenceDesc": "Push/Fold charts are based on Nash equilibrium ranges for tournament play. The correct decision depends on your stack size, position, and the action before you.",
+      "stackTip1": "< 10bb: Usually push or fold",
+      "stackTip2": "10-15bb: Standard short stack",
+      "stackTip3": "> 15bb: Consider raise/fold",
+      "modes": {
+        "push": "Open Shove",
+        "defense": "Defense",
+        "resteal": "Resteal",
+        "hu": "Heads Up"
+      }
     }
   },
   "range": {
@@ -230,9 +253,21 @@
       "title": "GTO Logic Quiz",
       "description": "Test your understanding of GTO principles",
       "progress": "Completed {used}/{total} questions"
+    },
+    "exploit": {
+      "title": "Exploit Quiz",
+      "description": "Learn to adjust GTO strategy based on opponent types",
+      "tips": "Exploit Tips",
+      "tip1": "1. Calling Stations: Never bluff, always value bet bigger",
+      "tip2": "2. Nits: Fold marginal hands to their aggression, steal more",
+      "tip3": "3. Aggro Fish: Trap with strong hands, reduce bluffs",
+      "tip4": "4. High Rake: Tighten ranges, avoid marginal spots"
     }
   },
   "postflop": {
+    "title": "Postflop Street Practice",
+    "description": "Practice GTO strategies for Flop C-bet, Turn Barrel, and River Decisions",
+    "tipsTitle": "Strategy Tips",
     "cbet": {
       "title": "Postflop C-bet Practice",
       "description": "Practice making correct C-bet decisions on different board textures",
@@ -242,6 +277,18 @@
       "tip1": "Dry boards (like A72r) are good for high-frequency small c-bets due to range advantage.",
       "tip2": "Wet boards (like JT9ss) require more caution - opponents have more strong hands and draws.",
       "tip3": "Consider your hand's equity and playability on this specific board."
+    },
+    "turn": {
+      "tipsTitle": "Turn Barrel Strategy Tips",
+      "tip1": "Turn continuation bets should consider range changes from flop action",
+      "tip2": "Good turn cards are usually high cards or cards that complete your draws",
+      "tip3": "Pot control checks are sometimes better than forcing barrels"
+    },
+    "river": {
+      "tipsTitle": "River Decision Tips",
+      "tip1": "River is the final decision point - no more improvement opportunities",
+      "tip2": "Consider opponent's range: what hands call? what hands fold?",
+      "tip3": "Blocker effects are crucial for river bluff decisions"
     }
   },
   "mtt": {
@@ -323,7 +370,21 @@
     "newAnalysis": "New Analysis",
     "errorFormat": "Only .txt files are supported",
     "errorAnalysis": "Failed to analyze hand history",
-    "errorDemo": "Failed to load demo data"
+    "errorDemo": "Failed to load demo data",
+    "ai": {
+      "title": "AI Coach Insights",
+      "description": "Get personalized recommendations based on your analysis",
+      "generate": "Generate Insights",
+      "skillLevel": "Skill Level",
+      "levelExpert": "Expert",
+      "levelAdvanced": "Advanced",
+      "levelIntermediate": "Intermediate",
+      "levelBeginner": "Beginner",
+      "levelInsufficient": "Insufficient Data",
+      "insights": "Personalized Insights",
+      "focusAreas": "Recommended Focus Areas",
+      "practiceNow": "Practice Now"
+    }
   },
   "learn": {
     "title": "Learning Center",
@@ -337,6 +398,51 @@
       "postflop": "Postflop Strategy",
       "fundamentals": "Fundamentals"
     }
+  },
+  "exam": {
+    "title": "GTO Mock Exam",
+    "description": "Test your GTO knowledge with a comprehensive timed exam",
+    "questions": "Questions",
+    "minutes": "Minutes",
+    "instruction1": "This exam covers:",
+    "topic1": "GTO Logic and Theory",
+    "topic2": "Hand Equity",
+    "topic3": "Position Strategy",
+    "topic4": "Push/Fold Decisions",
+    "startExam": "Start Exam",
+    "yourScore": "Your Score",
+    "resultExcellent": "Excellent!",
+    "resultGood": "Good Job!",
+    "resultKeepPracticing": "Keep Practicing!",
+    "incorrect": "Incorrect",
+    "timeTaken": "Time Taken",
+    "tryAgain": "Try Again",
+    "reviewAnswers": "Review Your Answers",
+    "yourAnswer": "Your answer",
+    "noAnswer": "No answer",
+    "answered": "answered",
+    "submit": "Submit"
+  },
+  "stats": {
+    "title": "Statistics",
+    "description": "Track your progress and identify weak spots",
+    "totalHands": "Total Hands",
+    "overallAccuracy": "Overall Accuracy",
+    "bestStreak": "Best Streak",
+    "correctAnswers": "Correct Answers",
+    "byDrillType": "By Drill Type",
+    "byDrillTypeDesc": "Accuracy breakdown by drill type",
+    "hands": "hands",
+    "weakSpots": "Weak Spots",
+    "weakSpotsDesc": "Areas that need more practice (< 70% accuracy)",
+    "noWeakSpots": "Great job! No weak spots detected.",
+    "startPracticing": "Start practicing to see your weak spots",
+    "positionMatrix": "Position Accuracy Matrix",
+    "positionMatrixDesc": "Accuracy by position and drill type",
+    "recentActivity": "Recent Activity",
+    "recentActivityDesc": "Your last 20 practice hands",
+    "noRecentActivity": "No recent activity. Start practicing!",
+    "lastSynced": "Last synced"
   },
   "footer": {
     "description": "Free GTO poker trainer: preflop range charts, push/fold strategy, ICM calculator. Master game theory optimal poker strategy.",

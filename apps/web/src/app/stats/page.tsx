@@ -1,0 +1,398 @@
+"use client";
+
+import { useTranslations } from "next-intl";
+import { useProgressStore } from "@/stores/progressStore";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+import {
+  Trophy,
+  Target,
+  TrendingUp,
+  AlertTriangle,
+  RotateCcw,
+  Activity,
+  BarChart3,
+  Clock,
+} from "lucide-react";
+import Link from "next/link";
+
+type DrillType = "rfi" | "vs_rfi" | "vs_3bet" | "vs_4bet";
+
+const DRILL_LABELS: Record<DrillType, { en: string; zh: string }> = {
+  rfi: { en: "RFI", zh: "RFI 開池" },
+  vs_rfi: { en: "VS RFI", zh: "VS RFI" },
+  vs_3bet: { en: "VS 3-Bet", zh: "VS 3-Bet" },
+  vs_4bet: { en: "VS 4-Bet", zh: "VS 4-Bet" },
+};
+
+const POSITIONS = ["UTG", "HJ", "CO", "BTN", "SB", "BB"];
+
+export default function StatsPage() {
+  const t = useTranslations();
+  const { stats, recentResults, lastSyncedAt, resetStats, getWeakPositions } =
+    useProgressStore();
+
+  // Calculate overall stats
+  const totalHands = Object.values(stats).reduce((sum, s) => sum + s.total, 0);
+  const totalCorrect = Object.values(stats).reduce(
+    (sum, s) => sum + s.correct + s.acceptable,
+    0
+  );
+  const overallAccuracy = totalHands > 0 ? (totalCorrect / totalHands) * 100 : 0;
+
+  // Calculate best streak from recent results
+  let bestStreak = 0;
+  let currentStreak = 0;
+  for (const result of [...recentResults].reverse()) {
+    if (result.is_correct || result.is_acceptable) {
+      currentStreak++;
+      bestStreak = Math.max(bestStreak, currentStreak);
+    } else {
+      currentStreak = 0;
+    }
+  }
+
+  // Get weak areas
+  const weakAreas: Array<{ drill: DrillType; positions: string[] }> = [];
+  (Object.keys(stats) as DrillType[]).forEach((drill) => {
+    const weak = getWeakPositions(drill);
+    if (weak.length > 0) {
+      weakAreas.push({ drill, positions: weak });
+    }
+  });
+
+  // Calculate accuracy by drill type
+  const drillAccuracies = (Object.keys(stats) as DrillType[]).map((drill) => {
+    const s = stats[drill];
+    const accuracy = s.total > 0 ? ((s.correct + s.acceptable) / s.total) * 100 : 0;
+    return { drill, ...s, accuracy };
+  });
+
+  // Position accuracy matrix
+  const positionMatrix: Record<string, Record<DrillType, { total: number; accuracy: number }>> = {};
+  POSITIONS.forEach((pos) => {
+    positionMatrix[pos] = {} as Record<DrillType, { total: number; accuracy: number }>;
+    (Object.keys(stats) as DrillType[]).forEach((drill) => {
+      const posStats = stats[drill].byPosition[pos];
+      if (posStats) {
+        const accuracy =
+          posStats.total > 0
+            ? ((posStats.correct + posStats.acceptable) / posStats.total) * 100
+            : 0;
+        positionMatrix[pos][drill] = { total: posStats.total, accuracy };
+      } else {
+        positionMatrix[pos][drill] = { total: 0, accuracy: 0 };
+      }
+    });
+  });
+
+  const getAccuracyColor = (accuracy: number) => {
+    if (accuracy >= 80) return "text-green-500";
+    if (accuracy >= 60) return "text-yellow-500";
+    return "text-red-500";
+  };
+
+  const getAccuracyBgColor = (accuracy: number, total: number) => {
+    if (total === 0) return "bg-muted/30";
+    if (accuracy >= 80) return "bg-green-500/20";
+    if (accuracy >= 60) return "bg-yellow-500/20";
+    return "bg-red-500/20";
+  };
+
+  return (
+    <div className="container max-w-6xl py-8">
+      {/* Header */}
+      <div className="mb-8 flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold">{t("stats.title") || "Statistics"}</h1>
+          <p className="text-muted-foreground">
+            {t("stats.description") || "Track your progress and identify weak spots"}
+          </p>
+        </div>
+        <Button variant="outline" onClick={resetStats}>
+          <RotateCcw className="mr-2 h-4 w-4" />
+          {t("common.reset")}
+        </Button>
+      </div>
+
+      {/* Overview Cards */}
+      <div className="mb-8 grid grid-cols-2 gap-4 md:grid-cols-4">
+        <Card>
+          <CardContent className="p-4 sm:p-6 text-center">
+            <Activity className="h-8 w-8 mx-auto mb-2 text-primary" />
+            <div className="text-2xl sm:text-3xl font-bold">{totalHands}</div>
+            <div className="text-sm text-muted-foreground">
+              {t("stats.totalHands") || "Total Hands"}
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-4 sm:p-6 text-center">
+            <Target className="h-8 w-8 mx-auto mb-2 text-green-500" />
+            <div
+              className={cn("text-2xl sm:text-3xl font-bold", getAccuracyColor(overallAccuracy))}
+            >
+              {overallAccuracy.toFixed(1)}%
+            </div>
+            <div className="text-sm text-muted-foreground">
+              {t("stats.overallAccuracy") || "Overall Accuracy"}
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-4 sm:p-6 text-center">
+            <Trophy className="h-8 w-8 mx-auto mb-2 text-yellow-500" />
+            <div className="text-2xl sm:text-3xl font-bold">{bestStreak}</div>
+            <div className="text-sm text-muted-foreground">
+              {t("stats.bestStreak") || "Best Streak"}
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-4 sm:p-6 text-center">
+            <TrendingUp className="h-8 w-8 mx-auto mb-2 text-blue-500" />
+            <div className="text-2xl sm:text-3xl font-bold">{totalCorrect}</div>
+            <div className="text-sm text-muted-foreground">
+              {t("stats.correctAnswers") || "Correct Answers"}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      <div className="grid gap-6 md:grid-cols-2">
+        {/* Drill Type Breakdown */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <BarChart3 className="h-5 w-5" />
+              {t("stats.byDrillType") || "By Drill Type"}
+            </CardTitle>
+            <CardDescription>
+              {t("stats.byDrillTypeDesc") || "Accuracy breakdown by drill type"}
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              {drillAccuracies.map(({ drill, total, accuracy }) => (
+                <div key={drill} className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <Link href={`/drill/${drill.replace("_", "-")}`}>
+                      <span className="font-medium hover:text-primary hover:underline">
+                        {DRILL_LABELS[drill].en}
+                      </span>
+                    </Link>
+                    <span className="text-sm text-muted-foreground">
+                      {total} {t("stats.hands") || "hands"}
+                    </span>
+                  </div>
+                  <div className="h-2 rounded-full bg-muted overflow-hidden">
+                    <div
+                      className={cn(
+                        "h-full transition-all duration-300",
+                        accuracy >= 80
+                          ? "bg-green-500"
+                          : accuracy >= 60
+                          ? "bg-yellow-500"
+                          : accuracy > 0
+                          ? "bg-red-500"
+                          : "bg-muted"
+                      )}
+                      style={{ width: `${Math.max(accuracy, 0)}%` }}
+                    />
+                  </div>
+                  <div className="flex justify-end">
+                    <span className={cn("text-sm font-medium", getAccuracyColor(accuracy))}>
+                      {total > 0 ? `${accuracy.toFixed(1)}%` : "-"}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Weak Spots */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <AlertTriangle className="h-5 w-5 text-yellow-500" />
+              {t("stats.weakSpots") || "Weak Spots"}
+            </CardTitle>
+            <CardDescription>
+              {t("stats.weakSpotsDesc") || "Areas that need more practice (< 70% accuracy)"}
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            {weakAreas.length > 0 ? (
+              <div className="space-y-4">
+                {weakAreas.map(({ drill, positions }) => (
+                  <div key={drill} className="flex items-start gap-3">
+                    <Badge variant="outline" className="mt-0.5">
+                      {DRILL_LABELS[drill].en}
+                    </Badge>
+                    <div className="flex flex-wrap gap-2">
+                      {positions.map((pos) => (
+                        <Badge key={pos} variant="destructive">
+                          {pos}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : totalHands > 0 ? (
+              <div className="text-center py-8">
+                <Trophy className="h-12 w-12 mx-auto text-green-500 mb-2" />
+                <p className="text-muted-foreground">
+                  {t("stats.noWeakSpots") || "Great job! No weak spots detected."}
+                </p>
+              </div>
+            ) : (
+              <div className="text-center py-8">
+                <Activity className="h-12 w-12 mx-auto text-muted-foreground/50 mb-2" />
+                <p className="text-muted-foreground">
+                  {t("stats.startPracticing") || "Start practicing to see your weak spots"}
+                </p>
+                <Link href="/drill/rfi">
+                  <Button className="mt-4">{t("drill.startDrill")}</Button>
+                </Link>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Position Accuracy Matrix */}
+      <Card className="mt-6">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Target className="h-5 w-5" />
+            {t("stats.positionMatrix") || "Position Accuracy Matrix"}
+          </CardTitle>
+          <CardDescription>
+            {t("stats.positionMatrixDesc") ||
+              "Accuracy by position and drill type. Click to focus on weak areas."}
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr>
+                  <th className="text-left p-2 font-medium">{t("drill.position")}</th>
+                  {(Object.keys(stats) as DrillType[]).map((drill) => (
+                    <th key={drill} className="text-center p-2 font-medium">
+                      {DRILL_LABELS[drill].en}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {POSITIONS.map((pos) => (
+                  <tr key={pos} className="border-t">
+                    <td className="p-2 font-medium">{pos}</td>
+                    {(Object.keys(stats) as DrillType[]).map((drill) => {
+                      const data = positionMatrix[pos][drill];
+                      return (
+                        <td key={drill} className="p-2 text-center">
+                          <div
+                            className={cn(
+                              "inline-block px-3 py-1 rounded-md min-w-[60px]",
+                              getAccuracyBgColor(data.accuracy, data.total)
+                            )}
+                          >
+                            {data.total > 0 ? (
+                              <span className={getAccuracyColor(data.accuracy)}>
+                                {data.accuracy.toFixed(0)}%
+                              </span>
+                            ) : (
+                              <span className="text-muted-foreground">-</span>
+                            )}
+                          </div>
+                        </td>
+                      );
+                    })}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Recent Activity */}
+      <Card className="mt-6">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Clock className="h-5 w-5" />
+            {t("stats.recentActivity") || "Recent Activity"}
+          </CardTitle>
+          <CardDescription>
+            {t("stats.recentActivityDesc") || "Your last 20 practice hands"}
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          {recentResults.length > 0 ? (
+            <div className="space-y-2">
+              {recentResults.slice(0, 20).map((result, idx) => (
+                <div
+                  key={idx}
+                  className={cn(
+                    "flex items-center justify-between p-2 rounded-lg",
+                    result.is_correct
+                      ? "bg-green-500/10"
+                      : result.is_acceptable
+                      ? "bg-yellow-500/10"
+                      : "bg-red-500/10"
+                  )}
+                >
+                  <div className="flex items-center gap-3">
+                    <span className="font-mono font-bold">{result.hand}</span>
+                    <Badge variant="outline" className="text-xs">
+                      {result.hero_position}
+                    </Badge>
+                    <Badge variant="secondary" className="text-xs">
+                      {DRILL_LABELS[result.drill_type as DrillType]?.en || result.drill_type}
+                    </Badge>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm text-muted-foreground">
+                      {result.player_action} → {result.correct_action}
+                    </span>
+                    {result.is_correct ? (
+                      <Badge className="bg-green-500">OK</Badge>
+                    ) : result.is_acceptable ? (
+                      <Badge className="bg-yellow-500">OK</Badge>
+                    ) : (
+                      <Badge variant="destructive">X</Badge>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-8 text-muted-foreground">
+              {t("stats.noRecentActivity") || "No recent activity. Start practicing!"}
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Sync Info */}
+      {lastSyncedAt && (
+        <p className="mt-4 text-center text-sm text-muted-foreground">
+          {t("stats.lastSynced") || "Last synced"}:{" "}
+          {new Date(lastSyncedAt).toLocaleString()}
+        </p>
+      )}
+    </div>
+  );
+}

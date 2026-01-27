@@ -11,12 +11,15 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
-import { RefreshCw, CheckCircle2, XCircle, Trophy, Target } from "lucide-react";
+import { RefreshCw, CheckCircle2, XCircle, Trophy } from "lucide-react";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://gto-poker-trainer-production.up.railway.app";
 
-// Card display for flop
+type Street = "flop" | "turn" | "river";
+
+// Card display
 const SUIT_SYMBOLS: Record<string, string> = {
   s: "♠",
   h: "♥",
@@ -31,14 +34,12 @@ const SUIT_COLORS: Record<string, string> = {
   c: "text-green-600",
 };
 
-interface CbetScenario {
+interface BaseScenario {
   id: string;
   preflop: string;
   hero_position: string;
   villain_position: string;
   pot_type: string;
-  flop: string[];
-  flop_suits: string[];
   texture: string;
   texture_zh: string;
   hero_hand: string;
@@ -49,7 +50,28 @@ interface CbetScenario {
   explanation_en: string;
 }
 
-function FlopCard({ rank, suit }: { rank: string; suit: string }) {
+interface FlopScenario extends BaseScenario {
+  flop: string[];
+  flop_suits: string[];
+}
+
+interface TurnScenario extends BaseScenario {
+  flop: string[];
+  flop_suits: string[];
+  turn: string;
+  turn_suit: string;
+  flop_action: string;
+}
+
+interface RiverScenario extends BaseScenario {
+  board: string[];
+  board_suits: string[];
+  previous_action: string;
+}
+
+type Scenario = FlopScenario | TurnScenario | RiverScenario;
+
+function BoardCard({ rank, suit }: { rank: string; suit: string }) {
   return (
     <div className="bg-white dark:bg-gray-100 rounded-lg shadow-md w-14 h-20 sm:w-16 sm:h-24 flex flex-col items-center justify-center border-2 border-gray-200">
       <span className={cn("text-2xl sm:text-3xl font-bold", SUIT_COLORS[suit])}>
@@ -63,7 +85,6 @@ function FlopCard({ rank, suit }: { rank: string; suit: string }) {
 }
 
 function HeroHand({ hand }: { hand: string }) {
-  // Parse hand like "AKo" or "JTs"
   const rank1 = hand[0];
   const rank2 = hand[1];
   const suited = hand.endsWith("s");
@@ -86,33 +107,83 @@ function HeroHand({ hand }: { hand: string }) {
   );
 }
 
-const ACTION_OPTIONS = [
+const FLOP_ACTIONS = [
   { key: "bet_33", label: "Bet 33%", labelZh: "下注 33%" },
   { key: "bet_50", label: "Bet 50%", labelZh: "下注 50%" },
   { key: "bet_75", label: "Bet 75%", labelZh: "下注 75%" },
   { key: "check", label: "Check", labelZh: "過牌" },
 ];
 
+const TURN_ACTIONS = [
+  { key: "bet_33", label: "Bet 33%", labelZh: "下注 33%" },
+  { key: "bet_50", label: "Bet 50%", labelZh: "下注 50%" },
+  { key: "bet_66", label: "Bet 66%", labelZh: "下注 66%" },
+  { key: "bet_75", label: "Bet 75%", labelZh: "下注 75%" },
+  { key: "check", label: "Check", labelZh: "過牌" },
+];
+
+const RIVER_ACTIONS = [
+  { key: "bet_25", label: "Bet 25%", labelZh: "下注 25%" },
+  { key: "bet_50", label: "Bet 50%", labelZh: "下注 50%" },
+  { key: "bet_75", label: "Bet 75%", labelZh: "下注 75%" },
+  { key: "bet_100", label: "Bet 100%", labelZh: "下注 100%" },
+  { key: "bet_150", label: "Overbet 150%", labelZh: "超池 150%" },
+  { key: "check", label: "Check", labelZh: "過牌" },
+  { key: "raise", label: "Raise", labelZh: "加注" },
+];
+
+function getActionsForStreet(street: Street) {
+  switch (street) {
+    case "flop":
+      return FLOP_ACTIONS;
+    case "turn":
+      return TURN_ACTIONS;
+    case "river":
+      return RIVER_ACTIONS;
+  }
+}
+
+function getStreetTitle(street: Street): string {
+  switch (street) {
+    case "flop":
+      return "Flop C-Bet";
+    case "turn":
+      return "Turn Barrel";
+    case "river":
+      return "River Decision";
+  }
+}
+
 export default function PostflopDrillPage() {
   const t = useTranslations();
-  const [scenario, setScenario] = useState<CbetScenario | null>(null);
+  const [street, setStreet] = useState<Street>("flop");
+  const [scenario, setScenario] = useState<Scenario | null>(null);
   const [selectedAction, setSelectedAction] = useState<string | null>(null);
   const [result, setResult] = useState<{
     correct: boolean;
     explanation: string;
+    correctAction: string;
+    correctSizing: string | null;
+    frequency: number;
   } | null>(null);
   const [score, setScore] = useState({ correct: 0, total: 0 });
   const [loading, setLoading] = useState(false);
   const [textureFilter, setTextureFilter] = useState<string | null>(null);
   const [textures, setTextures] = useState<Record<string, string>>({});
 
-  // Load available textures
+  // Load available textures for current street
   useEffect(() => {
-    fetch(`${API_URL}/api/postflop/cbet/textures`)
+    const endpoint =
+      street === "flop"
+        ? "cbet"
+        : street === "turn"
+        ? "turn"
+        : "river";
+    fetch(`${API_URL}/api/postflop/${endpoint}/textures`)
       .then((res) => res.json())
       .then((data) => setTextures(data.textures || {}))
       .catch(console.error);
-  }, []);
+  }, [street]);
 
   const loadScenario = useCallback(async () => {
     setLoading(true);
@@ -120,10 +191,16 @@ export default function PostflopDrillPage() {
     setResult(null);
 
     try {
+      const endpoint =
+        street === "flop"
+          ? "cbet"
+          : street === "turn"
+          ? "turn"
+          : "river";
       const params = new URLSearchParams();
       if (textureFilter) params.set("texture", textureFilter);
 
-      const res = await fetch(`${API_URL}/api/postflop/cbet/random?${params}`);
+      const res = await fetch(`${API_URL}/api/postflop/${endpoint}/random?${params}`);
       const data = await res.json();
       setScenario(data.scenario);
     } catch (err) {
@@ -131,11 +208,17 @@ export default function PostflopDrillPage() {
     } finally {
       setLoading(false);
     }
-  }, [textureFilter]);
+  }, [street, textureFilter]);
 
   useEffect(() => {
     loadScenario();
   }, [loadScenario]);
+
+  const handleStreetChange = (newStreet: Street) => {
+    setStreet(newStreet);
+    setTextureFilter(null);
+    setScore({ correct: 0, total: 0 });
+  };
 
   const handleAction = async (action: string) => {
     if (selectedAction || !scenario) return;
@@ -143,12 +226,19 @@ export default function PostflopDrillPage() {
     setSelectedAction(action);
 
     try {
-      const res = await fetch(`${API_URL}/api/postflop/cbet/evaluate`, {
+      const endpoint =
+        street === "flop"
+          ? "cbet"
+          : street === "turn"
+          ? "turn"
+          : "river";
+      const res = await fetch(`${API_URL}/api/postflop/${endpoint}/evaluate`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           scenario_id: scenario.id,
           user_action: action,
+          street: street,
         }),
       });
       const data = await res.json();
@@ -156,6 +246,9 @@ export default function PostflopDrillPage() {
       setResult({
         correct: data.correct,
         explanation: data.explanation_zh,
+        correctAction: data.correct_action,
+        correctSizing: data.correct_sizing,
+        frequency: data.frequency,
       });
 
       setScore((prev) => ({
@@ -169,6 +262,87 @@ export default function PostflopDrillPage() {
 
   const accuracy = score.total > 0 ? Math.round((score.correct / score.total) * 100) : 0;
 
+  const renderBoard = () => {
+    if (!scenario) return null;
+
+    if (street === "river") {
+      const riverScenario = scenario as RiverScenario;
+      return (
+        <div className="mb-6">
+          <div className="text-sm text-muted-foreground mb-2 text-center">Board</div>
+          <div className="flex gap-2 justify-center bg-green-800/30 py-4 px-6 rounded-lg flex-wrap">
+            {riverScenario.board.map((rank, i) => (
+              <BoardCard key={i} rank={rank} suit={riverScenario.board_suits[i]} />
+            ))}
+          </div>
+        </div>
+      );
+    }
+
+    if (street === "turn") {
+      const turnScenario = scenario as TurnScenario;
+      return (
+        <div className="mb-6">
+          <div className="text-sm text-muted-foreground mb-2 text-center">Board</div>
+          <div className="flex gap-2 justify-center bg-green-800/30 py-4 px-6 rounded-lg">
+            {turnScenario.flop.map((rank, i) => (
+              <BoardCard key={i} rank={rank} suit={turnScenario.flop_suits[i]} />
+            ))}
+            <div className="w-2" />
+            <BoardCard rank={turnScenario.turn} suit={turnScenario.turn_suit} />
+          </div>
+        </div>
+      );
+    }
+
+    // Flop
+    const flopScenario = scenario as FlopScenario;
+    return (
+      <div className="mb-6">
+        <div className="text-sm text-muted-foreground mb-2 text-center">Flop</div>
+        <div className="flex gap-2 justify-center bg-green-800/30 py-4 px-6 rounded-lg">
+          {flopScenario.flop.map((rank, i) => (
+            <BoardCard key={i} rank={rank} suit={flopScenario.flop_suits[i]} />
+          ))}
+        </div>
+      </div>
+    );
+  };
+
+  const renderPreviousAction = () => {
+    if (street === "turn") {
+      const turnScenario = scenario as TurnScenario;
+      return (
+        <div className="text-sm text-muted-foreground mb-2 text-center">
+          Flop Action: {turnScenario.flop_action}
+        </div>
+      );
+    }
+    if (street === "river") {
+      const riverScenario = scenario as RiverScenario;
+      return (
+        <div className="text-sm text-muted-foreground mb-2 text-center">
+          {riverScenario.previous_action}
+        </div>
+      );
+    }
+    return null;
+  };
+
+  const getCorrectActionDisplay = () => {
+    if (!result) return "";
+    if (result.correctAction === "check") return "Check";
+    if (result.correctAction === "raise") return `Raise ${result.correctSizing}%`;
+    return `Bet ${result.correctSizing}%`;
+  };
+
+  const isExactCorrect = (optionKey: string) => {
+    if (!result) return false;
+    if (result.correctAction === "check") return optionKey === "check";
+    if (result.correctAction === "raise") return optionKey === "raise";
+    return optionKey === `bet_${result.correctSizing}`;
+  };
+
   if (loading && !scenario) {
     return (
       <div className="container max-w-2xl py-8">
@@ -179,13 +353,24 @@ export default function PostflopDrillPage() {
     );
   }
 
+  const actionOptions = getActionsForStreet(street);
+
   return (
     <div className="container max-w-2xl py-8">
       {/* Header */}
       <div className="mb-6">
-        <h1 className="text-2xl font-bold">{t("postflop.cbet.title")}</h1>
-        <p className="text-muted-foreground">{t("postflop.cbet.description")}</p>
+        <h1 className="text-2xl font-bold">{t("postflop.title")}</h1>
+        <p className="text-muted-foreground">{t("postflop.description")}</p>
       </div>
+
+      {/* Street Tabs */}
+      <Tabs value={street} onValueChange={(v) => handleStreetChange(v as Street)} className="mb-6">
+        <TabsList className="grid w-full grid-cols-3">
+          <TabsTrigger value="flop">Flop C-Bet</TabsTrigger>
+          <TabsTrigger value="turn">Turn Barrel</TabsTrigger>
+          <TabsTrigger value="river">River Decision</TabsTrigger>
+        </TabsList>
+      </Tabs>
 
       {/* Score */}
       <div className="flex items-center justify-between mb-6">
@@ -224,23 +409,19 @@ export default function PostflopDrillPage() {
                 {scenario.hero_position} vs {scenario.villain_position}
               </Badge>
             </div>
-            <CardTitle className="text-lg mt-2">{t("postflop.cbet.question")}</CardTitle>
+            <CardTitle className="text-lg mt-2">{getStreetTitle(street)}</CardTitle>
           </CardHeader>
           <CardContent>
             {/* Preflop Action */}
-            <div className="text-sm text-muted-foreground mb-4 text-center">
+            <div className="text-sm text-muted-foreground mb-2 text-center">
               {scenario.preflop}
             </div>
 
-            {/* Flop Display */}
-            <div className="mb-6">
-              <div className="text-sm text-muted-foreground mb-2 text-center">Flop</div>
-              <div className="flex gap-2 justify-center bg-green-800/30 py-4 px-6 rounded-lg">
-                {scenario.flop.map((rank, i) => (
-                  <FlopCard key={i} rank={rank} suit={scenario.flop_suits[i]} />
-                ))}
-              </div>
-            </div>
+            {/* Previous Action (for turn/river) */}
+            {renderPreviousAction()}
+
+            {/* Board Display */}
+            {renderBoard()}
 
             {/* Hero Hand */}
             <div className="mb-6">
@@ -253,28 +434,21 @@ export default function PostflopDrillPage() {
             </div>
 
             {/* Action Buttons */}
-            <div className="grid grid-cols-2 gap-3">
-              {ACTION_OPTIONS.map((option) => {
+            <div className={cn(
+              "grid gap-3",
+              actionOptions.length <= 4 ? "grid-cols-2" : "grid-cols-2 sm:grid-cols-3"
+            )}>
+              {actionOptions.map((option) => {
                 const isSelected = selectedAction === option.key;
                 const showResult = selectedAction !== null;
-                const isCorrect =
-                  option.key.startsWith(scenario.correct_action) ||
-                  (scenario.correct_action === "bet" &&
-                    option.key.startsWith("bet") &&
-                    option.key.includes(scenario.correct_sizing || ""));
-
-                // For bet actions, check if the sizing matches
-                const isExactCorrect =
-                  scenario.correct_action === "check"
-                    ? option.key === "check"
-                    : option.key === `bet_${scenario.correct_sizing}`;
+                const isCorrect = isExactCorrect(option.key);
 
                 return (
                   <Button
                     key={option.key}
                     variant={
                       showResult
-                        ? isExactCorrect
+                        ? isCorrect
                           ? "default"
                           : isSelected
                           ? "destructive"
@@ -282,16 +456,16 @@ export default function PostflopDrillPage() {
                         : "outline"
                     }
                     className={cn(
-                      "h-auto py-4",
-                      showResult && isExactCorrect && "bg-green-600 hover:bg-green-600",
-                      showResult && isSelected && !isExactCorrect && "bg-red-600"
+                      "h-auto py-3",
+                      showResult && isCorrect && "bg-green-600 hover:bg-green-600",
+                      showResult && isSelected && !isCorrect && "bg-red-600"
                     )}
                     onClick={() => handleAction(option.key)}
                     disabled={showResult}
                   >
-                    <span className="text-lg font-medium">{option.labelZh}</span>
-                    {showResult && isExactCorrect && <CheckCircle2 className="h-4 w-4 ml-2" />}
-                    {showResult && isSelected && !isExactCorrect && (
+                    <span className="text-sm font-medium">{option.labelZh}</span>
+                    {showResult && isCorrect && <CheckCircle2 className="h-4 w-4 ml-2" />}
+                    {showResult && isSelected && !isCorrect && (
                       <XCircle className="h-4 w-4 ml-2" />
                     )}
                   </Button>
@@ -306,11 +480,7 @@ export default function PostflopDrillPage() {
                   <p className="text-green-500 font-medium">{t("drill.result.correct")}</p>
                 ) : (
                   <p className="text-red-500 font-medium">
-                    {t("drill.result.incorrect")} -{" "}
-                    {scenario.correct_action === "check"
-                      ? "Check"
-                      : `Bet ${scenario.correct_sizing}%`}{" "}
-                    ({scenario.frequency}%)
+                    {t("drill.result.incorrect")} - {getCorrectActionDisplay()} ({result.frequency}%)
                   </p>
                 )}
                 <p className="text-sm text-muted-foreground mt-2 bg-muted/30 p-3 rounded-lg">
@@ -328,12 +498,30 @@ export default function PostflopDrillPage() {
       {/* Tips */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">{t("postflop.cbet.tipsTitle")}</CardTitle>
+          <CardTitle className="text-base">{t("postflop.tipsTitle")}</CardTitle>
         </CardHeader>
         <CardContent className="text-sm text-muted-foreground space-y-2">
-          <p>{t("postflop.cbet.tip1")}</p>
-          <p>{t("postflop.cbet.tip2")}</p>
-          <p>{t("postflop.cbet.tip3")}</p>
+          {street === "flop" && (
+            <>
+              <p>{t("postflop.cbet.tip1")}</p>
+              <p>{t("postflop.cbet.tip2")}</p>
+              <p>{t("postflop.cbet.tip3")}</p>
+            </>
+          )}
+          {street === "turn" && (
+            <>
+              <p>轉牌持續下注需要考慮翻牌動作帶來的範圍變化</p>
+              <p>「好」的轉牌通常是高張或完成你的聽牌</p>
+              <p>控池過牌有時候比強行 barrel 更好</p>
+            </>
+          )}
+          {street === "river" && (
+            <>
+              <p>河牌是最後的決策點，沒有後續改進機會</p>
+              <p>考慮對手的範圍：什麼牌會跟注？什麼牌會棄牌？</p>
+              <p>Blocker 效應在河牌 bluff 決策中非常重要</p>
+            </>
+          )}
         </CardContent>
       </Card>
     </div>

@@ -1,0 +1,20 @@
+# GTO Poker Trainer - robots.txt
+# https://gto-trainer.com
+
+User-agent: *
+Allow: /
+
+# Sitemap location
+Sitemap: https://gto-trainer.com/sitemap.xml
+
+# Disallow admin/API routes
+Disallow: /api/
+Disallow: /_next/
+Disallow: /admin/
+
+# Allow search engines to crawl important content
+Allow: /learn/
+Allow: /drill/
+Allow: /ranges/
+Allow: /quiz/
+Allow: /mtt/

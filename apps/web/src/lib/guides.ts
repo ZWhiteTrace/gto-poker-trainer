@@ -53,6 +53,36 @@ const guideMetadata: Record<string, Omit<GuideMetadata, "slug">> = {
     category: "fundamentals",
     order: 6,
   },
+  "position-strategy-deep-dive": {
+    title: "位置策略深入剖析",
+    description: "從入門到精通：各位置的詳細策略和調整技巧",
+    category: "fundamentals",
+    order: 7,
+  },
+  "gto-vs-exploit-strategy": {
+    title: "GTO vs 剝削策略",
+    description: "何時該用 GTO？何時該剝削？完整的策略選擇指南",
+    category: "fundamentals",
+    order: 8,
+  },
+  "beginners-complete-guide": {
+    title: "新手完全入門指南",
+    description: "從零開始學德州撲克：規則、策略、資金管理一次搞定",
+    category: "fundamentals",
+    order: 9,
+  },
+  "hand-reading-fundamentals": {
+    title: "讀牌基礎教學",
+    description: "從翻前到河牌的範圍思考：學會像職業玩家一樣讀牌",
+    category: "fundamentals",
+    order: 10,
+  },
+  "bankroll-management": {
+    title: "資金管理完全指南",
+    description: "撲克生存法則：升降級規則、波動管理、職業玩家建議",
+    category: "fundamentals",
+    order: 11,
+  },
 };
 
 export function getAllGuides(): GuideMetadata[] {
