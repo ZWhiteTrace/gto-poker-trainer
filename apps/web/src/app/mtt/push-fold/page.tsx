@@ -13,7 +13,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
-import { Coins, Users, Target, Shield } from "lucide-react";
+import { Coins, Users, Target, Shield, Zap, UserRound } from "lucide-react";
 
 const RANKS = ["A", "K", "Q", "J", "T", "9", "8", "7", "6", "5", "4", "3", "2"];
 
@@ -28,6 +28,23 @@ const DEFENSE_SCENARIOS = [
   { key: "BB_vs_HJ_shove", label: "BB vs HJ Shove", hero: "BB", villain: "HJ" },
   { key: "SB_vs_BTN_shove", label: "SB vs BTN Shove", hero: "SB", villain: "BTN" },
 ];
+
+const RESTEAL_SCENARIOS = [
+  { key: "SB_resteal_vs_BTN", label: "SB vs BTN Open", hero: "SB", villain: "BTN" },
+  { key: "SB_resteal_vs_CO", label: "SB vs CO Open", hero: "SB", villain: "CO" },
+  { key: "BB_resteal_vs_BTN", label: "BB vs BTN Open", hero: "BB", villain: "BTN" },
+  { key: "BB_resteal_vs_CO", label: "BB vs CO Open", hero: "BB", villain: "CO" },
+  { key: "BB_resteal_vs_HJ", label: "BB vs HJ Open", hero: "BB", villain: "HJ" },
+];
+
+const RESTEAL_STACKS = ["10bb", "12bb", "15bb", "18bb", "20bb"];
+
+const HU_SCENARIOS = [
+  { key: "SB_push", label: "SB Push", hero: "SB", action: "Push" },
+  { key: "BB_call_vs_SB_shove", label: "BB Call vs SB", hero: "BB", action: "Call" },
+];
+
+const HU_STACKS = ["3bb", "4bb", "5bb", "6bb", "8bb", "10bb", "12bb", "15bb"];
 
 // Generate hand key from grid position
 function getHandKey(row: number, col: number): string {
@@ -104,6 +121,12 @@ export default function PushFoldPage() {
   const [defenseScenario, setDefenseScenario] = useState("BB_vs_SB_shove");
   const [pushHands, setPushHands] = useState<string[]>([]);
   const [defenseHands, setDefenseHands] = useState<string[]>([]);
+  const [restealScenario, setRestealScenario] = useState("SB_resteal_vs_BTN");
+  const [restealStack, setRestealStack] = useState("10bb");
+  const [restealHands, setRestealHands] = useState<string[]>([]);
+  const [huScenario, setHuScenario] = useState("SB_push");
+  const [huStack, setHuStack] = useState("5bb");
+  const [huHands, setHuHands] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
 
   // Fetch push/fold data
@@ -144,18 +167,64 @@ export default function PushFoldPage() {
     }
   }, [activeTab, defenseScenario, stackDepth]);
 
+  // Fetch resteal data
+  useEffect(() => {
+    if (activeTab === "resteal") {
+      setLoading(true);
+      fetch(
+        `${process.env.NEXT_PUBLIC_API_URL || "https://gto-poker-trainer-production.up.railway.app"}/api/mtt/resteal/${restealScenario}/${restealStack}`
+      )
+        .then((res) => res.json())
+        .then((data) => {
+          setRestealHands(data.hands || []);
+        })
+        .catch((err) => {
+          console.error("Failed to fetch resteal data:", err);
+          setRestealHands([]);
+        })
+        .finally(() => setLoading(false));
+    }
+  }, [activeTab, restealScenario, restealStack]);
+
+  // Fetch HU data
+  useEffect(() => {
+    if (activeTab === "hu") {
+      setLoading(true);
+      fetch(
+        `${process.env.NEXT_PUBLIC_API_URL || "https://gto-poker-trainer-production.up.railway.app"}/api/mtt/hu/${huScenario}/${huStack}?format=hu`
+      )
+        .then((res) => res.json())
+        .then((data) => {
+          setHuHands(data.hands || []);
+        })
+        .catch((err) => {
+          console.error("Failed to fetch HU data:", err);
+          setHuHands([]);
+        })
+        .finally(() => setLoading(false));
+    }
+  }, [activeTab, huScenario, huStack]);
+
   // Calculate range percentage
+  const currentHands = useMemo(() => {
+    switch (activeTab) {
+      case "push": return pushHands;
+      case "defense": return defenseHands;
+      case "resteal": return restealHands;
+      case "hu": return huHands;
+      default: return [];
+    }
+  }, [activeTab, pushHands, defenseHands, restealHands, huHands]);
+
   const rangePercentage = useMemo(() => {
-    const hands = activeTab === "push" ? pushHands : defenseHands;
-    // Approximate combo count (simplified)
     let combos = 0;
-    hands.forEach((hand) => {
+    currentHands.forEach((hand) => {
       if (hand.length === 2) combos += 6; // Pairs
       else if (hand.endsWith("s")) combos += 4; // Suited
       else combos += 12; // Offsuit
     });
     return Math.round((combos / 1326) * 100);
-  }, [activeTab, pushHands, defenseHands]);
+  }, [currentHands]);
 
   return (
     <div className="container max-w-4xl py-8">
@@ -167,14 +236,26 @@ export default function PushFoldPage() {
 
       {/* Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-6">
-        <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="push" className="gap-2">
-            <Target className="h-4 w-4" />
-            {t("mtt.pushFold.pushTab")}
+        <TabsList className="grid w-full grid-cols-4">
+          <TabsTrigger value="push" className="gap-1 text-xs sm:text-sm">
+            <Target className="h-3.5 w-3.5" />
+            <span className="hidden sm:inline">{t("mtt.pushFold.pushTab")}</span>
+            <span className="sm:hidden">Push</span>
           </TabsTrigger>
-          <TabsTrigger value="defense" className="gap-2">
-            <Shield className="h-4 w-4" />
-            {t("mtt.pushFold.defenseTab")}
+          <TabsTrigger value="defense" className="gap-1 text-xs sm:text-sm">
+            <Shield className="h-3.5 w-3.5" />
+            <span className="hidden sm:inline">{t("mtt.pushFold.defenseTab")}</span>
+            <span className="sm:hidden">Defense</span>
+          </TabsTrigger>
+          <TabsTrigger value="resteal" className="gap-1 text-xs sm:text-sm">
+            <Zap className="h-3.5 w-3.5" />
+            <span className="hidden sm:inline">{t("mtt.pushFold.restealTab")}</span>
+            <span className="sm:hidden">Resteal</span>
+          </TabsTrigger>
+          <TabsTrigger value="hu" className="gap-1 text-xs sm:text-sm">
+            <UserRound className="h-3.5 w-3.5" />
+            <span className="hidden sm:inline">{t("mtt.pushFold.huTab")}</span>
+            <span className="sm:hidden">HU</span>
           </TabsTrigger>
         </TabsList>
 
@@ -327,6 +408,166 @@ export default function PushFoldPage() {
                 <div className="flex items-center gap-1.5">
                   <div className="w-4 h-4 rounded" style={{ backgroundColor: COLORS.call }} />
                   <span>Call</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <div className="w-4 h-4 rounded" style={{ backgroundColor: COLORS.fold }} />
+                  <span>Fold</span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* Resteal Tab */}
+        <TabsContent value="resteal">
+          <Card>
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle className="flex items-center gap-2">
+                    <span>{RESTEAL_SCENARIOS.find((s) => s.key === restealScenario)?.label}</span>
+                    <Badge variant="outline">{restealStack}</Badge>
+                  </CardTitle>
+                  <CardDescription>{t("mtt.pushFold.restealDesc")}</CardDescription>
+                </div>
+                <div className="text-right">
+                  <div className="text-2xl font-bold text-orange-500">{rangePercentage}%</div>
+                  <div className="text-sm text-muted-foreground">{restealHands.length} {t("mtt.pushFold.hands")}</div>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent>
+              {/* Scenario Selector */}
+              <div className="mb-4">
+                <div className="text-sm text-muted-foreground mb-2">{t("mtt.pushFold.selectScenario")}</div>
+                <div className="flex flex-wrap gap-2">
+                  {RESTEAL_SCENARIOS.map((scenario) => (
+                    <Button
+                      key={scenario.key}
+                      variant={restealScenario === scenario.key ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => setRestealScenario(scenario.key)}
+                    >
+                      <Zap className="h-3 w-3 mr-1" />
+                      {scenario.hero} vs {scenario.villain}
+                    </Button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Stack Depth Selector */}
+              <div className="mb-6">
+                <div className="text-sm text-muted-foreground mb-2">{t("mtt.pushFold.selectStack")}</div>
+                <div className="flex flex-wrap gap-2">
+                  {RESTEAL_STACKS.map((depth) => (
+                    <Button
+                      key={depth}
+                      variant={restealStack === depth ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => setRestealStack(depth)}
+                      className="min-w-[60px]"
+                    >
+                      <Coins className="h-3 w-3 mr-1" />
+                      {depth}
+                    </Button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Grid */}
+              {loading ? (
+                <div className="flex items-center justify-center py-12">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
+                </div>
+              ) : (
+                <PushFoldGrid hands={restealHands} colorType="resteal" />
+              )}
+
+              {/* Legend */}
+              <div className="flex justify-center gap-6 mt-4 text-sm">
+                <div className="flex items-center gap-1.5">
+                  <div className="w-4 h-4 rounded" style={{ backgroundColor: COLORS.resteal }} />
+                  <span>Resteal (3bet Shove)</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <div className="w-4 h-4 rounded" style={{ backgroundColor: COLORS.fold }} />
+                  <span>Fold</span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* HU Tab */}
+        <TabsContent value="hu">
+          <Card>
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle className="flex items-center gap-2">
+                    <span>{HU_SCENARIOS.find((s) => s.key === huScenario)?.label}</span>
+                    <Badge variant="outline">{huStack}</Badge>
+                  </CardTitle>
+                  <CardDescription>{t("mtt.pushFold.huDesc")}</CardDescription>
+                </div>
+                <div className="text-right">
+                  <div className="text-2xl font-bold" style={{ color: huScenario === "SB_push" ? COLORS.push : COLORS.call }}>{rangePercentage}%</div>
+                  <div className="text-sm text-muted-foreground">{huHands.length} {t("mtt.pushFold.hands")}</div>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent>
+              {/* Scenario Selector */}
+              <div className="mb-4">
+                <div className="text-sm text-muted-foreground mb-2">{t("mtt.pushFold.selectScenario")}</div>
+                <div className="flex flex-wrap gap-2">
+                  {HU_SCENARIOS.map((scenario) => (
+                    <Button
+                      key={scenario.key}
+                      variant={huScenario === scenario.key ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => setHuScenario(scenario.key)}
+                    >
+                      <UserRound className="h-3 w-3 mr-1" />
+                      {scenario.label}
+                    </Button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Stack Depth Selector */}
+              <div className="mb-6">
+                <div className="text-sm text-muted-foreground mb-2">{t("mtt.pushFold.selectStack")}</div>
+                <div className="flex flex-wrap gap-2">
+                  {HU_STACKS.map((depth) => (
+                    <Button
+                      key={depth}
+                      variant={huStack === depth ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => setHuStack(depth)}
+                      className="min-w-[60px]"
+                    >
+                      <Coins className="h-3 w-3 mr-1" />
+                      {depth}
+                    </Button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Grid */}
+              {loading ? (
+                <div className="flex items-center justify-center py-12">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
+                </div>
+              ) : (
+                <PushFoldGrid hands={huHands} colorType={huScenario === "SB_push" ? "push" : "call"} />
+              )}
+
+              {/* Legend */}
+              <div className="flex justify-center gap-6 mt-4 text-sm">
+                <div className="flex items-center gap-1.5">
+                  <div className="w-4 h-4 rounded" style={{ backgroundColor: huScenario === "SB_push" ? COLORS.push : COLORS.call }} />
+                  <span>{huScenario === "SB_push" ? "Push" : "Call"}</span>
                 </div>
                 <div className="flex items-center gap-1.5">
                   <div className="w-4 h-4 rounded" style={{ backgroundColor: COLORS.fold }} />
