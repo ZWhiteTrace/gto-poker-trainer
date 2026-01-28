@@ -461,3 +461,44 @@ export function getGuideCategories(): string[] {
   const categories = [...new Set(guides.map((g) => g.category))];
   return categories.sort((a, b) => categoryOrder.indexOf(a) - categoryOrder.indexOf(b));
 }
+
+// Get adjacent guides for navigation
+export function getAdjacentGuides(slug: string): {
+  prev: GuideMetadata | null;
+  next: GuideMetadata | null;
+} {
+  const allGuides = getAllGuides();
+  const currentIndex = allGuides.findIndex((g) => g.slug === slug);
+
+  if (currentIndex === -1) {
+    return { prev: null, next: null };
+  }
+
+  return {
+    prev: currentIndex > 0 ? allGuides[currentIndex - 1] : null,
+    next: currentIndex < allGuides.length - 1 ? allGuides[currentIndex + 1] : null,
+  };
+}
+
+// Get adjacent guides within the same category
+export function getAdjacentGuidesInCategory(slug: string): {
+  prev: GuideMetadata | null;
+  next: GuideMetadata | null;
+} {
+  const guide = guideMetadata[slug];
+  if (!guide) {
+    return { prev: null, next: null };
+  }
+
+  const categoryGuides = getGuidesByCategory(guide.category);
+  const currentIndex = categoryGuides.findIndex((g) => g.slug === slug);
+
+  if (currentIndex === -1) {
+    return { prev: null, next: null };
+  }
+
+  return {
+    prev: currentIndex > 0 ? categoryGuides[currentIndex - 1] : null,
+    next: currentIndex < categoryGuides.length - 1 ? categoryGuides[currentIndex + 1] : null,
+  };
+}

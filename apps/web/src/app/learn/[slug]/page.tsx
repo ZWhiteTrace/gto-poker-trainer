@@ -1,10 +1,10 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { getGuide, getAllGuides } from "@/lib/guides";
+import { getGuide, getAllGuides, getAdjacentGuidesInCategory, type GuideMetadata } from "@/lib/guides";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, BookOpen } from "lucide-react";
+import { ArrowLeft, ArrowRight, BookOpen } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
 const BASE_URL = "https://gto-trainer.com";
@@ -109,9 +109,59 @@ function ArticleJsonLd({
   );
 }
 
+// Article navigation component
+function ArticleNavigation({
+  prev,
+  next,
+}: {
+  prev: GuideMetadata | null;
+  next: GuideMetadata | null;
+}) {
+  if (!prev && !next) return null;
+
+  return (
+    <nav className="flex justify-between items-stretch gap-4 mt-12 pt-8 border-t">
+      {prev ? (
+        <Link
+          href={`/learn/${prev.slug}`}
+          className="flex-1 group p-4 rounded-lg border border-border hover:border-primary hover:bg-primary/5 transition-colors"
+        >
+          <div className="flex items-center gap-2 text-sm text-muted-foreground mb-1">
+            <ArrowLeft className="h-4 w-4" />
+            <span>上一篇</span>
+          </div>
+          <div className="font-medium group-hover:text-primary transition-colors line-clamp-2">
+            {prev.title}
+          </div>
+        </Link>
+      ) : (
+        <div className="flex-1" />
+      )}
+
+      {next ? (
+        <Link
+          href={`/learn/${next.slug}`}
+          className="flex-1 group p-4 rounded-lg border border-border hover:border-primary hover:bg-primary/5 transition-colors text-right"
+        >
+          <div className="flex items-center justify-end gap-2 text-sm text-muted-foreground mb-1">
+            <span>下一篇</span>
+            <ArrowRight className="h-4 w-4" />
+          </div>
+          <div className="font-medium group-hover:text-primary transition-colors line-clamp-2">
+            {next.title}
+          </div>
+        </Link>
+      ) : (
+        <div className="flex-1" />
+      )}
+    </nav>
+  );
+}
+
 export default async function GuidePage({ params }: Props) {
   const { slug } = await params;
   const guide = getGuide(slug);
+  const { prev, next } = getAdjacentGuidesInCategory(slug);
 
   if (!guide) {
     notFound();
@@ -232,7 +282,10 @@ export default async function GuidePage({ params }: Props) {
         </ReactMarkdown>
       </article>
 
-      <div className="mt-12 pt-8 border-t">
+      {/* 上一篇 / 下一篇 導航 */}
+      <ArticleNavigation prev={prev} next={next} />
+
+      <div className="mt-8 pt-8 border-t">
         <h3 className="text-lg font-semibold mb-4">開始練習</h3>
         <div className="flex flex-wrap gap-3">
           {guide.category === "preflop" && (

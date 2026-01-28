@@ -29,10 +29,10 @@ const SUIT_SYMBOLS: Record<string, string> = {
 
 // 四色牌顏色：黑桃黑色、紅心紅色、方塊藍色、梅花綠色
 const SUIT_COLORS: Record<string, string> = {
-  s: "text-slate-900 dark:text-slate-100", // 黑桃：深黑/亮白
-  h: "text-red-500", // 紅心：紅色
-  d: "text-blue-500", // 方塊：藍色
-  c: "text-green-600", // 梅花：綠色
+  s: "text-slate-900", // 黑桃：黑色（卡牌背景是白色）
+  h: "text-red-500",   // 紅心：紅色
+  d: "text-blue-500",  // 方塊：藍色
+  c: "text-green-700", // 梅花：深綠色
 };
 
 interface BaseScenario {
