@@ -146,7 +146,7 @@ export function Seat({ player, isActive = false, isHero = false, showCards = fal
         <div className="mt-1 px-1.5 py-0.5 bg-purple-900/50 rounded text-[10px] text-purple-300 border border-purple-500/30">
           <div className="font-semibold">{aiProfile.style}</div>
           <div className="text-purple-400">
-            VPIP:{Math.round(aiProfile.vpip * 100)}% PFR:{Math.round(aiProfile.pfr * 100)}%
+            VPIP:{Math.round(aiProfile.vpip * 100)}% PFR:{Math.round(aiProfile.pfr * 100)}% 3bet:{Math.round(aiProfile.threeBetFreq * 100)}%
           </div>
         </div>
       )}

@@ -546,13 +546,27 @@ export const useTableStore = create<TableState & TableActions>()(
       },
 
       checkBettingRoundComplete: (players: Player[], nextIndex: number, lastAggressor: number | null) => {
-        // All players have acted and bets are equal
-        const activePlayers = players.filter(p => p.isActive && !p.isFolded && !p.isAllIn);
+        const { currentBet } = get();
 
-        if (activePlayers.length <= 1) return true;
+        // Players who can still act (not folded, not all-in)
+        const playersWhoCanAct = players.filter(p => p.isActive && !p.isFolded && !p.isAllIn);
 
-        const firstBet = activePlayers[0].currentBet;
-        const allBetsEqual = activePlayers.every(p => p.currentBet === firstBet);
+        // If nobody can act, round is complete
+        if (playersWhoCanAct.length === 0) return true;
+
+        // If only 1 player can act, check if they need to call
+        // This handles the case when someone is all-in and one player needs to respond
+        if (playersWhoCanAct.length === 1) {
+          const player = playersWhoCanAct[0];
+          // If they have less bet than current, they need to act (call or fold)
+          if (player.currentBet < currentBet) return false;
+          // Otherwise round is complete (they've already matched or checked)
+          return true;
+        }
+
+        // Multiple players can act - check if bets are equal
+        const firstBet = playersWhoCanAct[0].currentBet;
+        const allBetsEqual = playersWhoCanAct.every(p => p.currentBet === firstBet);
 
         // Round is complete when we're back to the last aggressor (or all checked)
         if (lastAggressor === null) {
