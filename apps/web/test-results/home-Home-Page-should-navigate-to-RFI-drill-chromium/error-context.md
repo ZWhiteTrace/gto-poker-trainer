@@ -1,0 +1,180 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e1]:
+  - generic [ref=e2]:
+    - banner [ref=e3]:
+      - generic [ref=e4]:
+        - link "GTO Trainer" [ref=e5] [cursor=pointer]:
+          - /url: /
+          - img [ref=e6]
+          - generic [ref=e8]: GTO Trainer
+        - navigation [ref=e9]:
+          - generic [ref=e10]:
+            - generic [ref=e11]: Practice
+            - generic [ref=e12]: MTT Tools
+            - link "Ranges" [ref=e13] [cursor=pointer]:
+              - /url: /range
+            - link "Quiz" [ref=e14] [cursor=pointer]:
+              - /url: /quiz
+            - link "GTO Mock Exam" [ref=e15] [cursor=pointer]:
+              - /url: /exam
+            - link "Learn" [ref=e16] [cursor=pointer]:
+              - /url: /learn
+            - link "Analyze" [ref=e17] [cursor=pointer]:
+              - /url: /analyze
+            - link "Leaderboard" [ref=e18] [cursor=pointer]:
+              - /url: /leaderboard
+            - link "Statistics" [ref=e19] [cursor=pointer]:
+              - /url: /stats
+          - generic [ref=e20]:
+            - button "🇹🇼 中文" [ref=e21]:
+              - img
+              - generic [ref=e22]: 🇹🇼 中文
+            - button "Sign In" [ref=e23]
+            - button "Get Started" [ref=e24]
+    - main [ref=e25]:
+      - generic [ref=e26]:
+        - generic [ref=e29]:
+          - generic [ref=e30]: Free GTO Training
+          - heading "Master GTO Poker Strategy" [level=1] [ref=e31]
+          - paragraph [ref=e32]: Stop guessing, start crushing. Train your preflop decisions with instant GTO feedback. Understand the WHY behind every play.
+          - generic [ref=e33]:
+            - link "Start Training" [ref=e34] [cursor=pointer]:
+              - /url: /drill/rfi
+              - text: Start Training
+              - img
+            - link "View Ranges" [ref=e35] [cursor=pointer]:
+              - /url: /range
+        - generic [ref=e40]:
+          - generic [ref=e41]:
+            - heading "Why GTO Trainer?" [level=2] [ref=e42]
+            - paragraph [ref=e43]: Built by poker players, for poker players. Focus on understanding, not memorization.
+          - generic [ref=e44]:
+            - generic [ref=e45]:
+              - generic [ref=e46]:
+                - img [ref=e47]
+                - generic [ref=e51]: Preflop Mastery
+              - generic [ref=e53]: Master RFI, 3-bet, and 4-bet ranges with instant feedback and GTO-based evaluation.
+            - generic [ref=e54]:
+              - generic [ref=e55]:
+                - img [ref=e56]
+                - generic [ref=e64]: Understand WHY
+              - generic [ref=e66]: Don't just memorize frequencies. Learn the logic behind every GTO decision.
+            - generic [ref=e67]:
+              - generic [ref=e68]:
+                - img [ref=e69]
+                - generic [ref=e72]: Track Progress
+              - generic [ref=e74]: Identify weak spots in your game with detailed analytics and weakness detection.
+            - generic [ref=e75]:
+              - generic [ref=e76]:
+                - img [ref=e77]
+                - generic [ref=e79]: Practice Anywhere
+              - generic [ref=e81]: Mobile-optimized interface. Train your poker brain during commute or breaks.
+        - generic [ref=e83]:
+          - generic [ref=e84]:
+            - heading "Practice Modes" [level=2] [ref=e85]
+            - paragraph [ref=e86]: Comprehensive preflop training covering all common scenarios.
+          - generic [ref=e87]:
+            - link "RFI Drill Opening ranges from each position" [active] [ref=e88] [cursor=pointer]:
+              - /url: /drill/rfi
+              - generic [ref=e89]:
+                - generic [ref=e91]:
+                  - img [ref=e92]
+                  - text: RFI Drill
+                - generic [ref=e95]: Opening ranges from each position
+            - link "VS RFI Respond to opens with 3-bet/call/fold" [ref=e96] [cursor=pointer]:
+              - /url: /drill/vs-rfi
+              - generic [ref=e97]:
+                - generic [ref=e99]:
+                  - img [ref=e100]
+                  - text: VS RFI
+                - generic [ref=e103]: Respond to opens with 3-bet/call/fold
+            - link "VS 3-Bet Face 3-bets and make correct decisions" [ref=e104] [cursor=pointer]:
+              - /url: /drill/vs-3bet
+              - generic [ref=e105]:
+                - generic [ref=e107]:
+                  - img [ref=e108]
+                  - text: VS 3-Bet
+                - generic [ref=e111]: Face 3-bets and make correct decisions
+            - link "Range Viewer Explore full GTO ranges visually" [ref=e112] [cursor=pointer]:
+              - /url: /range
+              - generic [ref=e113]:
+                - generic [ref=e115]:
+                  - img [ref=e116]
+                  - text: Range Viewer
+                - generic [ref=e119]: Explore full GTO ranges visually
+        - generic [ref=e123]:
+          - heading "Ready to Level Up Your Game?" [level=2] [ref=e124]
+          - list [ref=e125]:
+            - listitem [ref=e126]:
+              - img [ref=e127]
+              - text: 100% Free to Start
+            - listitem [ref=e130]:
+              - img [ref=e131]
+              - text: No Credit Card Required
+            - listitem [ref=e134]:
+              - img [ref=e135]
+              - text: Instant Feedback
+          - link "Start Free Training" [ref=e138] [cursor=pointer]:
+            - /url: /drill/rfi
+            - text: Start Free Training
+            - img
+    - contentinfo [ref=e139]:
+      - generic [ref=e140]:
+        - generic [ref=e141]:
+          - generic [ref=e142]:
+            - link "GTO Trainer" [ref=e143] [cursor=pointer]:
+              - /url: /
+              - img [ref=e144]
+              - generic [ref=e146]: GTO Trainer
+            - paragraph [ref=e147]: Master GTO poker strategy with AI-powered training.
+          - generic [ref=e148]:
+            - heading "Practice" [level=3] [ref=e149]
+            - list [ref=e150]:
+              - listitem [ref=e151]:
+                - link "RFI Drill" [ref=e152] [cursor=pointer]:
+                  - /url: /drill/rfi
+              - listitem [ref=e153]:
+                - link "VS RFI" [ref=e154] [cursor=pointer]:
+                  - /url: /drill/vs-rfi
+              - listitem [ref=e155]:
+                - link "VS 3-Bet" [ref=e156] [cursor=pointer]:
+                  - /url: /drill/vs-3bet
+              - listitem [ref=e157]:
+                - link "VS 4-Bet" [ref=e158] [cursor=pointer]:
+                  - /url: /drill/vs-4bet
+              - listitem [ref=e159]:
+                - link "Range Viewer" [ref=e160] [cursor=pointer]:
+                  - /url: /range
+          - generic [ref=e161]:
+            - heading "Learn" [level=3] [ref=e162]
+            - list [ref=e163]:
+              - listitem [ref=e164]:
+                - link "GTO Basics" [ref=e165] [cursor=pointer]:
+                  - /url: /learn
+              - listitem [ref=e166]:
+                - link "Equity Quiz" [ref=e167] [cursor=pointer]:
+                  - /url: /quiz
+              - listitem [ref=e168]:
+                - link "Blog" [ref=e169] [cursor=pointer]:
+                  - /url: /blog
+          - generic [ref=e170]:
+            - heading "Legal" [level=3] [ref=e171]
+            - list [ref=e172]:
+              - listitem [ref=e173]:
+                - link "Privacy Policy" [ref=e174] [cursor=pointer]:
+                  - /url: /privacy
+              - listitem [ref=e175]:
+                - link "Terms of Service" [ref=e176] [cursor=pointer]:
+                  - /url: /terms
+        - paragraph [ref=e178]: © 2026 GTO Poker Trainer. All rights reserved.
+  - button "Open Next.js Dev Tools" [ref=e184] [cursor=pointer]:
+    - generic [ref=e187]:
+      - text: Rendering
+      - generic [ref=e188]:
+        - generic [ref=e189]: .
+        - generic [ref=e190]: .
+        - generic [ref=e191]: .
+  - alert [ref=e192]
+```

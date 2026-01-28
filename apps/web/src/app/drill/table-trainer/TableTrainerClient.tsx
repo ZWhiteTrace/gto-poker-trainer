@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useTableStore } from "@/stores/tableStore";
 import { PokerTable, CompactPokerTable, ActionButtons, ScenarioSelector, ScenarioButton } from "@/components/poker/table";
 import { Button } from "@/components/ui/button";
@@ -33,9 +33,11 @@ export default function TableTrainerClient() {
     getAvailableActions,
     setSelectedBetSize,
     resetSession,
+    processAITurn,
   } = useTableStore();
 
   const [showScenarioSelector, setShowScenarioSelector] = useState(false);
+  const aiTurnTriggered = useRef(false);
 
   // Initialize on mount
   useEffect(() => {
@@ -43,6 +45,38 @@ export default function TableTrainerClient() {
       initializeTable();
     }
   }, [players.length, initializeTable]);
+
+  // Trigger AI turn when it's an AI's turn to act
+  useEffect(() => {
+    const activePlayer = players[activePlayerIndex];
+
+    // Only trigger if:
+    // 1. Game is in playing phase
+    // 2. Active player exists and is not hero
+    // 3. AI is not already thinking
+    // 4. We haven't already triggered this turn
+    if (
+      phase === "playing" &&
+      activePlayer &&
+      !activePlayer.isHero &&
+      !activePlayer.isFolded &&
+      !aiThinking &&
+      !aiTurnTriggered.current
+    ) {
+      aiTurnTriggered.current = true;
+      processAITurn();
+    }
+
+    // Reset the trigger flag when the active player changes
+    if (activePlayer?.isHero) {
+      aiTurnTriggered.current = false;
+    }
+  }, [phase, activePlayerIndex, players, aiThinking, processAITurn]);
+
+  // Reset AI trigger when active player changes
+  useEffect(() => {
+    aiTurnTriggered.current = false;
+  }, [activePlayerIndex]);
 
   const handleLoadScenario = (scenario: ScenarioPreset) => {
     loadScenario(scenario);
