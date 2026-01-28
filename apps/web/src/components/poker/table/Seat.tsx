@@ -12,6 +12,7 @@ interface SeatProps {
   isHero?: boolean;
   showCards?: boolean;
   aiProfile?: AIPlayerProfile;
+  devMode?: boolean;
   className?: string;
 }
 
@@ -35,7 +36,7 @@ export const POSITION_TO_SEAT: Record<Position, number> = {
   UTG: 5,
 };
 
-export function Seat({ player, isActive = false, isHero = false, showCards = false, aiProfile, className }: SeatProps) {
+export function Seat({ player, isActive = false, isHero = false, showCards = false, aiProfile, devMode = false, className }: SeatProps) {
   if (!player) {
     // 空座位
     return (
@@ -101,6 +102,11 @@ export function Seat({ player, isActive = false, isHero = false, showCards = fal
       <div className="my-1">
         {player.holeCards && (showCards || isHero) ? (
           <HoleCards cards={player.holeCards} size="sm" highlighted={isActive} />
+        ) : player.holeCards && devMode && !isHero ? (
+          // Dev mode: show AI cards with transparency
+          <div className="opacity-50">
+            <HoleCards cards={player.holeCards} size="sm" highlighted={isActive} />
+          </div>
         ) : player.isActive && !player.isFolded ? (
           <div className="flex gap-0.5">
             <CardBack size="sm" />
@@ -133,6 +139,16 @@ export function Seat({ player, isActive = false, isHero = false, showCards = fal
         <span className="px-2 py-0.5 bg-red-600 text-white text-xs font-bold rounded animate-pulse">
           ALL IN
         </span>
+      )}
+
+      {/* Dev mode: AI profile info */}
+      {devMode && !isHero && aiProfile && (
+        <div className="mt-1 px-1.5 py-0.5 bg-purple-900/50 rounded text-[10px] text-purple-300 border border-purple-500/30">
+          <div className="font-semibold">{aiProfile.style}</div>
+          <div className="text-purple-400">
+            VPIP:{Math.round(aiProfile.vpip * 100)}% PFR:{Math.round(aiProfile.pfr * 100)}%
+          </div>
+        </div>
       )}
     </div>
   );

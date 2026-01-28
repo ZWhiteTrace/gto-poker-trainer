@@ -37,6 +37,7 @@ export default function TableTrainerClient() {
   } = useTableStore();
 
   const [showScenarioSelector, setShowScenarioSelector] = useState(false);
+  const [devMode, setDevMode] = useState(false);
   const aiTurnTriggered = useRef(false);
 
   // Initialize on mount
@@ -211,6 +212,17 @@ export default function TableTrainerClient() {
               </span>
             </div>
 
+            {/* Dev Mode Toggle */}
+            <Button
+              variant={devMode ? "default" : "outline"}
+              size="sm"
+              onClick={() => setDevMode(!devMode)}
+              className={cn(devMode && "bg-purple-600 hover:bg-purple-500")}
+              title="開發者模式：顯示 AI 手牌"
+            >
+              {devMode ? "🔓 Dev" : "🔒 Dev"}
+            </Button>
+
             {/* Reset Button */}
             <Button variant="outline" size="sm" onClick={resetSession}>
               重置
@@ -272,6 +284,7 @@ export default function TableTrainerClient() {
                   pot={pot}
                   activePlayerIndex={activePlayerIndex}
                   showAllCards={phase === "showdown" || phase === "result"}
+                  devMode={devMode}
                 />
               )}
             </div>

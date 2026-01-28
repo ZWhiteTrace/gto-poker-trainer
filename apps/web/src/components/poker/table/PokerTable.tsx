@@ -14,6 +14,7 @@ interface PokerTableProps {
   activePlayerIndex: number;
   showAllCards?: boolean;
   aiProfiles?: Map<number, AIPlayerProfile>;
+  devMode?: boolean;
   className?: string;
 }
 
@@ -29,6 +30,7 @@ export function PokerTable({
   activePlayerIndex,
   showAllCards = false,
   aiProfiles,
+  devMode = false,
   className,
 }: PokerTableProps) {
   return (
@@ -73,6 +75,7 @@ export function PokerTable({
               isHero={player.isHero}
               showCards={showAllCards || player.isHero}
               aiProfile={!player.isHero ? (aiProfiles?.get(player.seatIndex) || getDefaultAIProfile(player.seatIndex)) : undefined}
+              devMode={devMode}
             />
           </div>
         );
