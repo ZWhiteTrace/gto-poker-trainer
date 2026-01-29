@@ -77,12 +77,12 @@ export function ActionButtons({
   const displayValue = inputValue || roundToHalf(selectedBetSize).toString();
 
   return (
-    <div className={cn("flex flex-col gap-2.5 sm:gap-3 p-3 sm:p-4 bg-gray-900/95 rounded-xl border border-gray-700/80 backdrop-blur-sm", className)}>
+    <div className={cn("flex flex-col gap-3 sm:gap-3 p-3 sm:p-4 bg-gray-900/95 rounded-xl border border-gray-700/80 backdrop-blur-sm", className)}>
       {/* 下注控制區 (只在可以 bet/raise 時顯示) */}
       {betOrRaiseAction && (
-        <div className="flex flex-col gap-1.5 sm:gap-2">
-          {/* 預設尺寸 - 使用 grid 確保不會被截斷 */}
-          <div className="grid grid-cols-4 gap-1 sm:gap-1.5">
+        <div className="flex flex-col gap-2 sm:gap-2">
+          {/* 預設尺寸 - 使用 grid 確保不會被截斷，加大觸控區域 */}
+          <div className="grid grid-cols-4 gap-1.5 sm:gap-1.5">
             {betSizePresets.map((preset) => (
               <Button
                 key={preset.label}
@@ -94,8 +94,8 @@ export function ActionButtons({
                 }}
                 disabled={disabled || preset.value > maxBet}
                 className={cn(
-                  "h-7 sm:h-8 px-0.5 sm:px-2 text-[10px] sm:text-xs font-medium",
-                  "bg-gray-800/60 border-gray-600 hover:bg-gray-700",
+                  "h-9 sm:h-8 px-1 sm:px-2 text-xs sm:text-xs font-semibold",
+                  "bg-gray-800/60 border-gray-600 hover:bg-gray-700 active:bg-gray-600",
                   Math.abs(selectedBetSize - preset.value) < 0.3 && "border-green-500 bg-green-500/20 text-green-400"
                 )}
               >
@@ -104,9 +104,9 @@ export function ActionButtons({
             ))}
           </div>
 
-          {/* 滑桿 + 數值顯示 */}
-          <div className="flex items-center gap-1.5 sm:gap-2">
-            <span className="text-[9px] sm:text-xs text-gray-500 w-6 sm:w-8 shrink-0">{roundToHalf(minBet)}</span>
+          {/* 滑桿 + 數值顯示 - 加大滑桿和拇指 */}
+          <div className="flex items-center gap-2 sm:gap-2">
+            <span className="text-[10px] sm:text-xs text-gray-500 w-7 sm:w-8 shrink-0">{roundToHalf(minBet)}</span>
             <input
               type="range"
               min={roundToHalf(minBet)}
@@ -118,12 +118,13 @@ export function ActionButtons({
                 setInputValue("");
               }}
               disabled={disabled}
-              className="flex-1 h-1.5 bg-gray-700 rounded-full appearance-none cursor-pointer
-                       [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4
+              className="flex-1 h-2 bg-gray-700 rounded-full appearance-none cursor-pointer
+                       [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:h-6
                        [&::-webkit-slider-thumb]:bg-green-500 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:cursor-pointer
-                       [&::-webkit-slider-thumb]:shadow-md [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-green-400"
+                       [&::-webkit-slider-thumb]:shadow-lg [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-green-400
+                       [&::-webkit-slider-thumb]:active:scale-110 [&::-webkit-slider-thumb]:transition-transform"
             />
-            {/* 數值顯示/輸入 */}
+            {/* 數值顯示/輸入 - 加大 */}
             <input
               type="number"
               value={displayValue}
@@ -134,7 +135,7 @@ export function ActionButtons({
               max={roundToHalf(maxBet)}
               step={0.5}
               disabled={disabled}
-              className="w-12 sm:w-16 h-6 sm:h-7 px-1 text-[10px] sm:text-xs text-center font-mono
+              className="w-14 sm:w-16 h-8 sm:h-7 px-1.5 text-xs sm:text-xs text-center font-mono
                        bg-gray-800 border border-gray-600 rounded text-white shrink-0
                        focus:border-green-500 focus:outline-none focus:ring-1 focus:ring-green-500/50"
             />
@@ -142,7 +143,7 @@ export function ActionButtons({
         </div>
       )}
 
-      {/* 主要動作按鈕 - GGPoker 風格 */}
+      {/* 主要動作按鈕 - GGPoker 風格，加大觸控區域 */}
       <div className="flex gap-2 justify-center">
         {/* Fold */}
         {foldAction && (
@@ -150,9 +151,9 @@ export function ActionButtons({
             variant="ghost"
             onClick={() => onAction("fold")}
             disabled={disabled}
-            className="flex-1 h-11 sm:h-12 bg-red-900/40 hover:bg-red-800/60 border border-red-700/50 text-red-100"
+            className="flex-1 h-12 sm:h-12 bg-red-900/40 hover:bg-red-800/60 active:bg-red-700/70 border border-red-700/50 text-red-100"
           >
-            <span className="font-bold text-sm sm:text-base">Fold</span>
+            <span className="font-bold text-base sm:text-base">Fold</span>
           </Button>
         )}
 
@@ -162,9 +163,9 @@ export function ActionButtons({
             variant="ghost"
             onClick={() => onAction("check")}
             disabled={disabled}
-            className="flex-1 h-11 sm:h-12 bg-gray-700/50 hover:bg-gray-600/60 border border-gray-600/50 text-gray-100"
+            className="flex-1 h-12 sm:h-12 bg-gray-700/50 hover:bg-gray-600/60 active:bg-gray-500/70 border border-gray-600/50 text-gray-100"
           >
-            <span className="font-bold text-sm sm:text-base">Check</span>
+            <span className="font-bold text-base sm:text-base">Check</span>
           </Button>
         )}
 
@@ -174,11 +175,11 @@ export function ActionButtons({
             variant="ghost"
             onClick={() => onAction("call")}
             disabled={disabled}
-            className="flex-1 h-11 sm:h-12 bg-blue-900/40 hover:bg-blue-800/60 border border-blue-700/50 text-blue-100"
+            className="flex-1 h-12 sm:h-12 bg-blue-900/40 hover:bg-blue-800/60 active:bg-blue-700/70 border border-blue-700/50 text-blue-100"
           >
             <div className="flex flex-col items-center leading-tight">
-              <span className="font-bold text-sm sm:text-base">Call</span>
-              <span className="text-[10px] sm:text-xs opacity-80">{roundToHalf(currentBet)} BB</span>
+              <span className="font-bold text-base sm:text-base">Call</span>
+              <span className="text-[11px] sm:text-xs opacity-80">{roundToHalf(currentBet)} BB</span>
             </div>
           </Button>
         )}
@@ -189,11 +190,11 @@ export function ActionButtons({
             variant="ghost"
             onClick={() => onAction(betOrRaiseAction.type, roundToHalf(selectedBetSize))}
             disabled={disabled}
-            className="flex-1 h-11 sm:h-12 bg-green-900/50 hover:bg-green-800/60 border border-green-600/50 text-green-100"
+            className="flex-1 h-12 sm:h-12 bg-green-900/50 hover:bg-green-800/60 active:bg-green-700/70 border border-green-600/50 text-green-100"
           >
             <div className="flex flex-col items-center leading-tight">
-              <span className="font-bold text-sm sm:text-base">{betAction ? "Bet" : "Raise"}</span>
-              <span className="text-[10px] sm:text-xs opacity-80">{roundToHalf(selectedBetSize)} BB</span>
+              <span className="font-bold text-base sm:text-base">{betAction ? "Bet" : "Raise"}</span>
+              <span className="text-[11px] sm:text-xs opacity-80">{roundToHalf(selectedBetSize)} BB</span>
             </div>
           </Button>
         )}
@@ -204,11 +205,11 @@ export function ActionButtons({
             variant="ghost"
             onClick={() => onAction("allin")}
             disabled={disabled}
-            className="flex-1 h-11 sm:h-12 bg-amber-900/50 hover:bg-amber-800/60 border border-amber-600/50 text-amber-100"
+            className="flex-1 h-12 sm:h-12 bg-amber-900/50 hover:bg-amber-800/60 active:bg-amber-700/70 border border-amber-600/50 text-amber-100"
           >
             <div className="flex flex-col items-center leading-tight">
-              <span className="font-bold text-sm sm:text-base">All In</span>
-              <span className="text-[10px] sm:text-xs opacity-80">{roundToHalf(heroStack)} BB</span>
+              <span className="font-bold text-base sm:text-base">All In</span>
+              <span className="text-[11px] sm:text-xs opacity-80">{roundToHalf(heroStack)} BB</span>
             </div>
           </Button>
         )}
