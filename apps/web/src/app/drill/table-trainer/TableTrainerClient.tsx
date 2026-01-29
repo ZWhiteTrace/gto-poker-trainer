@@ -186,7 +186,7 @@ export default function TableTrainerClient() {
   return (
     <div className="fixed inset-0 bg-gradient-to-b from-gray-900 to-gray-950 text-white flex flex-col z-40">
       {/* Header */}
-      <header className="border-b border-gray-800 bg-gray-900/50 backdrop-blur-sm shrink-0 z-50">
+      <header data-table-trainer-header className="border-b border-gray-800 bg-gray-900/50 backdrop-blur-sm shrink-0 z-50">
         <div className="container mx-auto px-4 py-2 sm:py-3 flex items-center justify-between">
           <div className="flex items-center gap-4">
             <h1 className="text-xl font-bold">GTO Table Trainer</h1>
