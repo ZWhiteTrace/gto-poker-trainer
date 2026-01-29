@@ -289,8 +289,8 @@ export default function TableTrainerClient() {
               )}
             </div>
 
-            {/* Action Area */}
-            <div className="space-y-3">
+            {/* Action Area - z-30 to be above table seats (z-20) */}
+            <div className="space-y-3 relative z-30">
               {/* Start / New Hand Button */}
               {(phase === "setup" || phase === "result" || phase === "showdown") && (
                 <div className="flex justify-center">
