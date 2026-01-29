@@ -219,6 +219,7 @@ export interface TableState {
 
   // Game Phase
   phase: GamePhase;
+  isTransitioning: boolean; // Flag to track street transition to prevent race conditions
 
   // Results
   winners: Player[] | null;

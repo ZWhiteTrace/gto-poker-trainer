@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useMemo } from "react";
 import { useTableStore } from "@/stores/tableStore";
 import { useProgressStore } from "@/stores/progressStore";
 import { useAuthStore } from "@/stores/authStore";
@@ -103,6 +103,11 @@ export default function TableTrainerClient() {
       handRecorded.current = false;
     }
   }, [phase, winners, players, lastWonPot, recordTableTrainerHand, user?.id]);
+
+  // Memoize display pot to prevent flicker during phase transitions
+  const displayPot = useMemo(() => {
+    return (phase === "result" || phase === "showdown") ? lastWonPot : pot;
+  }, [phase, pot, lastWonPot]);
 
   const handleLoadScenario = (scenario: ScenarioPreset) => {
     loadScenario(scenario);
@@ -329,7 +334,7 @@ export default function TableTrainerClient() {
                 <CompactPokerTable
                   players={players}
                   communityCards={communityCards}
-                  pot={phase === "result" || phase === "showdown" ? lastWonPot : pot}
+                  pot={displayPot}
                   activePlayerIndex={activePlayerIndex}
                   heroIndex={heroIndex}
                 />
@@ -337,7 +342,7 @@ export default function TableTrainerClient() {
                 <PokerTable
                   players={players}
                   communityCards={communityCards}
-                  pot={phase === "result" || phase === "showdown" ? lastWonPot : pot}
+                  pot={displayPot}
                   activePlayerIndex={activePlayerIndex}
                   showAllCards={phase === "showdown" || phase === "result"}
                   devMode={devMode}
@@ -377,6 +382,27 @@ export default function TableTrainerClient() {
                       {handEvaluations.get(winners[0].id)?.descriptionZh || handEvaluations.get(winners[0].id)?.description}
                     </p>
                   )}
+                </div>
+              )}
+
+              {/* Mobile Hero Stats - show above action buttons */}
+              {hero && phase === "playing" && (
+                <div className="flex items-center justify-between px-3 py-1.5 bg-yellow-500/10 rounded-lg text-sm border border-yellow-500/20">
+                  <div className="flex items-center gap-2">
+                    <span className="text-yellow-400 font-semibold">{hero.position}</span>
+                    <span className="text-gray-400">Hero</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <span className="text-gray-400 text-xs">
+                      投入: <span className="text-orange-400">{hero.totalInvested.toFixed(1)}</span>
+                    </span>
+                    <span className={cn(
+                      "font-semibold",
+                      hero.stack > 50 ? "text-green-400" : hero.stack > 20 ? "text-yellow-400" : "text-red-400"
+                    )}>
+                      {hero.stack.toFixed(1)} BB
+                    </span>
+                  </div>
                 </div>
               )}
 

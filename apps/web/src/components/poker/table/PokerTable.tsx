@@ -5,6 +5,7 @@ import type { Player, Card } from "@/lib/poker/types";
 import { Seat, SEAT_POSITIONS } from "./Seat";
 import { CommunityCards } from "./CommunityCards";
 import { PotDisplay } from "./PotDisplay";
+import { AllInBadge } from "./AllInBadge";
 import { AI_PROFILES, type AIPlayerProfile } from "@/lib/poker/aiDecisionEngine";
 
 interface PokerTableProps {
@@ -34,7 +35,7 @@ export function PokerTable({
   className,
 }: PokerTableProps) {
   return (
-    <div className={cn("relative w-full aspect-[16/10] max-w-4xl mx-auto", className)}>
+    <div className={cn("relative w-full aspect-[16/10] max-w-4xl xl:max-w-5xl 2xl:max-w-6xl mx-auto", className)}>
       {/* 桌面背景 */}
       <div className="absolute inset-0 rounded-[40%] bg-gradient-to-br from-green-800 to-green-900 border-8 border-amber-900 shadow-2xl">
         {/* 桌面紋理 */}
@@ -268,11 +269,7 @@ function MobileOpponentSeat({ player, isActive }: MobileOpponentSeatProps) {
       </div>
 
       {/* All-in 標記 */}
-      {player.isAllIn && (
-        <span className="text-[8px] bg-red-600 text-white px-1 rounded font-bold animate-pulse">
-          ALL IN
-        </span>
-      )}
+      {player.isAllIn && <AllInBadge size="sm" />}
     </div>
   );
 }
@@ -353,11 +350,7 @@ function MobileHeroSeat({ player, isActive }: MobileHeroSeatProps) {
       )}
 
       {/* All-in 標記 */}
-      {player.isAllIn && (
-        <span className="shrink-0 px-2 py-1 bg-red-600 text-white text-xs font-bold rounded animate-pulse">
-          ALL IN
-        </span>
-      )}
+      {player.isAllIn && <AllInBadge className="shrink-0" />}
     </div>
   );
 }

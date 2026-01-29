@@ -1,9 +1,11 @@
 "use client";
 
+import { memo } from "react";
 import { cn } from "@/lib/utils";
 import type { Player, Position } from "@/lib/poker/types";
 import { POSITION_LABELS } from "@/lib/poker/types";
 import { HoleCards, CardBack } from "../cards";
+import { AllInBadge } from "./AllInBadge";
 import type { AIPlayerProfile } from "@/lib/poker/aiDecisionEngine";
 
 interface SeatProps {
@@ -36,7 +38,7 @@ export const POSITION_TO_SEAT: Record<Position, number> = {
   UTG: 5,
 };
 
-export function Seat({ player, isActive = false, isHero = false, showCards = false, aiProfile, devMode = false, className }: SeatProps) {
+export const Seat = memo(function Seat({ player, isActive = false, isHero = false, showCards = false, aiProfile, devMode = false, className }: SeatProps) {
   if (!player) {
     // 空座位
     return (
@@ -142,11 +144,7 @@ export function Seat({ player, isActive = false, isHero = false, showCards = fal
       </div>
 
       {/* 狀態指示器 */}
-      {player.isAllIn && (
-        <span className="px-2 py-0.5 bg-red-600 text-white text-xs font-bold rounded animate-pulse">
-          ALL IN
-        </span>
-      )}
+      {player.isAllIn && <AllInBadge />}
 
       {/* Dev mode: AI profile info */}
       {devMode && !isHero && aiProfile && (
@@ -159,7 +157,7 @@ export function Seat({ player, isActive = false, isHero = false, showCards = fal
       )}
     </div>
   );
-}
+});
 
 // 迷你版座位 (用於 mobile 或緊湊視圖)
 interface MiniSeatProps {
@@ -168,7 +166,7 @@ interface MiniSeatProps {
   className?: string;
 }
 
-export function MiniSeat({ player, isActive = false, className }: MiniSeatProps) {
+export const MiniSeat = memo(function MiniSeat({ player, isActive = false, className }: MiniSeatProps) {
   return (
     <div
       className={cn(
@@ -185,4 +183,4 @@ export function MiniSeat({ player, isActive = false, className }: MiniSeatProps)
       {player.currentBet > 0 && <span className="text-xs text-orange-400">({player.currentBet})</span>}
     </div>
   );
-}
+});

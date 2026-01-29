@@ -1,5 +1,6 @@
 "use client";
 
+import { memo } from "react";
 import { cn } from "@/lib/utils";
 import type { Card, Suit, Rank } from "@/lib/poker/types";
 import { SUIT_SYMBOLS, SUIT_COLORS } from "@/lib/poker/types";
@@ -18,7 +19,7 @@ const sizeClasses = {
   lg: "w-20 h-28 text-3xl sm:w-24 sm:h-32 sm:text-4xl",
 };
 
-export function PlayingCard({
+export const PlayingCard = memo(function PlayingCard({
   card,
   size = "md",
   hidden = false,
@@ -45,14 +46,14 @@ export function PlayingCard({
       <span className={cn("text-[0.8em]", suitColor)}>{suitSymbol}</span>
     </div>
   );
-}
+});
 
 interface CardBackProps {
   size?: "sm" | "md" | "lg";
   className?: string;
 }
 
-export function CardBack({ size = "md", className }: CardBackProps) {
+export const CardBack = memo(function CardBack({ size = "md", className }: CardBackProps) {
   return (
     <div
       className={cn(
@@ -70,7 +71,7 @@ export function CardBack({ size = "md", className }: CardBackProps) {
       </div>
     </div>
   );
-}
+});
 
 interface HoleCardsProps {
   cards: [Card, Card] | null;
@@ -80,7 +81,7 @@ interface HoleCardsProps {
   className?: string;
 }
 
-export function HoleCards({
+export const HoleCards = memo(function HoleCards({
   cards,
   hidden = false,
   size = "md",
@@ -111,7 +112,7 @@ export function HoleCards({
       <PlayingCard card={cards[1]} size={size} highlighted={highlighted} />
     </div>
   );
-}
+});
 
 // Helper function to create a card from string notation (e.g., "As", "Kh")
 export function parseCard(notation: string): Card {

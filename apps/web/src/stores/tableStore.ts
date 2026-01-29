@@ -22,6 +22,7 @@ import {
   SUITS,
   DEFAULT_CONFIG,
 } from "@/lib/poker/types";
+import { TIMING, TABLE } from "@/lib/poker/constants";
 import { evaluateHand, determineWinners as findWinners } from "@/lib/poker/handEvaluator";
 import { getAIDecision, AI_PROFILES, AIPlayerProfile, getAIProfile } from "@/lib/poker/aiDecisionEngine";
 
@@ -190,6 +191,7 @@ const initialState: Omit<TableState, keyof TableActions> = {
   actionHistory: [],
   streetActions: new Map(),
   phase: "setup",
+  isTransitioning: false,
   winners: null,
   handEvaluations: new Map(),
   trainingMode: {
@@ -250,14 +252,128 @@ export const useTableStore = create<TableState & TableActions>()(
 
       loadScenario: (scenario: ScenarioPreset) => {
         const { config } = get();
+        const dealerIndex = getPositionIndex("BTN");
         const players = createPlayers(
           { ...config, startingStack: scenario.effectiveStack },
           scenario.heroPosition,
-          getPositionIndex("BTN")
+          dealerIndex
         );
+
+        // Apply preflop actions if provided
+        let pot = config.blinds.sb + config.blinds.bb;
+        let currentBet = config.blinds.bb;
+        const actionHistory: ActionRecord[] = [];
+
+        // Apply blinds to initial state
+        const sbIndex = (dealerIndex + 1) % 6;
+        const bbIndex = (dealerIndex + 2) % 6;
+        players[sbIndex].currentBet = config.blinds.sb;
+        players[sbIndex].totalInvested = config.blinds.sb;
+        players[sbIndex].stack -= config.blinds.sb;
+        players[bbIndex].currentBet = config.blinds.bb;
+        players[bbIndex].totalInvested = config.blinds.bb;
+        players[bbIndex].stack -= config.blinds.bb;
+
+        if (scenario.preflopActions && scenario.preflopActions.length > 0) {
+          for (const action of scenario.preflopActions) {
+            const playerIndex = players.findIndex(p => p.position === action.position);
+            if (playerIndex === -1) continue;
+
+            const player = players[playerIndex];
+
+            switch (action.action) {
+              case "fold":
+                player.isFolded = true;
+                break;
+              case "call":
+                const callAmount = currentBet - player.currentBet;
+                player.stack -= callAmount;
+                pot += callAmount;
+                player.currentBet = currentBet;
+                player.totalInvested += callAmount;
+                break;
+              case "raise":
+              case "bet":
+                if (action.amount) {
+                  const raiseAmount = action.amount - player.currentBet;
+                  player.stack -= raiseAmount;
+                  pot += raiseAmount;
+                  player.currentBet = action.amount;
+                  player.totalInvested += raiseAmount;
+                  currentBet = action.amount;
+                }
+                break;
+              case "allin":
+                const allinAmount = player.stack;
+                pot += allinAmount;
+                player.currentBet += allinAmount;
+                player.totalInvested += allinAmount;
+                player.stack = 0;
+                player.isAllIn = true;
+                if (player.currentBet > currentBet) {
+                  currentBet = player.currentBet;
+                }
+                break;
+            }
+
+            actionHistory.push(action);
+          }
+        }
+
+        // Set hero hand if specified
+        let deck = shuffleDeck(createDeck());
+        if (scenario.heroHand) {
+          const heroIndex = players.findIndex(p => p.isHero);
+          if (heroIndex !== -1) {
+            // Remove hero's cards from deck
+            deck = deck.filter(c =>
+              !(c.rank === scenario.heroHand![0].rank && c.suit === scenario.heroHand![0].suit) &&
+              !(c.rank === scenario.heroHand![1].rank && c.suit === scenario.heroHand![1].suit)
+            );
+            players[heroIndex].holeCards = scenario.heroHand;
+          }
+        }
+
+        // Set community cards if board is provided
+        let communityCards: Card[] = [];
+        let currentStreet: Street = "preflop";
+
+        if (scenario.board) {
+          if (scenario.board.flop) {
+            communityCards = [...scenario.board.flop];
+            currentStreet = "flop";
+            // Remove flop cards from deck
+            for (const card of scenario.board.flop) {
+              deck = deck.filter(c => !(c.rank === card.rank && c.suit === card.suit));
+            }
+            // Reset current bets for postflop
+            players.forEach(p => { p.currentBet = 0; });
+            currentBet = 0;
+          }
+          if (scenario.board.turn) {
+            communityCards.push(scenario.board.turn);
+            currentStreet = "turn";
+            deck = deck.filter(c =>
+              !(c.rank === scenario.board!.turn!.rank && c.suit === scenario.board!.turn!.suit)
+            );
+          }
+          if (scenario.board.river) {
+            communityCards.push(scenario.board.river);
+            currentStreet = "river";
+            deck = deck.filter(c =>
+              !(c.rank === scenario.board!.river!.rank && c.suit === scenario.board!.river!.suit)
+            );
+          }
+        }
 
         set({
           players,
+          pot,
+          currentBet,
+          communityCards,
+          currentStreet,
+          deck,
+          actionHistory,
           trainingMode: {
             enabled: true,
             scenario,
@@ -369,8 +485,26 @@ export const useTableStore = create<TableState & TableActions>()(
         // SB acts first postflop (or first active player after dealer)
         const { dealerSeatIndex } = get();
         let firstToAct = (dealerSeatIndex + 1) % 6;
-        while (resetPlayers[firstToAct].isFolded || resetPlayers[firstToAct].isAllIn) {
+        let attempts = 0;
+        while (
+          (resetPlayers[firstToAct].isFolded || resetPlayers[firstToAct].isAllIn) &&
+          attempts < TABLE.MAX_PLAYERS
+        ) {
           firstToAct = (firstToAct + 1) % 6;
+          attempts++;
+        }
+
+        // If all players are folded/all-in, go straight to showdown
+        if (attempts === TABLE.MAX_PLAYERS) {
+          set({
+            deck: newDeck,
+            communityCards: flop,
+            currentStreet: "flop",
+            players: resetPlayers,
+            phase: "showdown",
+          });
+          get().determineWinners();
+          return;
         }
 
         set({
@@ -397,8 +531,26 @@ export const useTableStore = create<TableState & TableActions>()(
         const resetPlayers = players.map(p => ({ ...p, currentBet: 0 }));
 
         let firstToAct = (dealerSeatIndex + 1) % 6;
-        while (resetPlayers[firstToAct].isFolded || resetPlayers[firstToAct].isAllIn) {
+        let attempts = 0;
+        while (
+          (resetPlayers[firstToAct].isFolded || resetPlayers[firstToAct].isAllIn) &&
+          attempts < TABLE.MAX_PLAYERS
+        ) {
           firstToAct = (firstToAct + 1) % 6;
+          attempts++;
+        }
+
+        // If all players are folded/all-in, go straight to showdown
+        if (attempts === TABLE.MAX_PLAYERS) {
+          set({
+            deck: newDeck,
+            communityCards: [...communityCards, turn],
+            currentStreet: "turn",
+            players: resetPlayers,
+            phase: "showdown",
+          });
+          get().determineWinners();
+          return;
         }
 
         set({
@@ -425,8 +577,26 @@ export const useTableStore = create<TableState & TableActions>()(
         const resetPlayers = players.map(p => ({ ...p, currentBet: 0 }));
 
         let firstToAct = (dealerSeatIndex + 1) % 6;
-        while (resetPlayers[firstToAct].isFolded || resetPlayers[firstToAct].isAllIn) {
+        let attempts = 0;
+        while (
+          (resetPlayers[firstToAct].isFolded || resetPlayers[firstToAct].isAllIn) &&
+          attempts < TABLE.MAX_PLAYERS
+        ) {
           firstToAct = (firstToAct + 1) % 6;
+          attempts++;
+        }
+
+        // If all players are folded/all-in, go straight to showdown
+        if (attempts === TABLE.MAX_PLAYERS) {
+          set({
+            deck: newDeck,
+            communityCards: [...communityCards, river],
+            currentStreet: "river",
+            players: resetPlayers,
+            phase: "showdown",
+          });
+          get().determineWinners();
+          return;
         }
 
         set({
@@ -620,10 +790,20 @@ export const useTableStore = create<TableState & TableActions>()(
             actionHistory: newActionHistory,
           });
 
-          const { currentStreet } = get();
+          // Mark as transitioning to prevent race conditions
+          set({ isTransitioning: true });
 
           // Add delay before dealing next street for better UX
           const dealNextStreet = () => {
+            const { isTransitioning, phase } = get();
+
+            // Abort if transition was cancelled (e.g., by resetSession)
+            if (!isTransitioning || phase !== "playing") {
+              return;
+            }
+
+            set({ isTransitioning: false });
+
             const street = get().currentStreet;
             if (street === "preflop") {
               get().dealFlop();
@@ -638,8 +818,8 @@ export const useTableStore = create<TableState & TableActions>()(
             }
           };
 
-          // 600ms delay for street transition (feels more natural)
-          setTimeout(dealNextStreet, 600);
+          // Delay for street transition (feels more natural)
+          setTimeout(dealNextStreet, TIMING.STREET_TRANSITION);
         } else {
           // Continue betting round
           set({
@@ -777,7 +957,7 @@ export const useTableStore = create<TableState & TableActions>()(
         set({ aiThinking: true });
 
         // Simulate AI thinking time
-        await new Promise(resolve => setTimeout(resolve, 600 + Math.random() * 600));
+        await new Promise(resolve => setTimeout(resolve, TIMING.AI_THINKING_MIN + Math.random() * TIMING.AI_THINKING_RANDOM));
 
         const { players, activePlayerIndex, currentBet, pot, currentStreet, communityCards, lastAggressorIndex } = get();
         const aiPlayer = players[activePlayerIndex];
@@ -1018,6 +1198,7 @@ export const useTableStore = create<TableState & TableActions>()(
         set({
           ...initialState,
           phase: "setup",
+          isTransitioning: false, // Cancel any pending street transitions
         });
       },
 

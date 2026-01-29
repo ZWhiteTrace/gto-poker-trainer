@@ -4,3 +4,4 @@ export { CommunityCards, StreetCards } from "./CommunityCards";
 export { PotDisplay, SimplePot } from "./PotDisplay";
 export { ActionButtons, SimpleActionButtons } from "./ActionButtons";
 export { ScenarioSelector, ScenarioButton } from "./ScenarioSelector";
+export { AllInBadge } from "./AllInBadge";

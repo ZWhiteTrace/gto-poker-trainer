@@ -1,5 +1,6 @@
 import { Metadata } from "next";
 import TableTrainerClient from "./TableTrainerClient";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
 
 export const metadata: Metadata = {
   title: "GTO Table Trainer | 撲克桌訓練",
@@ -7,5 +8,9 @@ export const metadata: Metadata = {
 };
 
 export default function TableTrainerPage() {
-  return <TableTrainerClient />;
+  return (
+    <ErrorBoundary>
+      <TableTrainerClient />
+    </ErrorBoundary>
+  );
 }

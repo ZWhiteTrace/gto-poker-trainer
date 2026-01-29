@@ -118,6 +118,10 @@ export function ActionButtons({
                 setInputValue("");
               }}
               disabled={disabled}
+              aria-label="Bet size slider"
+              aria-valuemin={roundToHalf(minBet)}
+              aria-valuemax={roundToHalf(maxBet)}
+              aria-valuenow={roundToHalf(selectedBetSize)}
               className="flex-1 h-2 bg-gray-700 rounded-full appearance-none cursor-pointer
                        [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:h-6
                        [&::-webkit-slider-thumb]:bg-green-500 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:cursor-pointer
@@ -151,6 +155,7 @@ export function ActionButtons({
             variant="ghost"
             onClick={() => onAction("fold")}
             disabled={disabled}
+            aria-label="Fold your hand"
             className="flex-1 h-12 sm:h-12 bg-red-900/40 hover:bg-red-800/60 active:bg-red-700/70 border border-red-700/50 text-red-100"
           >
             <span className="font-bold text-base sm:text-base">Fold</span>
@@ -163,6 +168,7 @@ export function ActionButtons({
             variant="ghost"
             onClick={() => onAction("check")}
             disabled={disabled}
+            aria-label="Check"
             className="flex-1 h-12 sm:h-12 bg-gray-700/50 hover:bg-gray-600/60 active:bg-gray-500/70 border border-gray-600/50 text-gray-100"
           >
             <span className="font-bold text-base sm:text-base">Check</span>
@@ -175,6 +181,7 @@ export function ActionButtons({
             variant="ghost"
             onClick={() => onAction("call")}
             disabled={disabled}
+            aria-label={`Call ${roundToHalf(currentBet)} big blinds`}
             className="flex-1 h-12 sm:h-12 bg-blue-900/40 hover:bg-blue-800/60 active:bg-blue-700/70 border border-blue-700/50 text-blue-100"
           >
             <div className="flex flex-col items-center leading-tight">
@@ -190,6 +197,7 @@ export function ActionButtons({
             variant="ghost"
             onClick={() => onAction(betOrRaiseAction.type, roundToHalf(selectedBetSize))}
             disabled={disabled}
+            aria-label={`${betAction ? "Bet" : "Raise to"} ${roundToHalf(selectedBetSize)} big blinds`}
             className="flex-1 h-12 sm:h-12 bg-green-900/50 hover:bg-green-800/60 active:bg-green-700/70 border border-green-600/50 text-green-100"
           >
             <div className="flex flex-col items-center leading-tight">
@@ -205,6 +213,7 @@ export function ActionButtons({
             variant="ghost"
             onClick={() => onAction("allin")}
             disabled={disabled}
+            aria-label={`Go all in for ${roundToHalf(heroStack)} big blinds`}
             className="flex-1 h-12 sm:h-12 bg-amber-900/50 hover:bg-amber-800/60 active:bg-amber-700/70 border border-amber-600/50 text-amber-100"
           >
             <div className="flex flex-col items-center leading-tight">
