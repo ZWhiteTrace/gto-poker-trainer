@@ -90,7 +90,6 @@ export function Seat({ player, isActive = false, isHero = false, showCards = fal
         )}
       >
         {player.position}
-        {player.isDealer && " D"}
       </div>
 
       {/* 玩家名稱 */}

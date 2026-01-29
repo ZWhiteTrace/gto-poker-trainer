@@ -14,6 +14,7 @@ export default function TableTrainerClient() {
     players,
     communityCards,
     pot,
+    lastWonPot,
     activePlayerIndex,
     phase,
     currentStreet,
@@ -312,6 +313,11 @@ export default function TableTrainerClient() {
                     <span className={winners[0].isHero ? "text-yellow-400 font-bold" : "text-white font-semibold"}>
                       {winners.map(w => w.name).join(", ")}
                     </span>
+                    {lastWonPot > 0 && (
+                      <span className="text-green-400 ml-2">
+                        (+{lastWonPot.toFixed(1)} BB)
+                      </span>
+                    )}
                   </p>
                   {/* Show hand evaluation */}
                   {handEvaluations && handEvaluations.size > 0 && winners[0] && (
@@ -350,27 +356,39 @@ export default function TableTrainerClient() {
                   {actionHistory.length === 0 ? (
                     <p className="text-sm text-gray-500">尚無行動</p>
                   ) : (
-                    actionHistory.slice(-15).map((action, i) => (
-                      <div
-                        key={i}
-                        className={cn(
-                          "text-xs p-1.5 rounded",
-                          action.isHero ? "bg-yellow-500/10" : "bg-gray-700/50"
-                        )}
-                      >
-                        <span className="text-gray-400">{action.position}</span>{" "}
-                        <span className={cn(
-                          action.action === "fold" && "text-red-400",
-                          action.action === "check" && "text-gray-300",
-                          action.action === "call" && "text-blue-400",
-                          (action.action === "bet" || action.action === "raise") && "text-green-400",
-                          action.action === "allin" && "text-red-500 font-bold"
-                        )}>
-                          {action.action.toUpperCase()}
-                        </span>
-                        {action.amount && <span className="text-gray-400"> {action.amount.toFixed(1)}</span>}
-                      </div>
-                    ))
+                    actionHistory.slice(-15).map((action, i, arr) => {
+                      // Show street separator when street changes
+                      const prevAction = i > 0 ? arr[i - 1] : null;
+                      const showStreetHeader = !prevAction || prevAction.street !== action.street;
+
+                      return (
+                        <div key={i}>
+                          {showStreetHeader && (
+                            <div className="text-[10px] text-purple-400 font-semibold mt-2 mb-1 uppercase">
+                              — {action.street} —
+                            </div>
+                          )}
+                          <div
+                            className={cn(
+                              "text-xs p-1.5 rounded",
+                              action.isHero ? "bg-yellow-500/10" : "bg-gray-700/50"
+                            )}
+                          >
+                            <span className="text-gray-400">{action.position}</span>{" "}
+                            <span className={cn(
+                              action.action === "fold" && "text-red-400",
+                              action.action === "check" && "text-gray-300",
+                              action.action === "call" && "text-blue-400",
+                              (action.action === "bet" || action.action === "raise") && "text-green-400",
+                              action.action === "allin" && "text-red-500 font-bold"
+                            )}>
+                              {action.action.toUpperCase()}
+                            </span>
+                            {action.amount && <span className="text-gray-400"> {action.amount.toFixed(1)}</span>}
+                          </div>
+                        </div>
+                      );
+                    })
                   )}
                 </div>
               </CardContent>

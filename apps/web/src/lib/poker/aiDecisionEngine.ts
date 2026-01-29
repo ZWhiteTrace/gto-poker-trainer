@@ -401,8 +401,18 @@ function getRFIDecision(
   let openProb = 0;
 
   if (gtoFreq && gtoFreq.raise > 0) {
-    // Hand is in GTO range
-    openProb = gtoFreq.raise / 100;
+    // Hand is in GTO range - use GTO frequency as base
+    const gtoRaiseProb = gtoFreq.raise / 100;
+
+    // For 100% raise hands, ALWAYS raise (no variance)
+    if (gtoFreq.raise >= 100) {
+      openProb = 1.0;
+    } else {
+      // For mixed frequency hands, adjust based on profile
+      // Looser players open more, tighter players open less
+      const vpipMultiplier = profile.vpip / 0.24; // Normalized to GTO baseline
+      openProb = Math.min(1.0, gtoRaiseProb * vpipMultiplier);
+    }
   } else {
     // Hand is not in GTO range - adjust based on VPIP
     // LAGs and maniacs open wider
@@ -421,17 +431,18 @@ function getRFIDecision(
 
   // Decision based on probability
   if (Math.random() < openProb) {
-    // Calculate raise size based on position
+    // Calculate raise size based on position (rounded to 0.5 BB)
     const positionSizes: Record<Position, number> = {
-      UTG: 2.2,
-      MP: 2.2,
-      CO: 2.3,
+      UTG: 2.5,
+      MP: 2.5,
+      CO: 2.5,
       BTN: 2.5,
       SB: 3.0,
       BB: 3.0,
     };
     const baseSize = positionSizes[position] || 2.5;
-    const raiseSize = baseSize * (0.9 + profile.aggression * 0.2);
+    // Round to 0.5 BB
+    const raiseSize = Math.round(baseSize * (0.9 + profile.aggression * 0.2) * 2) / 2;
 
     return {
       action: "raise",
@@ -469,21 +480,28 @@ function getVsRFIDecision(
 
   if (gtoFreq) {
     // Use GTO frequencies as baseline
-    threeBetProb = gtoFreq.threeBet / 100;
-    callProb = gtoFreq.call / 100;
+    const gto3bet = gtoFreq.threeBet / 100;
+    const gtoCall = gtoFreq.call / 100;
 
-    // Adjust based on player style
-    // Higher 3bet frequency = more 3bets
-    const threeBetAdjust = profile.threeBetFreq / 0.08; // Normalized to GTO
-    threeBetProb *= threeBetAdjust;
+    // For 100% action hands, respect GTO (no adjustments)
+    if (gtoFreq.threeBet >= 100) {
+      threeBetProb = 1.0;
+      callProb = 0;
+    } else if (gtoFreq.call >= 100) {
+      threeBetProb = 0;
+      callProb = 1.0;
+    } else {
+      // Mixed frequency - adjust based on player style
+      const threeBetAdjust = profile.threeBetFreq / 0.08;
+      threeBetProb = Math.min(1.0, gto3bet * threeBetAdjust);
 
-    // Looser players call more
-    const callAdjust = profile.vpip / 0.24;
-    callProb *= Math.min(callAdjust, 1.5);
+      const callAdjust = profile.vpip / 0.24;
+      callProb = Math.min(1.0 - threeBetProb, gtoCall * Math.min(callAdjust, 1.5));
 
-    // Tighter players 3bet less
-    if (profile.vpip < 0.20) {
-      threeBetProb *= 0.7;
+      // Tighter players 3bet less
+      if (profile.vpip < 0.20) {
+        threeBetProb *= 0.7;
+      }
     }
   } else {
     // Hand not in GTO range - base on player style
@@ -511,9 +529,9 @@ function getVsRFIDecision(
 
   // 3-bet decision
   if (rand < threeBetProb) {
-    // 3bet sizing: IP ~3x, OOP ~3.5-4x
+    // 3bet sizing: IP ~3x, OOP ~3.5-4x (rounded to 0.5 BB)
     const isIP = isInPosition(position, raiserPosition);
-    const threeBetSize = currentBet * (isIP ? 3 : 3.5);
+    const threeBetSize = Math.round(currentBet * (isIP ? 3 : 3.5) * 2) / 2;
 
     return {
       action: "raise",
@@ -668,7 +686,8 @@ function getPostflopBetDecision(
       betMultiplier = 0.45 + profile.aggression * 0.15; // 45-60%
     }
 
-    const betSize = pot * betMultiplier;
+    // Round to 0.5 BB
+    const betSize = Math.round(pot * betMultiplier * 2) / 2;
 
     return {
       action: "bet",
@@ -703,7 +722,8 @@ function getFacingBetDecision(
     const raiseProb = 0.5 + profile.aggression * 0.3;
 
     if (Math.random() < raiseProb) {
-      const raiseSize = currentBet * (2 + profile.aggression);
+      // Round to 0.5 BB
+      const raiseSize = Math.round(currentBet * (2 + profile.aggression) * 2) / 2;
       return {
         action: "raise",
         amount: Math.min(raiseSize, stack + playerBet),
@@ -717,7 +737,8 @@ function getFacingBetDecision(
   // Strong hands - mostly call, sometimes raise
   if (handStrength > 0.6) {
     if (Math.random() < profile.aggression * 0.3) {
-      const raiseSize = currentBet * 2.5;
+      // Round to 0.5 BB
+      const raiseSize = Math.round(currentBet * 2.5 * 2) / 2;
       return {
         action: "raise",
         amount: Math.min(raiseSize, stack + playerBet),
@@ -740,7 +761,8 @@ function getFacingBetDecision(
 
   // Weak hands - fold or bluff raise
   if (Math.random() < profile.bluffFreq * 0.15 && toCall < pot * 0.5) {
-    const raiseSize = currentBet * 2.5;
+    // Round to 0.5 BB
+    const raiseSize = Math.round(currentBet * 2.5 * 2) / 2;
     return {
       action: "raise",
       amount: Math.min(raiseSize, stack + playerBet),

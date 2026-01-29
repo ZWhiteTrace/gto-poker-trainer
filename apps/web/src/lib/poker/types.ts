@@ -201,6 +201,7 @@ export interface TableState {
   players: Player[];
   communityCards: Card[];
   pot: number;
+  lastWonPot: number; // Store the won pot for display at result phase
   sidePots: SidePot[];
   deck: Card[];
 
@@ -208,6 +209,7 @@ export interface TableState {
   currentStreet: Street;
   activePlayerIndex: number;
   lastAggressorIndex: number | null;
+  actionsThisRound: number; // Track actions since last raise/bet for round completion
   currentBet: number;
   minRaise: number;
 

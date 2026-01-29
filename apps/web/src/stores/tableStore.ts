@@ -131,11 +131,13 @@ const initialState: Omit<TableState, keyof TableActions> = {
   players: [],
   communityCards: [],
   pot: 0,
+  lastWonPot: 0, // Store the won pot for display
   sidePots: [],
   deck: [],
   currentStreet: "preflop",
   activePlayerIndex: 0,
   lastAggressorIndex: null,
+  actionsThisRound: 0, // Track number of actions since last raise/bet
   currentBet: 0,
   minRaise: 1,
   actionHistory: [],
@@ -273,6 +275,7 @@ export const useTableStore = create<TableState & TableActions>()(
           lastAggressorIndex: bbIndex, // BB is initial aggressor
           currentBet: config.blinds.bb,
           minRaise: config.blinds.bb,
+          actionsThisRound: 0, // Start with 0 actions
           actionHistory: [],
           streetActions: new Map([["preflop", []]]),
           phase: "playing",
@@ -401,7 +404,9 @@ export const useTableStore = create<TableState & TableActions>()(
         const newPlayers = [...players];
         let newPot = pot;
         let newCurrentBet = currentBet;
+        let newMinRaise = state.minRaise;
         let newLastAggressor = state.lastAggressorIndex;
+        let newActionsThisRound = state.actionsThisRound + 1; // Increment action counter
 
         const actionRecord: ActionRecord = {
           playerId: player.id,
@@ -449,33 +454,43 @@ export const useTableStore = create<TableState & TableActions>()(
             const toAdd = totalBet - player.currentBet;
             const actualAdd = Math.min(toAdd, player.stack);
 
+            // Calculate the raise increment for minimum re-raise
+            const newTotalBet = player.currentBet + actualAdd;
+            const raiseIncrement = newTotalBet - currentBet;
+            if (raiseIncrement > 0) {
+              newMinRaise = raiseIncrement;
+            }
+
             newPlayers[activePlayerIndex] = {
               ...player,
               stack: player.stack - actualAdd,
-              currentBet: player.currentBet + actualAdd,
+              currentBet: newTotalBet,
               totalInvested: player.totalInvested + actualAdd,
               isAllIn: player.stack - actualAdd === 0,
             };
             newPot += actualAdd;
-            newCurrentBet = player.currentBet + actualAdd;
+            newCurrentBet = newTotalBet;
             newLastAggressor = activePlayerIndex;
+            newActionsThisRound = 1; // Reset counter on bet/raise (this counts as first action)
             actionRecord.amount = totalBet;
             break;
           }
 
           case "allin": {
             const allInAmount = player.stack;
+            const newTotalBet = player.currentBet + allInAmount;
             newPlayers[activePlayerIndex] = {
               ...player,
               stack: 0,
-              currentBet: player.currentBet + allInAmount,
+              currentBet: newTotalBet,
               totalInvested: player.totalInvested + allInAmount,
               isAllIn: true,
             };
             newPot += allInAmount;
-            if (player.currentBet + allInAmount > currentBet) {
-              newCurrentBet = player.currentBet + allInAmount;
+            if (newTotalBet > currentBet) {
+              newCurrentBet = newTotalBet;
               newLastAggressor = activePlayerIndex;
+              newActionsThisRound = 1; // Reset counter if this is a raise
             }
             actionRecord.amount = allInAmount;
             break;
@@ -511,28 +526,40 @@ export const useTableStore = create<TableState & TableActions>()(
             players: newPlayers,
             pot: newPot,
             currentBet: newCurrentBet,
+            minRaise: config.blinds.bb, // Reset minRaise for new street
+            actionsThisRound: 0, // Reset action counter for new street
             lastAggressorIndex: newLastAggressor,
             actionHistory: newActionHistory,
           });
 
           const { currentStreet } = get();
-          if (currentStreet === "preflop") {
-            get().dealFlop();
-          } else if (currentStreet === "flop") {
-            get().dealTurn();
-          } else if (currentStreet === "turn") {
-            get().dealRiver();
-          } else {
-            // Showdown
-            set({ phase: "showdown" });
-            get().determineWinners();
-          }
+
+          // Add delay before dealing next street for better UX
+          const dealNextStreet = () => {
+            const street = get().currentStreet;
+            if (street === "preflop") {
+              get().dealFlop();
+            } else if (street === "flop") {
+              get().dealTurn();
+            } else if (street === "turn") {
+              get().dealRiver();
+            } else {
+              // Showdown
+              set({ phase: "showdown" });
+              get().determineWinners();
+            }
+          };
+
+          // 600ms delay for street transition (feels more natural)
+          setTimeout(dealNextStreet, 600);
         } else {
           // Continue betting round
           set({
             players: newPlayers,
             pot: newPot,
             currentBet: newCurrentBet,
+            minRaise: newMinRaise,
+            actionsThisRound: newActionsThisRound,
             lastAggressorIndex: newLastAggressor,
             activePlayerIndex: nextPlayerIndex,
             actionHistory: newActionHistory,
@@ -546,7 +573,7 @@ export const useTableStore = create<TableState & TableActions>()(
       },
 
       checkBettingRoundComplete: (players: Player[], nextIndex: number, lastAggressor: number | null) => {
-        const { currentBet } = get();
+        const { currentBet, actionsThisRound } = get();
 
         // Players who can still act (not folded, not all-in)
         const playersWhoCanAct = players.filter(p => p.isActive && !p.isFolded && !p.isAllIn);
@@ -565,16 +592,16 @@ export const useTableStore = create<TableState & TableActions>()(
         }
 
         // Multiple players can act - check if bets are equal
-        const firstBet = playersWhoCanAct[0].currentBet;
-        const allBetsEqual = playersWhoCanAct.every(p => p.currentBet === firstBet);
+        const allBetsEqual = playersWhoCanAct.every(p => p.currentBet === currentBet);
 
-        // Round is complete when we're back to the last aggressor (or all checked)
-        if (lastAggressor === null) {
-          // No aggressor, check if we've gone around
-          return nextIndex === players.findIndex(p => p.isActive && !p.isFolded && !p.isAllIn);
+        // Round is complete when:
+        // 1. All bets are equal (everyone has matched or checked)
+        // 2. AND everyone has had a chance to act (actions >= number of active players)
+        if (allBetsEqual && actionsThisRound >= playersWhoCanAct.length) {
+          return true;
         }
 
-        return nextIndex === lastAggressor && allBetsEqual;
+        return false;
       },
 
       getAvailableActions: (): AvailableAction[] => {
@@ -628,12 +655,14 @@ export const useTableStore = create<TableState & TableActions>()(
 
         // Raise if there's a bet
         if (currentBet > 0 && player.stack > toCall) {
-          const minRaise = currentBet + config.blinds.bb;
+          // Minimum raise = current bet + raise increment (at least 1 BB)
+          const { minRaise: raiseIncrement } = get();
+          const minRaiseAmount = currentBet + Math.max(raiseIncrement, config.blinds.bb);
           actions.push({
             type: "raise",
             label: "Raise",
             labelZh: "加注",
-            minAmount: minRaise,
+            minAmount: minRaiseAmount,
             maxAmount: player.stack + player.currentBet,
           });
         }
@@ -722,19 +751,35 @@ export const useTableStore = create<TableState & TableActions>()(
           set({
             players: newPlayers,
             winners: [winner],
+            lastWonPot: pot, // Store pot for display
             pot: 0,
             phase: "result",
           });
 
-          // Update session stats
+          // Update session stats - always increment handsPlayed
+          const heroPlayer = players.find(p => p.isHero);
+          const heroInvested = heroPlayer?.totalInvested ?? 0;
+          const { sessionStats } = get();
+
           if (winner.isHero) {
-            const { sessionStats } = get();
+            // Hero won the pot
+            const netProfit = pot - heroInvested;
             set({
               sessionStats: {
                 ...sessionStats,
                 handsPlayed: sessionStats.handsPlayed + 1,
                 handsWon: sessionStats.handsWon + 1,
-                totalProfit: sessionStats.totalProfit + pot,
+                totalProfit: sessionStats.totalProfit + netProfit,
+                biggestPot: Math.max(sessionStats.biggestPot, pot),
+              },
+            });
+          } else {
+            // Hero lost (folded or was the one remaining when everyone folded)
+            set({
+              sessionStats: {
+                ...sessionStats,
+                handsPlayed: sessionStats.handsPlayed + 1,
+                totalProfit: sessionStats.totalProfit - heroInvested,
                 biggestPot: Math.max(sessionStats.biggestPot, pot),
               },
             });
@@ -756,6 +801,7 @@ export const useTableStore = create<TableState & TableActions>()(
             set({
               players: newPlayers,
               winners: [winner],
+              lastWonPot: pot, // Store pot for display
               pot: 0,
               phase: "result",
             });
@@ -802,26 +848,40 @@ export const useTableStore = create<TableState & TableActions>()(
             players: newPlayers,
             winners: winnerPlayers,
             handEvaluations: evaluations,
+            lastWonPot: pot, // Store pot for display
             pot: 0,
             phase: "showdown",
           });
 
-          // Update session stats
+          // Update session stats - get hero from all players (may have folded)
           const heroWon = winnerPlayers.some(w => w.isHero);
-          const heroPlayer = activePlayers.find(p => p.isHero);
+          const heroPlayer = players.find(p => p.isHero);
           const heroInvested = heroPlayer?.totalInvested ?? 0;
           const { sessionStats } = get();
-          set({
-            sessionStats: {
-              ...sessionStats,
-              handsPlayed: sessionStats.handsPlayed + 1,
-              handsWon: heroWon ? sessionStats.handsWon + 1 : sessionStats.handsWon,
-              totalProfit: heroWon
-                ? sessionStats.totalProfit + (potShare - heroInvested)
-                : sessionStats.totalProfit - heroInvested,
-              biggestPot: Math.max(sessionStats.biggestPot, pot),
-            },
-          });
+
+          if (heroWon) {
+            // Hero won (or split the pot)
+            const netProfit = potShare - heroInvested;
+            set({
+              sessionStats: {
+                ...sessionStats,
+                handsPlayed: sessionStats.handsPlayed + 1,
+                handsWon: sessionStats.handsWon + 1,
+                totalProfit: sessionStats.totalProfit + netProfit,
+                biggestPot: Math.max(sessionStats.biggestPot, pot),
+              },
+            });
+          } else {
+            // Hero lost (folded earlier or lost at showdown)
+            set({
+              sessionStats: {
+                ...sessionStats,
+                handsPlayed: sessionStats.handsPlayed + 1,
+                totalProfit: sessionStats.totalProfit - heroInvested,
+                biggestPot: Math.max(sessionStats.biggestPot, pot),
+              },
+            });
+          }
         }
       },
 
