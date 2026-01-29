@@ -130,6 +130,35 @@
   max-width: min(100%, 1280px);
 }
 
+/* Card dealing animations */
+@keyframes card-deal {
+  0% {
+    opacity: 0;
+    transform: scale(0.8) translateY(-10px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes card-highlight {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(250, 204, 21, 0);
+  }
+  50% {
+    box-shadow: 0 0 20px 5px rgba(250, 204, 21, 0.5);
+  }
+}
+
+.animate-card-deal {
+  animation: card-deal 0.4s ease-out forwards;
+}
+
+.animate-card-highlight {
+  animation: card-highlight 1s ease-in-out;
+}
+
 /* Hide global navbar and footer on table-trainer page for full-screen experience */
 body.table-trainer-active footer,
 body.table-trainer-active header:not([data-table-trainer-header]) {

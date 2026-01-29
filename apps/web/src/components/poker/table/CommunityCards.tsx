@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 import type { Card } from "@/lib/poker/types";
 import { PlayingCard, CardBack } from "../cards";
@@ -15,18 +16,47 @@ export function CommunityCards({ cards, size = "md", className }: CommunityCards
   const displayCards = cards.slice(0, 5);
   const emptySlots = 5 - displayCards.length;
 
+  // Track which cards are newly dealt for animation
+  const prevCardCount = useRef(0);
+  const [newCardIndices, setNewCardIndices] = useState<number[]>([]);
+
+  useEffect(() => {
+    if (cards.length > prevCardCount.current) {
+      // New cards were dealt
+      const newIndices = Array.from(
+        { length: cards.length - prevCardCount.current },
+        (_, i) => prevCardCount.current + i
+      );
+      setNewCardIndices(newIndices);
+
+      // Clear the "new" status after animation
+      const timer = setTimeout(() => setNewCardIndices([]), 1000);
+      return () => clearTimeout(timer);
+    } else if (cards.length < prevCardCount.current) {
+      // Board was reset
+      setNewCardIndices([]);
+    }
+    prevCardCount.current = cards.length;
+  }, [cards.length]);
+
   return (
     <div className={cn("flex gap-1.5 sm:gap-2", className)}>
       {/* 已發出的公牌 */}
-      {displayCards.map((card, index) => (
-        <div
-          key={`${card.rank}${card.suit}-${index}`}
-          className="animate-fade-in"
-          style={{ animationDelay: `${index * 100}ms` }}
-        >
-          <PlayingCard card={card} size={size} />
-        </div>
-      ))}
+      {displayCards.map((card, index) => {
+        const isNew = newCardIndices.includes(index);
+        return (
+          <div
+            key={`${card.rank}${card.suit}-${index}`}
+            className={cn(
+              isNew && "animate-card-deal",
+              isNew && "animate-card-highlight"
+            )}
+            style={{ animationDelay: isNew ? `${(index - (cards.length - newCardIndices.length)) * 100}ms` : undefined }}
+          >
+            <PlayingCard card={card} size={size} />
+          </div>
+        );
+      })}
 
       {/* 空位佔位符 (可選，視覺參考用) */}
       {emptySlots > 0 && cards.length > 0 && (

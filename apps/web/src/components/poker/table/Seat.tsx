@@ -63,11 +63,19 @@ export function Seat({ player, isActive = false, isHero = false, showCards = fal
         "w-24 sm:w-28",
         "rounded-xl border-2",
         "transition-all duration-300",
-        isActive && !player.isFolded
-          ? "border-primary ring-2 ring-primary/50 bg-primary/10"
-          : "border-gray-600/50 bg-gray-800/50",
+        // Active player - prominent glow effect
+        isActive && !player.isFolded && [
+          "border-yellow-400",
+          "bg-yellow-400/10",
+          "shadow-[0_0_20px_rgba(250,204,21,0.4)]",
+          "animate-pulse",
+        ],
+        // Inactive player
+        !isActive && "border-gray-600/50 bg-gray-800/50",
+        // Folded player
         player.isFolded && "opacity-50",
-        isHero && "ring-2 ring-yellow-500/50",
+        // Hero styling (when not active)
+        isHero && !isActive && "ring-2 ring-yellow-500/30 border-yellow-500/50",
         className
       )}
     >
