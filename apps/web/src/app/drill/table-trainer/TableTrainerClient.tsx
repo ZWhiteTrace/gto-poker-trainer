@@ -2,6 +2,8 @@
 
 import { useEffect, useState, useRef } from "react";
 import { useTableStore } from "@/stores/tableStore";
+import { useProgressStore } from "@/stores/progressStore";
+import { useAuthStore } from "@/stores/authStore";
 import { PokerTable, CompactPokerTable, ActionButtons, ScenarioSelector, ScenarioButton } from "@/components/poker/table";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -40,6 +42,11 @@ export default function TableTrainerClient() {
   const [showScenarioSelector, setShowScenarioSelector] = useState(false);
   const [devMode, setDevMode] = useState(false);
   const aiTurnTriggered = useRef(false);
+  const handRecorded = useRef(false);
+
+  // Progress tracking
+  const { recordTableTrainerHand } = useProgressStore();
+  const { user } = useAuthStore();
 
   // Initialize on mount
   useEffect(() => {
@@ -79,6 +86,23 @@ export default function TableTrainerClient() {
   useEffect(() => {
     aiTurnTriggered.current = false;
   }, [activePlayerIndex]);
+
+  // Record hand result when phase changes to "result"
+  useEffect(() => {
+    if (phase === "result" && winners && !handRecorded.current) {
+      handRecorded.current = true;
+      const hero = players.find(p => p.isHero);
+      if (hero) {
+        const isWin = winners.some(w => w.isHero);
+        const profitBB = isWin ? lastWonPot - hero.totalInvested : -hero.totalInvested;
+        recordTableTrainerHand(hero.position, isWin, profitBB, user?.id);
+      }
+    }
+    // Reset flag when starting new hand
+    if (phase === "setup" || phase === "playing") {
+      handRecorded.current = false;
+    }
+  }, [phase, winners, players, lastWonPot, recordTableTrainerHand, user?.id]);
 
   const handleLoadScenario = (scenario: ScenarioPreset) => {
     loadScenario(scenario);

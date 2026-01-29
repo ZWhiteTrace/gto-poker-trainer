@@ -3,7 +3,7 @@ import { persist } from "zustand/middleware";
 import { createClient } from "@/lib/supabase/client";
 import { updateLeaderboardStats, type Achievement } from "@/lib/supabase/leaderboard";
 
-type DrillType = "rfi" | "vs_rfi" | "vs_3bet" | "vs_4bet" | "push_fold" | "push_fold_defense" | "push_fold_resteal" | "push_fold_hu";
+type DrillType = "rfi" | "vs_rfi" | "vs_3bet" | "vs_4bet" | "push_fold" | "push_fold_defense" | "push_fold_resteal" | "push_fold_hu" | "table_trainer";
 type QuizType = "equity" | "outs" | "ev" | "logic" | "exploit";
 
 interface DrillResult {
@@ -72,6 +72,12 @@ interface ProgressState {
     isCorrect: boolean,
     userId?: string
   ) => Promise<void>;
+  recordTableTrainerHand: (
+    heroPosition: string,
+    isWin: boolean,
+    profitBB: number,
+    userId?: string
+  ) => Promise<void>;
   syncToCloud: (userId: string) => Promise<void>;
   loadFromCloud: (userId: string) => Promise<void>;
   getWeakPositions: (drillType: DrillType) => string[];
@@ -102,6 +108,7 @@ const initialState = {
     push_fold_defense: { ...initialStats },
     push_fold_resteal: { ...initialStats },
     push_fold_hu: { ...initialStats },
+    table_trainer: { ...initialStats },
   },
   quizStats: {
     equity: { ...initialQuizStats },
@@ -269,6 +276,49 @@ export const useProgressStore = create<ProgressState>()(
             });
           } catch (error) {
             console.error("Failed to sync quiz result to cloud:", error);
+          }
+        }
+      },
+
+      recordTableTrainerHand: async (
+        heroPosition: string,
+        isWin: boolean,
+        profitBB: number,
+        userId?: string
+      ) => {
+        const { stats, dailyHistory } = get();
+        const drillStats = stats.table_trainer;
+
+        // Update local stats
+        const newStats = { ...drillStats };
+        newStats.total += 1;
+        if (isWin) newStats.correct += 1;
+        newStats.lastPracticed = new Date().toISOString();
+
+        // Update position stats
+        const posStats = newStats.byPosition[heroPosition] || {
+          total: 0,
+          correct: 0,
+          acceptable: 0,
+        };
+        posStats.total += 1;
+        if (isWin) posStats.correct += 1;
+        newStats.byPosition[heroPosition] = posStats;
+
+        // Update daily history
+        const newDailyHistory = updateDailyHistory(dailyHistory, isWin);
+
+        set({
+          stats: { ...stats, table_trainer: newStats },
+          dailyHistory: newDailyHistory,
+        });
+
+        // Sync to leaderboard if user is logged in
+        if (userId) {
+          try {
+            await updateLeaderboardStats(userId, isWin);
+          } catch (error) {
+            console.error("Failed to update leaderboard:", error);
           }
         }
       },
