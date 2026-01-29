@@ -43,7 +43,6 @@ export default function TableTrainerClient() {
   const [showScenarioSelector, setShowScenarioSelector] = useState(false);
   const [devMode, setDevMode] = useState(false);
   const [showMobileSidebar, setShowMobileSidebar] = useState(false);
-  const aiTurnTriggered = useRef(false);
   const handRecorded = useRef(false);
 
   // Progress tracking
@@ -57,37 +56,34 @@ export default function TableTrainerClient() {
     }
   }, [players.length, initializeTable]);
 
+  // Track which player index we last triggered AI for
+  const lastAITriggerIndex = useRef<number>(-1);
+
   // Trigger AI turn when it's an AI's turn to act
   useEffect(() => {
     const activePlayer = players[activePlayerIndex];
+
+    // Reset tracking when phase changes or it's hero's turn
+    if (phase !== "playing" || activePlayer?.isHero) {
+      lastAITriggerIndex.current = -1;
+      return;
+    }
 
     // Only trigger if:
     // 1. Game is in playing phase
     // 2. Active player exists and is not hero
     // 3. AI is not already thinking
-    // 4. We haven't already triggered this turn
+    // 4. We haven't already triggered for this specific player index
     if (
-      phase === "playing" &&
       activePlayer &&
-      !activePlayer.isHero &&
       !activePlayer.isFolded &&
       !aiThinking &&
-      !aiTurnTriggered.current
+      lastAITriggerIndex.current !== activePlayerIndex
     ) {
-      aiTurnTriggered.current = true;
+      lastAITriggerIndex.current = activePlayerIndex;
       processAITurn();
     }
-
-    // Reset the trigger flag when the active player changes
-    if (activePlayer?.isHero) {
-      aiTurnTriggered.current = false;
-    }
   }, [phase, activePlayerIndex, players, aiThinking, processAITurn]);
-
-  // Reset AI trigger when active player changes
-  useEffect(() => {
-    aiTurnTriggered.current = false;
-  }, [activePlayerIndex]);
 
   // Record hand result when phase changes to "result" or "showdown"
   useEffect(() => {
@@ -113,38 +109,59 @@ export default function TableTrainerClient() {
     setShowScenarioSelector(false);
   };
 
-  // Keyboard shortcuts
+  // Keyboard shortcuts with safety checks
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      // Skip if any modifier key is pressed
+      if (e.ctrlKey || e.altKey || e.metaKey || e.shiftKey) return;
+
+      // Skip if user is typing in an input field
+      const target = e.target as HTMLElement;
+      if (target.tagName === "INPUT" || target.tagName === "TEXTAREA" || target.isContentEditable) {
+        return;
+      }
+
       if (phase !== "playing") return;
       const activePlayer = players[activePlayerIndex];
       if (!activePlayer?.isHero) return;
 
       const actions = getAvailableActions();
+      let handled = false;
+
       switch (e.key.toLowerCase()) {
         case "f":
           if (actions.find((a) => a.type === "fold")) {
             handleAction("fold");
+            handled = true;
           }
           break;
         case "c":
           if (actions.find((a) => a.type === "check")) {
             handleAction("check");
+            handled = true;
           } else if (actions.find((a) => a.type === "call")) {
             handleAction("call");
+            handled = true;
           }
           break;
         case "r":
           const betAction = actions.find((a) => a.type === "bet" || a.type === "raise");
           if (betAction) {
             handleAction(betAction.type, selectedBetSize || betAction.minAmount);
+            handled = true;
           }
           break;
         case "a":
           if (actions.find((a) => a.type === "allin")) {
             handleAction("allin");
+            handled = true;
           }
           break;
+      }
+
+      // Prevent default only if we handled the key
+      if (handled) {
+        e.preventDefault();
       }
     };
 

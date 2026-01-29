@@ -116,6 +116,53 @@ function countActivePlayers(players: Player[]): number {
   return players.filter(p => p.isActive && !p.isFolded).length;
 }
 
+// Side pot calculation for multi-way all-in scenarios
+// Uses SidePot type from types.ts
+
+function calculateSidePots(players: Player[]): { amount: number; eligiblePlayers: string[] }[] {
+  // Get all players who contributed to the pot (including folded players)
+  const contributors = players.filter(p => p.totalInvested > 0);
+  if (contributors.length === 0) return [];
+
+  // Get unique investment levels, sorted ascending
+  const investmentLevels = [...new Set(contributors.map(p => p.totalInvested))].sort((a, b) => a - b);
+
+  const pots: { amount: number; eligiblePlayers: string[] }[] = [];
+  let previousLevel = 0;
+
+  for (const level of investmentLevels) {
+    if (level > previousLevel) {
+      const contribution = level - previousLevel;
+
+      // Count how many players contributed at least this level
+      const playersAtThisLevel = contributors.filter(p => p.totalInvested >= level);
+
+      // Pot amount = contribution * number of players who contributed at least this much
+      const potAmount = contribution * playersAtThisLevel.length;
+
+      // Only non-folded players are eligible to win
+      const eligiblePlayersList = playersAtThisLevel.filter(p => !p.isFolded);
+
+      if (potAmount > 0 && eligiblePlayersList.length > 0) {
+        pots.push({
+          amount: potAmount,
+          eligiblePlayers: eligiblePlayersList.map(p => p.id),
+        });
+      } else if (potAmount > 0 && eligiblePlayersList.length === 0) {
+        // All eligible players folded - add to previous pot or create dead money pot
+        // This money goes to the last pot with eligible players
+        if (pots.length > 0) {
+          pots[pots.length - 1].amount += potAmount;
+        }
+      }
+
+      previousLevel = level;
+    }
+  }
+
+  return pots;
+}
+
 function getPositionIndex(position: Position): number {
   return POSITIONS.indexOf(position);
 }
@@ -455,8 +502,16 @@ export const useTableStore = create<TableState & TableActions>()(
 
           case "bet":
           case "raise": {
-            const betAmount = amount || config.blinds.bb * 2;
-            const totalBet = action === "raise" ? betAmount : betAmount;
+            // Validate bet amount
+            const { minRaise } = get();
+            const minBetAmount = action === "bet" ? config.blinds.bb : currentBet + minRaise;
+            const maxBetAmount = player.stack + player.currentBet;
+
+            // Clamp amount to valid range
+            let betAmount = amount || minBetAmount;
+            betAmount = Math.max(minBetAmount, Math.min(betAmount, maxBetAmount));
+
+            const totalBet = betAmount;
             const toAdd = totalBet - player.currentBet;
             const actualAdd = Math.min(toAdd, player.stack);
 
@@ -849,52 +904,76 @@ export const useTableStore = create<TableState & TableActions>()(
               holeCards: p.holeCards as [Card, Card],
             }));
 
-          const winnerResults = findWinners(playersWithCards, communityCards);
-
-          // Store hand evaluations
-          const evaluations = new Map<string, typeof winnerResults[0]['evaluation']>();
+          // Store hand evaluations for all players
+          const evaluations = new Map<string, ReturnType<typeof evaluateHand>>();
           for (const player of playersWithCards) {
             const eval_ = evaluateHand(player.holeCards, communityCards);
             evaluations.set(player.id, eval_);
           }
 
-          // Calculate pot share (handles ties)
-          const potShare = pot / winnerResults.length;
+          // Calculate side pots for proper multi-way all-in handling
+          const sidePots = calculateSidePots(players);
+
+          // Track winnings for each player
+          const winnings = new Map<string, number>();
+          const allWinnerIds = new Set<string>();
+
+          // Award each pot to its winner(s)
+          for (const sidePot of sidePots) {
+            // Find eligible players with cards for this pot
+            const eligibleWithCards = playersWithCards.filter(
+              p => sidePot.eligiblePlayers.includes(p.id)
+            );
+
+            if (eligibleWithCards.length === 0) continue;
+
+            // Find winner(s) among eligible players
+            const potWinners = findWinners(eligibleWithCards, communityCards);
+            const potShare = sidePot.amount / potWinners.length;
+
+            // Record winnings
+            for (const winner of potWinners) {
+              const current = winnings.get(winner.playerId) || 0;
+              winnings.set(winner.playerId, current + potShare);
+              allWinnerIds.add(winner.playerId);
+            }
+          }
 
           // Update player stacks
           const newPlayers = [...players];
-          const winnerIds = new Set(winnerResults.map(w => w.playerId));
-
           for (let i = 0; i < newPlayers.length; i++) {
-            if (winnerIds.has(newPlayers[i].id)) {
+            const playerWinnings = winnings.get(newPlayers[i].id);
+            if (playerWinnings && playerWinnings > 0) {
               newPlayers[i] = {
                 ...newPlayers[i],
-                stack: newPlayers[i].stack + potShare,
+                stack: newPlayers[i].stack + playerWinnings,
               };
             }
           }
 
-          // Get winner Player objects
-          const winnerPlayers = activePlayers.filter(p => winnerIds.has(p.id));
+          // Get winner Player objects (players who won at least one pot)
+          const winnerPlayers = activePlayers.filter(p => allWinnerIds.has(p.id));
 
           set({
             players: newPlayers,
             winners: winnerPlayers,
             handEvaluations: evaluations,
+            sidePots, // Store side pots for potential UI display
             lastWonPot: pot, // Store pot for display
             pot: 0,
             phase: "showdown",
           });
 
           // Update session stats - get hero from all players (may have folded)
-          const heroWon = winnerPlayers.some(w => w.isHero);
           const heroPlayer = players.find(p => p.isHero);
           const heroInvested = heroPlayer?.totalInvested ?? 0;
+          const heroWinnings = heroPlayer ? (winnings.get(heroPlayer.id) || 0) : 0;
+          const heroWon = heroWinnings > 0;
           const { sessionStats } = get();
 
           if (heroWon) {
-            // Hero won (or split the pot)
-            const netProfit = potShare - heroInvested;
+            // Hero won (or split a pot)
+            const netProfit = heroWinnings - heroInvested;
             set({
               sessionStats: {
                 ...sessionStats,
