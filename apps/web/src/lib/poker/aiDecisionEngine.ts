@@ -292,7 +292,26 @@ interface GameContext {
 }
 
 /**
- * Main AI decision function with style modifier
+ * Main AI decision function that determines the optimal action for an AI player.
+ * Uses GTO range data with player style adjustments for realistic decision making.
+ *
+ * @param context - Current game state including position, cards, betting info
+ * @param profile - AI player profile defining play style and tendencies
+ * @returns AIDecision containing action type and optional bet amount
+ *
+ * @example
+ * ```ts
+ * const decision = getAIDecision({
+ *   position: "BTN",
+ *   holeCards: [{ rank: "A", suit: "s" }, { rank: "K", suit: "s" }],
+ *   street: "preflop",
+ *   pot: 1.5,
+ *   currentBet: 1,
+ *   playerBet: 0,
+ *   stack: 100,
+ *   communityCards: [],
+ * }, AI_PROFILES[0]);
+ * ```
  */
 export function getAIDecision(
   context: GameContext,
@@ -889,6 +908,29 @@ function estimatePreflopStrength(hand: string): number {
   return 0.15;
 }
 
+/**
+ * Estimates the relative strength of a hand based on made hands.
+ * Returns a value from 0 to 1 representing hand strength percentile.
+ *
+ * Current implementation checks for:
+ * - Four of a kind (0.98)
+ * - Full house (0.95)
+ * - Flush (0.88)
+ * - Straight (0.82)
+ * - Three of a kind (0.75)
+ * - Two pair (0.60)
+ * - One pair (0.40)
+ * - High card (0.20)
+ *
+ * @param holeCards - Player's hole cards
+ * @param communityCards - Community cards on the board
+ * @returns Hand strength as a value between 0 and 1
+ *
+ * @todo Add draw equity (OESD, flush draws)
+ * @todo Consider board texture impact
+ * @todo Add blocker effects
+ * @todo Adjust for kicker strength
+ */
 function estimateHandStrength(holeCards: [Card, Card], communityCards: Card[]): number {
   const allCards = [...holeCards, ...communityCards];
   const rankCounts = new Map<string, number>();
@@ -941,12 +983,86 @@ function estimateHandStrength(holeCards: [Card, Card], communityCards: Card[]): 
     return 0.40;
   }
 
+  // Calculate draw equity (only on flop and turn)
+  let drawEquity = 0;
+  if (communityCards.length >= 3 && communityCards.length < 5) {
+    drawEquity = calculateDrawEquity(holeCards, communityCards);
+  }
+
   // High card
   const highCard = holeCards.reduce((max, c) =>
     "AKQJT98765432".indexOf(c.rank) < "AKQJT98765432".indexOf(max.rank) ? c : max
   );
   const highCardValue = 14 - "AKQJT98765432".indexOf(highCard.rank);
-  return 0.10 + (highCardValue / 14) * 0.20;
+  const baseStrength = 0.10 + (highCardValue / 14) * 0.20;
+
+  // Combine base strength with draw equity
+  return Math.min(0.99, baseStrength + drawEquity);
+}
+
+/**
+ * Calculate equity from drawing hands.
+ * Returns additional equity value to add to hand strength.
+ *
+ * @param holeCards - Player's hole cards
+ * @param communityCards - Community cards (3 or 4 cards)
+ * @returns Draw equity as a value between 0 and 0.35
+ */
+function calculateDrawEquity(holeCards: [Card, Card], communityCards: Card[]): number {
+  const allCards = [...holeCards, ...communityCards];
+  let equity = 0;
+
+  // Check for flush draw (4 to a flush)
+  const suitCounts = new Map<string, number>();
+  for (const card of allCards) {
+    suitCounts.set(card.suit, (suitCounts.get(card.suit) || 0) + 1);
+  }
+  const maxSuit = Math.max(...suitCounts.values());
+
+  if (maxSuit === 4) {
+    // Flush draw: ~35% on flop (9 outs * 4 - 1), ~19% on turn (9 outs * 2 + 1)
+    const cardsTocome = 5 - communityCards.length;
+    equity += cardsTocome === 2 ? 0.35 : 0.19;
+  }
+
+  // Check for straight draws
+  const rankOrder = "AKQJT98765432";
+  const rankValues = allCards
+    .map(c => rankOrder.indexOf(c.rank))
+    .sort((a, b) => a - b);
+  const uniqueRanks = [...new Set(rankValues)];
+
+  // OESD: 4 consecutive cards with gaps on both ends
+  for (let i = 0; i <= uniqueRanks.length - 4; i++) {
+    const span = uniqueRanks[i + 3] - uniqueRanks[i];
+    if (span === 3) {
+      // Check if it's open-ended (not at the edges A-high or 5-low)
+      const lowRank = uniqueRanks[i];
+      const highRank = uniqueRanks[i + 3];
+      if (lowRank > 0 && highRank < 12) {
+        // OESD: ~31% on flop (8 outs), ~17% on turn
+        const cardsTocome = 5 - communityCards.length;
+        equity += cardsTocome === 2 ? 0.31 : 0.17;
+        break; // Only count one straight draw
+      }
+    }
+  }
+
+  // Check for gutshot (4 cards with one gap)
+  if (equity < 0.15) { // Don't double-count with OESD
+    for (let i = 0; i <= uniqueRanks.length - 4; i++) {
+      const span = uniqueRanks[i + 3] - uniqueRanks[i];
+      if (span === 4) {
+        // Gutshot: ~17% on flop (4 outs), ~9% on turn
+        const cardsTocome = 5 - communityCards.length;
+        equity += cardsTocome === 2 ? 0.17 : 0.09;
+        break;
+      }
+    }
+  }
+
+  // Cap draw equity to avoid overvaluing
+  return Math.min(equity, 0.35);
 }
 
 export { getHandNotation };
