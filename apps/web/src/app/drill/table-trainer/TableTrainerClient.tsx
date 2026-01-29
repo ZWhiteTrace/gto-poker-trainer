@@ -89,14 +89,16 @@ export default function TableTrainerClient() {
     aiTurnTriggered.current = false;
   }, [activePlayerIndex]);
 
-  // Record hand result when phase changes to "result"
+  // Record hand result when phase changes to "result" or "showdown"
   useEffect(() => {
-    if (phase === "result" && winners && !handRecorded.current) {
+    if ((phase === "result" || phase === "showdown") && winners && winners.length > 0 && !handRecorded.current) {
       handRecorded.current = true;
       const hero = players.find(p => p.isHero);
       if (hero) {
         const isWin = winners.some(w => w.isHero);
-        const profitBB = isWin ? lastWonPot - hero.totalInvested : -hero.totalInvested;
+        // Calculate correct profit accounting for split pots
+        const potShare = lastWonPot / winners.length;
+        const profitBB = isWin ? potShare - hero.totalInvested : -hero.totalInvested;
         recordTableTrainerHand(hero.position, isWin, profitBB, user?.id);
       }
     }

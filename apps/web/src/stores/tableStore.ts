@@ -304,7 +304,7 @@ export const useTableStore = create<TableState & TableActions>()(
       },
 
       dealFlop: () => {
-        const { deck, players } = get();
+        const { deck, players, config } = get();
         const newDeck = [...deck];
 
         // Burn one card
@@ -333,13 +333,15 @@ export const useTableStore = create<TableState & TableActions>()(
           players: resetPlayers,
           activePlayerIndex: firstToAct,
           currentBet: 0,
+          minRaise: config.blinds.bb, // Reset min raise for new street
+          actionsThisRound: 0, // Ensure action counter is reset
           lastAggressorIndex: null,
           streetActions: new Map([...get().streetActions, ["flop", []]]),
         });
       },
 
       dealTurn: () => {
-        const { deck, communityCards, players, dealerSeatIndex } = get();
+        const { deck, communityCards, players, dealerSeatIndex, config } = get();
         const newDeck = [...deck];
 
         newDeck.pop(); // Burn
@@ -359,13 +361,15 @@ export const useTableStore = create<TableState & TableActions>()(
           players: resetPlayers,
           activePlayerIndex: firstToAct,
           currentBet: 0,
+          minRaise: config.blinds.bb, // Reset min raise for new street
+          actionsThisRound: 0, // Ensure action counter is reset
           lastAggressorIndex: null,
           streetActions: new Map([...get().streetActions, ["turn", []]]),
         });
       },
 
       dealRiver: () => {
-        const { deck, communityCards, players, dealerSeatIndex } = get();
+        const { deck, communityCards, players, dealerSeatIndex, config } = get();
         const newDeck = [...deck];
 
         newDeck.pop(); // Burn
@@ -385,6 +389,8 @@ export const useTableStore = create<TableState & TableActions>()(
           players: resetPlayers,
           activePlayerIndex: firstToAct,
           currentBet: 0,
+          minRaise: config.blinds.bb, // Reset min raise for new street
+          actionsThisRound: 0, // Ensure action counter is reset
           lastAggressorIndex: null,
           streetActions: new Map([...get().streetActions, ["river", []]]),
         });
@@ -487,11 +493,26 @@ export const useTableStore = create<TableState & TableActions>()(
               isAllIn: true,
             };
             newPot += allInAmount;
-            if (newTotalBet > currentBet) {
+
+            // Check if this all-in is a raise that re-opens betting
+            // In standard poker, all-in must meet min raise to re-open
+            const raiseAmount = newTotalBet - currentBet;
+            const { minRaise } = get();
+
+            if (newTotalBet > currentBet && raiseAmount >= minRaise) {
+              // Full raise - re-opens betting
               newCurrentBet = newTotalBet;
               newLastAggressor = activePlayerIndex;
-              newActionsThisRound = 1; // Reset counter if this is a raise
+              newMinRaise = raiseAmount; // Update min raise for next player
+              newActionsThisRound = 1; // Reset counter
+            } else if (newTotalBet > currentBet) {
+              // Incomplete raise (all-in for less than min raise)
+              // Updates current bet but doesn't re-open betting
+              newCurrentBet = newTotalBet;
+              // Don't reset action counter - betting isn't re-opened
             }
+            // If newTotalBet <= currentBet, it's a call-all-in, no changes needed
+
             actionRecord.amount = allInAmount;
             break;
           }
@@ -516,6 +537,18 @@ export const useTableStore = create<TableState & TableActions>()(
 
         // Find next player to act
         const nextPlayerIndex = getNextActivePlayerIndex(newPlayers, activePlayerIndex);
+
+        // Safety check: if no active players found, go to showdown
+        if (nextPlayerIndex === -1) {
+          set({
+            players: newPlayers,
+            pot: newPot,
+            actionHistory: newActionHistory,
+            phase: "showdown",
+          });
+          get().determineWinners();
+          return;
+        }
 
         // Check if betting round is complete
         const isRoundComplete = state.checkBettingRoundComplete(newPlayers, nextPlayerIndex, newLastAggressor);
