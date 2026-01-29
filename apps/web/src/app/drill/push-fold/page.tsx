@@ -21,8 +21,18 @@ import {
   Settings,
   Layers,
 } from "lucide-react";
+import { useProgressStore } from "@/stores/progressStore";
+import { useAuthStore } from "@/stores/authStore";
 
 type DrillMode = "push" | "defense" | "resteal" | "hu";
+
+// Map drill mode to progressStore drill type
+const modeToDrillType = {
+  push: "push_fold",
+  defense: "push_fold_defense",
+  resteal: "push_fold_resteal",
+  hu: "push_fold_hu",
+} as const;
 
 interface SessionStats {
   total: number;
@@ -70,6 +80,12 @@ export default function PushFoldDrillPage() {
   const [error, setError] = useState<string | null>(null);
   const [sessionStats, setSessionStats] = useState<SessionStats>(initialStats);
   const [showSettings, setShowSettings] = useState(false);
+
+  // Progress persistence
+  const { stats, recordResult } = useProgressStore();
+  const { user } = useAuthStore();
+  const drillType = modeToDrillType[mode];
+  const cumulativeStats = stats[drillType];
 
   // Settings state
   const [enabledPositions, setEnabledPositions] = useState<string[]>(["UTG", "HJ", "CO", "BTN", "SB"]);
@@ -126,6 +142,22 @@ export default function PushFoldDrillPage() {
 
       setSessionStats(newStats);
       setLastResult(result);
+
+      // Persist to progressStore (localStorage + Supabase if logged in)
+      await recordResult(
+        {
+          drill_type: drillType as "rfi" | "vs_rfi" | "vs_3bet" | "vs_4bet",
+          hand: currentSpot.hand,
+          hero_position: currentSpot.position,
+          villain_position: currentSpot.scenario || undefined,
+          player_action: action,
+          correct_action: result.correct_action,
+          is_correct: result.is_correct,
+          is_acceptable: false, // Push-fold is binary
+          frequency: result.range_pct,
+        },
+        user?.id
+      );
     } catch (err) {
       setError(err instanceof Error ? err.message : t("common.error"));
     } finally {
@@ -347,6 +379,21 @@ export default function PushFoldDrillPage() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Cumulative Stats (All-time) */}
+      {cumulativeStats && cumulativeStats.total > 0 && (
+        <div className="mb-8 p-3 rounded-lg bg-muted/50 flex items-center justify-between text-sm">
+          <span className="text-muted-foreground">{t("drill.allTime") || "All-time"}:</span>
+          <div className="flex gap-4">
+            <span>{cumulativeStats.total} {t("common.total")}</span>
+            <span className="text-green-500">
+              {cumulativeStats.total > 0
+                ? Math.round((cumulativeStats.correct / cumulativeStats.total) * 100)
+                : 0}% {t("common.accuracy")}
+            </span>
+          </div>
+        </div>
+      )}
 
       {/* Main Drill Area */}
       <Card className="mb-8">

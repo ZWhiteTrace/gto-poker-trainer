@@ -3,7 +3,7 @@ import { persist } from "zustand/middleware";
 import { createClient } from "@/lib/supabase/client";
 import { updateLeaderboardStats, type Achievement } from "@/lib/supabase/leaderboard";
 
-type DrillType = "rfi" | "vs_rfi" | "vs_3bet" | "vs_4bet";
+type DrillType = "rfi" | "vs_rfi" | "vs_3bet" | "vs_4bet" | "push_fold" | "push_fold_defense" | "push_fold_resteal" | "push_fold_hu";
 type QuizType = "equity" | "outs" | "ev" | "logic" | "exploit";
 
 interface DrillResult {
@@ -98,6 +98,10 @@ const initialState = {
     vs_rfi: { ...initialStats },
     vs_3bet: { ...initialStats },
     vs_4bet: { ...initialStats },
+    push_fold: { ...initialStats },
+    push_fold_defense: { ...initialStats },
+    push_fold_resteal: { ...initialStats },
+    push_fold_hu: { ...initialStats },
   },
   quizStats: {
     equity: { ...initialQuizStats },

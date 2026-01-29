@@ -23,9 +23,11 @@ import {
   Brain,
   Calculator,
   Lightbulb,
+  RotateCcw,
+  XCircle,
 } from "lucide-react";
 
-type DrillType = "rfi" | "vs_rfi" | "vs_3bet" | "vs_4bet";
+type DrillType = "rfi" | "vs_rfi" | "vs_3bet" | "vs_4bet" | "push_fold" | "push_fold_defense" | "push_fold_resteal" | "push_fold_hu";
 type QuizType = "equity" | "outs" | "ev" | "logic" | "exploit";
 
 const drillTypeLabels: Record<DrillType, { en: string; zh: string }> = {
@@ -33,6 +35,10 @@ const drillTypeLabels: Record<DrillType, { en: string; zh: string }> = {
   vs_rfi: { en: "VS RFI Drill", zh: "VS RFI 練習" },
   vs_3bet: { en: "VS 3-Bet Drill", zh: "VS 3-Bet 練習" },
   vs_4bet: { en: "VS 4-Bet Drill", zh: "VS 4-Bet 練習" },
+  push_fold: { en: "Push/Fold Drill", zh: "Push/Fold 練習" },
+  push_fold_defense: { en: "Defense vs Shove", zh: "防守 vs Shove" },
+  push_fold_resteal: { en: "Resteal Drill", zh: "Resteal 練習" },
+  push_fold_hu: { en: "Heads Up P/F", zh: "單挑 Push/Fold" },
 };
 
 const quizTypeLabels: Record<QuizType, { en: string; zh: string }> = {
@@ -47,7 +53,7 @@ export default function ProgressPage() {
   const t = useTranslations();
   const router = useRouter();
   const { user, isInitialized } = useAuthStore();
-  const { stats, quizStats, getWeakPositions, syncToCloud, isSyncing, lastSyncedAt } =
+  const { stats, quizStats, recentResults, getWeakPositions, syncToCloud, isSyncing, lastSyncedAt } =
     useProgressStore();
 
   // Redirect to home if not logged in
@@ -356,6 +362,91 @@ export default function ProgressPage() {
           );
         })}
       </div>
+
+      {/* Section Header - Wrong Answers Review */}
+      {recentResults.filter(r => !r.is_correct && !r.is_acceptable).length > 0 && (
+        <>
+          <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
+            <RotateCcw className="h-5 w-5" />
+            {t("progress.wrongAnswers") || "錯題複習"}
+          </h2>
+
+          <Card className="mb-8">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-base">
+                <XCircle className="h-5 w-5 text-destructive" />
+                {t("progress.recentMistakes") || "最近錯誤"}
+              </CardTitle>
+              <CardDescription>
+                {t("progress.reviewMistakesDesc") || "複習這些錯誤的手牌，加強記憶"}
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3 max-h-96 overflow-y-auto">
+                {recentResults
+                  .filter(r => !r.is_correct && !r.is_acceptable)
+                  .slice(0, 20)
+                  .map((result, index) => (
+                    <div
+                      key={result.id || index}
+                      className="flex items-center justify-between p-3 rounded-lg bg-destructive/5 border border-destructive/20"
+                    >
+                      <div className="flex items-center gap-4">
+                        <div className="text-xl font-bold font-mono">{result.hand}</div>
+                        <div className="text-sm">
+                          <Badge variant="outline" className="mr-2">
+                            {result.hero_position}
+                          </Badge>
+                          {result.villain_position && (
+                            <span className="text-muted-foreground">
+                              vs {result.villain_position}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                      <div className="text-right text-sm">
+                        <div className="text-destructive">
+                          你: <span className="font-semibold">{result.player_action}</span>
+                        </div>
+                        <div className="text-green-500">
+                          正解: <span className="font-semibold">{result.correct_action}</span>
+                          <span className="text-muted-foreground ml-1">({result.frequency}%)</span>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+              </div>
+
+              {/* Practice button for the drill type of the most common mistake */}
+              {(() => {
+                const wrongAnswers = recentResults.filter(r => !r.is_correct && !r.is_acceptable);
+                if (wrongAnswers.length === 0) return null;
+
+                // Find most common drill type among wrong answers
+                const drillCounts = wrongAnswers.reduce((acc, r) => {
+                  acc[r.drill_type] = (acc[r.drill_type] || 0) + 1;
+                  return acc;
+                }, {} as Record<string, number>);
+
+                const mostCommonDrill = Object.entries(drillCounts)
+                  .sort(([, a], [, b]) => b - a)[0]?.[0] as DrillType;
+
+                if (!mostCommonDrill) return null;
+
+                return (
+                  <Button
+                    className="w-full mt-4"
+                    variant="destructive"
+                    onClick={() => router.push(`/drill/${mostCommonDrill.replace(/_/g, "-")}`)}
+                  >
+                    {t("progress.practiceWeakArea") || "練習弱項"}: {drillTypeLabels[mostCommonDrill]?.zh || mostCommonDrill}
+                  </Button>
+                );
+              })()}
+            </CardContent>
+          </Card>
+        </>
+      )}
 
       {/* Last synced */}
       {lastSyncedAt && (
