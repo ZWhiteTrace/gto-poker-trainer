@@ -10,6 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { POSITIONS, Position, POSITION_LABELS, ScenarioPreset } from "@/lib/poker/types";
 import { cn } from "@/lib/utils";
+import { ChevronUp, ChevronDown, History } from "lucide-react";
 
 export default function TableTrainerClient() {
   const {
@@ -41,6 +42,7 @@ export default function TableTrainerClient() {
 
   const [showScenarioSelector, setShowScenarioSelector] = useState(false);
   const [devMode, setDevMode] = useState(false);
+  const [showMobileSidebar, setShowMobileSidebar] = useState(false);
   const aiTurnTriggered = useRef(false);
   const handRecorded = useRef(false);
 
@@ -172,11 +174,20 @@ export default function TableTrainerClient() {
   // Check if we're on mobile
   const isMobile = typeof window !== "undefined" && window.innerWidth < 768;
 
+  // Hide footer when this component is mounted
+  useEffect(() => {
+    // Add a class to body to hide footer on this page
+    document.body.classList.add('table-trainer-active');
+    return () => {
+      document.body.classList.remove('table-trainer-active');
+    };
+  }, []);
+
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-950 text-white">
+    <div className="fixed inset-0 bg-gradient-to-b from-gray-900 to-gray-950 text-white flex flex-col z-40">
       {/* Header */}
-      <header className="border-b border-gray-800 bg-gray-900/50 backdrop-blur-sm sticky top-0 z-50">
-        <div className="container mx-auto px-4 py-3 flex items-center justify-between">
+      <header className="border-b border-gray-800 bg-gray-900/50 backdrop-blur-sm shrink-0 z-50">
+        <div className="container mx-auto px-4 py-2 sm:py-3 flex items-center justify-between">
           <div className="flex items-center gap-4">
             <h1 className="text-xl font-bold">GTO Table Trainer</h1>
             <Badge variant="outline" className="text-xs">
@@ -256,13 +267,13 @@ export default function TableTrainerClient() {
         </div>
       </header>
 
-      <main className="container mx-auto px-4 py-6">
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+      <main className="container mx-auto px-2 sm:px-4 py-2 sm:py-4 flex-1 overflow-y-auto">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-3 sm:gap-6 h-full">
           {/* Main Table Area */}
-          <div className="lg:col-span-3 space-y-4">
+          <div className="lg:col-span-3 flex flex-col gap-2 sm:gap-4">
             {/* Game Phase Indicator */}
-            <div className="flex items-center justify-between mb-2">
-              <div className="flex items-center gap-2">
+            <div className="flex items-center justify-between mb-1 sm:mb-2 shrink-0">
+              <div className="flex items-center gap-1 sm:gap-2">
                 <Badge
                   variant={phase === "playing" ? "default" : "secondary"}
                   className={cn(
@@ -293,7 +304,7 @@ export default function TableTrainerClient() {
             </div>
 
             {/* Poker Table */}
-            <div className="bg-gray-800/50 rounded-2xl p-4 sm:p-6">
+            <div className="bg-gray-800/50 rounded-xl sm:rounded-2xl p-2 sm:p-6 flex-1 min-h-0">
               {isMobile ? (
                 <CompactPokerTable
                   players={players}
@@ -315,14 +326,14 @@ export default function TableTrainerClient() {
             </div>
 
             {/* Action Area - z-30 to be above table seats (z-20) */}
-            <div className="space-y-3 relative z-30">
+            <div className="space-y-2 sm:space-y-3 relative z-30 shrink-0">
               {/* Start / New Hand Button */}
               {(phase === "setup" || phase === "result" || phase === "showdown") && (
                 <div className="flex justify-center">
                   <Button
                     size="lg"
                     onClick={startNewHand}
-                    className="bg-green-600 hover:bg-green-500 text-lg px-8"
+                    className="bg-green-600 hover:bg-green-500 text-base sm:text-lg px-6 sm:px-8"
                   >
                     {phase === "setup" ? "開始遊戲" : "下一手"}
                   </Button>
@@ -331,8 +342,8 @@ export default function TableTrainerClient() {
 
               {/* Winner Display */}
               {winners && winners.length > 0 && (
-                <div className="text-center py-4 space-y-2">
-                  <p className="text-lg">
+                <div className="text-center py-2 sm:py-4 space-y-1 sm:space-y-2">
+                  <p className="text-sm sm:text-lg">
                     <span className="text-gray-400">贏家: </span>
                     <span className={winners[0].isHero ? "text-yellow-400 font-bold" : "text-white font-semibold"}>
                       {winners.map(w => w.name).join(", ")}
@@ -345,7 +356,7 @@ export default function TableTrainerClient() {
                   </p>
                   {/* Show hand evaluation */}
                   {handEvaluations && handEvaluations.size > 0 && winners[0] && (
-                    <p className="text-sm text-green-400">
+                    <p className="text-xs sm:text-sm text-green-400">
                       {handEvaluations.get(winners[0].id)?.descriptionZh || handEvaluations.get(winners[0].id)?.description}
                     </p>
                   )}
@@ -368,15 +379,33 @@ export default function TableTrainerClient() {
             </div>
           </div>
 
-          {/* Sidebar */}
-          <div className="space-y-4">
+          {/* Mobile Sidebar Toggle */}
+          <div className="lg:hidden">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setShowMobileSidebar(!showMobileSidebar)}
+              className="w-full flex items-center justify-center gap-2"
+            >
+              <History className="h-4 w-4" />
+              <span>行動歷史</span>
+              {showMobileSidebar ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+            </Button>
+          </div>
+
+          {/* Sidebar - Hidden on mobile unless toggled */}
+          <div className={cn(
+            "space-y-3 sm:space-y-4",
+            "lg:block",
+            showMobileSidebar ? "block" : "hidden"
+          )}>
             {/* Action History */}
             <Card className="bg-gray-800/50 border-gray-700">
-              <CardHeader className="py-3">
+              <CardHeader className="py-2 sm:py-3">
                 <CardTitle className="text-sm">行動歷史</CardTitle>
               </CardHeader>
               <CardContent className="py-2">
-                <div className="max-h-64 overflow-y-auto space-y-1">
+                <div className="max-h-40 sm:max-h-64 overflow-y-auto space-y-1">
                   {actionHistory.length === 0 ? (
                     <p className="text-sm text-gray-500">尚無行動</p>
                   ) : (
@@ -418,8 +447,8 @@ export default function TableTrainerClient() {
               </CardContent>
             </Card>
 
-            {/* Keyboard Shortcuts */}
-            <Card className="bg-gray-800/50 border-gray-700">
+            {/* Keyboard Shortcuts - Hidden on mobile */}
+            <Card className="bg-gray-800/50 border-gray-700 hidden sm:block">
               <CardHeader className="py-3">
                 <CardTitle className="text-sm">快捷鍵</CardTitle>
               </CardHeader>
@@ -443,22 +472,22 @@ export default function TableTrainerClient() {
               </CardContent>
             </Card>
 
-            {/* Hero Info */}
+            {/* Hero Info - Compact on mobile */}
             {hero && (
               <Card className="bg-yellow-500/10 border-yellow-500/30">
-                <CardHeader className="py-3">
+                <CardHeader className="py-2 sm:py-3">
                   <CardTitle className="text-sm text-yellow-400">Hero 狀態</CardTitle>
                 </CardHeader>
-                <CardContent className="py-2 space-y-2">
-                  <div className="flex justify-between text-sm">
+                <CardContent className="py-2 space-y-1 sm:space-y-2">
+                  <div className="flex justify-between text-xs sm:text-sm">
                     <span className="text-gray-400">位置</span>
                     <span>{hero.position} ({POSITION_LABELS[hero.position].zh})</span>
                   </div>
-                  <div className="flex justify-between text-sm">
+                  <div className="flex justify-between text-xs sm:text-sm">
                     <span className="text-gray-400">籌碼</span>
                     <span className="text-green-400">{hero.stack.toFixed(1)} BB</span>
                   </div>
-                  <div className="flex justify-between text-sm">
+                  <div className="flex justify-between text-xs sm:text-sm">
                     <span className="text-gray-400">本手投入</span>
                     <span className="text-orange-400">{hero.totalInvested.toFixed(1)} BB</span>
                   </div>

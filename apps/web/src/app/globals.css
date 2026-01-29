@@ -129,3 +129,13 @@
   @apply mx-auto px-4 sm:px-6 lg:px-8;
   max-width: min(100%, 1280px);
 }
+
+/* Hide footer and navbar on table-trainer page for full-screen experience */
+body.table-trainer-active > div > footer,
+body.table-trainer-active > div > nav {
+  display: none !important;
+}
+
+body.table-trainer-active > div > main {
+  flex: none !important;
+}
