@@ -309,7 +309,7 @@ export default function TableTrainerClient() {
                 <CompactPokerTable
                   players={players}
                   communityCards={communityCards}
-                  pot={pot}
+                  pot={phase === "result" || phase === "showdown" ? lastWonPot : pot}
                   activePlayerIndex={activePlayerIndex}
                   heroIndex={heroIndex}
                 />
@@ -317,7 +317,7 @@ export default function TableTrainerClient() {
                 <PokerTable
                   players={players}
                   communityCards={communityCards}
-                  pot={pot}
+                  pot={phase === "result" || phase === "showdown" ? lastWonPot : pot}
                   activePlayerIndex={activePlayerIndex}
                   showAllCards={phase === "showdown" || phase === "result"}
                   devMode={devMode}

@@ -51,10 +51,10 @@ export function ActionButtons({
   const callAmount = isRaise ? currentBet : 0;
   const effectivePot = potSize + callAmount;
 
-  // GGPoker style presets: 25%, 33%, 75%, Pot
+  // GGPoker style presets - simplified for mobile
   const betSizePresets = [
-    { label: "25%", value: roundToHalf(Math.max(minBet, callAmount + effectivePot * 0.25)) },
     { label: "33%", value: roundToHalf(Math.max(minBet, callAmount + effectivePot * 0.33)) },
+    { label: "50%", value: roundToHalf(Math.max(minBet, callAmount + effectivePot * 0.50)) },
     { label: "75%", value: roundToHalf(Math.max(minBet, callAmount + effectivePot * 0.75)) },
     { label: "Pot", value: roundToHalf(Math.max(minBet, callAmount + effectivePot * 1.0)) },
   ];
@@ -80,9 +80,9 @@ export function ActionButtons({
     <div className={cn("flex flex-col gap-2.5 sm:gap-3 p-3 sm:p-4 bg-gray-900/95 rounded-xl border border-gray-700/80 backdrop-blur-sm", className)}>
       {/* 下注控制區 (只在可以 bet/raise 時顯示) */}
       {betOrRaiseAction && (
-        <div className="flex flex-col gap-2">
-          {/* 預設尺寸 + 輸入框 - GGPoker 風格 */}
-          <div className="flex items-center gap-1.5 sm:gap-2">
+        <div className="flex flex-col gap-1.5 sm:gap-2">
+          {/* 預設尺寸 - 使用 grid 確保不會被截斷 */}
+          <div className="grid grid-cols-4 gap-1 sm:gap-1.5">
             {betSizePresets.map((preset) => (
               <Button
                 key={preset.label}
@@ -94,7 +94,7 @@ export function ActionButtons({
                 }}
                 disabled={disabled || preset.value > maxBet}
                 className={cn(
-                  "flex-1 h-7 sm:h-8 px-1 sm:px-2 text-[10px] sm:text-xs font-medium",
+                  "h-7 sm:h-8 px-0.5 sm:px-2 text-[10px] sm:text-xs font-medium",
                   "bg-gray-800/60 border-gray-600 hover:bg-gray-700",
                   Math.abs(selectedBetSize - preset.value) < 0.3 && "border-green-500 bg-green-500/20 text-green-400"
                 )}
@@ -102,28 +102,11 @@ export function ActionButtons({
                 {preset.label}
               </Button>
             ))}
-            {/* 金額輸入框 */}
-            <div className="relative">
-              <input
-                type="number"
-                value={displayValue}
-                onChange={handleInputChange}
-                onBlur={handleInputBlur}
-                onFocus={() => setInputValue(roundToHalf(selectedBetSize).toString())}
-                min={roundToHalf(minBet)}
-                max={roundToHalf(maxBet)}
-                step={0.5}
-                disabled={disabled}
-                className="w-16 sm:w-20 h-7 sm:h-8 px-2 text-xs sm:text-sm text-center font-mono
-                         bg-gray-800 border border-gray-600 rounded-md text-white
-                         focus:border-green-500 focus:outline-none focus:ring-1 focus:ring-green-500/50"
-              />
-            </div>
           </div>
 
-          {/* 滑桿 */}
-          <div className="flex items-center gap-2 px-1">
-            <span className="text-[10px] sm:text-xs text-gray-500 w-8 sm:w-10">{roundToHalf(minBet)}</span>
+          {/* 滑桿 + 數值顯示 */}
+          <div className="flex items-center gap-1.5 sm:gap-2">
+            <span className="text-[9px] sm:text-xs text-gray-500 w-6 sm:w-8 shrink-0">{roundToHalf(minBet)}</span>
             <input
               type="range"
               min={roundToHalf(minBet)}
@@ -140,7 +123,21 @@ export function ActionButtons({
                        [&::-webkit-slider-thumb]:bg-green-500 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:cursor-pointer
                        [&::-webkit-slider-thumb]:shadow-md [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-green-400"
             />
-            <span className="text-[10px] sm:text-xs text-gray-500 w-8 sm:w-10 text-right">{roundToHalf(maxBet)}</span>
+            {/* 數值顯示/輸入 */}
+            <input
+              type="number"
+              value={displayValue}
+              onChange={handleInputChange}
+              onBlur={handleInputBlur}
+              onFocus={() => setInputValue(roundToHalf(selectedBetSize).toString())}
+              min={roundToHalf(minBet)}
+              max={roundToHalf(maxBet)}
+              step={0.5}
+              disabled={disabled}
+              className="w-12 sm:w-16 h-6 sm:h-7 px-1 text-[10px] sm:text-xs text-center font-mono
+                       bg-gray-800 border border-gray-600 rounded text-white shrink-0
+                       focus:border-green-500 focus:outline-none focus:ring-1 focus:ring-green-500/50"
+            />
           </div>
         </div>
       )}

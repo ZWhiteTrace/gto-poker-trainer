@@ -161,63 +161,101 @@ export function CompactPokerTable({
 }: CompactPokerTableProps) {
   const hero = players[heroIndex];
   const villains = players.filter((_, i) => i !== heroIndex);
-  const activeVillains = villains.filter((p) => !p.isFolded);
+  // Sort villains by position for consistent display
+  const positionOrder = ["UTG", "MP", "CO", "BTN", "SB", "BB"];
+  const sortedVillains = [...villains].sort(
+    (a, b) => positionOrder.indexOf(a.position) - positionOrder.indexOf(b.position)
+  );
 
   return (
-    <div className={cn("flex flex-col gap-4 p-4", className)}>
-      {/* 對手區域 */}
-      <div className="flex flex-wrap justify-center gap-2">
-        {activeVillains.map((player, i) => (
-          <div
-            key={player.id}
-            className={cn(
-              "flex flex-col items-center p-2 rounded-lg border",
-              players.indexOf(player) === activePlayerIndex
-                ? "border-primary bg-primary/10"
-                : "border-gray-600 bg-gray-800/50",
-              player.isFolded && "opacity-50"
-            )}
-          >
-            <span className="text-xs text-gray-400">{player.position}</span>
-            <span className="text-sm text-white">{player.name}</span>
-            <span className="text-xs text-green-400">{player.stack.toFixed(1)} BB</span>
-            {player.currentBet > 0 && (
-              <span className="text-xs text-orange-400">Bet: {player.currentBet}</span>
-            )}
-          </div>
-        ))}
+    <div className={cn("flex flex-col gap-2", className)}>
+      {/* 對手區域 - 緊湊的橫向列表 */}
+      <div className="flex justify-center gap-1 overflow-x-auto pb-1">
+        {sortedVillains.map((player) => {
+          const isActive = players.indexOf(player) === activePlayerIndex;
+          return (
+            <div
+              key={player.id}
+              className={cn(
+                "flex flex-col items-center px-2 py-1 rounded-lg min-w-[60px] shrink-0",
+                isActive && "ring-2 ring-yellow-400 bg-yellow-400/10",
+                player.isFolded && "opacity-40"
+              )}
+            >
+              <span className="text-[10px] text-gray-400">{player.position}</span>
+              <span className="text-[11px] text-white truncate max-w-[56px]">{player.name}</span>
+              <span className={cn(
+                "text-[10px]",
+                player.currentBet > 0 ? "text-orange-400" : "text-green-400"
+              )}>
+                {player.currentBet > 0 ? `${player.currentBet.toFixed(1)}` : `${player.stack.toFixed(0)}`}
+              </span>
+            </div>
+          );
+        })}
       </div>
 
-      {/* 公牌 + 底池 */}
-      <div className="flex flex-col items-center gap-2 py-4 bg-green-900/30 rounded-xl">
+      {/* 公牌 + 底池 - 更緊湊 */}
+      <div className="flex flex-col items-center gap-1 py-2 bg-green-900/40 rounded-lg">
         <CommunityCards cards={communityCards} size="sm" />
-        <PotDisplay amount={pot} />
+        <div className="flex items-center gap-1.5 text-amber-400">
+          <span className="text-xs">POT</span>
+          <span className="text-sm font-bold">{pot.toFixed(1)} BB</span>
+        </div>
       </div>
 
-      {/* Hero 區域 */}
+      {/* Hero 區域 - 突出顯示 */}
       {hero && (
-        <div className="flex flex-col items-center p-3 rounded-xl border-2 border-yellow-500/50 bg-yellow-500/10">
-          <span className="text-sm text-yellow-400 font-semibold">{hero.position} (Hero)</span>
-          <span className="text-lg text-white font-bold">{hero.name}</span>
-          <div className="my-2">
-            {hero.holeCards && (
-              <div className="flex gap-1">
-                {/* Inline card display for compact view */}
-                {hero.holeCards.map((card, i) => (
-                  <div
-                    key={i}
-                    className="w-12 h-16 bg-white rounded flex flex-col items-center justify-center shadow"
-                  >
-                    <span className={cn("font-bold", getCardColor(card.suit))}>{card.rank}</span>
-                    <span className={cn("text-sm", getCardColor(card.suit))}>
-                      {getSuitSymbol(card.suit)}
-                    </span>
-                  </div>
-                ))}
-              </div>
+        <div className={cn(
+          "flex items-center gap-3 p-2 rounded-lg border",
+          players.indexOf(hero) === activePlayerIndex
+            ? "border-yellow-400 bg-yellow-400/20 ring-2 ring-yellow-400/50"
+            : "border-yellow-500/30 bg-yellow-500/10"
+        )}>
+          {/* Hero 手牌 */}
+          <div className="flex gap-0.5 shrink-0">
+            {hero.holeCards ? (
+              hero.holeCards.map((card, i) => (
+                <div
+                  key={i}
+                  className="w-10 h-14 bg-white rounded shadow flex flex-col items-center justify-center"
+                >
+                  <span className={cn("text-sm font-bold leading-none", getCardColor(card.suit))}>
+                    {card.rank}
+                  </span>
+                  <span className={cn("text-base leading-none", getCardColor(card.suit))}>
+                    {getSuitSymbol(card.suit)}
+                  </span>
+                </div>
+              ))
+            ) : (
+              <>
+                <div className="w-10 h-14 bg-blue-800 rounded shadow" />
+                <div className="w-10 h-14 bg-blue-800 rounded shadow" />
+              </>
             )}
           </div>
-          <span className="text-green-400 font-semibold">{hero.stack.toFixed(1)} BB</span>
+
+          {/* Hero 資訊 */}
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-2">
+              <span className="text-yellow-400 font-semibold text-sm">{hero.position}</span>
+              <span className="text-white text-sm">Hero</span>
+            </div>
+            <div className="flex items-center gap-2 text-xs">
+              <span className="text-green-400">{hero.stack.toFixed(1)} BB</span>
+              {hero.currentBet > 0 && (
+                <span className="text-orange-400">Bet: {hero.currentBet.toFixed(1)}</span>
+              )}
+            </div>
+          </div>
+
+          {/* 輪到 Hero 的指示 */}
+          {players.indexOf(hero) === activePlayerIndex && (
+            <div className="shrink-0 px-2 py-1 bg-yellow-400 text-black text-xs font-bold rounded">
+              YOUR TURN
+            </div>
+          )}
         </div>
       )}
     </div>
