@@ -631,15 +631,6 @@ export default function TableTrainerClient() {
                   </div>
                 )}
 
-                {/* GTO Hint Panel - Show before action or after action */}
-                {(hintMode === "before" || hintMode === "detailed") && isHeroTurn && gtoHint && (
-                  <GTOHintPanel
-                    hint={gtoHint}
-                    mode={hintMode}
-                    className="mb-3"
-                  />
-                )}
-
                 {/* Action Buttons (Hero's turn) - Desktop */}
                 {isHeroTurn && !aiThinking && (
                   <ActionButtons
@@ -654,7 +645,17 @@ export default function TableTrainerClient() {
                   />
                 )}
 
-                {/* GTO Hint Panel - After action mode */}
+                {/* GTO Hint Panel - Always below action buttons */}
+                {/* 行動前: 輪到你時顯示建議 */}
+                {/* 行動後: 你行動後才顯示分析 */}
+                {/* 詳細: 顯示更詳細的說明 */}
+                {(hintMode === "before" || hintMode === "detailed") && isHeroTurn && gtoHint && (
+                  <GTOHintPanel
+                    hint={gtoHint}
+                    mode={hintMode}
+                    className="mt-3"
+                  />
+                )}
                 {hintMode === "after" && lastHeroAction && gtoHint && (
                   <GTOHintPanel
                     hint={gtoHint}
