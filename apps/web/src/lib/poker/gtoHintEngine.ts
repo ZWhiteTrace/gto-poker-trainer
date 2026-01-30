@@ -678,21 +678,29 @@ function generatePreflopHint(context: HintContext, handStrength: HandStrengthAna
       keyFactorsZh.push("強牌面對加注 - 3-bet 或跟注");
     } else if (handStrength.category === "medium") {
       if (context.isInPosition) {
+        // In position with medium hand - can call, sometimes 3-bet for balance
         recommendations.push({
           action: "call",
-          frequency: 60,
+          frequency: 55,
           isPrimary: true,
         });
         recommendations.push({
-          action: "fold",
-          frequency: 40,
+          action: "raise",
+          frequency: 15,
+          sizing: 300, // 3-bet
           isPrimary: false,
         });
-        keyFactorsZh.push("有位置 + 中等牌 - 跟注看翻牌");
-      } else {
         recommendations.push({
           action: "fold",
-          frequency: 70,
+          frequency: 30,
+          isPrimary: false,
+        });
+        keyFactorsZh.push("有位置 + 中等牌 - 跟注為主，偶爾 3-bet");
+      } else {
+        // Out of position - tighter
+        recommendations.push({
+          action: "fold",
+          frequency: 60,
           isPrimary: true,
         });
         recommendations.push({
@@ -700,15 +708,48 @@ function generatePreflopHint(context: HintContext, handStrength: HandStrengthAna
           frequency: 30,
           isPrimary: false,
         });
-        keyFactorsZh.push("無位置 + 中等牌 - 傾向棄牌");
+        recommendations.push({
+          action: "raise",
+          frequency: 10,
+          sizing: 300, // 3-bet
+          isPrimary: false,
+        });
+        keyFactorsZh.push("無位置 + 中等牌 - 傾向棄牌，偶爾 3-bet");
       }
     } else {
-      recommendations.push({
-        action: "fold",
-        frequency: 95,
-        isPrimary: true,
-      });
-      keyFactorsZh.push("弱牌面對加注 - 棄牌");
+      // Weak hand facing a raise
+      if (context.isInPosition && handStrength.category === "draw") {
+        // Draws in position can occasionally 3-bet as semi-bluff
+        recommendations.push({
+          action: "fold",
+          frequency: 75,
+          isPrimary: true,
+        });
+        recommendations.push({
+          action: "call",
+          frequency: 15,
+          isPrimary: false,
+        });
+        recommendations.push({
+          action: "raise",
+          frequency: 10,
+          sizing: 300,
+          isPrimary: false,
+        });
+        keyFactorsZh.push("聽牌有位置 - 可跟注或偶爾 3-bet 半詐唬");
+      } else {
+        recommendations.push({
+          action: "fold",
+          frequency: 95,
+          isPrimary: true,
+        });
+        recommendations.push({
+          action: "call",
+          frequency: 5,
+          isPrimary: false,
+        });
+        keyFactorsZh.push("弱牌面對加注 - 棄牌");
+      }
     }
   }
 
