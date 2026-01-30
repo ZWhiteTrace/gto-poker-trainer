@@ -223,7 +223,7 @@ export function CompactPokerTable({
   const hero = players[heroIndex];
   const villains = players.filter((_, i) => i !== heroIndex);
   // Sort villains by position for consistent display
-  const positionOrder = ["UTG", "MP", "CO", "BTN", "SB", "BB"];
+  const positionOrder = ["UTG", "HJ", "CO", "BTN", "SB", "BB"];
   const sortedVillains = [...villains].sort(
     (a, b) => positionOrder.indexOf(a.position) - positionOrder.indexOf(b.position)
   );

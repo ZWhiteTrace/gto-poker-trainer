@@ -20,10 +20,10 @@ type RFIFrequencies = Record<string, { raise?: number; fold?: number }>;
 type VsRFIFrequencies = Record<string, { "3bet"?: number; call?: number; fold?: number }>;
 type Vs3BetFrequencies = Record<string, { "4bet"?: number; call?: number; fold?: number }>;
 
-// Position mapping (our code uses MP, JSON uses HJ)
+// Position mapping (now unified - both frontend and JSON use same names)
 const POSITION_MAP: Record<Position, string> = {
   UTG: "UTG",
-  MP: "HJ",  // Our MP = JSON's HJ (Hijack)
+  HJ: "HJ",
   CO: "CO",
   BTN: "BTN",
   SB: "SB",
@@ -493,7 +493,7 @@ function getRFIDecision(
     // Calculate raise size based on position (rounded to 0.5 BB)
     const positionSizes: Record<Position, number> = {
       UTG: 2.5,
-      MP: 2.5,
+      HJ: 2.5,
       CO: 2.5,
       BTN: 2.5,
       SB: 3.0,
@@ -1058,7 +1058,7 @@ function analyzeBoardTexture(communityCards: Card[]): BoardTexture {
 // ============================================
 
 function isInPosition(ourPosition: Position, villainPosition: Position): boolean {
-  const order: Position[] = ["UTG", "MP", "CO", "BTN", "SB", "BB"];
+  const order: Position[] = ["UTG", "HJ", "CO", "BTN", "SB", "BB"];
   return order.indexOf(ourPosition) > order.indexOf(villainPosition);
 }
 

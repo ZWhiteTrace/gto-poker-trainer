@@ -520,7 +520,7 @@ export default function TableTrainerClient() {
                   <p className="text-sm">
                     <span className="text-gray-400">贏家: </span>
                     <span className={winners[0].isHero ? "text-yellow-400 font-bold" : "text-white font-semibold"}>
-                      {winners.map(w => w.name).join(", ")}
+                      {winners.map(w => `${w.name} (${w.position})`).join(", ")}
                     </span>
                     {lastWonPot > 0 && (
                       <span className="text-green-400 ml-2">(+{lastWonPot.toFixed(1)} BB)</span>
@@ -597,7 +597,7 @@ export default function TableTrainerClient() {
                       <p className="text-lg">
                         <span className="text-gray-400">贏家: </span>
                         <span className={winners[0].isHero ? "text-yellow-400 font-bold" : "text-white font-semibold"}>
-                          {winners.map(w => w.name).join(", ")}
+                          {winners.map(w => `${w.name} (${w.position})`).join(", ")}
                         </span>
                       </p>
                       {lastWonPot > 0 && (
@@ -909,7 +909,7 @@ export default function TableTrainerClient() {
               <div>
                 <h3 className="text-sm font-semibold text-gray-300 mb-2">各位置盈虧</h3>
                 <div className="grid grid-cols-6 gap-1">
-                  {(["BTN", "CO", "MP", "UTG", "SB", "BB"] as const).map((pos) => {
+                  {(["BTN", "CO", "HJ", "UTG", "SB", "BB"] as const).map((pos) => {
                     const stats = positionStats[pos];
                     return (
                       <div key={pos} className="text-center bg-gray-800/30 rounded p-1.5">

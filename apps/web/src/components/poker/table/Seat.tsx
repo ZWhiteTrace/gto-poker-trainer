@@ -33,7 +33,7 @@ export const POSITION_TO_SEAT: Record<Position, number> = {
   SB: 1,
   BTN: 2,
   CO: 3,
-  MP: 4,
+  HJ: 4,
   UTG: 5,
 };
 
@@ -95,34 +95,44 @@ export const Seat = memo(function Seat({ player, isActive = false, isHero = fals
         ) : null}
       </div>
 
-      {/* 資訊區 - 下方：位置 + BB */}
-      <div className="flex items-center gap-1.5">
-        {/* 位置標籤 */}
-        <span
-          className={cn(
-            "px-1.5 py-0.5 rounded text-xs font-bold",
-            isHero
-              ? "bg-yellow-500 text-black"
-              : player.isDealer
-                ? "bg-amber-500 text-black"
-                : "bg-gray-700 text-gray-200"
+      {/* 資訊區 - 下方：位置 + 名字 + BB */}
+      <div className="flex flex-col items-center gap-0.5">
+        {/* 位置標籤 + 名字 */}
+        <div className="flex items-center gap-1.5">
+          <span
+            className={cn(
+              "px-1.5 py-0.5 rounded text-xs font-bold",
+              isHero
+                ? "bg-yellow-500 text-black"
+                : player.isDealer
+                  ? "bg-amber-500 text-black"
+                  : "bg-gray-700 text-gray-200"
+            )}
+          >
+            {player.position}
+          </span>
+          {/* 玩家名字（非 Hero 時顯示） */}
+          {!isHero && (
+            <span className="text-[10px] text-gray-400 truncate max-w-[50px]" title={player.name}>
+              {player.name}
+            </span>
           )}
-        >
-          {player.position}
-        </span>
+        </div>
 
-        {/* BB 顯示 */}
-        <span
-          className={cn(
-            "text-sm font-bold",
-            player.stack > 50 ? "text-green-400" : player.stack > 20 ? "text-yellow-400" : "text-red-400"
-          )}
-        >
-          {player.stack.toFixed(1)}
-        </span>
+        {/* BB 顯示 + All-in */}
+        <div className="flex items-center gap-1">
+          <span
+            className={cn(
+              "text-sm font-bold",
+              player.stack > 50 ? "text-green-400" : player.stack > 20 ? "text-yellow-400" : "text-red-400"
+            )}
+          >
+            {player.stack.toFixed(1)}
+          </span>
 
-        {/* All-in 標記 */}
-        {player.isAllIn && <AllInBadge size="sm" />}
+          {/* All-in 標記 */}
+          {player.isAllIn && <AllInBadge size="sm" />}
+        </div>
       </div>
 
       {/* Dev mode: AI profile info */}

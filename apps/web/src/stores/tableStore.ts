@@ -177,11 +177,11 @@ function getPositionForSeat(seatIndex: number, dealerSeatIndex: number): Positio
   // Calculate relative position from dealer
   // seatIndex 0-5, dealerSeatIndex 0-5
   // If dealer is at seat 3:
-  //   seat 3 = BTN, seat 4 = SB, seat 5 = BB, seat 0 = UTG, seat 1 = MP, seat 2 = CO
+  //   seat 3 = BTN, seat 4 = SB, seat 5 = BB, seat 0 = UTG, seat 1 = HJ, seat 2 = CO
   const relativePos = (seatIndex - dealerSeatIndex + 6) % 6;
 
-  // Mapping: 0=BTN, 1=SB, 2=BB, 3=UTG, 4=MP, 5=CO
-  const positionMap: Position[] = ["BTN", "SB", "BB", "UTG", "MP", "CO"];
+  // Mapping: 0=BTN, 1=SB, 2=BB, 3=UTG, 4=HJ, 5=CO
+  const positionMap: Position[] = ["BTN", "SB", "BB", "UTG", "HJ", "CO"];
   return positionMap[relativePos];
 }
 
@@ -235,7 +235,7 @@ const initialState: Omit<TableState, keyof TableActions> = {
   heroStats: { ...DEFAULT_HERO_STATS },
   positionStats: {
     UTG: { handsPlayed: 0, handsWon: 0, totalProfit: 0 },
-    MP: { handsPlayed: 0, handsWon: 0, totalProfit: 0 },
+    HJ: { handsPlayed: 0, handsWon: 0, totalProfit: 0 },
     CO: { handsPlayed: 0, handsWon: 0, totalProfit: 0 },
     BTN: { handsPlayed: 0, handsWon: 0, totalProfit: 0 },
     SB: { handsPlayed: 0, handsWon: 0, totalProfit: 0 },
@@ -1678,7 +1678,7 @@ export const useTableStore = create<TableState & TableActions>()(
             positionStats: {
               BTN: { handsPlayed: 0, handsWon: 0, totalProfit: 0 },
               CO: { handsPlayed: 0, handsWon: 0, totalProfit: 0 },
-              MP: { handsPlayed: 0, handsWon: 0, totalProfit: 0 },
+              HJ: { handsPlayed: 0, handsWon: 0, totalProfit: 0 },
               UTG: { handsPlayed: 0, handsWon: 0, totalProfit: 0 },
               SB: { handsPlayed: 0, handsWon: 0, totalProfit: 0 },
               BB: { handsPlayed: 0, handsWon: 0, totalProfit: 0 },

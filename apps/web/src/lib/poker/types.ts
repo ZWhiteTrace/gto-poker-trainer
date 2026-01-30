@@ -3,7 +3,7 @@
 // ============================================
 
 // Position types for 6-max table
-export type Position = "UTG" | "MP" | "CO" | "BTN" | "SB" | "BB";
+export type Position = "UTG" | "HJ" | "CO" | "BTN" | "SB" | "BB";
 
 // Street/phase of the hand
 export type Street = "preflop" | "flop" | "turn" | "river" | "showdown";
@@ -436,11 +436,11 @@ export interface TableActions {
 // Constants
 // ============================================
 
-export const POSITIONS: Position[] = ["UTG", "MP", "CO", "BTN", "SB", "BB"];
+export const POSITIONS: Position[] = ["UTG", "HJ", "CO", "BTN", "SB", "BB"];
 
 export const POSITION_LABELS: Record<Position, { en: string; zh: string }> = {
   UTG: { en: "Under the Gun", zh: "槍口位" },
-  MP: { en: "Middle Position", zh: "中位" },
+  HJ: { en: "Hijack", zh: "劫位" },
   CO: { en: "Cutoff", zh: "關煞位" },
   BTN: { en: "Button", zh: "按鈕位" },
   SB: { en: "Small Blind", zh: "小盲" },
