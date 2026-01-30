@@ -374,11 +374,19 @@ export const useTableStore = create<TableState & TableActions>()(
           }
         }
 
-        // Ensure at least one opponent for heads-up scenarios without actions
-        if (scenario.numPlayers && inHandPositions.size < scenario.numPlayers) {
-          const fallbackOpponent: Position =
-            scenario.heroPosition === "BB" ? "BTN" : "BB";
-          inHandPositions.add(fallbackOpponent);
+        const desiredPlayers = scenario.numPlayers
+          ? Math.max(scenario.numPlayers, inHandPositions.size)
+          : inHandPositions.size;
+
+        // Fill missing seats (if needed) to match desired player count
+        if (inHandPositions.size < desiredPlayers) {
+          const positionOrder: Position[] = ["BTN", "BB", "SB", "CO", "HJ", "UTG"];
+          for (const pos of positionOrder) {
+            if (inHandPositions.size >= desiredPlayers) break;
+            if (!inHandPositions.has(pos)) {
+              inHandPositions.add(pos);
+            }
+          }
         }
 
         // Mark players not in-hand as folded (still seated, but out of the hand)

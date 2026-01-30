@@ -3,9 +3,10 @@
 // Uses GTO range tables with player style adjustments
 // ============================================
 
-import type { Card, Position, ActionType, Street, AIStyle } from "./types";
+import type { Card, Position, ActionType, Street, AIStyle, Rank } from "./types";
 import type { PlayerStats } from "./playerStats";
 import { getPlayerVPIP } from "./playerStats";
+import { evaluateHand } from "./handEvaluator";
 
 // ============================================
 // Import GTO Range Data (will be loaded dynamically)
@@ -411,8 +412,9 @@ function getAllInResponse(
   const potOdds = toCall / (pot + toCall);
 
   // Calculate hand strength
+  const opponents = Math.max(1, context.numActivePlayers - 1);
   const handStrength = communityCards.length > 0
-    ? estimateHandStrength(context.holeCards, communityCards)
+    ? estimateHandStrengthVsOpponents(context.holeCards, communityCards, opponents)
     : estimatePreflopStrength(handNotation);
 
   // Required equity to call (with style adjustment)
@@ -731,6 +733,7 @@ function getVs4BetDecision(
 
     // Adjust based on profile aggression (slightly more 5-bet for aggressive players)
     fiveBetProb *= Math.min(1.5, 0.8 + profile.aggression * 0.7);
+    fiveBetProb = Math.min(1.0, fiveBetProb);
     // Tighter players call less vs 4bet
     if (profile.vpip < 0.20) {
       callProb *= 0.7;
@@ -786,7 +789,8 @@ function getPostflopDecision(
   const { pot, currentBet, playerBet, stack, communityCards, street, isInPosition, villainChecked, wasLastStreetAggressor, preflopAggressor, position } = context;
   const toCall = currentBet - playerBet;
 
-  const handStrength = estimateHandStrength(context.holeCards, communityCards);
+  const opponents = Math.max(1, context.numActivePlayers - 1);
+  const handStrength = estimateHandStrengthVsOpponents(context.holeCards, communityCards, opponents);
   const boardTexture = analyzeBoardTexture(communityCards);
 
   // Determine if we were the preflop aggressor
@@ -1206,6 +1210,20 @@ function estimatePreflopStrength(hand: string): number {
  * @todo Adjust for kicker strength
  */
 function estimateHandStrength(holeCards: [Card, Card], communityCards: Card[]): number {
+  const numOpponents = 1;
+  return estimateHandStrengthVsOpponents(holeCards, communityCards, numOpponents);
+}
+
+function estimateHandStrengthVsOpponents(
+  holeCards: [Card, Card],
+  communityCards: Card[],
+  numOpponents: number
+): number {
+  if (communityCards.length >= 3) {
+    return estimateEquityMonteCarlo(holeCards, communityCards, numOpponents);
+  }
+
+  // Fallback heuristic for non-standard states (preflop/partial boards)
   const allCards = [...holeCards, ...communityCards];
   const rankCounts = new Map<string, number>();
   const suitCounts = new Map<string, number>();
@@ -1277,6 +1295,93 @@ function estimateHandStrength(holeCards: [Card, Card], communityCards: Card[]): 
 
   // Combine base strength with draw equity
   return Math.min(0.99, baseStrength + drawEquity);
+}
+
+function estimateEquityMonteCarlo(
+  holeCards: [Card, Card],
+  communityCards: Card[],
+  numOpponents: number
+): number {
+  const opponents = Math.max(1, Math.min(numOpponents, 5));
+  const iterations = getMonteCarloIterations(communityCards.length, opponents);
+  if (iterations === 0) return 0.5;
+
+  const deck = buildDeckExcluding([...holeCards, ...communityCards]);
+  const remainingBoardCards = 5 - communityCards.length;
+
+  let equity = 0;
+
+  for (let i = 0; i < iterations; i++) {
+    const shuffled = shuffleDeck(deck);
+    let cursor = 0;
+
+    const board = [...communityCards];
+    for (let j = 0; j < remainingBoardCards; j++) {
+      board.push(shuffled[cursor++]);
+    }
+
+    const opponentHands: [Card, Card][] = [];
+    for (let o = 0; o < opponents; o++) {
+      const card1 = shuffled[cursor++];
+      const card2 = shuffled[cursor++];
+      opponentHands.push([card1, card2]);
+    }
+
+    const heroEval = evaluateHand(holeCards, board);
+    let bestRank = heroEval.rankValue;
+    let winners = 1;
+    let heroWins = true;
+
+    for (const oppHand of opponentHands) {
+      const oppEval = evaluateHand(oppHand, board);
+      if (oppEval.rankValue > bestRank) {
+        bestRank = oppEval.rankValue;
+        winners = 1;
+        heroWins = false;
+      } else if (oppEval.rankValue === bestRank) {
+        winners += 1;
+        if (!heroWins) {
+          // hero already behind
+          continue;
+        }
+      }
+    }
+
+    if (heroWins) {
+      equity += 1 / winners;
+    }
+  }
+
+  return equity / iterations;
+}
+
+function getMonteCarloIterations(boardSize: number, opponents: number): number {
+  const base = boardSize >= 5 ? 180 : boardSize === 4 ? 240 : 320;
+  const scale = 1 / Math.sqrt(opponents);
+  return Math.max(80, Math.round(base * scale));
+}
+
+function buildDeckExcluding(excluded: Card[]): Card[] {
+  const excludedSet = new Set(excluded.map(c => `${c.rank}${c.suit}`));
+  const deck: Card[] = [];
+  for (const rank of "AKQJT98765432") {
+    for (const suit of ["s", "h", "d", "c"] as const) {
+      const key = `${rank}${suit}`;
+      if (!excludedSet.has(key)) {
+        deck.push({ rank: rank as Rank, suit });
+      }
+    }
+  }
+  return deck;
+}
+
+function shuffleDeck(cards: Card[]): Card[] {
+  const arr = [...cards];
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
 }
 
 /**
