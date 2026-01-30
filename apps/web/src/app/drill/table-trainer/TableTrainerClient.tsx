@@ -416,7 +416,7 @@ export default function TableTrainerClient() {
             <HintModeSelector
               mode={hintMode}
               onChange={setHintMode}
-              className="hidden sm:flex"
+              className="flex"
             />
 
             {/* Hand History Toggle */}
