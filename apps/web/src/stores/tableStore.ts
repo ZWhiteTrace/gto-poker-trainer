@@ -15,6 +15,7 @@ import type {
   Rank,
   Suit,
   GamePhase,
+  HandHistory,
 } from "@/lib/poker/types";
 import {
   POSITIONS,
@@ -25,6 +26,7 @@ import {
 import { TIMING, TABLE } from "@/lib/poker/constants";
 import { evaluateHand, determineWinners as findWinners } from "@/lib/poker/handEvaluator";
 import { getAIDecision, AI_PROFILES, AIPlayerProfile, getAIProfile } from "@/lib/poker/aiDecisionEngine";
+import { createHandHistory, saveHandHistory } from "@/lib/poker/handHistory";
 
 // ============================================
 // Helper Functions
@@ -1121,7 +1123,9 @@ export const useTableStore = create<TableState & TableActions>()(
           const heroPlayer = players.find(p => p.isHero);
           const heroInvested = heroPlayer?.totalInvested ?? 0;
           const heroPosition = heroPlayer?.position;
-          const { sessionStats, heroStats, positionStats } = get();
+          const { sessionStats, heroStats, positionStats, handNumber, actionHistory, communityCards: cc, config, dealerSeatIndex } = get();
+          const dealerPlayer = players.find(p => p.seatIndex === dealerSeatIndex);
+          const dealerPosition = dealerPlayer?.position ?? "BTN";
           const newHeroStats = { ...heroStats, handsPlayed: heroStats.handsPlayed + 1 };
 
           // Update position stats
@@ -1135,6 +1139,24 @@ export const useTableStore = create<TableState & TableActions>()(
               totalProfit: posStats.totalProfit + netProfit,
             };
           }
+
+          // Record hand history
+          const heroProfit = winner.isHero ? (pot - heroInvested) : -heroInvested;
+          const handHistory = createHandHistory(
+            handNumber,
+            players,
+            dealerPosition,
+            actionHistory,
+            cc,
+            [winner],
+            pot,
+            heroPosition ?? "BTN",
+            heroProfit,
+            new Map(),
+            config.blinds,
+            config.ante
+          );
+          saveHandHistory(handHistory);
 
           if (winner.isHero) {
             // Hero won the pot
@@ -1261,7 +1283,9 @@ export const useTableStore = create<TableState & TableActions>()(
           const heroWinnings = heroPlayer ? (winnings.get(heroPlayer.id) || 0) : 0;
           const heroWon = heroWinnings > 0;
           const heroPosition = heroPlayer?.position;
-          const { sessionStats, heroStats, positionStats } = get();
+          const { sessionStats, heroStats, positionStats, handNumber, actionHistory, config, dealerSeatIndex } = get();
+          const dealerPlayer = players.find(p => p.seatIndex === dealerSeatIndex);
+          const dealerPosition = dealerPlayer?.position ?? "BTN";
           const newHeroStats = { ...heroStats, handsPlayed: heroStats.handsPlayed + 1 };
 
           // Update position stats
@@ -1275,6 +1299,24 @@ export const useTableStore = create<TableState & TableActions>()(
               totalProfit: posStats.totalProfit + netProfit,
             };
           }
+
+          // Record hand history (showdown)
+          const heroProfit = heroWon ? (heroWinnings - heroInvested) : -heroInvested;
+          const handHistory = createHandHistory(
+            handNumber,
+            players,
+            dealerPosition,
+            actionHistory,
+            communityCards,
+            winnerPlayers,
+            pot,
+            heroPosition ?? "BTN",
+            heroProfit,
+            evaluations,
+            config.blinds,
+            config.ante
+          );
+          saveHandHistory(handHistory);
 
           if (heroWon) {
             // Hero won (or split a pot)

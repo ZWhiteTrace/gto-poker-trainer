@@ -362,3 +362,78 @@ export const DEFAULT_CONFIG: GameConfig = {
   ante: 0,
   timeBank: 30,
 };
+
+// ============================================
+// Hand History Types
+// ============================================
+
+export interface HandHistoryPlayer {
+  name: string;
+  position: Position;
+  stack: number;           // Starting stack for this hand
+  holeCards: HoleCards | null;  // null if not shown
+  seatIndex: number;
+  isHero: boolean;
+}
+
+export interface HandHistoryAction {
+  position: Position;
+  action: ActionType;
+  amount?: number;
+  isAllIn?: boolean;
+}
+
+export interface HandHistoryStreetActions {
+  preflop: HandHistoryAction[];
+  flop: HandHistoryAction[];
+  turn: HandHistoryAction[];
+  river: HandHistoryAction[];
+}
+
+export interface HandHistoryResult {
+  winners: {
+    position: Position;
+    amount: number;
+    handRank?: HandRank;
+    handDescription?: string;
+  }[];
+  showdownHands?: {
+    position: Position;
+    cards: HoleCards;
+    handRank: HandRank;
+    handDescription: string;
+  }[];
+}
+
+export interface HandHistory {
+  id: string;
+  timestamp: number;
+  handNumber: number;
+
+  // Game info
+  tableName: string;
+  tableSize: number;
+  blinds: { sb: number; bb: number };
+  ante: number;
+
+  // Players at the start of the hand
+  players: HandHistoryPlayer[];
+  dealerPosition: Position;
+
+  // Community cards
+  board: {
+    flop?: [Card, Card, Card];
+    turn?: Card;
+    river?: Card;
+  };
+
+  // Actions by street
+  actions: HandHistoryStreetActions;
+
+  // Result
+  result: HandHistoryResult;
+
+  // Hero specific
+  heroPosition: Position;
+  heroProfit: number;  // BB won/lost
+}

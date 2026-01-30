@@ -11,7 +11,8 @@ import { Badge } from "@/components/ui/badge";
 import { POSITIONS, Position, POSITION_LABELS, ScenarioPreset } from "@/lib/poker/types";
 import { getPlayerVPIP, getPlayerPFR } from "@/lib/poker/playerStats";
 import { cn } from "@/lib/utils";
-import { ChevronUp, ChevronDown, History, RotateCw, BarChart3 } from "lucide-react";
+import { ChevronUp, ChevronDown, History, RotateCw, BarChart3, FileText } from "lucide-react";
+import { HandHistoryPanel } from "@/components/poker/HandHistoryPanel";
 
 export default function TableTrainerClient() {
   const {
@@ -49,6 +50,7 @@ export default function TableTrainerClient() {
   const [devMode, setDevMode] = useState(false);
   const [showMobileSidebar, setShowMobileSidebar] = useState(false);
   const [showStatsPanel, setShowStatsPanel] = useState(false);
+  const [showHandHistory, setShowHandHistory] = useState(false);
   const handRecorded = useRef(false);
 
   // Progress tracking
@@ -310,6 +312,18 @@ export default function TableTrainerClient() {
             >
               <BarChart3 className="h-4 w-4" />
               <span className="hidden sm:inline">統計</span>
+            </Button>
+
+            {/* Hand History Toggle */}
+            <Button
+              variant={showHandHistory ? "default" : "outline"}
+              size="sm"
+              onClick={() => setShowHandHistory(!showHandHistory)}
+              className={cn("gap-1.5", showHandHistory && "bg-amber-600 hover:bg-amber-500")}
+              title="手牌紀錄"
+            >
+              <FileText className="h-4 w-4" />
+              <span className="hidden sm:inline">紀錄</span>
             </Button>
 
             {/* Dev Mode Toggle */}
@@ -793,6 +807,28 @@ export default function TableTrainerClient() {
                   </p>
                 </div>
               )}
+            </CardContent>
+          </Card>
+        </div>
+      )}
+
+      {/* Hand History Panel Modal */}
+      {showHandHistory && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <Card className="bg-gray-900 border-gray-700 w-full max-w-lg max-h-[80vh] overflow-auto">
+            <CardHeader className="border-b border-gray-700 sticky top-0 bg-gray-900 z-10">
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-white flex items-center gap-2">
+                  <FileText className="h-5 w-5" />
+                  手牌紀錄
+                </CardTitle>
+                <Button variant="ghost" size="sm" onClick={() => setShowHandHistory(false)}>
+                  ✕
+                </Button>
+              </div>
+            </CardHeader>
+            <CardContent className="p-0">
+              <HandHistoryPanel />
             </CardContent>
           </Card>
         </div>
