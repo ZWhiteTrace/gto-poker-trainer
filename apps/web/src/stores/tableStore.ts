@@ -1520,7 +1520,8 @@ export const useTableStore = create<TableState & TableActions>()(
 
         // Calculate position awareness (is AI in position vs active players)
         const { dealerSeatIndex, actionHistory } = get();
-        const activePlayers = players.filter(p => p.isActive && !p.isFolded && !p.isAllIn);
+        const playersInHand = players.filter(p => p.isActive && !p.isFolded);
+        const activePlayers = playersInHand.filter(p => !p.isAllIn);
         const aiSeatIndex = aiPlayer.seatIndex;
         // In position = acting last among remaining players
         const isInPosition = activePlayers.every(p =>
@@ -1565,7 +1566,7 @@ export const useTableStore = create<TableState & TableActions>()(
             currentBet,
             playerBet: aiPlayer.currentBet,
             stack: aiPlayer.stack,
-            numActivePlayers: activePlayers.length,
+            numActivePlayers: playersInHand.length,
             lastAggressor,
             hasRaiseInFront,
             preflopRaiseCount,

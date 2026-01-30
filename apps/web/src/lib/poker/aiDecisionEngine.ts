@@ -1412,24 +1412,18 @@ function estimateEquityMonteCarlo(
     const heroEval = evaluateHand(holeCards, board);
     let bestRank = heroEval.rankValue;
     let winners = 1;
-    let heroWins = true;
 
     for (const oppHand of opponentHands) {
       const oppEval = evaluateHand(oppHand, board);
       if (oppEval.rankValue > bestRank) {
         bestRank = oppEval.rankValue;
         winners = 1;
-        heroWins = false;
       } else if (oppEval.rankValue === bestRank) {
         winners += 1;
-        if (!heroWins) {
-          // hero already behind
-          continue;
-        }
       }
     }
 
-    if (heroWins) {
+    if (heroEval.rankValue === bestRank) {
       equity += 1 / winners;
     }
   }
