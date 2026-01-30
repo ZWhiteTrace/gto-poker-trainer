@@ -15,10 +15,12 @@ import { getPlayerVPIP } from "./playerStats";
 import rfiData from "@data/ranges/6max/rfi_frequencies.json";
 import vsRfiData from "@data/ranges/6max/vs_rfi_frequencies.json";
 import vs3betData from "@data/ranges/6max/vs_3bet_frequencies.json";
+import vs4betData from "@data/ranges/6max/vs_4bet_frequencies.json";
 
 type RFIFrequencies = Record<string, { raise?: number; fold?: number }>;
 type VsRFIFrequencies = Record<string, { "3bet"?: number; call?: number; fold?: number }>;
 type Vs3BetFrequencies = Record<string, { "4bet"?: number; call?: number; fold?: number }>;
+type Vs4BetFrequencies = Record<string, { "5bet"?: number; call?: number; fold?: number }>;
 
 // Position mapping (now unified - both frontend and JSON use same names)
 const POSITION_MAP: Record<Position, string> = {
@@ -267,6 +269,28 @@ function getVs3BetFrequency(
   };
 }
 
+function getVs4BetFrequency(
+  ourPosition: Position,
+  fourBetterPosition: Position,
+  hand: string
+): { fiveBet: number; call: number; fold: number } | null {
+  const ourJsonPos = POSITION_MAP[ourPosition];
+  const fourBetterJsonPos = POSITION_MAP[fourBetterPosition];
+  const key = `${ourJsonPos}_vs_${fourBetterJsonPos}`;
+
+  const matchupData = (vs4betData as Record<string, { frequencies?: Vs4BetFrequencies }>)[key];
+  if (!matchupData?.frequencies) return null;
+
+  const handData = matchupData.frequencies[hand];
+  if (!handData) return null;
+
+  return {
+    fiveBet: handData["5bet"] || 0,
+    call: handData.call || 0,
+    fold: handData.fold || 100 - (handData["5bet"] || 0) - (handData.call || 0),
+  };
+}
+
 // ============================================
 // Decision Logic
 // ============================================
@@ -289,6 +313,7 @@ interface GameContext {
   numActivePlayers: number;
   lastAggressor: Position | null;
   hasRaiseInFront: boolean;
+  preflopRaiseCount?: number;
   communityCards: Card[];
   isAllInSituation?: boolean;
   // New fields for improved postflop logic
@@ -417,7 +442,7 @@ function getPreflopDecision(
   handNotation: string,
   profile: AIPlayerProfile
 ): AIDecision {
-  const { position, currentBet, playerBet, stack, hasRaiseInFront, lastAggressor, pot } = context;
+  const { position, currentBet, playerBet, stack, hasRaiseInFront, lastAggressor, pot, preflopRaiseCount = 0 } = context;
   const toCall = currentBet - playerBet;
 
   // No raise in front - consider opening (RFI)
@@ -429,6 +454,10 @@ function getPreflopDecision(
   if (hasRaiseInFront && lastAggressor) {
     // Check if we already raised (facing 3bet)
     if (playerBet > 1) {
+      // If there have been 3+ raises preflop, we're facing a 4-bet
+      if (preflopRaiseCount >= 3) {
+        return getVs4BetDecision(context, handNotation, profile, lastAggressor);
+      }
       return getVs3BetDecision(context, handNotation, profile, lastAggressor);
     }
     // We haven't acted yet, this is our response to RFI
@@ -677,6 +706,71 @@ function getVs3BetDecision(
     action: "fold",
     confidence: 1 - fourBetProb - callProb,
     reasoning: `Folding ${handNotation} to 3bet`,
+  };
+}
+
+/**
+ * Response to 4bet (5bet/call/fold)
+ */
+function getVs4BetDecision(
+  context: GameContext,
+  handNotation: string,
+  profile: AIPlayerProfile,
+  fourBetterPosition: Position
+): AIDecision {
+  const { position, stack, playerBet } = context;
+
+  const gtoFreq = getVs4BetFrequency(position, fourBetterPosition, handNotation);
+
+  let fiveBetProb = 0;
+  let callProb = 0;
+
+  if (gtoFreq) {
+    fiveBetProb = gtoFreq.fiveBet / 100;
+    callProb = gtoFreq.call / 100;
+
+    // Adjust based on profile aggression (slightly more 5-bet for aggressive players)
+    fiveBetProb *= Math.min(1.5, 0.8 + profile.aggression * 0.7);
+    // Tighter players call less vs 4bet
+    if (profile.vpip < 0.20) {
+      callProb *= 0.7;
+    }
+  } else {
+    // Hand not in GTO range - occasional bluff 5bet for maniacs
+    if (profile.fourBetFreq > 0.05 && estimatePreflopStrength(handNotation) > 0.75) {
+      fiveBetProb = 0.1;
+    }
+  }
+
+  const total = fiveBetProb + callProb;
+  if (total > 1) {
+    fiveBetProb /= total;
+    callProb /= total;
+  }
+
+  const rand = Math.random();
+
+  if (rand < fiveBetProb) {
+    return {
+      action: "allin",
+      amount: stack + playerBet,
+      confidence: fiveBetProb,
+      reasoning: `5-betting (all-in) ${handNotation} vs ${fourBetterPosition}`,
+    };
+  }
+
+  if (rand < fiveBetProb + callProb) {
+    return {
+      action: "call",
+      confidence: callProb,
+      reasoning: `Calling 4bet with ${handNotation}`,
+    };
+  }
+
+  return {
+    action: "fold",
+    confidence: 1 - fiveBetProb - callProb,
+    reasoning: `Folding ${handNotation} to 4bet`,
   };
 }
 
@@ -948,7 +1042,7 @@ function getFacingBetDecision(
   }
 
   // Drawing hands - consider implied odds on earlier streets
-  if (street !== "river" && boardTexture.hasFlushDraw || boardTexture.hasStraightDraw) {
+  if (street !== "river" && (boardTexture.hasFlushDraw || boardTexture.hasStraightDraw)) {
     if (handStrength > 0.25 && betSize < 0.75) {
       return { action: "call", confidence: 0.55, reasoning: "Chasing draw with implied odds" };
     }
@@ -1133,11 +1227,16 @@ function estimateHandStrength(holeCards: [Card, Card], communityCards: Card[]): 
   // Flush
   if (maxSuit >= 5) return 0.88;
 
-  // Check for straight
+  // Check for straight (including wheel A-2-3-4-5)
   const rankValues = allCards.map(c => "AKQJT98765432".indexOf(c.rank)).sort((a, b) => a - b);
   const uniqueRanks = [...new Set(rankValues)];
   for (let i = 0; i <= uniqueRanks.length - 5; i++) {
     if (uniqueRanks[i + 4] - uniqueRanks[i] === 4) return 0.82;
+  }
+  // Wheel straight (A-2-3-4-5)
+  const wheelRanks = [0, 9, 10, 11, 12]; // A,5,4,3,2 in index order
+  if (wheelRanks.every(r => uniqueRanks.includes(r))) {
+    return 0.82;
   }
 
   // Three of a kind

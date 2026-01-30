@@ -366,20 +366,72 @@ export const useTableStore = create<TableState & TableActions>()(
           dealerIndex
         );
 
-        // Apply preflop actions if provided
-        let pot = config.blinds.sb + config.blinds.bb;
-        let currentBet = config.blinds.bb;
+        // Determine which positions are in-hand for this scenario
+        const inHandPositions = new Set<Position>([scenario.heroPosition]);
+        if (scenario.preflopActions) {
+          for (const action of scenario.preflopActions) {
+            inHandPositions.add(action.position);
+          }
+        }
+
+        // Ensure at least one opponent for heads-up scenarios without actions
+        if (scenario.numPlayers && inHandPositions.size < scenario.numPlayers) {
+          const fallbackOpponent: Position =
+            scenario.heroPosition === "BB" ? "BTN" : "BB";
+          inHandPositions.add(fallbackOpponent);
+        }
+
+        // Mark players not in-hand as folded (still seated, but out of the hand)
+        players.forEach((player) => {
+          if (!inHandPositions.has(player.position)) {
+            player.isFolded = true;
+          }
+        });
+
+        let pot = 0;
+        let currentBet = 0;
+        let minRaise = config.blinds.bb;
+        let actionsThisRound = 0;
+        let lastAggressorIndex: number | null = null;
         const actionHistory: ActionRecord[] = [];
 
         // Apply blinds to initial state
-        const sbIndex = (dealerIndex + 1) % 6;
-        const bbIndex = (dealerIndex + 2) % 6;
-        players[sbIndex].currentBet = config.blinds.sb;
-        players[sbIndex].totalInvested = config.blinds.sb;
-        players[sbIndex].stack -= config.blinds.sb;
-        players[bbIndex].currentBet = config.blinds.bb;
-        players[bbIndex].totalInvested = config.blinds.bb;
-        players[bbIndex].stack -= config.blinds.bb;
+        const headsUp = inHandPositions.size === 2;
+        if (headsUp) {
+          const btnIndex = players.findIndex(p => p.position === "BTN");
+          const bbIndex = players.findIndex(p => p.position === "BB");
+          const smallBlindIndex = btnIndex !== -1 ? btnIndex : players.findIndex(p => p.isHero);
+          const bigBlindIndex = bbIndex !== -1
+            ? bbIndex
+            : players.findIndex(p => p.position !== players[smallBlindIndex].position);
+
+          if (smallBlindIndex !== -1) {
+            players[smallBlindIndex].currentBet = config.blinds.sb;
+            players[smallBlindIndex].totalInvested = config.blinds.sb;
+            players[smallBlindIndex].stack -= config.blinds.sb;
+            pot += config.blinds.sb;
+          }
+          if (bigBlindIndex !== -1) {
+            players[bigBlindIndex].currentBet = config.blinds.bb;
+            players[bigBlindIndex].totalInvested = config.blinds.bb;
+            players[bigBlindIndex].stack -= config.blinds.bb;
+            pot += config.blinds.bb;
+            currentBet = config.blinds.bb;
+            lastAggressorIndex = bigBlindIndex;
+          }
+        } else {
+          const sbIndex = (dealerIndex + 1) % 6;
+          const bbIndex = (dealerIndex + 2) % 6;
+          players[sbIndex].currentBet = config.blinds.sb;
+          players[sbIndex].totalInvested = config.blinds.sb;
+          players[sbIndex].stack -= config.blinds.sb;
+          players[bbIndex].currentBet = config.blinds.bb;
+          players[bbIndex].totalInvested = config.blinds.bb;
+          players[bbIndex].stack -= config.blinds.bb;
+          pot = config.blinds.sb + config.blinds.bb;
+          currentBet = config.blinds.bb;
+          lastAggressorIndex = bbIndex;
+        }
 
         if (scenario.preflopActions && scenario.preflopActions.length > 0) {
           for (const action of scenario.preflopActions) {
@@ -391,36 +443,53 @@ export const useTableStore = create<TableState & TableActions>()(
             switch (action.action) {
               case "fold":
                 player.isFolded = true;
+                actionsThisRound += 1;
                 break;
-              case "call":
+              case "call": {
                 const callAmount = currentBet - player.currentBet;
                 player.stack -= callAmount;
                 pot += callAmount;
                 player.currentBet = currentBet;
                 player.totalInvested += callAmount;
+                actionsThisRound += 1;
                 break;
+              }
               case "raise":
               case "bet":
                 if (action.amount) {
+                  const previousBet = currentBet;
                   const raiseAmount = action.amount - player.currentBet;
                   player.stack -= raiseAmount;
                   pot += raiseAmount;
                   player.currentBet = action.amount;
                   player.totalInvested += raiseAmount;
                   currentBet = action.amount;
+                  minRaise = Math.max(minRaise, currentBet - previousBet);
+                  actionsThisRound = 1;
+                  lastAggressorIndex = playerIndex;
                 }
                 break;
-              case "allin":
+              case "allin": {
                 const allinAmount = player.stack;
+                const newTotalBet = player.currentBet + allinAmount;
                 pot += allinAmount;
-                player.currentBet += allinAmount;
+                player.currentBet = newTotalBet;
                 player.totalInvested += allinAmount;
                 player.stack = 0;
                 player.isAllIn = true;
-                if (player.currentBet > currentBet) {
-                  currentBet = player.currentBet;
+                if (newTotalBet > currentBet) {
+                  const raiseIncrement = newTotalBet - currentBet;
+                  if (raiseIncrement >= minRaise) {
+                    minRaise = raiseIncrement;
+                    lastAggressorIndex = playerIndex;
+                  }
+                  currentBet = newTotalBet;
+                  actionsThisRound = 1;
+                } else {
+                  actionsThisRound += 1;
                 }
                 break;
+              }
             }
 
             actionHistory.push(action);
@@ -432,7 +501,6 @@ export const useTableStore = create<TableState & TableActions>()(
         if (scenario.heroHand) {
           const heroIndex = players.findIndex(p => p.isHero);
           if (heroIndex !== -1) {
-            // Remove hero's cards from deck
             deck = deck.filter(c =>
               !(c.rank === scenario.heroHand![0].rank && c.suit === scenario.heroHand![0].suit) &&
               !(c.rank === scenario.heroHand![1].rank && c.suit === scenario.heroHand![1].suit)
@@ -449,13 +517,13 @@ export const useTableStore = create<TableState & TableActions>()(
           if (scenario.board.flop) {
             communityCards = [...scenario.board.flop];
             currentStreet = "flop";
-            // Remove flop cards from deck
             for (const card of scenario.board.flop) {
               deck = deck.filter(c => !(c.rank === card.rank && c.suit === card.suit));
             }
-            // Reset current bets for postflop
             players.forEach(p => { p.currentBet = 0; });
             currentBet = 0;
+            actionsThisRound = 0;
+            lastAggressorIndex = null;
           }
           if (scenario.board.turn) {
             communityCards.push(scenario.board.turn);
@@ -473,14 +541,78 @@ export const useTableStore = create<TableState & TableActions>()(
           }
         }
 
+        // Deal hole cards to players still in the hand
+        const activePlayers = players.filter(p => p.isActive && !p.isFolded);
+        for (const player of activePlayers) {
+          if (!player.holeCards) {
+            const card1 = deck.pop();
+            const card2 = deck.pop();
+            if (card1 && card2) {
+              player.holeCards = [card1, card2];
+            }
+          }
+        }
+
+        // Determine active player index
+        let activePlayerIndex = 0;
+        if (currentStreet === "preflop") {
+          if (scenario.preflopActions && scenario.preflopActions.length > 0) {
+            const lastAction = scenario.preflopActions[scenario.preflopActions.length - 1];
+            const lastIndex = players.findIndex(p => p.position === lastAction.position);
+            activePlayerIndex = getNextActivePlayerIndex(players, lastIndex);
+          } else if (headsUp) {
+            const btnIndex = players.findIndex(p => p.position === "BTN");
+            activePlayerIndex = btnIndex !== -1 ? btnIndex : 0;
+          } else {
+            let firstToAct = (dealerIndex + 3) % 6;
+            let attempts = 0;
+            while (
+              (players[firstToAct].isFolded || players[firstToAct].isAllIn) &&
+              attempts < TABLE.MAX_PLAYERS
+            ) {
+              firstToAct = (firstToAct + 1) % 6;
+              attempts++;
+            }
+            activePlayerIndex = firstToAct;
+          }
+        } else {
+          let firstToAct = (dealerIndex + 1) % 6;
+          let attempts = 0;
+          while (
+            (players[firstToAct].isFolded || players[firstToAct].isAllIn) &&
+            attempts < TABLE.MAX_PLAYERS
+          ) {
+            firstToAct = (firstToAct + 1) % 6;
+            attempts++;
+          }
+          activePlayerIndex = firstToAct;
+        }
+
+        const streetActions = new Map<Street, ActionRecord[]>([
+          ["preflop", actionHistory.filter(a => a.street === "preflop")],
+        ]);
+
         set({
+          dealerSeatIndex: dealerIndex,
           players,
           pot,
           currentBet,
+          minRaise,
+          actionsThisRound,
+          lastAggressorIndex,
+          sidePots: [],
+          lastWonPot: 0,
           communityCards,
           currentStreet,
           deck,
           actionHistory,
+          streetActions,
+          phase: "playing",
+          activePlayerIndex,
+          winners: null,
+          handEvaluations: new Map(),
+          aiThinking: false,
+          isTransitioning: false,
           trainingMode: {
             enabled: true,
             scenario,
@@ -489,6 +621,18 @@ export const useTableStore = create<TableState & TableActions>()(
             hintMode: "after" as const,
           },
         });
+
+        // If preflop is already complete and no board was provided, auto-deal flop
+        const preflopComplete = get().checkBettingRoundComplete(
+          players,
+          activePlayerIndex,
+          lastAggressorIndex,
+          currentBet,
+          actionsThisRound
+        );
+        if (currentStreet === "preflop" && preflopComplete && !scenario.board) {
+          get().dealFlop();
+        }
       },
 
       // ========================================
@@ -1386,6 +1530,9 @@ export const useTableStore = create<TableState & TableActions>()(
         const preflopActions = actionHistory.filter(a => a.street === "preflop");
         const preflopRaiser = preflopActions.find(a => a.action === "raise" || a.action === "bet");
         const preflopAggressor = preflopRaiser?.position;
+        const preflopRaiseCount = preflopActions.filter(a =>
+          a.action === "raise" || a.action === "bet" || a.action === "allin"
+        ).length;
 
         // Check if AI was the aggressor on previous street
         const streetOrder: Street[] = ["preflop", "flop", "turn", "river"];
@@ -1413,6 +1560,7 @@ export const useTableStore = create<TableState & TableActions>()(
             numActivePlayers: activePlayers.length,
             lastAggressor,
             hasRaiseInFront,
+            preflopRaiseCount,
             communityCards,
             // New context fields for improved postflop logic
             isInPosition,
