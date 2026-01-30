@@ -510,7 +510,7 @@ export default function TableTrainerClient() {
             </div>
 
             {/* Mobile Action Area - only show on mobile */}
-            <div className="lg:hidden space-y-2 relative z-30 shrink-0">
+            <div className="lg:hidden space-y-2 relative z-30 max-h-[45vh] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-700">
               {/* Start / New Hand Button */}
               {(phase === "setup" || phase === "result" || phase === "showdown") && (
                 <div className="flex justify-center">

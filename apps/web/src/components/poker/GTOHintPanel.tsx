@@ -43,15 +43,15 @@ export function GTOHintPanel({ hint, mode, lastAction, className }: GTOHintPanel
 
   return (
     <div className={cn(
-      "bg-gray-900/95 border rounded-xl p-4 shadow-xl",
+      "bg-gray-900/95 border rounded-xl p-3 sm:p-4 shadow-xl",
       mode === "before" ? "border-yellow-500/50" : "border-cyan-500/50",
       className
     )}>
       {/* Header */}
-      <div className="flex items-center justify-between mb-3">
+      <div className="flex items-center justify-between mb-2 sm:mb-3">
         <div className="flex items-center gap-2">
-          <span className="text-lg">🎯</span>
-          <h3 className="text-sm font-semibold text-white">
+          <span className="text-base sm:text-lg">🎯</span>
+          <h3 className="text-xs sm:text-sm font-semibold text-white">
             {mode === "before" ? "GTO 建議" : "GTO 分析"}
           </h3>
         </div>
@@ -66,7 +66,7 @@ export function GTOHintPanel({ hint, mode, lastAction, className }: GTOHintPanel
       </div>
 
       {/* Board & Hand Analysis */}
-      <div className="flex gap-3 mb-3 text-xs">
+      <div className="flex flex-wrap gap-1.5 sm:gap-3 mb-2 sm:mb-3 text-xs">
         <div className="bg-gray-800/50 rounded px-2 py-1">
           <span className="text-gray-400">公牌: </span>
           <span className="text-white font-medium">{hint.reasoning.boardTextureZh}</span>
@@ -87,7 +87,7 @@ export function GTOHintPanel({ hint, mode, lastAction, className }: GTOHintPanel
       </div>
 
       {/* Recommendations */}
-      <div className="space-y-2 mb-3">
+      <div className="space-y-1.5 sm:space-y-2 mb-2 sm:mb-3">
         {/* Primary action */}
         {primaryRec && (
           <div className={cn(
