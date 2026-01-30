@@ -227,6 +227,14 @@ const initialState: Omit<TableState, keyof TableActions> = {
     foldTo3BetCount: 0,
     faced3BetCount: 0,
   },
+  positionStats: {
+    UTG: { handsPlayed: 0, handsWon: 0, totalProfit: 0 },
+    MP: { handsPlayed: 0, handsWon: 0, totalProfit: 0 },
+    CO: { handsPlayed: 0, handsWon: 0, totalProfit: 0 },
+    BTN: { handsPlayed: 0, handsWon: 0, totalProfit: 0 },
+    SB: { handsPlayed: 0, handsWon: 0, totalProfit: 0 },
+    BB: { handsPlayed: 0, handsWon: 0, totalProfit: 0 },
+  },
   aiThinking: false,
   showBetSlider: false,
   selectedBetSize: 0,
@@ -1071,11 +1079,24 @@ export const useTableStore = create<TableState & TableActions>()(
             phase: "result",
           });
 
-          // Update session stats and hero stats - always increment handsPlayed
+          // Update session stats, hero stats, and position stats
           const heroPlayer = players.find(p => p.isHero);
           const heroInvested = heroPlayer?.totalInvested ?? 0;
-          const { sessionStats, heroStats } = get();
+          const heroPosition = heroPlayer?.position;
+          const { sessionStats, heroStats, positionStats } = get();
           const newHeroStats = { ...heroStats, handsPlayed: heroStats.handsPlayed + 1 };
+
+          // Update position stats
+          const newPositionStats = { ...positionStats };
+          if (heroPosition) {
+            const posStats = newPositionStats[heroPosition];
+            const netProfit = winner.isHero ? (pot - heroInvested) : -heroInvested;
+            newPositionStats[heroPosition] = {
+              handsPlayed: posStats.handsPlayed + 1,
+              handsWon: posStats.handsWon + (winner.isHero ? 1 : 0),
+              totalProfit: posStats.totalProfit + netProfit,
+            };
+          }
 
           if (winner.isHero) {
             // Hero won the pot
@@ -1089,6 +1110,7 @@ export const useTableStore = create<TableState & TableActions>()(
                 biggestPot: Math.max(sessionStats.biggestPot, pot),
               },
               heroStats: newHeroStats,
+              positionStats: newPositionStats,
             });
           } else {
             // Hero lost (folded or was the one remaining when everyone folded)
@@ -1100,6 +1122,7 @@ export const useTableStore = create<TableState & TableActions>()(
                 biggestPot: Math.max(sessionStats.biggestPot, pot),
               },
               heroStats: newHeroStats,
+              positionStats: newPositionStats,
             });
           }
         } else {
@@ -1194,13 +1217,26 @@ export const useTableStore = create<TableState & TableActions>()(
             phase: "showdown",
           });
 
-          // Update session stats and hero stats - get hero from all players (may have folded)
+          // Update session stats, hero stats, and position stats
           const heroPlayer = players.find(p => p.isHero);
           const heroInvested = heroPlayer?.totalInvested ?? 0;
           const heroWinnings = heroPlayer ? (winnings.get(heroPlayer.id) || 0) : 0;
           const heroWon = heroWinnings > 0;
-          const { sessionStats, heroStats } = get();
+          const heroPosition = heroPlayer?.position;
+          const { sessionStats, heroStats, positionStats } = get();
           const newHeroStats = { ...heroStats, handsPlayed: heroStats.handsPlayed + 1 };
+
+          // Update position stats
+          const newPositionStats = { ...positionStats };
+          if (heroPosition) {
+            const posStats = newPositionStats[heroPosition];
+            const netProfit = heroWon ? (heroWinnings - heroInvested) : -heroInvested;
+            newPositionStats[heroPosition] = {
+              handsPlayed: posStats.handsPlayed + 1,
+              handsWon: posStats.handsWon + (heroWon ? 1 : 0),
+              totalProfit: posStats.totalProfit + netProfit,
+            };
+          }
 
           if (heroWon) {
             // Hero won (or split a pot)
@@ -1214,6 +1250,7 @@ export const useTableStore = create<TableState & TableActions>()(
                 biggestPot: Math.max(sessionStats.biggestPot, pot),
               },
               heroStats: newHeroStats,
+              positionStats: newPositionStats,
             });
           } else {
             // Hero lost (folded earlier or lost at showdown)
@@ -1225,6 +1262,7 @@ export const useTableStore = create<TableState & TableActions>()(
                 biggestPot: Math.max(sessionStats.biggestPot, pot),
               },
               heroStats: newHeroStats,
+              positionStats: newPositionStats,
             });
           }
         }
@@ -1272,6 +1310,7 @@ export const useTableStore = create<TableState & TableActions>()(
         trainingMode: state.trainingMode,
         autoRotate: state.autoRotate,
         heroStats: state.heroStats,
+        positionStats: state.positionStats,
       }),
     }
   )

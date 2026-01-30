@@ -11,7 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { POSITIONS, Position, POSITION_LABELS, ScenarioPreset } from "@/lib/poker/types";
 import { getPlayerVPIP, getPlayerPFR } from "@/lib/poker/playerStats";
 import { cn } from "@/lib/utils";
-import { ChevronUp, ChevronDown, History, RotateCw } from "lucide-react";
+import { ChevronUp, ChevronDown, History, RotateCw, BarChart3 } from "lucide-react";
 
 export default function TableTrainerClient() {
   const {
@@ -27,6 +27,7 @@ export default function TableTrainerClient() {
     selectedBetSize,
     sessionStats,
     heroStats,
+    positionStats,
     actionHistory,
     winners,
     handEvaluations,
@@ -47,6 +48,7 @@ export default function TableTrainerClient() {
   const [showScenarioSelector, setShowScenarioSelector] = useState(false);
   const [devMode, setDevMode] = useState(false);
   const [showMobileSidebar, setShowMobileSidebar] = useState(false);
+  const [showStatsPanel, setShowStatsPanel] = useState(false);
   const handRecorded = useRef(false);
 
   // Progress tracking
@@ -297,6 +299,18 @@ export default function TableTrainerClient() {
                 AI 適應中: VPIP {(getPlayerVPIP(heroStats) * 100).toFixed(0)}% / PFR {(getPlayerPFR(heroStats) * 100).toFixed(0)}%
               </div>
             )}
+
+            {/* Stats Panel Toggle */}
+            <Button
+              variant={showStatsPanel ? "default" : "outline"}
+              size="sm"
+              onClick={() => setShowStatsPanel(!showStatsPanel)}
+              className={cn("gap-1.5", showStatsPanel && "bg-cyan-600 hover:bg-cyan-500")}
+              title="玩家統計"
+            >
+              <BarChart3 className="h-4 w-4" />
+              <span className="hidden sm:inline">統計</span>
+            </Button>
 
             {/* Dev Mode Toggle */}
             <Button
@@ -678,6 +692,110 @@ export default function TableTrainerClient() {
           onSelect={handleLoadScenario}
           onClose={() => setShowScenarioSelector(false)}
         />
+      )}
+
+      {/* Stats Panel Modal */}
+      {showStatsPanel && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <Card className="bg-gray-900 border-gray-700 w-full max-w-lg max-h-[80vh] overflow-auto">
+            <CardHeader className="border-b border-gray-700 sticky top-0 bg-gray-900 z-10">
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-white flex items-center gap-2">
+                  <BarChart3 className="h-5 w-5" />
+                  玩家統計
+                </CardTitle>
+                <Button variant="ghost" size="sm" onClick={() => setShowStatsPanel(false)}>
+                  ✕
+                </Button>
+              </div>
+            </CardHeader>
+            <CardContent className="p-4 space-y-4">
+              {/* Overall Stats */}
+              <div className="grid grid-cols-2 gap-3">
+                <div className="bg-gray-800/50 rounded-lg p-3">
+                  <p className="text-xs text-gray-400">VPIP</p>
+                  <p className="text-2xl font-bold text-cyan-400">
+                    {heroStats.handsPlayed > 0
+                      ? (getPlayerVPIP(heroStats) * 100).toFixed(1)
+                      : "--"}%
+                  </p>
+                  <p className="text-xs text-gray-500">自願投入底池</p>
+                </div>
+                <div className="bg-gray-800/50 rounded-lg p-3">
+                  <p className="text-xs text-gray-400">PFR</p>
+                  <p className="text-2xl font-bold text-orange-400">
+                    {heroStats.handsPlayed > 0
+                      ? (getPlayerPFR(heroStats) * 100).toFixed(1)
+                      : "--"}%
+                  </p>
+                  <p className="text-xs text-gray-500">翻前加注</p>
+                </div>
+                <div className="bg-gray-800/50 rounded-lg p-3">
+                  <p className="text-xs text-gray-400">勝率</p>
+                  <p className="text-2xl font-bold text-green-400">
+                    {sessionStats.handsPlayed > 0
+                      ? ((sessionStats.handsWon / sessionStats.handsPlayed) * 100).toFixed(1)
+                      : "--"}%
+                  </p>
+                  <p className="text-xs text-gray-500">{sessionStats.handsWon}/{sessionStats.handsPlayed} 手</p>
+                </div>
+                <div className="bg-gray-800/50 rounded-lg p-3">
+                  <p className="text-xs text-gray-400">總盈虧</p>
+                  <p className={cn(
+                    "text-2xl font-bold",
+                    sessionStats.totalProfit >= 0 ? "text-green-400" : "text-red-400"
+                  )}>
+                    {sessionStats.totalProfit >= 0 ? "+" : ""}{sessionStats.totalProfit.toFixed(1)} BB
+                  </p>
+                  <p className="text-xs text-gray-500">最大底池: {sessionStats.biggestPot.toFixed(1)}</p>
+                </div>
+              </div>
+
+              {/* Position Stats */}
+              <div>
+                <h3 className="text-sm font-semibold text-gray-300 mb-2">各位置統計</h3>
+                <div className="space-y-1">
+                  {(["BTN", "CO", "MP", "UTG", "SB", "BB"] as const).map((pos) => {
+                    const stats = positionStats[pos];
+                    const winRate = stats.handsPlayed > 0
+                      ? ((stats.handsWon / stats.handsPlayed) * 100).toFixed(0)
+                      : "--";
+                    return (
+                      <div
+                        key={pos}
+                        className="flex items-center justify-between py-1.5 px-2 bg-gray-800/30 rounded"
+                      >
+                        <span className="text-sm font-semibold text-gray-300 w-12">{pos}</span>
+                        <span className="text-xs text-gray-500">{stats.handsPlayed} 手</span>
+                        <span className="text-xs text-gray-400">勝率 {winRate}%</span>
+                        <span className={cn(
+                          "text-sm font-semibold w-20 text-right",
+                          stats.totalProfit >= 0 ? "text-green-400" : "text-red-400"
+                        )}>
+                          {stats.totalProfit >= 0 ? "+" : ""}{stats.totalProfit.toFixed(1)}
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* AI Adaptation Status */}
+              {heroStats.handsPlayed >= 10 && (
+                <div className="bg-purple-900/30 border border-purple-500/30 rounded-lg p-3">
+                  <p className="text-xs text-purple-400 font-semibold mb-1">AI 適應狀態</p>
+                  <p className="text-sm text-purple-300">
+                    {getPlayerVPIP(heroStats) > 0.35
+                      ? "你打得較鬆，AI 會增加 3-bet 頻率來對抗"
+                      : getPlayerVPIP(heroStats) < 0.15
+                        ? "你打得很緊，AI 會增加偷盲頻率"
+                        : "你的風格較為平衡，AI 使用標準策略"}
+                  </p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </div>
       )}
     </div>
   );

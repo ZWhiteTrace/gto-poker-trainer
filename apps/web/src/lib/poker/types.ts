@@ -241,6 +241,13 @@ export interface TableState {
     biggestPot: number;
   };
 
+  // Position-based Statistics
+  positionStats: Record<Position, {
+    handsPlayed: number;
+    handsWon: number;
+    totalProfit: number;
+  }>;
+
   // Hero Statistics (for AI adaptation)
   heroStats: {
     handsPlayed: number;
