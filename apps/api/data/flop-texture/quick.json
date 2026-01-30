@@ -1,0 +1,693 @@
+{
+  "meta": {
+    "description": "Quick feature recognition training",
+    "version": "1.0",
+    "time_limit_seconds": 10,
+    "total_scenarios": 48
+  },
+  "scenarios": [
+    {
+      "id": "quick_001",
+      "flop": ["J", "T", "9"],
+      "suits": ["s", "h", "d"],
+      "question_type": "connectivity",
+      "question_zh": "這個牌面的連接性？",
+      "question_en": "What is the connectivity?",
+      "correct_answer": "connected",
+      "options": [
+        {"key": "connected", "label_zh": "高度連接", "label_en": "Connected"},
+        {"key": "semi_connected", "label_zh": "半連接", "label_en": "Semi-connected"},
+        {"key": "disconnected", "label_zh": "斷開", "label_en": "Disconnected"}
+      ]
+    },
+    {
+      "id": "quick_002",
+      "flop": ["A", "7", "2"],
+      "suits": ["s", "d", "c"],
+      "question_type": "connectivity",
+      "question_zh": "這個牌面的連接性？",
+      "question_en": "What is the connectivity?",
+      "correct_answer": "disconnected",
+      "options": [
+        {"key": "connected", "label_zh": "高度連接", "label_en": "Connected"},
+        {"key": "semi_connected", "label_zh": "半連接", "label_en": "Semi-connected"},
+        {"key": "disconnected", "label_zh": "斷開", "label_en": "Disconnected"}
+      ]
+    },
+    {
+      "id": "quick_003",
+      "flop": ["Q", "T", "8"],
+      "suits": ["h", "d", "c"],
+      "question_type": "connectivity",
+      "question_zh": "這個牌面的連接性？",
+      "question_en": "What is the connectivity?",
+      "correct_answer": "semi_connected",
+      "options": [
+        {"key": "connected", "label_zh": "高度連接", "label_en": "Connected"},
+        {"key": "semi_connected", "label_zh": "半連接", "label_en": "Semi-connected"},
+        {"key": "disconnected", "label_zh": "斷開", "label_en": "Disconnected"}
+      ]
+    },
+    {
+      "id": "quick_004",
+      "flop": ["T", "7", "3"],
+      "suits": ["h", "h", "h"],
+      "question_type": "suit_distribution",
+      "question_zh": "這個牌面的花色分佈？",
+      "question_en": "What is the suit distribution?",
+      "correct_answer": "monotone",
+      "options": [
+        {"key": "rainbow", "label_zh": "彩虹（三花）", "label_en": "Rainbow"},
+        {"key": "twotone", "label_zh": "雙花", "label_en": "Two-tone"},
+        {"key": "monotone", "label_zh": "單花", "label_en": "Monotone"}
+      ]
+    },
+    {
+      "id": "quick_005",
+      "flop": ["K", "8", "3"],
+      "suits": ["s", "s", "h"],
+      "question_type": "suit_distribution",
+      "question_zh": "這個牌面的花色分佈？",
+      "question_en": "What is the suit distribution?",
+      "correct_answer": "twotone",
+      "options": [
+        {"key": "rainbow", "label_zh": "彩虹（三花）", "label_en": "Rainbow"},
+        {"key": "twotone", "label_zh": "雙花", "label_en": "Two-tone"},
+        {"key": "monotone", "label_zh": "單花", "label_en": "Monotone"}
+      ]
+    },
+    {
+      "id": "quick_006",
+      "flop": ["A", "9", "4"],
+      "suits": ["d", "h", "c"],
+      "question_type": "suit_distribution",
+      "question_zh": "這個牌面的花色分佈？",
+      "question_en": "What is the suit distribution?",
+      "correct_answer": "rainbow",
+      "options": [
+        {"key": "rainbow", "label_zh": "彩虹（三花）", "label_en": "Rainbow"},
+        {"key": "twotone", "label_zh": "雙花", "label_en": "Two-tone"},
+        {"key": "monotone", "label_zh": "單花", "label_en": "Monotone"}
+      ]
+    },
+    {
+      "id": "quick_007",
+      "flop": ["A", "7", "2"],
+      "suits": ["s", "d", "c"],
+      "question_type": "wetness",
+      "question_zh": "這個牌面的濕潤度？",
+      "question_en": "How wet is this board?",
+      "correct_answer": "dry",
+      "options": [
+        {"key": "dry", "label_zh": "乾燥", "label_en": "Dry"},
+        {"key": "medium", "label_zh": "中等", "label_en": "Medium"},
+        {"key": "wet", "label_zh": "濕潤", "label_en": "Wet"}
+      ]
+    },
+    {
+      "id": "quick_008",
+      "flop": ["J", "T", "9"],
+      "suits": ["s", "s", "h"],
+      "question_type": "wetness",
+      "question_zh": "這個牌面的濕潤度？",
+      "question_en": "How wet is this board?",
+      "correct_answer": "wet",
+      "options": [
+        {"key": "dry", "label_zh": "乾燥", "label_en": "Dry"},
+        {"key": "medium", "label_zh": "中等", "label_en": "Medium"},
+        {"key": "wet", "label_zh": "濕潤", "label_en": "Wet"}
+      ]
+    },
+    {
+      "id": "quick_009",
+      "flop": ["K", "9", "5"],
+      "suits": ["h", "h", "d"],
+      "question_type": "wetness",
+      "question_zh": "這個牌面的濕潤度？",
+      "question_en": "How wet is this board?",
+      "correct_answer": "medium",
+      "options": [
+        {"key": "dry", "label_zh": "乾燥", "label_en": "Dry"},
+        {"key": "medium", "label_zh": "中等", "label_en": "Medium"},
+        {"key": "wet", "label_zh": "濕潤", "label_en": "Wet"}
+      ]
+    },
+    {
+      "id": "quick_010",
+      "flop": ["A", "K", "Q"],
+      "suits": ["s", "h", "d"],
+      "question_type": "high_card",
+      "question_zh": "這個牌面的最高牌？",
+      "question_en": "What is the high card?",
+      "correct_answer": "ace",
+      "options": [
+        {"key": "ace", "label_zh": "A", "label_en": "Ace"},
+        {"key": "king", "label_zh": "K", "label_en": "King"},
+        {"key": "queen", "label_zh": "Q", "label_en": "Queen"},
+        {"key": "low", "label_zh": "J以下", "label_en": "Jack or lower"}
+      ]
+    },
+    {
+      "id": "quick_011",
+      "flop": ["K", "8", "3"],
+      "suits": ["d", "h", "c"],
+      "question_type": "high_card",
+      "question_zh": "這個牌面的最高牌？",
+      "question_en": "What is the high card?",
+      "correct_answer": "king",
+      "options": [
+        {"key": "ace", "label_zh": "A", "label_en": "Ace"},
+        {"key": "king", "label_zh": "K", "label_en": "King"},
+        {"key": "queen", "label_zh": "Q", "label_en": "Queen"},
+        {"key": "low", "label_zh": "J以下", "label_en": "Jack or lower"}
+      ]
+    },
+    {
+      "id": "quick_012",
+      "flop": ["9", "6", "2"],
+      "suits": ["s", "h", "d"],
+      "question_type": "high_card",
+      "question_zh": "這個牌面的最高牌？",
+      "question_en": "What is the high card?",
+      "correct_answer": "low",
+      "options": [
+        {"key": "ace", "label_zh": "A", "label_en": "Ace"},
+        {"key": "king", "label_zh": "K", "label_en": "King"},
+        {"key": "queen", "label_zh": "Q", "label_en": "Queen"},
+        {"key": "low", "label_zh": "J以下", "label_en": "Jack or lower"}
+      ]
+    },
+    {
+      "id": "quick_013",
+      "flop": ["8", "7", "6"],
+      "suits": ["h", "d", "c"],
+      "question_type": "connectivity",
+      "question_zh": "這個牌面的連接性？",
+      "question_en": "What is the connectivity?",
+      "correct_answer": "connected",
+      "options": [
+        {"key": "connected", "label_zh": "高度連接", "label_en": "Connected"},
+        {"key": "semi_connected", "label_zh": "半連接", "label_en": "Semi-connected"},
+        {"key": "disconnected", "label_zh": "斷開", "label_en": "Disconnected"}
+      ]
+    },
+    {
+      "id": "quick_014",
+      "flop": ["K", "J", "9"],
+      "suits": ["s", "d", "h"],
+      "question_type": "connectivity",
+      "question_zh": "這個牌面的連接性？",
+      "question_en": "What is the connectivity?",
+      "correct_answer": "semi_connected",
+      "options": [
+        {"key": "connected", "label_zh": "高度連接", "label_en": "Connected"},
+        {"key": "semi_connected", "label_zh": "半連接", "label_en": "Semi-connected"},
+        {"key": "disconnected", "label_zh": "斷開", "label_en": "Disconnected"}
+      ]
+    },
+    {
+      "id": "quick_015",
+      "flop": ["Q", "5", "2"],
+      "suits": ["c", "h", "d"],
+      "question_type": "connectivity",
+      "question_zh": "這個牌面的連接性？",
+      "question_en": "What is the connectivity?",
+      "correct_answer": "disconnected",
+      "options": [
+        {"key": "connected", "label_zh": "高度連接", "label_en": "Connected"},
+        {"key": "semi_connected", "label_zh": "半連接", "label_en": "Semi-connected"},
+        {"key": "disconnected", "label_zh": "斷開", "label_en": "Disconnected"}
+      ]
+    },
+    {
+      "id": "quick_016",
+      "flop": ["J", "5", "2"],
+      "suits": ["d", "d", "d"],
+      "question_type": "suit_distribution",
+      "question_zh": "這個牌面的花色分佈？",
+      "question_en": "What is the suit distribution?",
+      "correct_answer": "monotone",
+      "options": [
+        {"key": "rainbow", "label_zh": "彩虹（三花）", "label_en": "Rainbow"},
+        {"key": "twotone", "label_zh": "雙花", "label_en": "Two-tone"},
+        {"key": "monotone", "label_zh": "單花", "label_en": "Monotone"}
+      ]
+    },
+    {
+      "id": "quick_017",
+      "flop": ["A", "T", "6"],
+      "suits": ["h", "h", "c"],
+      "question_type": "suit_distribution",
+      "question_zh": "這個牌面的花色分佈？",
+      "question_en": "What is the suit distribution?",
+      "correct_answer": "twotone",
+      "options": [
+        {"key": "rainbow", "label_zh": "彩虹（三花）", "label_en": "Rainbow"},
+        {"key": "twotone", "label_zh": "雙花", "label_en": "Two-tone"},
+        {"key": "monotone", "label_zh": "單花", "label_en": "Monotone"}
+      ]
+    },
+    {
+      "id": "quick_018",
+      "flop": ["Q", "8", "4"],
+      "suits": ["s", "h", "d"],
+      "question_type": "suit_distribution",
+      "question_zh": "這個牌面的花色分佈？",
+      "question_en": "What is the suit distribution?",
+      "correct_answer": "rainbow",
+      "options": [
+        {"key": "rainbow", "label_zh": "彩虹（三花）", "label_en": "Rainbow"},
+        {"key": "twotone", "label_zh": "雙花", "label_en": "Two-tone"},
+        {"key": "monotone", "label_zh": "單花", "label_en": "Monotone"}
+      ]
+    },
+    {
+      "id": "quick_019",
+      "flop": ["K", "K", "5"],
+      "suits": ["h", "d", "c"],
+      "question_type": "wetness",
+      "question_zh": "這個牌面的濕潤度？",
+      "question_en": "How wet is this board?",
+      "correct_answer": "dry",
+      "options": [
+        {"key": "dry", "label_zh": "乾燥", "label_en": "Dry"},
+        {"key": "medium", "label_zh": "中等", "label_en": "Medium"},
+        {"key": "wet", "label_zh": "濕潤", "label_en": "Wet"}
+      ]
+    },
+    {
+      "id": "quick_020",
+      "flop": ["T", "9", "8"],
+      "suits": ["d", "d", "h"],
+      "question_type": "wetness",
+      "question_zh": "這個牌面的濕潤度？",
+      "question_en": "How wet is this board?",
+      "correct_answer": "wet",
+      "options": [
+        {"key": "dry", "label_zh": "乾燥", "label_en": "Dry"},
+        {"key": "medium", "label_zh": "中等", "label_en": "Medium"},
+        {"key": "wet", "label_zh": "濕潤", "label_en": "Wet"}
+      ]
+    },
+    {
+      "id": "quick_021",
+      "flop": ["A", "8", "3"],
+      "suits": ["s", "s", "h"],
+      "question_type": "wetness",
+      "question_zh": "這個牌面的濕潤度？",
+      "question_en": "How wet is this board?",
+      "correct_answer": "medium",
+      "options": [
+        {"key": "dry", "label_zh": "乾燥", "label_en": "Dry"},
+        {"key": "medium", "label_zh": "中等", "label_en": "Medium"},
+        {"key": "wet", "label_zh": "濕潤", "label_en": "Wet"}
+      ]
+    },
+    {
+      "id": "quick_022",
+      "flop": ["Q", "J", "T"],
+      "suits": ["h", "d", "c"],
+      "question_type": "high_card",
+      "question_zh": "這個牌面的最高牌？",
+      "question_en": "What is the high card?",
+      "correct_answer": "queen",
+      "options": [
+        {"key": "ace", "label_zh": "A", "label_en": "Ace"},
+        {"key": "king", "label_zh": "K", "label_en": "King"},
+        {"key": "queen", "label_zh": "Q", "label_en": "Queen"},
+        {"key": "low", "label_zh": "J以下", "label_en": "Jack or lower"}
+      ]
+    },
+    {
+      "id": "quick_023",
+      "flop": ["J", "9", "7"],
+      "suits": ["s", "h", "d"],
+      "question_type": "high_card",
+      "question_zh": "這個牌面的最高牌？",
+      "question_en": "What is the high card?",
+      "correct_answer": "low",
+      "options": [
+        {"key": "ace", "label_zh": "A", "label_en": "Ace"},
+        {"key": "king", "label_zh": "K", "label_en": "King"},
+        {"key": "queen", "label_zh": "Q", "label_en": "Queen"},
+        {"key": "low", "label_zh": "J以下", "label_en": "Jack or lower"}
+      ]
+    },
+    {
+      "id": "quick_024",
+      "flop": ["5", "4", "3"],
+      "suits": ["d", "h", "c"],
+      "question_type": "connectivity",
+      "question_zh": "這個牌面的連接性？",
+      "question_en": "What is the connectivity?",
+      "correct_answer": "connected",
+      "options": [
+        {"key": "connected", "label_zh": "高度連接", "label_en": "Connected"},
+        {"key": "semi_connected", "label_zh": "半連接", "label_en": "Semi-connected"},
+        {"key": "disconnected", "label_zh": "斷開", "label_en": "Disconnected"}
+      ]
+    },
+    {
+      "id": "quick_025",
+      "flop": ["A", "J", "7"],
+      "suits": ["c", "s", "d"],
+      "question_type": "connectivity",
+      "question_zh": "這個牌面的連接性？",
+      "question_en": "What is the connectivity?",
+      "correct_answer": "disconnected",
+      "options": [
+        {"key": "connected", "label_zh": "高度連接", "label_en": "Connected"},
+        {"key": "semi_connected", "label_zh": "半連接", "label_en": "Semi-connected"},
+        {"key": "disconnected", "label_zh": "斷開", "label_en": "Disconnected"}
+      ]
+    },
+    {
+      "id": "quick_026",
+      "flop": ["9", "7", "5"],
+      "suits": ["h", "d", "c"],
+      "question_type": "connectivity",
+      "question_zh": "這個牌面的連接性？",
+      "question_en": "What is the connectivity?",
+      "correct_answer": "semi_connected",
+      "options": [
+        {"key": "connected", "label_zh": "高度連接", "label_en": "Connected"},
+        {"key": "semi_connected", "label_zh": "半連接", "label_en": "Semi-connected"},
+        {"key": "disconnected", "label_zh": "斷開", "label_en": "Disconnected"}
+      ]
+    },
+    {
+      "id": "quick_027",
+      "flop": ["K", "9", "2"],
+      "suits": ["c", "c", "c"],
+      "question_type": "suit_distribution",
+      "question_zh": "這個牌面的花色分佈？",
+      "question_en": "What is the suit distribution?",
+      "correct_answer": "monotone",
+      "options": [
+        {"key": "rainbow", "label_zh": "彩虹（三花）", "label_en": "Rainbow"},
+        {"key": "twotone", "label_zh": "雙花", "label_en": "Two-tone"},
+        {"key": "monotone", "label_zh": "單花", "label_en": "Monotone"}
+      ]
+    },
+    {
+      "id": "quick_028",
+      "flop": ["Q", "9", "4"],
+      "suits": ["d", "d", "h"],
+      "question_type": "suit_distribution",
+      "question_zh": "這個牌面的花色分佈？",
+      "question_en": "What is the suit distribution?",
+      "correct_answer": "twotone",
+      "options": [
+        {"key": "rainbow", "label_zh": "彩虹（三花）", "label_en": "Rainbow"},
+        {"key": "twotone", "label_zh": "雙花", "label_en": "Two-tone"},
+        {"key": "monotone", "label_zh": "單花", "label_en": "Monotone"}
+      ]
+    },
+    {
+      "id": "quick_029",
+      "flop": ["J", "7", "3"],
+      "suits": ["s", "h", "d"],
+      "question_type": "suit_distribution",
+      "question_zh": "這個牌面的花色分佈？",
+      "question_en": "What is the suit distribution?",
+      "correct_answer": "rainbow",
+      "options": [
+        {"key": "rainbow", "label_zh": "彩虹（三花）", "label_en": "Rainbow"},
+        {"key": "twotone", "label_zh": "雙花", "label_en": "Two-tone"},
+        {"key": "monotone", "label_zh": "單花", "label_en": "Monotone"}
+      ]
+    },
+    {
+      "id": "quick_030",
+      "flop": ["6", "5", "4"],
+      "suits": ["h", "h", "d"],
+      "question_type": "wetness",
+      "question_zh": "這個牌面的濕潤度？",
+      "question_en": "How wet is this board?",
+      "correct_answer": "wet",
+      "options": [
+        {"key": "dry", "label_zh": "乾燥", "label_en": "Dry"},
+        {"key": "medium", "label_zh": "中等", "label_en": "Medium"},
+        {"key": "wet", "label_zh": "濕潤", "label_en": "Wet"}
+      ]
+    },
+    {
+      "id": "quick_031",
+      "flop": ["A", "5", "2"],
+      "suits": ["d", "c", "h"],
+      "question_type": "wetness",
+      "question_zh": "這個牌面的濕潤度？",
+      "question_en": "How wet is this board?",
+      "correct_answer": "dry",
+      "options": [
+        {"key": "dry", "label_zh": "乾燥", "label_en": "Dry"},
+        {"key": "medium", "label_zh": "中等", "label_en": "Medium"},
+        {"key": "wet", "label_zh": "濕潤", "label_en": "Wet"}
+      ]
+    },
+    {
+      "id": "quick_032",
+      "flop": ["T", "8", "6"],
+      "suits": ["s", "h", "d"],
+      "question_type": "wetness",
+      "question_zh": "這個牌面的濕潤度？",
+      "question_en": "How wet is this board?",
+      "correct_answer": "medium",
+      "options": [
+        {"key": "dry", "label_zh": "乾燥", "label_en": "Dry"},
+        {"key": "medium", "label_zh": "中等", "label_en": "Medium"},
+        {"key": "wet", "label_zh": "濕潤", "label_en": "Wet"}
+      ]
+    },
+    {
+      "id": "quick_033",
+      "flop": ["A", "9", "5"],
+      "suits": ["h", "d", "c"],
+      "question_type": "high_card",
+      "question_zh": "這個牌面的最高牌？",
+      "question_en": "What is the high card?",
+      "correct_answer": "ace",
+      "options": [
+        {"key": "ace", "label_zh": "A", "label_en": "Ace"},
+        {"key": "king", "label_zh": "K", "label_en": "King"},
+        {"key": "queen", "label_zh": "Q", "label_en": "Queen"},
+        {"key": "low", "label_zh": "J以下", "label_en": "Jack or lower"}
+      ]
+    },
+    {
+      "id": "quick_034",
+      "flop": ["K", "T", "4"],
+      "suits": ["s", "d", "h"],
+      "question_type": "high_card",
+      "question_zh": "這個牌面的最高牌？",
+      "question_en": "What is the high card?",
+      "correct_answer": "king",
+      "options": [
+        {"key": "ace", "label_zh": "A", "label_en": "Ace"},
+        {"key": "king", "label_zh": "K", "label_en": "King"},
+        {"key": "queen", "label_zh": "Q", "label_en": "Queen"},
+        {"key": "low", "label_zh": "J以下", "label_en": "Jack or lower"}
+      ]
+    },
+    {
+      "id": "quick_035",
+      "flop": ["T", "7", "2"],
+      "suits": ["d", "c", "h"],
+      "question_type": "high_card",
+      "question_zh": "這個牌面的最高牌？",
+      "question_en": "What is the high card?",
+      "correct_answer": "low",
+      "options": [
+        {"key": "ace", "label_zh": "A", "label_en": "Ace"},
+        {"key": "king", "label_zh": "K", "label_en": "King"},
+        {"key": "queen", "label_zh": "Q", "label_en": "Queen"},
+        {"key": "low", "label_zh": "J以下", "label_en": "Jack or lower"}
+      ]
+    },
+    {
+      "id": "quick_036",
+      "flop": ["K", "Q", "J"],
+      "suits": ["h", "d", "c"],
+      "question_type": "connectivity",
+      "question_zh": "這個牌面的連接性？",
+      "question_en": "What is the connectivity?",
+      "correct_answer": "connected",
+      "options": [
+        {"key": "connected", "label_zh": "高度連接", "label_en": "Connected"},
+        {"key": "semi_connected", "label_zh": "半連接", "label_en": "Semi-connected"},
+        {"key": "disconnected", "label_zh": "斷開", "label_en": "Disconnected"}
+      ]
+    },
+    {
+      "id": "quick_037",
+      "flop": ["A", "Q", "9"],
+      "suits": ["s", "h", "d"],
+      "question_type": "connectivity",
+      "question_zh": "這個牌面的連接性？",
+      "question_en": "What is the connectivity?",
+      "correct_answer": "semi_connected",
+      "options": [
+        {"key": "connected", "label_zh": "高度連接", "label_en": "Connected"},
+        {"key": "semi_connected", "label_zh": "半連接", "label_en": "Semi-connected"},
+        {"key": "disconnected", "label_zh": "斷開", "label_en": "Disconnected"}
+      ]
+    },
+    {
+      "id": "quick_038",
+      "flop": ["K", "6", "2"],
+      "suits": ["d", "h", "c"],
+      "question_type": "connectivity",
+      "question_zh": "這個牌面的連接性？",
+      "question_en": "What is the connectivity?",
+      "correct_answer": "disconnected",
+      "options": [
+        {"key": "connected", "label_zh": "高度連接", "label_en": "Connected"},
+        {"key": "semi_connected", "label_zh": "半連接", "label_en": "Semi-connected"},
+        {"key": "disconnected", "label_zh": "斷開", "label_en": "Disconnected"}
+      ]
+    },
+    {
+      "id": "quick_039",
+      "flop": ["8", "4", "2"],
+      "suits": ["s", "s", "s"],
+      "question_type": "suit_distribution",
+      "question_zh": "這個牌面的花色分佈？",
+      "question_en": "What is the suit distribution?",
+      "correct_answer": "monotone",
+      "options": [
+        {"key": "rainbow", "label_zh": "彩虹（三花）", "label_en": "Rainbow"},
+        {"key": "twotone", "label_zh": "雙花", "label_en": "Two-tone"},
+        {"key": "monotone", "label_zh": "單花", "label_en": "Monotone"}
+      ]
+    },
+    {
+      "id": "quick_040",
+      "flop": ["J", "8", "4"],
+      "suits": ["h", "h", "d"],
+      "question_type": "suit_distribution",
+      "question_zh": "這個牌面的花色分佈？",
+      "question_en": "What is the suit distribution?",
+      "correct_answer": "twotone",
+      "options": [
+        {"key": "rainbow", "label_zh": "彩虹（三花）", "label_en": "Rainbow"},
+        {"key": "twotone", "label_zh": "雙花", "label_en": "Two-tone"},
+        {"key": "monotone", "label_zh": "單花", "label_en": "Monotone"}
+      ]
+    },
+    {
+      "id": "quick_041",
+      "flop": ["A", "K", "5"],
+      "suits": ["c", "h", "d"],
+      "question_type": "suit_distribution",
+      "question_zh": "這個牌面的花色分佈？",
+      "question_en": "What is the suit distribution?",
+      "correct_answer": "rainbow",
+      "options": [
+        {"key": "rainbow", "label_zh": "彩虹（三花）", "label_en": "Rainbow"},
+        {"key": "twotone", "label_zh": "雙花", "label_en": "Two-tone"},
+        {"key": "monotone", "label_zh": "單花", "label_en": "Monotone"}
+      ]
+    },
+    {
+      "id": "quick_042",
+      "flop": ["7", "7", "3"],
+      "suits": ["h", "d", "c"],
+      "question_type": "wetness",
+      "question_zh": "這個牌面的濕潤度？",
+      "question_en": "How wet is this board?",
+      "correct_answer": "dry",
+      "options": [
+        {"key": "dry", "label_zh": "乾燥", "label_en": "Dry"},
+        {"key": "medium", "label_zh": "中等", "label_en": "Medium"},
+        {"key": "wet", "label_zh": "濕潤", "label_en": "Wet"}
+      ]
+    },
+    {
+      "id": "quick_043",
+      "flop": ["Q", "J", "9"],
+      "suits": ["s", "s", "h"],
+      "question_type": "wetness",
+      "question_zh": "這個牌面的濕潤度？",
+      "question_en": "How wet is this board?",
+      "correct_answer": "wet",
+      "options": [
+        {"key": "dry", "label_zh": "乾燥", "label_en": "Dry"},
+        {"key": "medium", "label_zh": "中等", "label_en": "Medium"},
+        {"key": "wet", "label_zh": "濕潤", "label_en": "Wet"}
+      ]
+    },
+    {
+      "id": "quick_044",
+      "flop": ["K", "T", "7"],
+      "suits": ["d", "d", "c"],
+      "question_type": "wetness",
+      "question_zh": "這個牌面的濕潤度？",
+      "question_en": "How wet is this board?",
+      "correct_answer": "medium",
+      "options": [
+        {"key": "dry", "label_zh": "乾燥", "label_en": "Dry"},
+        {"key": "medium", "label_zh": "中等", "label_en": "Medium"},
+        {"key": "wet", "label_zh": "濕潤", "label_en": "Wet"}
+      ]
+    },
+    {
+      "id": "quick_045",
+      "flop": ["A", "7", "4"],
+      "suits": ["h", "d", "c"],
+      "question_type": "high_card",
+      "question_zh": "這個牌面的最高牌？",
+      "question_en": "What is the high card?",
+      "correct_answer": "ace",
+      "options": [
+        {"key": "ace", "label_zh": "A", "label_en": "Ace"},
+        {"key": "king", "label_zh": "K", "label_en": "King"},
+        {"key": "queen", "label_zh": "Q", "label_en": "Queen"},
+        {"key": "low", "label_zh": "J以下", "label_en": "Jack or lower"}
+      ]
+    },
+    {
+      "id": "quick_046",
+      "flop": ["Q", "6", "3"],
+      "suits": ["s", "h", "d"],
+      "question_type": "high_card",
+      "question_zh": "這個牌面的最高牌？",
+      "question_en": "What is the high card?",
+      "correct_answer": "queen",
+      "options": [
+        {"key": "ace", "label_zh": "A", "label_en": "Ace"},
+        {"key": "king", "label_zh": "K", "label_en": "King"},
+        {"key": "queen", "label_zh": "Q", "label_en": "Queen"},
+        {"key": "low", "label_zh": "J以下", "label_en": "Jack or lower"}
+      ]
+    },
+    {
+      "id": "quick_047",
+      "flop": ["8", "5", "3"],
+      "suits": ["d", "c", "h"],
+      "question_type": "high_card",
+      "question_zh": "這個牌面的最高牌？",
+      "question_en": "What is the high card?",
+      "correct_answer": "low",
+      "options": [
+        {"key": "ace", "label_zh": "A", "label_en": "Ace"},
+        {"key": "king", "label_zh": "K", "label_en": "King"},
+        {"key": "queen", "label_zh": "Q", "label_en": "Queen"},
+        {"key": "low", "label_zh": "J以下", "label_en": "Jack or lower"}
+      ]
+    },
+    {
+      "id": "quick_048",
+      "flop": ["A", "K", "T"],
+      "suits": ["s", "d", "h"],
+      "question_type": "connectivity",
+      "question_zh": "這個牌面的連接性？",
+      "question_en": "What is the connectivity?",
+      "correct_answer": "semi_connected",
+      "options": [
+        {"key": "connected", "label_zh": "高度連接", "label_en": "Connected"},
+        {"key": "semi_connected", "label_zh": "半連接", "label_en": "Semi-connected"},
+        {"key": "disconnected", "label_zh": "斷開", "label_en": "Disconnected"}
+      ]
+    }
+  ]
+}

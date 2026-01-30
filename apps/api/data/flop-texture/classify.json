@@ -1,0 +1,549 @@
+{
+  "meta": {
+    "description": "Flop texture classification training scenarios",
+    "version": "1.0",
+    "total_scenarios": 60
+  },
+  "scenarios": [
+    {
+      "id": "cls_001",
+      "flop": ["A", "7", "2"],
+      "suits": ["s", "d", "c"],
+      "correct_texture": "dry_ace_high",
+      "explanation_zh": "A72 彩虹，無連接（7和2相差5，A與7相差7），無聽牌可能，屬於乾燥A高牌面",
+      "explanation_en": "A72 rainbow, no connectivity, no draw possibilities. Classic dry ace-high texture.",
+      "key_features": ["rainbow", "ace_high", "disconnected"]
+    },
+    {
+      "id": "cls_002",
+      "flop": ["A", "5", "3"],
+      "suits": ["h", "c", "d"],
+      "correct_texture": "dry_ace_high",
+      "explanation_zh": "A53 彩虹，雖然有輪子聽牌可能但牌面仍屬乾燥A高",
+      "explanation_en": "A53 rainbow, minor wheel draw but still classified as dry ace-high.",
+      "key_features": ["rainbow", "ace_high", "semi_connected"]
+    },
+    {
+      "id": "cls_003",
+      "flop": ["K", "8", "3"],
+      "suits": ["d", "h", "c"],
+      "correct_texture": "dry_king_high",
+      "explanation_zh": "K83 彩虹，K高無連接牌面，屬於乾燥K高",
+      "explanation_en": "K83 rainbow, king-high with no connectivity. Classic dry king-high.",
+      "key_features": ["rainbow", "king_high", "disconnected"]
+    },
+    {
+      "id": "cls_004",
+      "flop": ["K", "9", "4"],
+      "suits": ["s", "c", "h"],
+      "correct_texture": "dry_king_high",
+      "explanation_zh": "K94 彩虹，K高斷開牌面",
+      "explanation_en": "K94 rainbow, king-high disconnected board.",
+      "key_features": ["rainbow", "king_high", "disconnected"]
+    },
+    {
+      "id": "cls_005",
+      "flop": ["Q", "7", "2"],
+      "suits": ["h", "d", "c"],
+      "correct_texture": "dry_queen_high",
+      "explanation_zh": "Q72 彩虹，Q高無連接，乾燥Q高牌面",
+      "explanation_en": "Q72 rainbow, queen-high disconnected. Dry queen-high texture.",
+      "key_features": ["rainbow", "queen_high", "disconnected"]
+    },
+    {
+      "id": "cls_006",
+      "flop": ["Q", "8", "3"],
+      "suits": ["c", "s", "d"],
+      "correct_texture": "dry_queen_high",
+      "explanation_zh": "Q83 彩虹，Q高斷開牌面",
+      "explanation_en": "Q83 rainbow, queen-high with gaps.",
+      "key_features": ["rainbow", "queen_high", "disconnected"]
+    },
+    {
+      "id": "cls_007",
+      "flop": ["8", "5", "2"],
+      "suits": ["s", "h", "d"],
+      "correct_texture": "dry_low_rainbow",
+      "explanation_zh": "852 彩虹低牌，無高牌無連接，乾燥低牌彩虹",
+      "explanation_en": "852 rainbow low cards. Dry low rainbow texture.",
+      "key_features": ["rainbow", "low", "disconnected"]
+    },
+    {
+      "id": "cls_008",
+      "flop": ["9", "4", "2"],
+      "suits": ["d", "c", "h"],
+      "correct_texture": "dry_low_rainbow",
+      "explanation_zh": "942 彩虹，9高斷開，屬於乾燥低牌彩虹",
+      "explanation_en": "942 rainbow, 9-high disconnected. Low rainbow texture.",
+      "key_features": ["rainbow", "low", "disconnected"]
+    },
+    {
+      "id": "cls_009",
+      "flop": ["A", "A", "7"],
+      "suits": ["s", "h", "d"],
+      "correct_texture": "paired_high",
+      "explanation_zh": "AA7 配對A，高對子牌面，極度有利進攻者",
+      "explanation_en": "AA7 paired aces. High paired board, heavily favors aggressor.",
+      "key_features": ["paired", "ace_high"]
+    },
+    {
+      "id": "cls_010",
+      "flop": ["K", "K", "5"],
+      "suits": ["h", "d", "c"],
+      "correct_texture": "paired_high",
+      "explanation_zh": "KK5 配對K，高對子牌面",
+      "explanation_en": "KK5 paired kings. High paired texture.",
+      "key_features": ["paired", "king_high"]
+    },
+    {
+      "id": "cls_011",
+      "flop": ["Q", "Q", "3"],
+      "suits": ["s", "c", "h"],
+      "correct_texture": "paired_high",
+      "explanation_zh": "QQ3 配對Q，高對子牌面",
+      "explanation_en": "QQ3 paired queens. High paired texture.",
+      "key_features": ["paired", "queen_high"]
+    },
+    {
+      "id": "cls_012",
+      "flop": ["5", "5", "9"],
+      "suits": ["h", "d", "c"],
+      "correct_texture": "paired_low",
+      "explanation_zh": "559 配對5，低對子牌面",
+      "explanation_en": "559 paired fives. Low paired texture.",
+      "key_features": ["paired", "low"]
+    },
+    {
+      "id": "cls_013",
+      "flop": ["3", "3", "8"],
+      "suits": ["s", "h", "d"],
+      "correct_texture": "paired_low",
+      "explanation_zh": "338 配對3，低對子牌面",
+      "explanation_en": "338 paired threes. Low paired board.",
+      "key_features": ["paired", "low"]
+    },
+    {
+      "id": "cls_014",
+      "flop": ["7", "7", "T"],
+      "suits": ["d", "c", "h"],
+      "correct_texture": "paired_low",
+      "explanation_zh": "77T 配對7，低對子牌面",
+      "explanation_en": "77T paired sevens. Low paired texture.",
+      "key_features": ["paired", "low"]
+    },
+    {
+      "id": "cls_015",
+      "flop": ["K", "Q", "J"],
+      "suits": ["s", "h", "d"],
+      "correct_texture": "wet_broadway",
+      "explanation_zh": "KQJ 大牌連接，濕潤大牌牌面，有大量聽牌",
+      "explanation_en": "KQJ broadway connector. Very wet with many draws.",
+      "key_features": ["rainbow", "connected", "broadway"]
+    },
+    {
+      "id": "cls_016",
+      "flop": ["Q", "J", "T"],
+      "suits": ["h", "d", "c"],
+      "correct_texture": "wet_broadway",
+      "explanation_zh": "QJT 大牌三連張，濕潤大牌連接",
+      "explanation_en": "QJT three connected broadway. Wet broadway texture.",
+      "key_features": ["rainbow", "connected", "broadway"]
+    },
+    {
+      "id": "cls_017",
+      "flop": ["A", "K", "Q"],
+      "suits": ["d", "s", "h"],
+      "correct_texture": "wet_broadway",
+      "explanation_zh": "AKQ 最高三連張，濕潤大牌牌面",
+      "explanation_en": "AKQ top broadway. Wet broadway texture.",
+      "key_features": ["rainbow", "connected", "broadway"]
+    },
+    {
+      "id": "cls_018",
+      "flop": ["J", "T", "9"],
+      "suits": ["s", "h", "c"],
+      "correct_texture": "wet_middle_connected",
+      "explanation_zh": "JT9 中間三連張，非常濕潤，多重聽牌",
+      "explanation_en": "JT9 middle connected. Very wet with straight possibilities.",
+      "key_features": ["rainbow", "connected", "middle"]
+    },
+    {
+      "id": "cls_019",
+      "flop": ["T", "9", "8"],
+      "suits": ["h", "d", "c"],
+      "correct_texture": "wet_middle_connected",
+      "explanation_zh": "T98 中間三連張，濕潤中間連接牌面",
+      "explanation_en": "T98 middle three connectors. Wet middle texture.",
+      "key_features": ["rainbow", "connected", "middle"]
+    },
+    {
+      "id": "cls_020",
+      "flop": ["9", "8", "7"],
+      "suits": ["s", "c", "d"],
+      "correct_texture": "wet_middle_connected",
+      "explanation_zh": "987 中低連接，濕潤中間連接",
+      "explanation_en": "987 connected middle cards. Wet middle connected.",
+      "key_features": ["rainbow", "connected", "middle"]
+    },
+    {
+      "id": "cls_021",
+      "flop": ["6", "5", "4"],
+      "suits": ["h", "d", "c"],
+      "correct_texture": "wet_low_connected",
+      "explanation_zh": "654 低牌三連張，濕潤低牌連接",
+      "explanation_en": "654 low three connectors. Wet low connected.",
+      "key_features": ["rainbow", "connected", "low"]
+    },
+    {
+      "id": "cls_022",
+      "flop": ["5", "4", "3"],
+      "suits": ["s", "h", "d"],
+      "correct_texture": "wet_low_connected",
+      "explanation_zh": "543 低牌連接，濕潤低牌牌面",
+      "explanation_en": "543 low connected. Wet low texture.",
+      "key_features": ["rainbow", "connected", "low"]
+    },
+    {
+      "id": "cls_023",
+      "flop": ["7", "6", "5"],
+      "suits": ["d", "c", "h"],
+      "correct_texture": "wet_low_connected",
+      "explanation_zh": "765 低中連接，濕潤低牌連接",
+      "explanation_en": "765 low-middle connected. Wet low connected.",
+      "key_features": ["rainbow", "connected", "low"]
+    },
+    {
+      "id": "cls_024",
+      "flop": ["T", "7", "3"],
+      "suits": ["h", "h", "h"],
+      "correct_texture": "monotone",
+      "explanation_zh": "T73 全紅心，單花牌面，同花已可能完成",
+      "explanation_en": "T73 all hearts. Monotone texture, flush possible.",
+      "key_features": ["monotone", "disconnected"]
+    },
+    {
+      "id": "cls_025",
+      "flop": ["K", "8", "4"],
+      "suits": ["s", "s", "s"],
+      "correct_texture": "monotone",
+      "explanation_zh": "K84 全黑桃，單花牌面",
+      "explanation_en": "K84 all spades. Monotone board.",
+      "key_features": ["monotone", "king_high"]
+    },
+    {
+      "id": "cls_026",
+      "flop": ["A", "9", "5"],
+      "suits": ["d", "d", "d"],
+      "correct_texture": "monotone",
+      "explanation_zh": "A95 全方塊，單花牌面",
+      "explanation_en": "A95 all diamonds. Monotone texture.",
+      "key_features": ["monotone", "ace_high"]
+    },
+    {
+      "id": "cls_027",
+      "flop": ["Q", "9", "2"],
+      "suits": ["h", "h", "h"],
+      "correct_texture": "monotone",
+      "explanation_zh": "Q92 全紅心，單花牌面",
+      "explanation_en": "Q92 all hearts. Monotone board.",
+      "key_features": ["monotone", "queen_high"]
+    },
+    {
+      "id": "cls_028",
+      "flop": ["A", "8", "3"],
+      "suits": ["s", "s", "h"],
+      "correct_texture": "twotone_dry",
+      "explanation_zh": "A83 雙黑桃，A高斷開，雙花乾燥",
+      "explanation_en": "A83 two spades, ace-high disconnected. Two-tone dry.",
+      "key_features": ["twotone", "ace_high", "disconnected"]
+    },
+    {
+      "id": "cls_029",
+      "flop": ["K", "7", "2"],
+      "suits": ["h", "h", "d"],
+      "correct_texture": "twotone_dry",
+      "explanation_zh": "K72 雙紅心，K高斷開，雙花乾燥",
+      "explanation_en": "K72 two hearts, king-high disconnected. Two-tone dry.",
+      "key_features": ["twotone", "king_high", "disconnected"]
+    },
+    {
+      "id": "cls_030",
+      "flop": ["Q", "6", "3"],
+      "suits": ["d", "d", "c"],
+      "correct_texture": "twotone_dry",
+      "explanation_zh": "Q63 雙方塊，Q高斷開，雙花乾燥",
+      "explanation_en": "Q63 two diamonds, queen-high disconnected. Two-tone dry.",
+      "key_features": ["twotone", "queen_high", "disconnected"]
+    },
+    {
+      "id": "cls_031",
+      "flop": ["J", "T", "8"],
+      "suits": ["s", "s", "h"],
+      "correct_texture": "twotone_wet",
+      "explanation_zh": "JT8 雙黑桃加連接，雙花濕潤",
+      "explanation_en": "JT8 two spades with connectivity. Two-tone wet.",
+      "key_features": ["twotone", "connected", "jack_high"]
+    },
+    {
+      "id": "cls_032",
+      "flop": ["9", "8", "6"],
+      "suits": ["h", "h", "d"],
+      "correct_texture": "twotone_wet",
+      "explanation_zh": "986 雙紅心加半連接，雙花濕潤",
+      "explanation_en": "986 two hearts with semi-connectivity. Two-tone wet.",
+      "key_features": ["twotone", "semi_connected", "middle"]
+    },
+    {
+      "id": "cls_033",
+      "flop": ["T", "9", "7"],
+      "suits": ["d", "d", "c"],
+      "correct_texture": "twotone_wet",
+      "explanation_zh": "T97 雙方塊加連接，雙花濕潤",
+      "explanation_en": "T97 two diamonds with connectivity. Two-tone wet.",
+      "key_features": ["twotone", "connected", "middle"]
+    },
+    {
+      "id": "cls_034",
+      "flop": ["A", "9", "2"],
+      "suits": ["c", "h", "d"],
+      "correct_texture": "dry_ace_high",
+      "explanation_zh": "A92 彩虹A高斷開，乾燥A高",
+      "explanation_en": "A92 rainbow ace-high disconnected. Dry ace-high.",
+      "key_features": ["rainbow", "ace_high", "disconnected"]
+    },
+    {
+      "id": "cls_035",
+      "flop": ["K", "6", "2"],
+      "suits": ["h", "s", "c"],
+      "correct_texture": "dry_king_high",
+      "explanation_zh": "K62 彩虹K高斷開，乾燥K高",
+      "explanation_en": "K62 rainbow king-high disconnected. Dry king-high.",
+      "key_features": ["rainbow", "king_high", "disconnected"]
+    },
+    {
+      "id": "cls_036",
+      "flop": ["J", "J", "4"],
+      "suits": ["s", "h", "d"],
+      "correct_texture": "paired_high",
+      "explanation_zh": "JJ4 配對J，高對子牌面",
+      "explanation_en": "JJ4 paired jacks. High paired texture.",
+      "key_features": ["paired", "jack_high"]
+    },
+    {
+      "id": "cls_037",
+      "flop": ["8", "8", "K"],
+      "suits": ["d", "c", "h"],
+      "correct_texture": "paired_low",
+      "explanation_zh": "88K 配對8，低對子牌面",
+      "explanation_en": "88K paired eights. Low paired texture.",
+      "key_features": ["paired", "low"]
+    },
+    {
+      "id": "cls_038",
+      "flop": ["K", "J", "9"],
+      "suits": ["s", "h", "d"],
+      "correct_texture": "wet_broadway",
+      "explanation_zh": "KJ9 大牌半連接，濕潤大牌牌面",
+      "explanation_en": "KJ9 broadway semi-connected. Wet broadway texture.",
+      "key_features": ["rainbow", "semi_connected", "broadway"]
+    },
+    {
+      "id": "cls_039",
+      "flop": ["8", "7", "5"],
+      "suits": ["h", "d", "c"],
+      "correct_texture": "wet_middle_connected",
+      "explanation_zh": "875 中間半連接，濕潤中間連接",
+      "explanation_en": "875 middle semi-connected. Wet middle texture.",
+      "key_features": ["rainbow", "semi_connected", "middle"]
+    },
+    {
+      "id": "cls_040",
+      "flop": ["6", "4", "3"],
+      "suits": ["s", "h", "d"],
+      "correct_texture": "wet_low_connected",
+      "explanation_zh": "643 低牌半連接，濕潤低牌連接",
+      "explanation_en": "643 low semi-connected. Wet low connected.",
+      "key_features": ["rainbow", "semi_connected", "low"]
+    },
+    {
+      "id": "cls_041",
+      "flop": ["J", "5", "2"],
+      "suits": ["c", "c", "c"],
+      "correct_texture": "monotone",
+      "explanation_zh": "J52 全梅花，單花牌面",
+      "explanation_en": "J52 all clubs. Monotone texture.",
+      "key_features": ["monotone", "jack_high"]
+    },
+    {
+      "id": "cls_042",
+      "flop": ["8", "6", "4"],
+      "suits": ["s", "s", "h"],
+      "correct_texture": "twotone_wet",
+      "explanation_zh": "864 雙黑桃加半連接，雙花濕潤",
+      "explanation_en": "864 two spades with semi-connectivity. Two-tone wet.",
+      "key_features": ["twotone", "semi_connected", "low"]
+    },
+    {
+      "id": "cls_043",
+      "flop": ["A", "T", "6"],
+      "suits": ["h", "d", "c"],
+      "correct_texture": "dry_ace_high",
+      "explanation_zh": "AT6 彩虹A高，輕微連接但仍屬乾燥A高",
+      "explanation_en": "AT6 rainbow ace-high. Minor connectivity but still dry ace-high.",
+      "key_features": ["rainbow", "ace_high", "semi_connected"]
+    },
+    {
+      "id": "cls_044",
+      "flop": ["K", "T", "7"],
+      "suits": ["s", "h", "d"],
+      "correct_texture": "dry_king_high",
+      "explanation_zh": "KT7 彩虹K高，有間隙，乾燥K高",
+      "explanation_en": "KT7 rainbow king-high with gaps. Dry king-high.",
+      "key_features": ["rainbow", "king_high", "semi_connected"]
+    },
+    {
+      "id": "cls_045",
+      "flop": ["Q", "9", "5"],
+      "suits": ["d", "c", "h"],
+      "correct_texture": "dry_queen_high",
+      "explanation_zh": "Q95 彩虹Q高斷開，乾燥Q高",
+      "explanation_en": "Q95 rainbow queen-high disconnected. Dry queen-high.",
+      "key_features": ["rainbow", "queen_high", "disconnected"]
+    },
+    {
+      "id": "cls_046",
+      "flop": ["T", "6", "3"],
+      "suits": ["h", "s", "d"],
+      "correct_texture": "dry_low_rainbow",
+      "explanation_zh": "T63 彩虹T高斷開，乾燥低牌彩虹",
+      "explanation_en": "T63 rainbow ten-high disconnected. Dry low rainbow.",
+      "key_features": ["rainbow", "low", "disconnected"]
+    },
+    {
+      "id": "cls_047",
+      "flop": ["9", "6", "2"],
+      "suits": ["c", "h", "d"],
+      "correct_texture": "dry_low_rainbow",
+      "explanation_zh": "962 彩虹9高斷開，乾燥低牌彩虹",
+      "explanation_en": "962 rainbow nine-high disconnected. Dry low rainbow.",
+      "key_features": ["rainbow", "low", "disconnected"]
+    },
+    {
+      "id": "cls_048",
+      "flop": ["A", "Q", "T"],
+      "suits": ["s", "h", "d"],
+      "correct_texture": "wet_broadway",
+      "explanation_zh": "AQT 大牌半連接，濕潤大牌牌面",
+      "explanation_en": "AQT broadway semi-connected. Wet broadway texture.",
+      "key_features": ["rainbow", "semi_connected", "broadway"]
+    },
+    {
+      "id": "cls_049",
+      "flop": ["J", "9", "7"],
+      "suits": ["h", "d", "c"],
+      "correct_texture": "wet_middle_connected",
+      "explanation_zh": "J97 中間半連接，濕潤中間連接",
+      "explanation_en": "J97 middle semi-connected. Wet middle texture.",
+      "key_features": ["rainbow", "semi_connected", "middle"]
+    },
+    {
+      "id": "cls_050",
+      "flop": ["7", "5", "3"],
+      "suits": ["s", "d", "h"],
+      "correct_texture": "wet_low_connected",
+      "explanation_zh": "753 低牌半連接，濕潤低牌連接",
+      "explanation_en": "753 low semi-connected. Wet low connected.",
+      "key_features": ["rainbow", "semi_connected", "low"]
+    },
+    {
+      "id": "cls_051",
+      "flop": ["K", "5", "5"],
+      "suits": ["h", "s", "d"],
+      "correct_texture": "paired_low",
+      "explanation_zh": "K55 配對5，低對子牌面",
+      "explanation_en": "K55 paired fives. Low paired texture.",
+      "key_features": ["paired", "low"]
+    },
+    {
+      "id": "cls_052",
+      "flop": ["A", "J", "J"],
+      "suits": ["s", "h", "d"],
+      "correct_texture": "paired_high",
+      "explanation_zh": "AJJ 配對J，高對子牌面",
+      "explanation_en": "AJJ paired jacks. High paired texture.",
+      "key_features": ["paired", "jack_high"]
+    },
+    {
+      "id": "cls_053",
+      "flop": ["Q", "T", "8"],
+      "suits": ["d", "d", "h"],
+      "correct_texture": "twotone_wet",
+      "explanation_zh": "QT8 雙方塊加半連接，雙花濕潤",
+      "explanation_en": "QT8 two diamonds with semi-connectivity. Two-tone wet.",
+      "key_features": ["twotone", "semi_connected", "queen_high"]
+    },
+    {
+      "id": "cls_054",
+      "flop": ["J", "8", "5"],
+      "suits": ["c", "c", "h"],
+      "correct_texture": "twotone_dry",
+      "explanation_zh": "J85 雙梅花斷開，雙花乾燥",
+      "explanation_en": "J85 two clubs disconnected. Two-tone dry.",
+      "key_features": ["twotone", "jack_high", "disconnected"]
+    },
+    {
+      "id": "cls_055",
+      "flop": ["9", "3", "2"],
+      "suits": ["h", "h", "d"],
+      "correct_texture": "twotone_dry",
+      "explanation_zh": "932 雙紅心斷開，雙花乾燥",
+      "explanation_en": "932 two hearts disconnected. Two-tone dry.",
+      "key_features": ["twotone", "low", "disconnected"]
+    },
+    {
+      "id": "cls_056",
+      "flop": ["8", "7", "6"],
+      "suits": ["s", "h", "d"],
+      "correct_texture": "wet_middle_connected",
+      "explanation_zh": "876 完美三連張，非常濕潤的中間連接牌面",
+      "explanation_en": "876 perfect three connectors. Very wet middle connected.",
+      "key_features": ["rainbow", "connected", "middle"]
+    },
+    {
+      "id": "cls_057",
+      "flop": ["4", "3", "2"],
+      "suits": ["d", "c", "h"],
+      "correct_texture": "wet_low_connected",
+      "explanation_zh": "432 最低三連張，濕潤低牌連接",
+      "explanation_en": "432 lowest three connectors. Wet low connected.",
+      "key_features": ["rainbow", "connected", "low"]
+    },
+    {
+      "id": "cls_058",
+      "flop": ["A", "K", "J"],
+      "suits": ["h", "s", "d"],
+      "correct_texture": "wet_broadway",
+      "explanation_zh": "AKJ 大牌半連接，濕潤大牌牌面",
+      "explanation_en": "AKJ broadway semi-connected. Wet broadway texture.",
+      "key_features": ["rainbow", "semi_connected", "broadway"]
+    },
+    {
+      "id": "cls_059",
+      "flop": ["6", "6", "2"],
+      "suits": ["h", "d", "c"],
+      "correct_texture": "paired_low",
+      "explanation_zh": "662 配對6，低對子牌面",
+      "explanation_en": "662 paired sixes. Low paired texture.",
+      "key_features": ["paired", "low"]
+    },
+    {
+      "id": "cls_060",
+      "flop": ["T", "T", "A"],
+      "suits": ["s", "h", "d"],
+      "correct_texture": "paired_low",
+      "explanation_zh": "TTA 配對T（屬於低對子範疇），低對子牌面",
+      "explanation_en": "TTA paired tens. Low paired texture (tens classified as low pair).",
+      "key_features": ["paired", "low"]
+    }
+  ]
+}
