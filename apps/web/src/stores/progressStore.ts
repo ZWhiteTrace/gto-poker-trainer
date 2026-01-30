@@ -41,6 +41,21 @@ interface QuizStats {
   lastPracticed?: string;
 }
 
+// Track individual question attempts
+interface QuestionAttempt {
+  questionId: string;
+  attempts: number;
+  correctOnFirstTry: boolean;
+  lastAttemptCorrect: boolean;
+  lastAttemptAt: string;
+}
+
+// Quiz progress tracking
+interface QuizProgressState {
+  totalQuestionsInBank: number;
+  attemptedQuestions: Record<string, QuestionAttempt>;
+}
+
 interface DailyRecord {
   date: string; // YYYY-MM-DD
   total: number;
@@ -53,6 +68,9 @@ interface ProgressState {
 
   // Quiz stats by quiz type
   quizStats: Record<QuizType, QuizStats>;
+
+  // Quiz progress tracking (question-level)
+  quizProgress: QuizProgressState;
 
   // Recent results (local cache)
   recentResults: DrillResult[];
@@ -72,6 +90,10 @@ interface ProgressState {
     isCorrect: boolean,
     userId?: string
   ) => Promise<void>;
+  recordQuestionAttempt: (
+    questionId: string,
+    isCorrect: boolean
+  ) => void;
   recordTableTrainerHand: (
     heroPosition: string,
     isWin: boolean,
@@ -82,6 +104,14 @@ interface ProgressState {
   loadFromCloud: (userId: string) => Promise<void>;
   getWeakPositions: (drillType: DrillType) => string[];
   getDailyHistory: (days: number) => DailyRecord[];
+  getQuizCompletionStats: () => {
+    attempted: number;
+    mastered: number;
+    needsReview: number;
+    total: number;
+    completionRate: number;
+    masteryRate: number;
+  };
   resetStats: () => void;
 }
 
@@ -97,6 +127,9 @@ const initialQuizStats: QuizStats = {
   correct: 0,
   byCategory: {},
 };
+
+// Total questions available in the quiz bank (updated as questions are added)
+const TOTAL_QUIZ_QUESTIONS = 45; // Current exam has ~45 questions
 
 const initialState = {
   stats: {
@@ -116,6 +149,10 @@ const initialState = {
     ev: { ...initialQuizStats },
     logic: { ...initialQuizStats },
     exploit: { ...initialQuizStats },
+  },
+  quizProgress: {
+    totalQuestionsInBank: TOTAL_QUIZ_QUESTIONS,
+    attemptedQuestions: {} as Record<string, QuestionAttempt>,
   },
   recentResults: [],
   dailyHistory: [],
@@ -280,6 +317,37 @@ export const useProgressStore = create<ProgressState>()(
         }
       },
 
+      recordQuestionAttempt: (questionId: string, isCorrect: boolean) => {
+        const { quizProgress } = get();
+        const existing = quizProgress.attemptedQuestions[questionId];
+        const now = new Date().toISOString();
+
+        const newAttempt: QuestionAttempt = existing
+          ? {
+              ...existing,
+              attempts: existing.attempts + 1,
+              lastAttemptCorrect: isCorrect,
+              lastAttemptAt: now,
+            }
+          : {
+              questionId,
+              attempts: 1,
+              correctOnFirstTry: isCorrect,
+              lastAttemptCorrect: isCorrect,
+              lastAttemptAt: now,
+            };
+
+        set({
+          quizProgress: {
+            ...quizProgress,
+            attemptedQuestions: {
+              ...quizProgress.attemptedQuestions,
+              [questionId]: newAttempt,
+            },
+          },
+        });
+      },
+
       recordTableTrainerHand: async (
         heroPosition: string,
         isWin: boolean,
@@ -430,6 +498,25 @@ export const useProgressStore = create<ProgressState>()(
         return result;
       },
 
+      getQuizCompletionStats: () => {
+        const { quizProgress } = get();
+        const attempts = Object.values(quizProgress.attemptedQuestions);
+        const total = quizProgress.totalQuestionsInBank;
+
+        const attempted = attempts.length;
+        const mastered = attempts.filter((a) => a.correctOnFirstTry || a.lastAttemptCorrect).length;
+        const needsReview = attempts.filter((a) => !a.lastAttemptCorrect).length;
+
+        return {
+          attempted,
+          mastered,
+          needsReview,
+          total,
+          completionRate: total > 0 ? Math.round((attempted / total) * 100) : 0,
+          masteryRate: attempted > 0 ? Math.round((mastered / attempted) * 100) : 0,
+        };
+      },
+
       resetStats: () => {
         set(initialState);
       },
@@ -439,6 +526,7 @@ export const useProgressStore = create<ProgressState>()(
       partialize: (state) => ({
         stats: state.stats,
         quizStats: state.quizStats,
+        quizProgress: state.quizProgress,
         recentResults: state.recentResults,
         dailyHistory: state.dailyHistory,
         lastSyncedAt: state.lastSyncedAt,

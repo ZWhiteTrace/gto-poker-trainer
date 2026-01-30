@@ -23,6 +23,9 @@ import {
   SUITS,
   DEFAULT_CONFIG,
   DEFAULT_HERO_STATS,
+  DEFAULT_AI_OPPONENT_STATS,
+  type AIOpponentStats,
+  type AIStyle,
 } from "@/lib/poker/types";
 import { TIMING, TABLE } from "@/lib/poker/constants";
 import { evaluateHand, determineWinners as findWinners } from "@/lib/poker/handEvaluator";
@@ -95,6 +98,73 @@ function createPlayers(
 
 function getPlayerAIProfile(seatIndex: number): AIPlayerProfile {
   return aiProfileAssignments.get(seatIndex) || AI_PROFILES[0];
+}
+
+// Get all AI profiles for hand history recording
+function getAIProfilesForHandHistory(): { seatIndex: number; profileId: string; style: AIPlayerProfile["style"] }[] {
+  const profiles: { seatIndex: number; profileId: string; style: AIPlayerProfile["style"] }[] = [];
+  aiProfileAssignments.forEach((profile, seatIndex) => {
+    profiles.push({
+      seatIndex,
+      profileId: profile.id,
+      style: profile.style,
+    });
+  });
+  return profiles;
+}
+
+// Update AI opponent stats after hand ends
+function updateAIOpponentStats(
+  currentStats: AIOpponentStats,
+  players: Player[],
+  winners: Player[],
+  heroProfit: number
+): AIOpponentStats {
+  const newStats: AIOpponentStats = JSON.parse(JSON.stringify(currentStats));
+  const heroWon = heroProfit > 0;
+
+  // Find all AI opponents in this hand
+  for (const player of players) {
+    if (player.isHero) continue;
+
+    const aiProfile = aiProfileAssignments.get(player.seatIndex);
+    if (!aiProfile) continue;
+
+    const style = aiProfile.style as AIStyle;
+    const profileId = aiProfile.id;
+
+    // Update by style
+    if (!newStats.byStyle[style]) {
+      newStats.byStyle[style] = { handsPlayed: 0, handsWon: 0, totalProfit: 0 };
+    }
+    newStats.byStyle[style].handsPlayed += 1;
+    if (heroWon) {
+      newStats.byStyle[style].handsWon += 1;
+      newStats.byStyle[style].totalProfit += heroProfit;
+    } else {
+      newStats.byStyle[style].totalProfit += heroProfit; // negative value
+    }
+
+    // Update by player
+    if (!newStats.byPlayer[profileId]) {
+      newStats.byPlayer[profileId] = {
+        name: aiProfile.nameZh || aiProfile.name,
+        style: style,
+        handsPlayed: 0,
+        handsWon: 0,
+        totalProfit: 0,
+      };
+    }
+    newStats.byPlayer[profileId].handsPlayed += 1;
+    if (heroWon) {
+      newStats.byPlayer[profileId].handsWon += 1;
+      newStats.byPlayer[profileId].totalProfit += heroProfit;
+    } else {
+      newStats.byPlayer[profileId].totalProfit += heroProfit;
+    }
+  }
+
+  return newStats;
 }
 
 function getNextActivePlayerIndex(
@@ -241,6 +311,7 @@ const initialState: Omit<TableState, keyof TableActions> = {
     SB: { handsPlayed: 0, handsWon: 0, totalProfit: 0 },
     BB: { handsPlayed: 0, handsWon: 0, totalProfit: 0 },
   },
+  aiOpponentStats: JSON.parse(JSON.stringify(DEFAULT_AI_OPPONENT_STATS)),
   aiThinking: false,
   showBetSlider: false,
   selectedBetSize: 0,
@@ -1418,9 +1489,19 @@ export const useTableStore = create<TableState & TableActions>()(
             heroProfit,
             new Map(),
             config.blinds,
-            config.ante
+            config.ante,
+            getAIProfilesForHandHistory()
           );
           saveHandHistory(handHistory);
+
+          // Update AI opponent stats
+          const { aiOpponentStats } = get();
+          const newAIOpponentStats = updateAIOpponentStats(
+            aiOpponentStats,
+            players,
+            [winner],
+            heroProfit
+          );
 
           if (winner.isHero) {
             // Hero won the pot
@@ -1435,6 +1516,7 @@ export const useTableStore = create<TableState & TableActions>()(
               },
               heroStats: newHeroStats,
               positionStats: newPositionStats,
+              aiOpponentStats: newAIOpponentStats,
             });
           } else {
             // Hero lost (folded or was the one remaining when everyone folded)
@@ -1447,6 +1529,7 @@ export const useTableStore = create<TableState & TableActions>()(
               },
               heroStats: newHeroStats,
               positionStats: newPositionStats,
+              aiOpponentStats: newAIOpponentStats,
             });
           }
         } else {
@@ -1592,9 +1675,19 @@ export const useTableStore = create<TableState & TableActions>()(
             heroProfit,
             evaluations,
             config.blinds,
-            config.ante
+            config.ante,
+            getAIProfilesForHandHistory()
           );
           saveHandHistory(handHistory);
+
+          // Update AI opponent stats
+          const { aiOpponentStats } = get();
+          const newAIOpponentStats = updateAIOpponentStats(
+            aiOpponentStats,
+            players,
+            winnerPlayers,
+            heroProfit
+          );
 
           if (heroWon) {
             // Hero won (or split a pot)
@@ -1609,6 +1702,7 @@ export const useTableStore = create<TableState & TableActions>()(
               },
               heroStats: newHeroStats,
               positionStats: newPositionStats,
+              aiOpponentStats: newAIOpponentStats,
             });
           } else {
             // Hero lost (folded earlier or lost at showdown)
@@ -1621,6 +1715,7 @@ export const useTableStore = create<TableState & TableActions>()(
               },
               heroStats: newHeroStats,
               positionStats: newPositionStats,
+              aiOpponentStats: newAIOpponentStats,
             });
           }
         }
@@ -1663,15 +1758,25 @@ export const useTableStore = create<TableState & TableActions>()(
     }),
     {
       name: "table-store",
-      version: 2, // Bump version to clear corrupted stats data
+      version: 4, // Bump version for AI opponent stats
       partialize: (state) => ({
         sessionStats: state.sessionStats,
         trainingMode: state.trainingMode,
         autoRotate: state.autoRotate,
         heroStats: state.heroStats,
         positionStats: state.positionStats,
-      }),
+        aiOpponentStats: state.aiOpponentStats,
+      } as TableState),
       migrate: (persistedState: unknown, version: number) => {
+        const defaultPositionStats = {
+          BTN: { handsPlayed: 0, handsWon: 0, totalProfit: 0 },
+          CO: { handsPlayed: 0, handsWon: 0, totalProfit: 0 },
+          HJ: { handsPlayed: 0, handsWon: 0, totalProfit: 0 },
+          UTG: { handsPlayed: 0, handsWon: 0, totalProfit: 0 },
+          SB: { handsPlayed: 0, handsWon: 0, totalProfit: 0 },
+          BB: { handsPlayed: 0, handsWon: 0, totalProfit: 0 },
+        };
+
         // Clear old corrupted data from version 0/1
         if (version < 2) {
           return {
@@ -1685,16 +1790,47 @@ export const useTableStore = create<TableState & TableActions>()(
             },
             autoRotate: true,
             heroStats: { ...DEFAULT_HERO_STATS },
-            positionStats: {
-              BTN: { handsPlayed: 0, handsWon: 0, totalProfit: 0 },
-              CO: { handsPlayed: 0, handsWon: 0, totalProfit: 0 },
-              HJ: { handsPlayed: 0, handsWon: 0, totalProfit: 0 },
-              UTG: { handsPlayed: 0, handsWon: 0, totalProfit: 0 },
-              SB: { handsPlayed: 0, handsWon: 0, totalProfit: 0 },
-              BB: { handsPlayed: 0, handsWon: 0, totalProfit: 0 },
-            },
+            positionStats: defaultPositionStats,
           };
         }
+
+        // Migrate version 2 → 3: MP → HJ position rename
+        if (version === 2) {
+          const state = persistedState as Record<string, unknown>;
+          const oldPositionStats = state.positionStats as Record<string, { handsPlayed: number; handsWon: number; totalProfit: number }> | undefined;
+
+          // Convert MP stats to HJ if exists
+          const newPositionStats = { ...defaultPositionStats };
+          if (oldPositionStats) {
+            if (oldPositionStats.BTN) newPositionStats.BTN = oldPositionStats.BTN;
+            if (oldPositionStats.CO) newPositionStats.CO = oldPositionStats.CO;
+            if (oldPositionStats.UTG) newPositionStats.UTG = oldPositionStats.UTG;
+            if (oldPositionStats.SB) newPositionStats.SB = oldPositionStats.SB;
+            if (oldPositionStats.BB) newPositionStats.BB = oldPositionStats.BB;
+            // Migrate MP → HJ
+            if (oldPositionStats.MP) {
+              newPositionStats.HJ = oldPositionStats.MP;
+            } else if (oldPositionStats.HJ) {
+              newPositionStats.HJ = oldPositionStats.HJ;
+            }
+          }
+
+          return {
+            ...state,
+            positionStats: newPositionStats,
+            aiOpponentStats: JSON.parse(JSON.stringify(DEFAULT_AI_OPPONENT_STATS)),
+          };
+        }
+
+        // Migrate version 3 → 4: Add AI opponent stats
+        if (version === 3) {
+          const state = persistedState as Record<string, unknown>;
+          return {
+            ...state,
+            aiOpponentStats: JSON.parse(JSON.stringify(DEFAULT_AI_OPPONENT_STATS)),
+          };
+        }
+
         return persistedState as TableState;
       },
     }

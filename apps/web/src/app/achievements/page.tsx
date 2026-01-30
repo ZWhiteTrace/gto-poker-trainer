@@ -22,11 +22,13 @@ import {
   Flame,
   Award,
   Sparkles,
+  RefreshCcw,
 } from "lucide-react";
 import {
   getAllAchievements,
   getUserAchievements,
   getUserLeaderboardStats,
+  checkAchievements,
   type Achievement,
   type AchievementSummary,
   type LeaderboardStats,
@@ -168,6 +170,7 @@ export default function AchievementsPage() {
   const [userSummary, setUserSummary] = useState<AchievementSummary | null>(null);
   const [userStats, setUserStats] = useState<LeaderboardStats | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isChecking, setIsChecking] = useState(false);
   const [locale, setLocale] = useState("en");
 
   useEffect(() => {
@@ -176,30 +179,46 @@ export default function AchievementsPage() {
     setLocale(htmlLang || "en");
   }, []);
 
-  useEffect(() => {
-    async function fetchData() {
-      setIsLoading(true);
-      try {
-        const achievements = await getAllAchievements();
-        setAllAchievements(achievements);
+  const fetchData = async () => {
+    setIsLoading(true);
+    try {
+      const achievements = await getAllAchievements();
+      setAllAchievements(achievements);
 
-        if (user?.id) {
-          const [summary, stats] = await Promise.all([
-            getUserAchievements(user.id),
-            getUserLeaderboardStats(user.id),
-          ]);
-          setUserSummary(summary);
-          setUserStats(stats);
-        }
-      } catch (error) {
-        console.error("Failed to fetch achievements:", error);
-      } finally {
-        setIsLoading(false);
+      if (user?.id) {
+        const [summary, stats] = await Promise.all([
+          getUserAchievements(user.id),
+          getUserLeaderboardStats(user.id),
+        ]);
+        setUserSummary(summary);
+        setUserStats(stats);
       }
+    } catch (error) {
+      console.error("Failed to fetch achievements:", error);
+    } finally {
+      setIsLoading(false);
     }
+  };
 
+  useEffect(() => {
     fetchData();
   }, [user?.id]);
+
+  const handleCheckAchievements = async () => {
+    if (!user?.id || isChecking) return;
+    setIsChecking(true);
+    try {
+      const newAchievements = await checkAchievements(user.id);
+      if (newAchievements.length > 0) {
+        // Refresh the data to show newly unlocked achievements
+        await fetchData();
+      }
+    } catch (error) {
+      console.error("Failed to check achievements:", error);
+    } finally {
+      setIsChecking(false);
+    }
+  };
 
   // Group achievements by category
   const groupedAchievements = allAchievements.reduce((acc, achievement) => {
@@ -252,25 +271,39 @@ export default function AchievementsPage() {
       {/* Summary Card */}
       <Card className="mb-8 bg-gradient-to-r from-yellow-500/10 to-orange-500/10 border-yellow-500/20">
         <CardContent className="p-6">
-          <div className="grid grid-cols-3 gap-4 text-center mb-4">
-            <div>
-              <div className="text-3xl font-bold text-yellow-500">{unlockedCount}</div>
-              <div className="text-sm text-muted-foreground">
-                {t("achievements.unlocked") || "Unlocked"}
+          <div className="flex justify-between items-start mb-4">
+            <div className="grid grid-cols-3 gap-4 text-center flex-1">
+              <div>
+                <div className="text-3xl font-bold text-yellow-500">{unlockedCount}</div>
+                <div className="text-sm text-muted-foreground">
+                  {t("achievements.unlocked") || "Unlocked"}
+                </div>
+              </div>
+              <div>
+                <div className="text-3xl font-bold text-primary">{totalPoints}</div>
+                <div className="text-sm text-muted-foreground">
+                  {t("achievements.totalPoints") || "Total Points"}
+                </div>
+              </div>
+              <div>
+                <div className="text-3xl font-bold">{totalAchievements}</div>
+                <div className="text-sm text-muted-foreground">
+                  {t("achievements.total") || "Total"}
+                </div>
               </div>
             </div>
-            <div>
-              <div className="text-3xl font-bold text-primary">{totalPoints}</div>
-              <div className="text-sm text-muted-foreground">
-                {t("achievements.totalPoints") || "Total Points"}
-              </div>
-            </div>
-            <div>
-              <div className="text-3xl font-bold">{totalAchievements}</div>
-              <div className="text-sm text-muted-foreground">
-                {t("achievements.total") || "Total"}
-              </div>
-            </div>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleCheckAchievements}
+              disabled={isChecking}
+              className="ml-4"
+            >
+              <RefreshCcw className={cn("h-4 w-4 mr-2", isChecking && "animate-spin")} />
+              {isChecking
+                ? (locale === "zh-TW" ? "檢查中..." : "Checking...")
+                : (locale === "zh-TW" ? "檢查成就" : "Check Achievements")}
+            </Button>
           </div>
           <div>
             <div className="flex justify-between text-sm mb-1">

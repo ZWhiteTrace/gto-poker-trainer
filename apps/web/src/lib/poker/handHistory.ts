@@ -15,8 +15,16 @@ import type {
   Position,
   Street,
   HandEvaluation,
+  AIStyle,
   SUIT_SYMBOLS,
 } from "./types";
+
+// AI Profile info for hand history
+export interface AIProfileInfo {
+  seatIndex: number;
+  profileId: string;
+  style: AIStyle;
+}
 
 // ============================================
 // Recording Hand History
@@ -34,17 +42,34 @@ export function createHandHistory(
   heroProfit: number,
   handEvaluations: Map<string, HandEvaluation>,
   blinds: { sb: number; bb: number },
-  ante: number = 0
+  ante: number = 0,
+  aiProfiles?: AIProfileInfo[]
 ): HandHistory {
+  // Create AI profile lookup by seat index
+  const aiProfileMap = new Map<number, AIProfileInfo>();
+  if (aiProfiles) {
+    for (const profile of aiProfiles) {
+      aiProfileMap.set(profile.seatIndex, profile);
+    }
+  }
+
   // Create player snapshots
-  const playerSnapshots: HandHistoryPlayer[] = players.map(p => ({
-    name: p.name,
-    position: p.position,
-    stack: p.stack + p.totalInvested, // Restore starting stack
-    holeCards: p.holeCards,
-    seatIndex: p.seatIndex,
-    isHero: p.isHero,
-  }));
+  const playerSnapshots: HandHistoryPlayer[] = players.map(p => {
+    const aiProfile = aiProfileMap.get(p.seatIndex);
+    return {
+      name: p.name,
+      position: p.position,
+      stack: p.stack + p.totalInvested, // Restore starting stack
+      holeCards: p.holeCards,
+      seatIndex: p.seatIndex,
+      isHero: p.isHero,
+      // Add AI info for non-hero players
+      ...(aiProfile && !p.isHero ? {
+        aiStyle: aiProfile.style,
+        aiProfileId: aiProfile.profileId,
+      } : {}),
+    };
+  });
 
   // Parse board
   const board: HandHistory["board"] = {};
@@ -206,7 +231,8 @@ export function exportToGGPokerFormat(history: HandHistory): string {
   // Seats
   for (const player of history.players) {
     const name = player.isHero ? "Hero" : player.name;
-    lines.push(`Seat ${player.seatIndex + 1}: ${name} (${formatAmount(player.stack, bb)} in chips)`);
+    const aiInfo = player.aiStyle ? ` [${player.aiStyle}]` : "";
+    lines.push(`Seat ${player.seatIndex + 1}: ${name}${aiInfo} (${formatAmount(player.stack, bb)} in chips)`);
   }
 
   // Blinds

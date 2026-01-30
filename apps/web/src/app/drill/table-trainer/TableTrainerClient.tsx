@@ -7,6 +7,7 @@ import { useAuthStore } from "@/stores/authStore";
 import { PokerTable, CompactPokerTable, ActionButtons, ScenarioSelector, ScenarioButton } from "@/components/poker/table";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { POSITIONS, Position, POSITION_LABELS, ScenarioPreset, HintMode, GTOHint, ActionType } from "@/lib/poker/types";
 import {
@@ -25,10 +26,18 @@ import {
   getTAF,
   getPlayerType,
 } from "@/lib/poker/playerStats";
+import {
+  STATS_THRESHOLDS,
+  analyzePlayerStats,
+  getTopImprovementAreas,
+  getOverallPerformance,
+  type StatFeedback,
+} from "@/lib/poker/statsFeedback";
 import { cn } from "@/lib/utils";
 import { ChevronUp, ChevronDown, History, RotateCw, BarChart3, FileText } from "lucide-react";
 import { HandHistoryPanel } from "@/components/poker/HandHistoryPanel";
 import { GTOHintPanel, HintModeSelector } from "@/components/poker/GTOHintPanel";
+import { AIExploitAnalysis } from "@/components/poker/AIExploitAnalysis";
 import { generateGTOHint } from "@/lib/poker/gtoHintEngine";
 
 export default function TableTrainerClient() {
@@ -46,6 +55,7 @@ export default function TableTrainerClient() {
     sessionStats,
     heroStats,
     positionStats,
+    aiOpponentStats,
     actionHistory,
     winners,
     handEvaluations,
@@ -315,7 +325,7 @@ export default function TableTrainerClient() {
             </Badge>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3 overflow-x-auto max-w-[60vw] sm:max-w-none scrollbar-thin scrollbar-thumb-gray-700">
             {/* Scenario Selector Button */}
             {phase === "setup" && (
               <ScenarioButton onClick={() => setShowScenarioSelector(true)} />
@@ -478,7 +488,7 @@ export default function TableTrainerClient() {
             </div>
 
             {/* Poker Table */}
-            <div className="bg-gray-800/50 rounded-xl sm:rounded-2xl p-2 sm:p-6 flex-1 min-h-0">
+            <div className="bg-gray-800/50 rounded-lg sm:rounded-2xl p-1 sm:p-6 flex-1 min-h-0">
               {isMobile ? (
                 <CompactPokerTable
                   players={players}
@@ -523,7 +533,14 @@ export default function TableTrainerClient() {
                       {winners.map(w => `${w.name} (${w.position})`).join(", ")}
                     </span>
                     {lastWonPot > 0 && (
-                      <span className="text-green-400 ml-2">(+{lastWonPot.toFixed(1)} BB)</span>
+                      <span className={cn("ml-2", winners.some(w => w.isHero) ? "text-green-400" : "text-red-400")}>
+                        {winners.some(w => w.isHero)
+                          ? `(+${lastWonPot.toFixed(1)} BB)`
+                          : (hero?.totalInvested ?? 0) > 0
+                            ? `(-${(hero?.totalInvested ?? 0).toFixed(1)} BB)`
+                            : `(${lastWonPot.toFixed(1)} BB)`
+                        }
+                      </span>
                     )}
                   </p>
                   {handEvaluations && handEvaluations.size > 0 && winners[0] && (
@@ -572,7 +589,7 @@ export default function TableTrainerClient() {
           </div>
 
           {/* Desktop Right Panel - Action Buttons & Controls */}
-          <div className="hidden lg:flex flex-col w-80 shrink-0 gap-3">
+          <div className="hidden lg:flex flex-col w-80 shrink-0 gap-3 overflow-y-auto max-h-full">
             {/* Action Buttons Area */}
             <Card className="bg-gray-800/50 border-gray-700 flex-1">
               <CardContent className="p-4 h-full flex flex-col">
@@ -605,7 +622,12 @@ export default function TableTrainerClient() {
                           "text-xl font-bold",
                           winners.some(w => w.isHero) ? "text-green-400" : "text-red-400"
                         )}>
-                          {winners.some(w => w.isHero) ? "+" : "-"}{(winners.some(w => w.isHero) ? lastWonPot : hero?.totalInvested || 0).toFixed(1)} BB
+                          {winners.some(w => w.isHero)
+                            ? `+${lastWonPot.toFixed(1)} BB`
+                            : (hero?.totalInvested ?? 0) > 0
+                              ? `-${(hero?.totalInvested ?? 0).toFixed(1)} BB`
+                              : `底池 ${lastWonPot.toFixed(1)} BB`
+                          }
                         </p>
                       )}
                       {handEvaluations && handEvaluations.size > 0 && winners[0] && (
@@ -726,9 +748,9 @@ export default function TableTrainerClient() {
           )}>
             {/* Desktop: Horizontal action history bar */}
             <div className="hidden lg:block">
-              <Card className="bg-gray-800/50 border-gray-700">
+              <Card className="bg-gray-800/50 border-gray-700 overflow-hidden">
                 <CardContent className="py-2 px-4">
-                  <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-4 max-w-full">
                     <span className="text-xs text-gray-400 shrink-0">行動歷史:</span>
                     <div className="flex-1 flex items-center gap-2 overflow-x-auto">
                       {actionHistory.length === 0 ? (
@@ -842,103 +864,229 @@ export default function TableTrainerClient() {
               </div>
             </CardHeader>
             <CardContent className="p-4 space-y-4">
-              {/* Player Type & Summary */}
+              {/* Player Summary - Always Show */}
               <div className="flex items-center justify-between bg-gray-800/50 rounded-lg p-3">
                 <div>
-                  <p className="text-xs text-gray-400">玩家類型</p>
-                  <p className="text-lg font-bold text-yellow-400">{getPlayerType(heroStats)}</p>
-                </div>
-                <div className="text-right">
                   <p className="text-xs text-gray-400">手數</p>
                   <p className="text-lg font-bold text-white">{heroStats.handsPlayed}</p>
                 </div>
-                <div className="text-right">
+                <div className="text-center">
                   <p className="text-xs text-gray-400">盈虧</p>
                   <p className={cn(
                     "text-lg font-bold",
                     sessionStats.totalProfit >= 0 ? "text-green-400" : "text-red-400"
                   )}>
-                    {sessionStats.totalProfit >= 0 ? "+" : ""}{sessionStats.totalProfit.toFixed(1)}
+                    {sessionStats.totalProfit >= 0 ? "+" : ""}{sessionStats.totalProfit.toFixed(1)} BB
+                  </p>
+                </div>
+                <div className="text-right">
+                  <p className="text-xs text-gray-400">勝率</p>
+                  <p className="text-lg font-bold text-white">
+                    {heroStats.handsPlayed > 0
+                      ? ((sessionStats.handsWon / heroStats.handsPlayed) * 100).toFixed(0)
+                      : 0}%
                   </p>
                 </div>
               </div>
 
-              {/* Preflop Stats - Ring Display Style */}
-              <div>
-                <h3 className="text-sm font-semibold text-gray-300 mb-2">翻前統計</h3>
-                <div className="grid grid-cols-4 gap-2">
-                  <StatRing label="VPIP" value={getPlayerVPIP(heroStats)} target={[0.22, 0.26]} color="cyan" />
-                  <StatRing label="PFR" value={getPlayerPFR(heroStats)} target={[0.18, 0.22]} color="orange" />
-                  <StatRing label="ATS" value={getPlayerATS(heroStats)} target={[0.32, 0.38]} color="yellow" />
-                  <StatRing label="3BET" value={getPlayer3Bet(heroStats)} target={[0.08, 0.12]} color="red" />
-                </div>
-              </div>
-
-              {/* Postflop Stats - By Street */}
-              <div className="grid grid-cols-3 gap-3">
-                {/* Flop */}
-                <div className="bg-gray-800/30 rounded-lg p-2">
-                  <h4 className="text-xs font-semibold text-gray-400 mb-2 text-center">翻牌</h4>
-                  <StatBar label="CB" value={getFlopCBet(heroStats)} target={[0.50, 0.60]} />
-                  <StatBar label="FCB" value={getFoldToCBet(heroStats)} target={[0.38, 0.45]} />
-                  <StatBar label="CCB" value={getCallCBet(heroStats)} target={[0.40, 0.50]} />
-                  <StatBar label="RCB" value={getRaiseCBet(heroStats)} target={[0.10, 0.15]} />
-                </div>
-                {/* Turn */}
-                <div className="bg-gray-800/30 rounded-lg p-2">
-                  <h4 className="text-xs font-semibold text-gray-400 mb-2 text-center">轉牌</h4>
-                  <StatBar label="CB" value={getTurnCBet(heroStats)} target={[0.45, 0.52]} />
-                  <StatBar label="FCB" value={getFoldToCBet(heroStats)} target={[0.40, 0.48]} />
-                  <StatBar label="CCB" value={getCallCBet(heroStats)} target={[0.40, 0.48]} />
-                  <StatBar label="RCB" value={getRaiseCBet(heroStats)} target={[0.08, 0.12]} />
-                </div>
-                {/* River / Showdown */}
-                <div className="bg-gray-800/30 rounded-lg p-2">
-                  <h4 className="text-xs font-semibold text-gray-400 mb-2 text-center">河牌</h4>
-                  <StatBar label="WT" value={getWTSD(heroStats)} target={[0.26, 0.30]} />
-                  <StatBar label="WSD" value={getWSD(heroStats)} target={[0.50, 0.55]} />
-                  <StatBar label="TAF" value={Math.min(getTAF(heroStats) / 5, 1)} target={[0.35, 0.45]} isRatio />
-                  <div className="flex justify-between items-center text-xs mt-1">
-                    <span className="text-gray-500">TAF</span>
-                    <span className="text-white font-semibold">{getTAF(heroStats).toFixed(1)}</span>
+              {/* ===== 分階段統計顯示 ===== */}
+              {heroStats.handsPlayed < STATS_THRESHOLDS.BASIC ? (
+                /* 階段 1: 收集中 (0-29 手) */
+                <div className="text-center py-8 space-y-4">
+                  <div className="text-6xl mb-4">📊</div>
+                  <p className="text-gray-300 text-lg font-semibold">收集數據中...</p>
+                  <p className="text-gray-500 text-sm">
+                    需要 {STATS_THRESHOLDS.BASIC} 手才能顯示基礎統計
+                  </p>
+                  <div className="max-w-xs mx-auto space-y-2">
+                    <Progress
+                      value={(heroStats.handsPlayed / STATS_THRESHOLDS.BASIC) * 100}
+                      className="h-2"
+                    />
+                    <p className="text-xs text-gray-500">
+                      {heroStats.handsPlayed} / {STATS_THRESHOLDS.BASIC} 手
+                    </p>
                   </div>
                 </div>
-              </div>
+              ) : heroStats.handsPlayed < STATS_THRESHOLDS.FULL ? (
+                /* 階段 2: 基礎統計 (30-99 手) */
+                <>
+                  {/* Player Type */}
+                  <div className="text-center bg-gray-800/30 rounded-lg p-3">
+                    <p className="text-xs text-gray-400 mb-1">玩家類型</p>
+                    <p className="text-xl font-bold text-yellow-400">{getPlayerType(heroStats)}</p>
+                  </div>
 
-              {/* Position Stats - Compact */}
-              <div>
-                <h3 className="text-sm font-semibold text-gray-300 mb-2">各位置盈虧</h3>
-                <div className="grid grid-cols-6 gap-1">
-                  {(["BTN", "CO", "HJ", "UTG", "SB", "BB"] as const).map((pos) => {
-                    const stats = positionStats[pos];
-                    return (
-                      <div key={pos} className="text-center bg-gray-800/30 rounded p-1.5">
-                        <p className="text-xs font-semibold text-gray-400">{pos}</p>
-                        <p className={cn(
-                          "text-sm font-bold",
-                          stats.totalProfit >= 0 ? "text-green-400" : "text-red-400"
-                        )}>
-                          {stats.totalProfit >= 0 ? "+" : ""}{stats.totalProfit.toFixed(0)}
-                        </p>
-                        <p className="text-[10px] text-gray-500">{stats.handsPlayed}手</p>
+                  {/* Basic Preflop Stats */}
+                  <div>
+                    <h3 className="text-sm font-semibold text-gray-300 mb-2">翻前統計 (基礎)</h3>
+                    <div className="grid grid-cols-4 gap-2">
+                      <StatRing label="VPIP" value={getPlayerVPIP(heroStats)} target={[0.22, 0.26]} color="cyan" />
+                      <StatRing label="PFR" value={getPlayerPFR(heroStats)} target={[0.18, 0.22]} color="orange" />
+                      <StatRing label="ATS" value={getPlayerATS(heroStats)} target={[0.32, 0.38]} color="yellow" />
+                      <StatRing label="3BET" value={getPlayer3Bet(heroStats)} target={[0.08, 0.12]} color="red" />
+                    </div>
+                  </div>
+
+                  {/* Progress to Full Stats */}
+                  <div className="bg-blue-900/20 border border-blue-500/30 rounded-lg p-3 space-y-2">
+                    <p className="text-xs text-blue-400 font-semibold">解鎖完整分析</p>
+                    <Progress
+                      value={((heroStats.handsPlayed - STATS_THRESHOLDS.BASIC) / (STATS_THRESHOLDS.FULL - STATS_THRESHOLDS.BASIC)) * 100}
+                      className="h-2"
+                    />
+                    <p className="text-xs text-gray-500">
+                      還需 {STATS_THRESHOLDS.FULL - heroStats.handsPlayed} 手解鎖翻後統計與改進建議
+                    </p>
+                  </div>
+
+                  {/* Position Stats - Basic */}
+                  <div>
+                    <h3 className="text-sm font-semibold text-gray-300 mb-2">各位置盈虧</h3>
+                    <div className="grid grid-cols-6 gap-1">
+                      {(["BTN", "CO", "HJ", "UTG", "SB", "BB"] as const).map((pos) => {
+                        const stats = positionStats[pos];
+                        return (
+                          <div key={pos} className="text-center bg-gray-800/30 rounded p-1.5">
+                            <p className="text-xs font-semibold text-gray-400">{pos}</p>
+                            <p className={cn(
+                              "text-sm font-bold",
+                              stats.totalProfit >= 0 ? "text-green-400" : "text-red-400"
+                            )}>
+                              {stats.totalProfit >= 0 ? "+" : ""}{stats.totalProfit.toFixed(0)}
+                            </p>
+                            <p className="text-[10px] text-gray-500">{stats.handsPlayed}手</p>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </>
+              ) : (
+                /* 階段 3: 完整統計 + 建議 (100+ 手) */
+                <>
+                  {/* Player Type & Performance */}
+                  <div className="flex items-center justify-between bg-gray-800/30 rounded-lg p-3">
+                    <div>
+                      <p className="text-xs text-gray-400">玩家類型</p>
+                      <p className="text-xl font-bold text-yellow-400">{getPlayerType(heroStats)}</p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-xs text-gray-400">整體評估</p>
+                      <p className={cn(
+                        "text-lg font-bold",
+                        getOverallPerformance(heroStats).level === "excellent" && "text-green-400",
+                        getOverallPerformance(heroStats).level === "good" && "text-blue-400",
+                        getOverallPerformance(heroStats).level === "needs_work" && "text-yellow-400",
+                        getOverallPerformance(heroStats).level === "poor" && "text-red-400"
+                      )}>
+                        {getOverallPerformance(heroStats).levelZh}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Improvement Suggestions */}
+                  {getTopImprovementAreas(heroStats, 3).length > 0 && (
+                    <div className="bg-amber-900/20 border border-amber-500/30 rounded-lg p-3 space-y-2">
+                      <p className="text-xs text-amber-400 font-semibold flex items-center gap-1">
+                        💡 改進建議
+                      </p>
+                      <div className="space-y-2">
+                        {getTopImprovementAreas(heroStats, 3).map((item, idx) => (
+                          <div key={idx} className="text-sm">
+                            <p className="text-amber-200">
+                              <span className="font-semibold">{item.stat}</span>
+                              <span className="text-gray-400 ml-2">
+                                {(item.value * 100).toFixed(0)}%
+                                (目標 {(item.target[0] * 100).toFixed(0)}-{(item.target[1] * 100).toFixed(0)}%)
+                              </span>
+                            </p>
+                            <p className="text-xs text-gray-400 mt-0.5">{item.suggestion}</p>
+                          </div>
+                        ))}
                       </div>
-                    );
-                  })}
-                </div>
-              </div>
+                    </div>
+                  )}
 
-              {/* AI Adaptation Status */}
-              {heroStats.handsPlayed >= 10 && (
-                <div className="bg-purple-900/30 border border-purple-500/30 rounded-lg p-3">
-                  <p className="text-xs text-purple-400 font-semibold mb-1">AI 適應狀態</p>
-                  <p className="text-sm text-purple-300">
-                    {getPlayerVPIP(heroStats) > 0.35
-                      ? "你打得較鬆，AI 會增加 3-bet 頻率來對抗"
-                      : getPlayerVPIP(heroStats) < 0.15
-                        ? "你打得很緊，AI 會增加偷盲頻率"
-                        : "你的風格較為平衡，AI 使用標準策略"}
-                  </p>
-                </div>
+                  {/* Full Preflop Stats */}
+                  <div>
+                    <h3 className="text-sm font-semibold text-gray-300 mb-2">翻前統計</h3>
+                    <div className="grid grid-cols-4 gap-2">
+                      <StatRing label="VPIP" value={getPlayerVPIP(heroStats)} target={[0.22, 0.26]} color="cyan" />
+                      <StatRing label="PFR" value={getPlayerPFR(heroStats)} target={[0.18, 0.22]} color="orange" />
+                      <StatRing label="ATS" value={getPlayerATS(heroStats)} target={[0.32, 0.38]} color="yellow" />
+                      <StatRing label="3BET" value={getPlayer3Bet(heroStats)} target={[0.08, 0.12]} color="red" />
+                    </div>
+                  </div>
+
+                  {/* Full Postflop Stats - By Street */}
+                  <div className="grid grid-cols-3 gap-3">
+                    {/* Flop */}
+                    <div className="bg-gray-800/30 rounded-lg p-2">
+                      <h4 className="text-xs font-semibold text-gray-400 mb-2 text-center">翻牌</h4>
+                      <StatBar label="CB" value={getFlopCBet(heroStats)} target={[0.50, 0.60]} />
+                      <StatBar label="FCB" value={getFoldToCBet(heroStats)} target={[0.38, 0.45]} />
+                      <StatBar label="CCB" value={getCallCBet(heroStats)} target={[0.40, 0.50]} />
+                      <StatBar label="RCB" value={getRaiseCBet(heroStats)} target={[0.10, 0.15]} />
+                    </div>
+                    {/* Turn */}
+                    <div className="bg-gray-800/30 rounded-lg p-2">
+                      <h4 className="text-xs font-semibold text-gray-400 mb-2 text-center">轉牌</h4>
+                      <StatBar label="CB" value={getTurnCBet(heroStats)} target={[0.45, 0.52]} />
+                      <StatBar label="FCB" value={getFoldToCBet(heroStats)} target={[0.40, 0.48]} />
+                      <StatBar label="CCB" value={getCallCBet(heroStats)} target={[0.40, 0.48]} />
+                      <StatBar label="RCB" value={getRaiseCBet(heroStats)} target={[0.08, 0.12]} />
+                    </div>
+                    {/* River / Showdown */}
+                    <div className="bg-gray-800/30 rounded-lg p-2">
+                      <h4 className="text-xs font-semibold text-gray-400 mb-2 text-center">河牌</h4>
+                      <StatBar label="WT" value={getWTSD(heroStats)} target={[0.26, 0.30]} />
+                      <StatBar label="WSD" value={getWSD(heroStats)} target={[0.50, 0.55]} />
+                      <StatBar label="TAF" value={Math.min(getTAF(heroStats) / 5, 1)} target={[0.35, 0.45]} isRatio />
+                      <div className="flex justify-between items-center text-xs mt-1">
+                        <span className="text-gray-500">TAF</span>
+                        <span className="text-white font-semibold">{getTAF(heroStats).toFixed(1)}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Position Stats */}
+                  <div>
+                    <h3 className="text-sm font-semibold text-gray-300 mb-2">各位置盈虧</h3>
+                    <div className="grid grid-cols-6 gap-1">
+                      {(["BTN", "CO", "HJ", "UTG", "SB", "BB"] as const).map((pos) => {
+                        const stats = positionStats[pos];
+                        return (
+                          <div key={pos} className="text-center bg-gray-800/30 rounded p-1.5">
+                            <p className="text-xs font-semibold text-gray-400">{pos}</p>
+                            <p className={cn(
+                              "text-sm font-bold",
+                              stats.totalProfit >= 0 ? "text-green-400" : "text-red-400"
+                            )}>
+                              {stats.totalProfit >= 0 ? "+" : ""}{stats.totalProfit.toFixed(0)}
+                            </p>
+                            <p className="text-[10px] text-gray-500">{stats.handsPlayed}手</p>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  {/* AI Adaptation Status */}
+                  <div className="bg-purple-900/30 border border-purple-500/30 rounded-lg p-3">
+                    <p className="text-xs text-purple-400 font-semibold mb-1">AI 適應狀態</p>
+                    <p className="text-sm text-purple-300">
+                      {getPlayerVPIP(heroStats) > 0.35
+                        ? "你打得較鬆，AI 會增加 3-bet 頻率來對抗"
+                        : getPlayerVPIP(heroStats) < 0.15
+                          ? "你打得很緊，AI 會增加偷盲頻率"
+                          : "你的風格較為平衡，AI 使用標準策略"}
+                    </p>
+                  </div>
+
+                  {/* AI Opponent Exploit Analysis */}
+                  <AIExploitAnalysis stats={aiOpponentStats} minHandsRequired={20} />
+                </>
               )}
             </CardContent>
           </Card>

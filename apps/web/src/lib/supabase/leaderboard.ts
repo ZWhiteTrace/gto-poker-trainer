@@ -234,35 +234,146 @@ export async function getAllAchievements(): Promise<Achievement[]> {
   return data || [];
 }
 
-// Get user's achievements
+// Get user's achievements (client-side implementation)
 export async function getUserAchievements(userId: string): Promise<AchievementSummary> {
   const supabase = createClient();
 
-  const { data, error } = await supabase.rpc("get_user_achievements_summary", {
-    p_user_id: userId,
-  });
+  try {
+    // Get user's unlocked achievements with full achievement data
+    const { data: userAchievements, error: uaError } = await supabase
+      .from("user_achievements")
+      .select(`
+        achievement_id,
+        unlocked_at,
+        achievements (*)
+      `)
+      .eq("user_id", userId);
 
-  if (error || !data || data.length === 0) {
+    if (uaError) {
+      console.error("Error fetching user achievements:", uaError);
+      return { total_achievements: 0, total_points: 0, achievements: [] };
+    }
+
+    if (!userAchievements || userAchievements.length === 0) {
+      return { total_achievements: 0, total_points: 0, achievements: [] };
+    }
+
+    // Map to Achievement type with unlocked_at
+    const achievements: Achievement[] = userAchievements
+      .filter((ua) => ua.achievements)
+      .map((ua) => ({
+        ...(ua.achievements as unknown as Achievement),
+        unlocked_at: ua.unlocked_at,
+      }));
+
+    const totalPoints = achievements.reduce((sum, a) => sum + (a.points || 0), 0);
+
+    return {
+      total_achievements: achievements.length,
+      total_points: totalPoints,
+      achievements,
+    };
+  } catch (error) {
+    console.error("Error in getUserAchievements:", error);
     return { total_achievements: 0, total_points: 0, achievements: [] };
   }
-
-  return data[0];
 }
 
-// Check and award new achievements
+// Check and award new achievements (client-side implementation)
 export async function checkAchievements(userId: string): Promise<Achievement[]> {
   const supabase = createClient();
+  const newlyUnlocked: Achievement[] = [];
 
-  const { data, error } = await supabase.rpc("check_achievements", {
-    p_user_id: userId,
-  });
+  try {
+    // 1. Get user's current stats
+    const { data: stats, error: statsError } = await supabase
+      .from("leaderboard_stats")
+      .select("total_hands, correct_hands, current_streak, best_streak")
+      .eq("user_id", userId)
+      .single();
 
-  if (error) {
+    if (statsError || !stats) {
+      console.error("Error fetching stats for achievement check:", statsError);
+      return [];
+    }
+
+    // 2. Get all achievements
+    const { data: allAchievements, error: achievementsError } = await supabase
+      .from("achievements")
+      .select("*");
+
+    if (achievementsError || !allAchievements) {
+      console.error("Error fetching achievements:", achievementsError);
+      return [];
+    }
+
+    // 3. Get user's already unlocked achievements
+    const { data: unlockedData, error: unlockedError } = await supabase
+      .from("user_achievements")
+      .select("achievement_id")
+      .eq("user_id", userId);
+
+    if (unlockedError) {
+      console.error("Error fetching unlocked achievements:", unlockedError);
+      return [];
+    }
+
+    const unlockedIds = new Set((unlockedData || []).map((ua) => ua.achievement_id));
+
+    // 4. Check each achievement
+    const accuracy = stats.total_hands > 0
+      ? (stats.correct_hands / stats.total_hands) * 100
+      : 0;
+
+    for (const achievement of allAchievements) {
+      // Skip if already unlocked
+      if (unlockedIds.has(achievement.id)) continue;
+
+      const req = achievement.requirement as { type: string; value: number; min_hands?: number };
+      if (!req || !req.type) continue;
+
+      let isUnlocked = false;
+
+      switch (req.type) {
+        case "hands":
+          isUnlocked = stats.total_hands >= req.value;
+          break;
+        case "streak":
+          isUnlocked = stats.best_streak >= req.value;
+          break;
+        case "accuracy":
+          // Accuracy achievements need minimum hands
+          const minHands = req.min_hands || 50;
+          isUnlocked = stats.total_hands >= minHands && accuracy >= req.value;
+          break;
+      }
+
+      if (isUnlocked) {
+        // Award the achievement
+        const { error: insertError } = await supabase
+          .from("user_achievements")
+          .insert({
+            user_id: userId,
+            achievement_id: achievement.id,
+            unlocked_at: new Date().toISOString(),
+          });
+
+        if (!insertError) {
+          newlyUnlocked.push({
+            ...achievement,
+            unlocked_at: new Date().toISOString(),
+          });
+        } else {
+          console.error("Error inserting achievement:", insertError);
+        }
+      }
+    }
+  } catch (error) {
     console.error("Error checking achievements:", error);
     return [];
   }
 
-  return data || [];
+  return newlyUnlocked;
 }
 
 // Get user's leaderboard stats

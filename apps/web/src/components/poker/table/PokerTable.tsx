@@ -229,9 +229,9 @@ export function CompactPokerTable({
   );
 
   return (
-    <div className={cn("flex flex-col gap-2 h-full", className)}>
+    <div className={cn("flex flex-col gap-1 h-full", className)}>
       {/* 模擬撲克桌 - 綠色背景 */}
-      <div className="relative flex-1 min-h-[200px] bg-gradient-to-b from-green-800 to-green-900 rounded-2xl border-4 border-amber-800/80 shadow-inner overflow-hidden">
+      <div className="relative flex-1 min-h-[160px] bg-gradient-to-b from-green-800 to-green-900 rounded-xl border-4 border-amber-800/80 shadow-inner overflow-hidden">
         {/* 桌面紋理 */}
         <div className="absolute inset-2 rounded-xl border-2 border-green-600/30" />
 

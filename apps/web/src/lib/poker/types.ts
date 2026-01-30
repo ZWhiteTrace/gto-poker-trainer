@@ -171,6 +171,37 @@ export interface ScenarioPreset {
 
 export type AIStyle = "GTO" | "LAG" | "TAG" | "Loose_Passive" | "Tight_Passive" | "Maniac";
 
+// AI Opponent Stats - 追蹤對各 AI 類型的戰績
+export interface AIOpponentStat {
+  handsPlayed: number;
+  handsWon: number;
+  totalProfit: number;  // BB
+}
+
+// 雙層追蹤：按類型 + 按個體
+export interface AIOpponentStats {
+  byStyle: Record<AIStyle, AIOpponentStat>;
+  byPlayer: Record<string, AIOpponentStat & { name: string; style: AIStyle }>;
+}
+
+export const DEFAULT_AI_OPPONENT_STAT: AIOpponentStat = {
+  handsPlayed: 0,
+  handsWon: 0,
+  totalProfit: 0,
+};
+
+export const DEFAULT_AI_OPPONENT_STATS: AIOpponentStats = {
+  byStyle: {
+    GTO: { ...DEFAULT_AI_OPPONENT_STAT },
+    LAG: { ...DEFAULT_AI_OPPONENT_STAT },
+    TAG: { ...DEFAULT_AI_OPPONENT_STAT },
+    Loose_Passive: { ...DEFAULT_AI_OPPONENT_STAT },
+    Tight_Passive: { ...DEFAULT_AI_OPPONENT_STAT },
+    Maniac: { ...DEFAULT_AI_OPPONENT_STAT },
+  },
+  byPlayer: {},
+};
+
 export interface AIProfile {
   id: string;
   name: string;
@@ -379,6 +410,9 @@ export interface TableState {
   // Hero Statistics (for AI adaptation and detailed tracking)
   heroStats: HeroStats;
 
+  // AI Opponent Statistics (追蹤對各 AI 的戰績)
+  aiOpponentStats: AIOpponentStats;
+
   // UI State
   aiThinking: boolean;
   showBetSlider: boolean;
@@ -497,6 +531,8 @@ export interface HandHistoryPlayer {
   holeCards: HoleCards | null;  // null if not shown
   seatIndex: number;
   isHero: boolean;
+  aiStyle?: AIStyle;       // AI 玩家風格 (非 Hero)
+  aiProfileId?: string;    // AI profile ID (如 "lag-larry")
 }
 
 export interface HandHistoryAction {
