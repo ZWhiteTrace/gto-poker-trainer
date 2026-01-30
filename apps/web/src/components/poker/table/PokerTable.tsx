@@ -83,8 +83,8 @@ export function PokerTable({
         </div>
       </div>
 
-      {/* POT - 左上角固定 */}
-      <div className="absolute top-4 left-4 z-30">
+      {/* POT - 左下角固定 */}
+      <div className="absolute bottom-4 left-4 z-30">
         <PotDisplay amount={pot} />
       </div>
 
