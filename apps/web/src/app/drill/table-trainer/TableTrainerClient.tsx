@@ -9,8 +9,9 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { POSITIONS, Position, POSITION_LABELS, ScenarioPreset } from "@/lib/poker/types";
+import { getPlayerVPIP, getPlayerPFR } from "@/lib/poker/playerStats";
 import { cn } from "@/lib/utils";
-import { ChevronUp, ChevronDown, History } from "lucide-react";
+import { ChevronUp, ChevronDown, History, RotateCw } from "lucide-react";
 
 export default function TableTrainerClient() {
   const {
@@ -25,10 +26,12 @@ export default function TableTrainerClient() {
     aiThinking,
     selectedBetSize,
     sessionStats,
+    heroStats,
     actionHistory,
     winners,
     handEvaluations,
     trainingMode,
+    autoRotate,
     initializeTable,
     setHeroPosition,
     loadScenario,
@@ -38,6 +41,7 @@ export default function TableTrainerClient() {
     setSelectedBetSize,
     resetSession,
     processAITurn,
+    setAutoRotate,
   } = useTableStore();
 
   const [showScenarioSelector, setShowScenarioSelector] = useState(false);
@@ -225,8 +229,23 @@ export default function TableTrainerClient() {
               <ScenarioButton onClick={() => setShowScenarioSelector(true)} />
             )}
 
-            {/* Hero Position Selector */}
-            {phase === "setup" && !trainingMode.scenario && (
+            {/* Auto Rotate Toggle */}
+            <Button
+              variant={autoRotate ? "default" : "outline"}
+              size="sm"
+              onClick={() => setAutoRotate(!autoRotate)}
+              className={cn(
+                "gap-1.5",
+                autoRotate && "bg-blue-600 hover:bg-blue-500"
+              )}
+              title={autoRotate ? "自動輪流位置 (開啟)" : "自動輪流位置 (關閉)"}
+            >
+              <RotateCw className={cn("h-4 w-4", autoRotate && "animate-spin")} style={{ animationDuration: "3s" }} />
+              <span className="hidden sm:inline">{autoRotate ? "輪流" : "固定"}</span>
+            </Button>
+
+            {/* Hero Position Selector - only show when not auto rotating */}
+            {phase === "setup" && !trainingMode.scenario && !autoRotate && (
               <select
                 onChange={(e) => handleHeroPositionChange(e.target.value)}
                 defaultValue={hero?.position || "BTN"}
@@ -271,6 +290,13 @@ export default function TableTrainerClient() {
                 {sessionStats.totalProfit.toFixed(1)} BB
               </span>
             </div>
+
+            {/* Dev Mode: AI Adaptation Hint */}
+            {devMode && heroStats.handsPlayed >= 10 && (
+              <div className="hidden sm:block px-2 py-1 bg-purple-900/50 rounded text-xs text-purple-300 border border-purple-500/30">
+                AI 適應中: VPIP {(getPlayerVPIP(heroStats) * 100).toFixed(0)}% / PFR {(getPlayerPFR(heroStats) * 100).toFixed(0)}%
+              </div>
+            )}
 
             {/* Dev Mode Toggle */}
             <Button

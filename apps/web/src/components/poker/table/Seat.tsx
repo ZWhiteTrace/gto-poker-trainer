@@ -58,7 +58,7 @@ export const Seat = memo(function Seat({ player, isActive = false, isHero = fals
   return (
     <div
       className={cn(
-        "flex items-center gap-2 px-3 py-2",
+        "flex flex-col items-center gap-1.5 px-2 py-2",
         "rounded-xl border-2",
         "transition-all duration-300",
         // Active player - prominent glow effect
@@ -77,7 +77,7 @@ export const Seat = memo(function Seat({ player, isActive = false, isHero = fals
         className
       )}
     >
-      {/* 手牌 */}
+      {/* 手牌 - 上方 */}
       <div className="shrink-0">
         {player.holeCards && (showCards || isHero) ? (
           <HoleCards cards={player.holeCards} size="sm" highlighted={isActive} />
@@ -95,12 +95,12 @@ export const Seat = memo(function Seat({ player, isActive = false, isHero = fals
         ) : null}
       </div>
 
-      {/* 資訊區 - 水平排列 */}
-      <div className="flex items-center gap-2">
+      {/* 資訊區 - 下方：位置 + BB */}
+      <div className="flex items-center gap-1.5">
         {/* 位置標籤 */}
         <span
           className={cn(
-            "px-2 py-0.5 rounded text-xs font-bold",
+            "px-1.5 py-0.5 rounded text-xs font-bold",
             isHero
               ? "bg-yellow-500 text-black"
               : player.isDealer
@@ -120,13 +120,6 @@ export const Seat = memo(function Seat({ player, isActive = false, isHero = fals
         >
           {player.stack.toFixed(1)}
         </span>
-
-        {/* Bet 顯示 */}
-        {player.currentBet > 0 && (
-          <span className="text-xs text-orange-400">
-            ({player.currentBet.toFixed(1)})
-          </span>
-        )}
 
         {/* All-in 標記 */}
         {player.isAllIn && <AllInBadge size="sm" />}
