@@ -448,7 +448,16 @@
     "yourAnswer": "你的答案",
     "noAnswer": "未作答",
     "answered": "已答",
-    "submit": "提交"
+    "submit": "提交",
+    "completed": "完成",
+    "questionBank": "題庫狀態",
+    "unanswered": "未作答",
+    "needsReview": "需複習",
+    "mastered": "已掌握",
+    "priorityUnanswered": "本次考試將優先出未作答的題目",
+    "priorityReview": "所有題目已作答，本次將複習錯題",
+    "allMastered": "恭喜！所有題目都已掌握",
+    "points": "分"
   },
   "stats": {
     "title": "統計數據",

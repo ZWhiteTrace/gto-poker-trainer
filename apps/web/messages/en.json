@@ -448,7 +448,16 @@
     "yourAnswer": "Your answer",
     "noAnswer": "No answer",
     "answered": "answered",
-    "submit": "Submit"
+    "submit": "Submit",
+    "completed": "Completed",
+    "questionBank": "Question Bank",
+    "unanswered": "Unanswered",
+    "needsReview": "Needs Review",
+    "mastered": "Mastered",
+    "priorityUnanswered": "This exam will prioritize unanswered questions",
+    "priorityReview": "All questions answered, this exam will review mistakes",
+    "allMastered": "Congratulations! All questions mastered",
+    "points": "pts"
   },
   "stats": {
     "title": "Statistics",
