@@ -1082,8 +1082,14 @@ export const useTableStore = create<TableState & TableActions>()(
           return;
         }
 
-        // Check if betting round is complete
-        const isRoundComplete = state.checkBettingRoundComplete(newPlayers, nextPlayerIndex, newLastAggressor);
+        // Check if betting round is complete (pass updated values, not stale state)
+        const isRoundComplete = state.checkBettingRoundComplete(
+          newPlayers,
+          nextPlayerIndex,
+          newLastAggressor,
+          newCurrentBet,
+          newActionsThisRound
+        );
 
         if (isRoundComplete) {
           // Move to next street
@@ -1149,9 +1155,13 @@ export const useTableStore = create<TableState & TableActions>()(
         }
       },
 
-      checkBettingRoundComplete: (players: Player[], nextIndex: number, lastAggressor: number | null) => {
-        const { currentBet, actionsThisRound } = get();
-
+      checkBettingRoundComplete: (
+        players: Player[],
+        nextIndex: number,
+        lastAggressor: number | null,
+        currentBetAmount: number,
+        actionsCount: number
+      ) => {
         // Players who can still act (not folded, not all-in)
         const playersWhoCanAct = players.filter(p => p.isActive && !p.isFolded && !p.isAllIn);
 
@@ -1163,18 +1173,18 @@ export const useTableStore = create<TableState & TableActions>()(
         if (playersWhoCanAct.length === 1) {
           const player = playersWhoCanAct[0];
           // If they have less bet than current, they need to act (call or fold)
-          if (player.currentBet < currentBet) return false;
+          if (player.currentBet < currentBetAmount) return false;
           // Otherwise round is complete (they've already matched or checked)
           return true;
         }
 
         // Multiple players can act - check if bets are equal
-        const allBetsEqual = playersWhoCanAct.every(p => p.currentBet === currentBet);
+        const allBetsEqual = playersWhoCanAct.every(p => p.currentBet === currentBetAmount);
 
         // Round is complete when:
         // 1. All bets are equal (everyone has matched or checked)
         // 2. AND everyone has had a chance to act (actions >= number of active players)
-        if (allBetsEqual && actionsThisRound >= playersWhoCanAct.length) {
+        if (allBetsEqual && actionsCount >= playersWhoCanAct.length) {
           return true;
         }
 

@@ -409,7 +409,7 @@ export interface TableActions {
   // Player Actions
   handleAction: (action: ActionType, amount?: number) => void;
   getAvailableActions: () => AvailableAction[];
-  checkBettingRoundComplete: (players: Player[], nextIndex: number, lastAggressor: number | null) => boolean;
+  checkBettingRoundComplete: (players: Player[], nextIndex: number, lastAggressor: number | null, currentBet: number, actionsThisRound: number) => boolean;
 
   // AI
   processAITurn: () => Promise<void>;

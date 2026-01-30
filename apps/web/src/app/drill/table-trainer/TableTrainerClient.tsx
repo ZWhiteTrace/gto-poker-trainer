@@ -440,7 +440,7 @@ export default function TableTrainerClient() {
         </div>
       </header>
 
-      <main className="container mx-auto px-2 sm:px-4 py-2 sm:py-4 flex-1 flex flex-col overflow-hidden">
+      <main className="container mx-auto px-2 sm:px-4 py-2 sm:py-4 flex-1 flex flex-col overflow-auto">
         {/* Desktop: Table + Action buttons side by side, Mobile: Stack */}
         <div className="flex-1 flex flex-col lg:flex-row gap-2 sm:gap-4 min-h-0">
           {/* Left: Poker Table Area */}
