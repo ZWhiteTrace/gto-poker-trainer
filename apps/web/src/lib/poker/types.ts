@@ -188,6 +188,133 @@ export interface AIProfile {
 }
 
 // ============================================
+// Advanced Statistics Types
+// ============================================
+
+export interface HeroStats {
+  // Basic stats
+  handsPlayed: number;
+  handsVPIP: number;        // Voluntarily put money in pot
+  handsPFR: number;         // Preflop raise
+
+  // 3-Bet stats
+  threeBetCount: number;    // Times hero 3-bet
+  threeBetOpportunity: number; // Times hero could 3-bet
+  foldTo3BetCount: number;  // Times hero folded to 3-bet
+  faced3BetCount: number;   // Times hero faced 3-bet
+
+  // Steal stats (ATS)
+  stealAttempts: number;    // Raise from CO/BTN/SB when folded to
+  stealOpportunities: number;
+
+  // Continuation bet stats (by street)
+  flopCBet: number;         // Times c-bet on flop
+  flopCBetOpportunity: number;
+  turnCBet: number;
+  turnCBetOpportunity: number;
+  riverCBet: number;
+  riverCBetOpportunity: number;
+
+  // Facing c-bet stats
+  foldToCBet: number;       // Times folded to c-bet
+  callCBet: number;         // Times called c-bet
+  raiseCBet: number;        // Times raised c-bet
+  facedCBet: number;        // Total times faced c-bet
+
+  // Showdown stats
+  wentToShowdown: number;   // Times reached showdown
+  wonAtShowdown: number;    // Times won at showdown
+
+  // Aggression tracking
+  totalBets: number;        // Total bets made
+  totalRaises: number;      // Total raises made
+  totalCalls: number;       // Total calls made
+
+  // Check-raise stats
+  checkRaiseCount: number;
+  checkRaiseOpportunity: number;
+}
+
+// Default empty stats
+export const DEFAULT_HERO_STATS: HeroStats = {
+  handsPlayed: 0,
+  handsVPIP: 0,
+  handsPFR: 0,
+  threeBetCount: 0,
+  threeBetOpportunity: 0,
+  foldTo3BetCount: 0,
+  faced3BetCount: 0,
+  stealAttempts: 0,
+  stealOpportunities: 0,
+  flopCBet: 0,
+  flopCBetOpportunity: 0,
+  turnCBet: 0,
+  turnCBetOpportunity: 0,
+  riverCBet: 0,
+  riverCBetOpportunity: 0,
+  foldToCBet: 0,
+  callCBet: 0,
+  raiseCBet: 0,
+  facedCBet: 0,
+  wentToShowdown: 0,
+  wonAtShowdown: 0,
+  totalBets: 0,
+  totalRaises: 0,
+  totalCalls: 0,
+  checkRaiseCount: 0,
+  checkRaiseOpportunity: 0,
+};
+
+// ============================================
+// GTO Hint Types
+// ============================================
+
+export type HintMode = "off" | "after" | "before" | "detailed";
+
+export type BoardTexture =
+  | "dry"           // 乾燥：無聯繫、無同花聽牌
+  | "semi_wet"      // 半濕潤：有一些聽牌可能
+  | "wet"           // 濕潤：多重聽牌可能
+  | "monotone"      // 單花：三張同花
+  | "paired"        // 對子公牌
+  | "connected";    // 連接：順子可能
+
+export type HandStrengthCategory =
+  | "nuts"          // 堅果：最強牌
+  | "strong"        // 強牌：頂對好踢腳、兩對、暗三
+  | "medium"        // 中等：中對、弱頂對
+  | "weak"          // 弱牌：底對、A高
+  | "draw"          // 聽牌：同花聽、順子聽
+  | "air";          // 空氣：無牌力
+
+export interface GTOHint {
+  // Recommended actions with frequencies
+  recommendations: {
+    action: ActionType;
+    frequency: number;      // 0-100%
+    sizing?: number;        // Bet size in % of pot
+    isPrimary: boolean;     // Is this the main recommended action
+  }[];
+
+  // Explanation
+  reasoning: {
+    boardTexture: BoardTexture;
+    boardTextureZh: string;
+    handStrength: HandStrengthCategory;
+    handStrengthZh: string;
+    positionAdvantage: "IP" | "OOP";
+    keyFactors: string[];   // Key decision factors
+    keyFactorsZh: string[];
+  };
+
+  // EV estimate (optional)
+  evEstimate?: {
+    action: ActionType;
+    ev: number;
+  }[];
+}
+
+// ============================================
 // Table State
 // ============================================
 
@@ -231,6 +358,7 @@ export interface TableState {
     scenario: ScenarioPreset | null;
     showGTOHints: boolean;
     showEV: boolean;
+    hintMode: HintMode;  // off | after | before | detailed
   };
 
   // Session Statistics
@@ -248,14 +376,8 @@ export interface TableState {
     totalProfit: number;
   }>;
 
-  // Hero Statistics (for AI adaptation)
-  heroStats: {
-    handsPlayed: number;
-    handsVPIP: number;
-    handsPFR: number;
-    foldTo3BetCount: number;
-    faced3BetCount: number;
-  };
+  // Hero Statistics (for AI adaptation and detailed tracking)
+  heroStats: HeroStats;
 
   // UI State
   aiThinking: boolean;

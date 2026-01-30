@@ -8,11 +8,28 @@ import { PokerTable, CompactPokerTable, ActionButtons, ScenarioSelector, Scenari
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { POSITIONS, Position, POSITION_LABELS, ScenarioPreset } from "@/lib/poker/types";
-import { getPlayerVPIP, getPlayerPFR } from "@/lib/poker/playerStats";
+import { POSITIONS, Position, POSITION_LABELS, ScenarioPreset, HintMode, GTOHint, ActionType } from "@/lib/poker/types";
+import {
+  getPlayerVPIP,
+  getPlayerPFR,
+  getPlayer3Bet,
+  getPlayerATS,
+  getFlopCBet,
+  getTurnCBet,
+  getRiverCBet,
+  getFoldToCBet,
+  getCallCBet,
+  getRaiseCBet,
+  getWTSD,
+  getWSD,
+  getTAF,
+  getPlayerType,
+} from "@/lib/poker/playerStats";
 import { cn } from "@/lib/utils";
 import { ChevronUp, ChevronDown, History, RotateCw, BarChart3, FileText } from "lucide-react";
 import { HandHistoryPanel } from "@/components/poker/HandHistoryPanel";
+import { GTOHintPanel, HintModeSelector } from "@/components/poker/GTOHintPanel";
+import { generateGTOHint } from "@/lib/poker/gtoHintEngine";
 
 export default function TableTrainerClient() {
   const {
@@ -51,6 +68,8 @@ export default function TableTrainerClient() {
   const [showMobileSidebar, setShowMobileSidebar] = useState(false);
   const [showStatsPanel, setShowStatsPanel] = useState(false);
   const [showHandHistory, setShowHandHistory] = useState(false);
+  const [hintMode, setHintMode] = useState<HintMode>("off");
+  const [lastHeroAction, setLastHeroAction] = useState<ActionType | null>(null);
   const handRecorded = useRef(false);
 
   // Progress tracking
@@ -116,6 +135,64 @@ export default function TableTrainerClient() {
   const displayPot = useMemo(() => {
     return (phase === "result" || phase === "showdown") ? lastWonPot : pot;
   }, [phase, pot, lastWonPot]);
+
+  // Generate GTO hint for current situation
+  const gtoHint = useMemo((): GTOHint | null => {
+    if (hintMode === "off") return null;
+
+    const hero = players.find(p => p.isHero);
+    if (!hero || !hero.holeCards || phase !== "playing") return null;
+
+    const activePlayer = players[activePlayerIndex];
+    if (!activePlayer?.isHero) return null;
+
+    // Determine if hero is in position
+    const dealerIndex = players.findIndex(p => p.isDealer);
+    const activePlayers = players.filter(p => p.isActive && !p.isFolded && !p.isAllIn);
+    const heroSeatIndex = hero.seatIndex;
+    const isInPosition = activePlayers.every(p =>
+      p.seatIndex === heroSeatIndex ||
+      ((p.seatIndex - dealerIndex + 6) % 6) < ((heroSeatIndex - dealerIndex + 6) % 6)
+    );
+
+    // Check if hero was preflop aggressor
+    const preflopActions = actionHistory.filter(a => a.street === "preflop");
+    const preflopRaiser = preflopActions.filter(a => a.action === "raise" || a.action === "bet").pop();
+    const isPreflopAggressor = preflopRaiser?.isHero ?? false;
+
+    // Check if facing a bet
+    const facingBet = currentBet > hero.currentBet;
+
+    return generateGTOHint({
+      holeCards: hero.holeCards,
+      communityCards,
+      position: hero.position,
+      street: currentStreet,
+      pot,
+      currentBet,
+      playerBet: hero.currentBet,
+      stack: hero.stack,
+      isInPosition,
+      facingBet,
+      isPreflopAggressor,
+    });
+  }, [players, activePlayerIndex, phase, communityCards, currentStreet, pot, currentBet, actionHistory, hintMode]);
+
+  // Wrap handleAction to track last hero action
+  const handleActionWithTracking = (action: ActionType, amount?: number) => {
+    const activePlayer = players[activePlayerIndex];
+    if (activePlayer?.isHero) {
+      setLastHeroAction(action);
+    }
+    handleAction(action, amount);
+  };
+
+  // Reset last hero action when street changes or hand ends
+  useEffect(() => {
+    if (phase === "setup" || phase === "result" || phase === "showdown") {
+      setLastHeroAction(null);
+    }
+  }, [phase]);
 
   const handleLoadScenario = (scenario: ScenarioPreset) => {
     loadScenario(scenario);
@@ -314,6 +391,13 @@ export default function TableTrainerClient() {
               <span className="hidden sm:inline">統計</span>
             </Button>
 
+            {/* GTO Hint Mode Selector */}
+            <HintModeSelector
+              mode={hintMode}
+              onChange={setHintMode}
+              className="hidden sm:flex"
+            />
+
             {/* Hand History Toggle */}
             <Button
               variant={showHandHistory ? "default" : "outline"}
@@ -464,7 +548,7 @@ export default function TableTrainerClient() {
               {isHeroTurn && !aiThinking && (
                 <ActionButtons
                   availableActions={availableActions}
-                  onAction={handleAction}
+                  onAction={handleActionWithTracking}
                   currentBet={currentBet}
                   potSize={pot}
                   heroStack={hero?.stack || 0}
@@ -547,17 +631,36 @@ export default function TableTrainerClient() {
                   </div>
                 )}
 
+                {/* GTO Hint Panel - Show before action or after action */}
+                {(hintMode === "before" || hintMode === "detailed") && isHeroTurn && gtoHint && (
+                  <GTOHintPanel
+                    hint={gtoHint}
+                    mode={hintMode}
+                    className="mb-3"
+                  />
+                )}
+
                 {/* Action Buttons (Hero's turn) - Desktop */}
                 {isHeroTurn && !aiThinking && (
                   <ActionButtons
                     availableActions={availableActions}
-                    onAction={handleAction}
+                    onAction={handleActionWithTracking}
                     currentBet={currentBet}
                     potSize={pot}
                     heroStack={hero?.stack || 0}
                     selectedBetSize={selectedBetSize}
                     onBetSizeChange={setSelectedBetSize}
                     disabled={aiThinking}
+                  />
+                )}
+
+                {/* GTO Hint Panel - After action mode */}
+                {hintMode === "after" && lastHeroAction && gtoHint && (
+                  <GTOHintPanel
+                    hint={gtoHint}
+                    mode={hintMode}
+                    lastAction={lastHeroAction}
+                    className="mt-3"
                   />
                 )}
 
@@ -724,70 +827,85 @@ export default function TableTrainerClient() {
               </div>
             </CardHeader>
             <CardContent className="p-4 space-y-4">
-              {/* Overall Stats */}
-              <div className="grid grid-cols-2 gap-3">
-                <div className="bg-gray-800/50 rounded-lg p-3">
-                  <p className="text-xs text-gray-400">VPIP</p>
-                  <p className="text-2xl font-bold text-cyan-400">
-                    {heroStats.handsPlayed > 0
-                      ? (getPlayerVPIP(heroStats) * 100).toFixed(1)
-                      : "--"}%
-                  </p>
-                  <p className="text-xs text-gray-500">自願投入底池</p>
+              {/* Player Type & Summary */}
+              <div className="flex items-center justify-between bg-gray-800/50 rounded-lg p-3">
+                <div>
+                  <p className="text-xs text-gray-400">玩家類型</p>
+                  <p className="text-lg font-bold text-yellow-400">{getPlayerType(heroStats)}</p>
                 </div>
-                <div className="bg-gray-800/50 rounded-lg p-3">
-                  <p className="text-xs text-gray-400">PFR</p>
-                  <p className="text-2xl font-bold text-orange-400">
-                    {heroStats.handsPlayed > 0
-                      ? (getPlayerPFR(heroStats) * 100).toFixed(1)
-                      : "--"}%
-                  </p>
-                  <p className="text-xs text-gray-500">翻前加注</p>
+                <div className="text-right">
+                  <p className="text-xs text-gray-400">手數</p>
+                  <p className="text-lg font-bold text-white">{heroStats.handsPlayed}</p>
                 </div>
-                <div className="bg-gray-800/50 rounded-lg p-3">
-                  <p className="text-xs text-gray-400">勝率</p>
-                  <p className="text-2xl font-bold text-green-400">
-                    {sessionStats.handsPlayed > 0
-                      ? ((sessionStats.handsWon / sessionStats.handsPlayed) * 100).toFixed(1)
-                      : "--"}%
-                  </p>
-                  <p className="text-xs text-gray-500">{sessionStats.handsWon}/{sessionStats.handsPlayed} 手</p>
-                </div>
-                <div className="bg-gray-800/50 rounded-lg p-3">
-                  <p className="text-xs text-gray-400">總盈虧</p>
+                <div className="text-right">
+                  <p className="text-xs text-gray-400">盈虧</p>
                   <p className={cn(
-                    "text-2xl font-bold",
+                    "text-lg font-bold",
                     sessionStats.totalProfit >= 0 ? "text-green-400" : "text-red-400"
                   )}>
-                    {sessionStats.totalProfit >= 0 ? "+" : ""}{sessionStats.totalProfit.toFixed(1)} BB
+                    {sessionStats.totalProfit >= 0 ? "+" : ""}{sessionStats.totalProfit.toFixed(1)}
                   </p>
-                  <p className="text-xs text-gray-500">最大底池: {sessionStats.biggestPot.toFixed(1)}</p>
                 </div>
               </div>
 
-              {/* Position Stats */}
+              {/* Preflop Stats - Ring Display Style */}
               <div>
-                <h3 className="text-sm font-semibold text-gray-300 mb-2">各位置統計</h3>
-                <div className="space-y-1">
+                <h3 className="text-sm font-semibold text-gray-300 mb-2">翻前統計</h3>
+                <div className="grid grid-cols-4 gap-2">
+                  <StatRing label="VPIP" value={getPlayerVPIP(heroStats)} target={[0.22, 0.26]} color="cyan" />
+                  <StatRing label="PFR" value={getPlayerPFR(heroStats)} target={[0.18, 0.22]} color="orange" />
+                  <StatRing label="ATS" value={getPlayerATS(heroStats)} target={[0.32, 0.38]} color="yellow" />
+                  <StatRing label="3BET" value={getPlayer3Bet(heroStats)} target={[0.08, 0.12]} color="red" />
+                </div>
+              </div>
+
+              {/* Postflop Stats - By Street */}
+              <div className="grid grid-cols-3 gap-3">
+                {/* Flop */}
+                <div className="bg-gray-800/30 rounded-lg p-2">
+                  <h4 className="text-xs font-semibold text-gray-400 mb-2 text-center">翻牌</h4>
+                  <StatBar label="CB" value={getFlopCBet(heroStats)} target={[0.50, 0.60]} />
+                  <StatBar label="FCB" value={getFoldToCBet(heroStats)} target={[0.38, 0.45]} />
+                  <StatBar label="CCB" value={getCallCBet(heroStats)} target={[0.40, 0.50]} />
+                  <StatBar label="RCB" value={getRaiseCBet(heroStats)} target={[0.10, 0.15]} />
+                </div>
+                {/* Turn */}
+                <div className="bg-gray-800/30 rounded-lg p-2">
+                  <h4 className="text-xs font-semibold text-gray-400 mb-2 text-center">轉牌</h4>
+                  <StatBar label="CB" value={getTurnCBet(heroStats)} target={[0.45, 0.52]} />
+                  <StatBar label="FCB" value={getFoldToCBet(heroStats)} target={[0.40, 0.48]} />
+                  <StatBar label="CCB" value={getCallCBet(heroStats)} target={[0.40, 0.48]} />
+                  <StatBar label="RCB" value={getRaiseCBet(heroStats)} target={[0.08, 0.12]} />
+                </div>
+                {/* River / Showdown */}
+                <div className="bg-gray-800/30 rounded-lg p-2">
+                  <h4 className="text-xs font-semibold text-gray-400 mb-2 text-center">河牌</h4>
+                  <StatBar label="WT" value={getWTSD(heroStats)} target={[0.26, 0.30]} />
+                  <StatBar label="WSD" value={getWSD(heroStats)} target={[0.50, 0.55]} />
+                  <StatBar label="TAF" value={Math.min(getTAF(heroStats) / 5, 1)} target={[0.35, 0.45]} isRatio />
+                  <div className="flex justify-between items-center text-xs mt-1">
+                    <span className="text-gray-500">TAF</span>
+                    <span className="text-white font-semibold">{getTAF(heroStats).toFixed(1)}</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Position Stats - Compact */}
+              <div>
+                <h3 className="text-sm font-semibold text-gray-300 mb-2">各位置盈虧</h3>
+                <div className="grid grid-cols-6 gap-1">
                   {(["BTN", "CO", "MP", "UTG", "SB", "BB"] as const).map((pos) => {
                     const stats = positionStats[pos];
-                    const winRate = stats.handsPlayed > 0
-                      ? ((stats.handsWon / stats.handsPlayed) * 100).toFixed(0)
-                      : "--";
                     return (
-                      <div
-                        key={pos}
-                        className="flex items-center justify-between py-1.5 px-2 bg-gray-800/30 rounded"
-                      >
-                        <span className="text-sm font-semibold text-gray-300 w-12">{pos}</span>
-                        <span className="text-xs text-gray-500">{stats.handsPlayed} 手</span>
-                        <span className="text-xs text-gray-400">勝率 {winRate}%</span>
-                        <span className={cn(
-                          "text-sm font-semibold w-20 text-right",
+                      <div key={pos} className="text-center bg-gray-800/30 rounded p-1.5">
+                        <p className="text-xs font-semibold text-gray-400">{pos}</p>
+                        <p className={cn(
+                          "text-sm font-bold",
                           stats.totalProfit >= 0 ? "text-green-400" : "text-red-400"
                         )}>
-                          {stats.totalProfit >= 0 ? "+" : ""}{stats.totalProfit.toFixed(1)}
-                        </span>
+                          {stats.totalProfit >= 0 ? "+" : ""}{stats.totalProfit.toFixed(0)}
+                        </p>
+                        <p className="text-[10px] text-gray-500">{stats.handsPlayed}手</p>
                       </div>
                     );
                   })}
@@ -833,6 +951,110 @@ export default function TableTrainerClient() {
           </Card>
         </div>
       )}
+    </div>
+  );
+}
+
+// ============================================
+// Stats Display Helper Components
+// ============================================
+
+interface StatRingProps {
+  label: string;
+  value: number;
+  target: [number, number];
+  color: "cyan" | "orange" | "yellow" | "red" | "green";
+}
+
+function StatRing({ label, value, target, color }: StatRingProps) {
+  const percentage = Math.min(value * 100, 100);
+  const isInRange = value >= target[0] && value <= target[1];
+
+  const colorMap = {
+    cyan: "text-cyan-400",
+    orange: "text-orange-400",
+    yellow: "text-yellow-400",
+    red: "text-red-400",
+    green: "text-green-400",
+  };
+
+  const bgColorMap = {
+    cyan: "stroke-cyan-400",
+    orange: "stroke-orange-400",
+    yellow: "stroke-yellow-400",
+    red: "stroke-red-400",
+    green: "stroke-green-400",
+  };
+
+  return (
+    <div className="flex flex-col items-center">
+      <div className="relative w-14 h-14">
+        <svg className="w-14 h-14 -rotate-90" viewBox="0 0 36 36">
+          <circle
+            cx="18" cy="18" r="15"
+            fill="none"
+            stroke="#374151"
+            strokeWidth="3"
+          />
+          <circle
+            cx="18" cy="18" r="15"
+            fill="none"
+            className={bgColorMap[color]}
+            strokeWidth="3"
+            strokeDasharray={`${percentage} 100`}
+            strokeLinecap="round"
+          />
+        </svg>
+        <div className="absolute inset-0 flex items-center justify-center">
+          <span className={cn("text-sm font-bold", colorMap[color])}>
+            {(value * 100).toFixed(0)}%
+          </span>
+        </div>
+      </div>
+      <span className="text-xs text-gray-400 mt-1">{label}</span>
+      <span className="text-[10px] text-gray-500">
+        {(target[0] * 100).toFixed(0)}-{(target[1] * 100).toFixed(0)}%
+      </span>
+    </div>
+  );
+}
+
+interface StatBarProps {
+  label: string;
+  value: number;
+  target: [number, number];
+  isRatio?: boolean;
+}
+
+function StatBar({ label, value, target, isRatio }: StatBarProps) {
+  const percentage = Math.min(value * 100, 100);
+  const isInRange = value >= target[0] && value <= target[1];
+  const isLow = value < target[0];
+
+  // Color based on whether in range
+  const barColor = isInRange
+    ? "bg-green-500"
+    : isLow
+      ? "bg-orange-500"
+      : "bg-red-500";
+
+  return (
+    <div className="mb-1.5">
+      <div className="flex justify-between items-center text-xs mb-0.5">
+        <span className="text-gray-400">{label}</span>
+        <span className={cn(
+          "font-semibold",
+          isInRange ? "text-green-400" : isLow ? "text-orange-400" : "text-red-400"
+        )}>
+          {isRatio ? "" : (value * 100).toFixed(0) + "%"}
+        </span>
+      </div>
+      <div className="h-1.5 bg-gray-700 rounded-full overflow-hidden">
+        <div
+          className={cn("h-full rounded-full transition-all", barColor)}
+          style={{ width: `${percentage}%` }}
+        />
+      </div>
     </div>
   );
 }

@@ -22,6 +22,7 @@ import {
   RANKS,
   SUITS,
   DEFAULT_CONFIG,
+  DEFAULT_HERO_STATS,
 } from "@/lib/poker/types";
 import { TIMING, TABLE } from "@/lib/poker/constants";
 import { evaluateHand, determineWinners as findWinners } from "@/lib/poker/handEvaluator";
@@ -215,6 +216,7 @@ const initialState: Omit<TableState, keyof TableActions> = {
     scenario: null,
     showGTOHints: false,
     showEV: false,
+    hintMode: "off" as const,
   },
   sessionStats: {
     handsPlayed: 0,
@@ -222,13 +224,7 @@ const initialState: Omit<TableState, keyof TableActions> = {
     totalProfit: 0,
     biggestPot: 0,
   },
-  heroStats: {
-    handsPlayed: 0,
-    handsVPIP: 0,
-    handsPFR: 0,
-    foldTo3BetCount: 0,
-    faced3BetCount: 0,
-  },
+  heroStats: { ...DEFAULT_HERO_STATS },
   positionStats: {
     UTG: { handsPlayed: 0, handsWon: 0, totalProfit: 0 },
     MP: { handsPlayed: 0, handsWon: 0, totalProfit: 0 },
@@ -411,6 +407,7 @@ export const useTableStore = create<TableState & TableActions>()(
             scenario,
             showGTOHints: true,
             showEV: false,
+            hintMode: "after" as const,
           },
         });
       },
@@ -781,19 +778,143 @@ export const useTableStore = create<TableState & TableActions>()(
         // Add to action history
         const newActionHistory = [...state.actionHistory, actionRecord];
 
-        // Track hero stats for AI adaptation (preflop only)
+        // Track hero stats for AI adaptation and performance tracking
         let newHeroStats = state.heroStats;
-        if (player.isHero && currentStreet === "preflop") {
+        if (player.isHero) {
           newHeroStats = { ...state.heroStats };
+          const { actionHistory, lastAggressorIndex, dealerSeatIndex } = state;
 
-          // Track VPIP (voluntarily put money in pot - call or raise)
-          if (action === "call" || action === "raise" || action === "bet" || action === "allin") {
-            newHeroStats.handsVPIP++;
+          // ============================================
+          // Basic action tracking (all streets)
+          // ============================================
+          if (action === "bet") {
+            newHeroStats.totalBets++;
+          } else if (action === "raise") {
+            newHeroStats.totalRaises++;
+          } else if (action === "call") {
+            newHeroStats.totalCalls++;
+          } else if (action === "allin") {
+            // Count as raise if it increases the bet
+            if (player.stack + player.currentBet > currentBet) {
+              newHeroStats.totalRaises++;
+            } else {
+              newHeroStats.totalCalls++;
+            }
           }
 
-          // Track PFR (preflop raise)
-          if (action === "raise" || action === "bet") {
-            newHeroStats.handsPFR++;
+          // ============================================
+          // Preflop stats
+          // ============================================
+          if (currentStreet === "preflop") {
+            // Track VPIP (voluntarily put money in pot)
+            if (action === "call" || action === "raise" || action === "bet" || action === "allin") {
+              newHeroStats.handsVPIP++;
+            }
+
+            // Track PFR (preflop raise)
+            if (action === "raise" || action === "bet") {
+              newHeroStats.handsPFR++;
+            }
+
+            // Track ATS (Attempt to Steal) - raise from CO/BTN/SB when folded to
+            const heroPosition = player.position;
+            const isStealPosition = heroPosition === "CO" || heroPosition === "BTN" || heroPosition === "SB";
+            const allFoldedToHero = actionHistory.filter(a => a.street === "preflop")
+              .every(a => a.action === "fold" || a.position === "SB" || a.position === "BB");
+
+            if (isStealPosition && allFoldedToHero) {
+              newHeroStats.stealOpportunities++;
+              if (action === "raise" || action === "bet" || action === "allin") {
+                newHeroStats.stealAttempts++;
+              }
+            }
+
+            // Track 3-bet
+            // Check if there's already a raise before us
+            const preflopActions = actionHistory.filter(a => a.street === "preflop");
+            const previousRaises = preflopActions.filter(a => a.action === "raise" || a.action === "bet");
+            if (previousRaises.length === 1) {
+              // Someone raised, we can 3-bet
+              newHeroStats.threeBetOpportunity++;
+              if (action === "raise" || action === "allin") {
+                newHeroStats.threeBetCount++;
+              }
+            }
+
+            // Track Fold to 3-bet
+            if (previousRaises.length >= 2) {
+              // We raised and got 3-bet
+              const heroRaised = preflopActions.some(a => a.isHero && (a.action === "raise" || a.action === "bet"));
+              if (heroRaised) {
+                newHeroStats.faced3BetCount++;
+                if (action === "fold") {
+                  newHeroStats.foldTo3BetCount++;
+                }
+              }
+            }
+          }
+
+          // ============================================
+          // Postflop stats
+          // ============================================
+          if (currentStreet !== "preflop") {
+            // Find who was the preflop aggressor
+            const preflopActions = actionHistory.filter(a => a.street === "preflop");
+            const preflopRaiser = preflopActions.filter(a => a.action === "raise" || a.action === "bet").pop();
+            const wasHeroPreflopAggressor = preflopRaiser?.isHero ?? false;
+
+            // C-bet opportunity (hero was preflop aggressor, action checks to us or we act first)
+            if (wasHeroPreflopAggressor && currentBet === 0) {
+              if (currentStreet === "flop") {
+                newHeroStats.flopCBetOpportunity++;
+                if (action === "bet" || action === "allin") {
+                  newHeroStats.flopCBet++;
+                }
+              } else if (currentStreet === "turn") {
+                newHeroStats.turnCBetOpportunity++;
+                if (action === "bet" || action === "allin") {
+                  newHeroStats.turnCBet++;
+                }
+              } else if (currentStreet === "river") {
+                newHeroStats.riverCBetOpportunity++;
+                if (action === "bet" || action === "allin") {
+                  newHeroStats.riverCBet++;
+                }
+              }
+            }
+
+            // Facing C-bet (villain was preflop aggressor and bet)
+            if (!wasHeroPreflopAggressor && currentBet > 0) {
+              // Check if this is actually a c-bet (bet from preflop aggressor)
+              const currentStreetActions = actionHistory.filter(a => a.street === currentStreet);
+              const bettorAction = currentStreetActions.find(a => a.action === "bet");
+              const isCBet = bettorAction && preflopRaiser && bettorAction.position === preflopRaiser.position;
+
+              if (isCBet) {
+                newHeroStats.facedCBet++;
+                if (action === "fold") {
+                  newHeroStats.foldToCBet++;
+                } else if (action === "call") {
+                  newHeroStats.callCBet++;
+                } else if (action === "raise" || action === "allin") {
+                  newHeroStats.raiseCBet++;
+                }
+              }
+            }
+
+            // Check-raise tracking
+            const heroActionsThisStreet = actionHistory.filter(
+              a => a.street === currentStreet && a.isHero
+            );
+            const heroCheckedFirst = heroActionsThisStreet.length === 1 &&
+              heroActionsThisStreet[0].action === "check";
+
+            if (heroCheckedFirst && currentBet > 0) {
+              newHeroStats.checkRaiseOpportunity++;
+              if (action === "raise" || action === "allin") {
+                newHeroStats.checkRaiseCount++;
+              }
+            }
           }
         }
 
@@ -1286,7 +1407,15 @@ export const useTableStore = create<TableState & TableActions>()(
           const { sessionStats, heroStats, positionStats, handNumber, actionHistory, config, dealerSeatIndex } = get();
           const dealerPlayer = players.find(p => p.seatIndex === dealerSeatIndex);
           const dealerPosition = dealerPlayer?.position ?? "BTN";
-          const newHeroStats = { ...heroStats, handsPlayed: heroStats.handsPlayed + 1 };
+
+          // Track showdown stats (WT = Went to Showdown, WSD = Won at Showdown)
+          const heroWentToShowdown = heroPlayer && !heroPlayer.isFolded;
+          const newHeroStats = {
+            ...heroStats,
+            handsPlayed: heroStats.handsPlayed + 1,
+            wentToShowdown: heroStats.wentToShowdown + (heroWentToShowdown ? 1 : 0),
+            wonAtShowdown: heroStats.wonAtShowdown + (heroWentToShowdown && heroWon ? 1 : 0),
+          };
 
           // Update position stats
           const newPositionStats = { ...positionStats };
