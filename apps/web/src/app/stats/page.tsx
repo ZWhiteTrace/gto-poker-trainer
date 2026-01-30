@@ -62,13 +62,18 @@ const Cell = dynamic(() => import("recharts").then((mod) => mod.Cell), {
   ssr: false,
 });
 
-type DrillType = "rfi" | "vs_rfi" | "vs_3bet" | "vs_4bet";
+type DrillType = "rfi" | "vs_rfi" | "vs_3bet" | "vs_4bet" | "push_fold" | "push_fold_defense" | "push_fold_resteal" | "push_fold_hu" | "table_trainer";
 
 const DRILL_LABELS: Record<DrillType, { en: string; zh: string }> = {
   rfi: { en: "RFI", zh: "RFI 開池" },
   vs_rfi: { en: "VS RFI", zh: "VS RFI" },
   vs_3bet: { en: "VS 3-Bet", zh: "VS 3-Bet" },
   vs_4bet: { en: "VS 4-Bet", zh: "VS 4-Bet" },
+  push_fold: { en: "Push/Fold", zh: "Push/Fold" },
+  push_fold_defense: { en: "PF Defense", zh: "PF 防守" },
+  push_fold_resteal: { en: "PF Resteal", zh: "PF 反偷" },
+  push_fold_hu: { en: "PF Heads-Up", zh: "PF 單挑" },
+  table_trainer: { en: "Table Trainer", zh: "牌桌訓練" },
 };
 
 const POSITIONS = ["UTG", "HJ", "CO", "BTN", "SB", "BB"];

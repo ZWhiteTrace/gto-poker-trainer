@@ -247,7 +247,7 @@ export default function AchievementsPage() {
               {t("achievements.loginRequiredDesc") || "Sign in to track your achievements"}
             </p>
             <Button asChild>
-              <Link href="/login">{t("common.login") || "Login"}</Link>
+              <Link href="/login">{t("common.signIn")}</Link>
             </Button>
           </CardContent>
         </Card>
