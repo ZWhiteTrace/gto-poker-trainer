@@ -1029,6 +1029,39 @@ export const useTableStore = create<TableState & TableActions>()(
         // Check if there's a raise in front
         const hasRaiseInFront = currentBet > 1 && lastAggressorIndex !== activePlayerIndex;
 
+        // Calculate position awareness (is AI in position vs active players)
+        const { dealerSeatIndex, actionHistory } = get();
+        const activePlayers = players.filter(p => p.isActive && !p.isFolded && !p.isAllIn);
+        const aiSeatIndex = aiPlayer.seatIndex;
+        // In position = acting last among remaining players
+        const isInPosition = activePlayers.every(p =>
+          p.seatIndex === aiSeatIndex ||
+          ((p.seatIndex - dealerSeatIndex + 6) % 6) < ((aiSeatIndex - dealerSeatIndex + 6) % 6)
+        );
+
+        // Check if villain checked (last action on this street was a check)
+        const streetActions = actionHistory.filter(a => a.street === currentStreet);
+        const villainChecked = streetActions.length > 0 &&
+          streetActions[streetActions.length - 1]?.action === "check" &&
+          !streetActions[streetActions.length - 1]?.isHero;
+
+        // Find preflop aggressor (who raised preflop)
+        const preflopActions = actionHistory.filter(a => a.street === "preflop");
+        const preflopRaiser = preflopActions.find(a => a.action === "raise" || a.action === "bet");
+        const preflopAggressor = preflopRaiser?.position;
+
+        // Check if AI was the aggressor on previous street
+        const streetOrder: Street[] = ["preflop", "flop", "turn", "river"];
+        const currentStreetIndex = streetOrder.indexOf(currentStreet);
+        const previousStreet = currentStreetIndex > 0 ? streetOrder[currentStreetIndex - 1] : null;
+        const wasLastStreetAggressor = previousStreet
+          ? actionHistory.some(a =>
+              a.street === previousStreet &&
+              a.position === aiPlayer.position &&
+              (a.action === "bet" || a.action === "raise")
+            )
+          : false;
+
         // Get AI decision using the decision engine with the player's profile
         // Pass heroStats for AI adaptation
         const decision = getAIDecision(
@@ -1040,10 +1073,15 @@ export const useTableStore = create<TableState & TableActions>()(
             currentBet,
             playerBet: aiPlayer.currentBet,
             stack: aiPlayer.stack,
-            numActivePlayers: players.filter(p => p.isActive && !p.isFolded).length,
+            numActivePlayers: activePlayers.length,
             lastAggressor,
             hasRaiseInFront,
             communityCards,
+            // New context fields for improved postflop logic
+            isInPosition,
+            villainChecked,
+            wasLastStreetAggressor,
+            preflopAggressor,
           },
           aiProfile,
           heroStats

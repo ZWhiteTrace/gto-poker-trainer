@@ -291,6 +291,11 @@ interface GameContext {
   hasRaiseInFront: boolean;
   communityCards: Card[];
   isAllInSituation?: boolean;
+  // New fields for improved postflop logic
+  isInPosition?: boolean;           // Is AI in position vs remaining players
+  villainChecked?: boolean;         // Did villain check to us (for probe betting)
+  wasLastStreetAggressor?: boolean; // Were we the aggressor on previous street
+  preflopAggressor?: Position;      // Who raised preflop (for c-bet logic)
 }
 
 /**
@@ -677,106 +682,232 @@ function getVs3BetDecision(
 
 /**
  * Postflop decision with board texture analysis
+ * Now includes position awareness, check-raise logic, and street-specific adjustments
  */
 function getPostflopDecision(
   context: GameContext,
   handNotation: string,
   profile: AIPlayerProfile
 ): AIDecision {
-  const { pot, currentBet, playerBet, stack, communityCards } = context;
+  const { pot, currentBet, playerBet, stack, communityCards, street, isInPosition, villainChecked, wasLastStreetAggressor, preflopAggressor, position } = context;
   const toCall = currentBet - playerBet;
 
   const handStrength = estimateHandStrength(context.holeCards, communityCards);
   const boardTexture = analyzeBoardTexture(communityCards);
 
+  // Determine if we were the preflop aggressor
+  const isPreflopAggressor = preflopAggressor === position;
+
   // No bet to face - consider betting or checking
   if (toCall === 0) {
-    return getPostflopBetDecision(context, handStrength, boardTexture, profile);
+    // Check-raise opportunity: we're OOP, villain might bet
+    if (!isInPosition && handStrength > 0.7 && Math.random() < profile.aggression * 0.25) {
+      // Set up check-raise with strong hands OOP
+      return { action: "check", confidence: 0.8, reasoning: "Setting up check-raise" };
+    }
+
+    // Probe betting: villain checked back on previous street, we're IP
+    if (villainChecked && isInPosition && street !== "flop") {
+      return getProbeBetDecision(context, handStrength, boardTexture, profile);
+    }
+
+    return getPostflopBetDecision(context, handStrength, boardTexture, profile, isPreflopAggressor);
   }
 
   // Facing a bet - call, raise, or fold
-  return getFacingBetDecision(context, handStrength, boardTexture, profile);
+  // Check-raise execution: we checked with intention to raise
+  if (!isInPosition && handStrength > 0.75) {
+    const checkRaiseProb = profile.aggression * 0.4;
+    if (Math.random() < checkRaiseProb) {
+      const raiseSize = Math.round(currentBet * 3 * 2) / 2;
+      return {
+        action: "raise",
+        amount: Math.min(raiseSize, stack + playerBet),
+        confidence: 0.85,
+        reasoning: "Check-raising for value",
+      };
+    }
+  }
+
+  return getFacingBetDecision(context, handStrength, boardTexture, profile, street);
 }
 
 /**
  * Decide whether to bet or check when facing no bet
+ * Now with position awareness and preflop aggressor consideration
  */
 function getPostflopBetDecision(
   context: GameContext,
   handStrength: number,
   boardTexture: BoardTexture,
-  profile: AIPlayerProfile
+  profile: AIPlayerProfile,
+  isPreflopAggressor: boolean = false
 ): AIDecision {
-  const { pot, stack } = context;
+  const { pot, stack, street, isInPosition } = context;
 
-  // C-bet decision
-  const cbetProb = profile.cbetFreq;
+  // Base c-bet probability
+  let betProb = profile.cbetFreq;
 
-  // Adjust c-bet frequency based on hand strength and board
-  let adjustedCbetProb = cbetProb;
+  // Adjust based on preflop aggressor status
+  if (isPreflopAggressor) {
+    // C-betting as preflop raiser
+    betProb *= 1.2;
+  } else {
+    // Donk betting (betting into preflop raiser) - less frequent
+    betProb *= 0.4;
+  }
 
-  // Strong hands - value bet
+  // Position adjustment: IP can bet more liberally
+  if (isInPosition) {
+    betProb *= 1.15;
+  } else {
+    betProb *= 0.85;
+  }
+
+  // Street-specific adjustments
+  if (street === "turn") {
+    // Turn barrels should be more selective
+    betProb *= 0.75;
+  } else if (street === "river") {
+    // River bets need to be even more polarized
+    betProb *= 0.6;
+    // But value bet more with strong hands
+    if (handStrength > 0.8) betProb = Math.min(0.95, betProb * 1.8);
+  }
+
+  // Hand strength adjustments
   if (handStrength > 0.7) {
-    adjustedCbetProb = Math.min(0.9, cbetProb + 0.3);
-  }
-  // Medium hands - depends on board texture
-  else if (handStrength > 0.4) {
-    adjustedCbetProb = cbetProb * (boardTexture.isDry ? 1.2 : 0.8);
-  }
-  // Weak hands - bluff based on profile
-  else {
-    adjustedCbetProb = profile.bluffFreq * (boardTexture.isDry ? 1.0 : 0.5);
+    betProb = Math.min(0.95, betProb + 0.3);
+  } else if (handStrength > 0.4) {
+    betProb *= (boardTexture.isDry ? 1.2 : 0.7);
+  } else {
+    // Bluffing - need good blockers or dry board
+    betProb = profile.bluffFreq * (boardTexture.isDry ? 0.8 : 0.3);
   }
 
-  if (Math.random() < adjustedCbetProb) {
-    // Sizing based on board texture and hand strength
+  if (Math.random() < betProb) {
+    // Sizing based on street, board texture, and position
     let betMultiplier: number;
 
-    if (boardTexture.isDry) {
-      betMultiplier = 0.33 + profile.aggression * 0.17; // 33-50%
-    } else if (boardTexture.isWet) {
-      betMultiplier = 0.55 + profile.aggression * 0.20; // 55-75%
+    if (street === "river") {
+      // River sizing: polarized - larger bets
+      betMultiplier = handStrength > 0.7 ? 0.7 : 0.5;
+    } else if (street === "turn") {
+      // Turn sizing: slightly larger than flop
+      betMultiplier = boardTexture.isWet ? 0.6 : 0.5;
     } else {
-      betMultiplier = 0.45 + profile.aggression * 0.15; // 45-60%
+      // Flop sizing
+      if (boardTexture.isDry) {
+        betMultiplier = 0.33 + profile.aggression * 0.12;
+      } else if (boardTexture.isWet) {
+        betMultiplier = 0.55 + profile.aggression * 0.15;
+      } else {
+        betMultiplier = 0.45 + profile.aggression * 0.10;
+      }
     }
 
-    // Round to 0.5 BB
     const betSize = Math.round(pot * betMultiplier * 2) / 2;
 
     return {
       action: "bet",
-      amount: Math.min(betSize, stack),
-      confidence: adjustedCbetProb,
-      reasoning: handStrength > 0.5 ? "Value betting" : "Continuation bet",
+      amount: Math.min(Math.max(betSize, 1), stack),
+      confidence: betProb,
+      reasoning: isPreflopAggressor
+        ? (handStrength > 0.5 ? "Value betting" : "Continuation bet")
+        : (handStrength > 0.5 ? "Value donk bet" : "Donk bluff"),
     };
   }
 
   return {
     action: "check",
-    confidence: 1 - adjustedCbetProb,
+    confidence: 1 - betProb,
+    reasoning: "Checking",
+  };
+}
+
+/**
+ * Probe betting: betting when villain checked previous street
+ */
+function getProbeBetDecision(
+  context: GameContext,
+  handStrength: number,
+  boardTexture: BoardTexture,
+  profile: AIPlayerProfile
+): AIDecision {
+  const { pot, stack, street } = context;
+
+  // Probe bet frequency - villain showed weakness
+  let probeProb = 0.35 + profile.aggression * 0.25;
+
+  // Stronger with value hands
+  if (handStrength > 0.6) {
+    probeProb = Math.min(0.9, probeProb + 0.3);
+  }
+  // More on dry boards
+  if (boardTexture.isDry) {
+    probeProb *= 1.2;
+  }
+
+  if (Math.random() < probeProb) {
+    // Probe sizing: usually smaller (40-50% pot)
+    const betMultiplier = 0.4 + profile.aggression * 0.1;
+    const betSize = Math.round(pot * betMultiplier * 2) / 2;
+
+    return {
+      action: "bet",
+      amount: Math.min(Math.max(betSize, 1), stack),
+      confidence: probeProb,
+      reasoning: "Probe betting - villain showed weakness",
+    };
+  }
+
+  return {
+    action: "check",
+    confidence: 1 - probeProb,
     reasoning: "Checking back",
   };
 }
 
 /**
  * Decide how to respond to a bet
+ * Now with street-specific adjustments
  */
 function getFacingBetDecision(
   context: GameContext,
   handStrength: number,
   boardTexture: BoardTexture,
-  profile: AIPlayerProfile
+  profile: AIPlayerProfile,
+  street: Street = "flop"
 ): AIDecision {
-  const { pot, currentBet, playerBet, stack } = context;
+  const { pot, currentBet, playerBet, stack, isInPosition } = context;
   const toCall = currentBet - playerBet;
   const potOdds = toCall / (pot + toCall);
+  const betSize = currentBet / pot; // Bet as fraction of pot
+
+  // Street-specific defense frequency adjustments
+  // Should defend less on later streets with marginal hands
+  let defenseMultiplier = 1.0;
+  if (street === "turn") {
+    defenseMultiplier = 0.85;
+  } else if (street === "river") {
+    defenseMultiplier = 0.7;
+  }
+
+  // Position adjustment: IP can float more
+  if (isInPosition) {
+    defenseMultiplier *= 1.15;
+  }
 
   // Very strong hands - raise for value
   if (handStrength > 0.8) {
-    const raiseProb = 0.5 + profile.aggression * 0.3;
+    let raiseProb = 0.5 + profile.aggression * 0.3;
+
+    // Raise more on river with monsters
+    if (street === "river") {
+      raiseProb = Math.min(0.95, raiseProb * 1.3);
+    }
 
     if (Math.random() < raiseProb) {
-      // Round to 0.5 BB
       const raiseSize = Math.round(currentBet * (2 + profile.aggression) * 2) / 2;
       return {
         action: "raise",
@@ -790,8 +921,8 @@ function getFacingBetDecision(
 
   // Strong hands - mostly call, sometimes raise
   if (handStrength > 0.6) {
-    if (Math.random() < profile.aggression * 0.3) {
-      // Round to 0.5 BB
+    const raiseProb = profile.aggression * 0.3 * defenseMultiplier;
+    if (Math.random() < raiseProb) {
       const raiseSize = Math.round(currentBet * 2.5 * 2) / 2;
       return {
         action: "raise",
@@ -803,19 +934,32 @@ function getFacingBetDecision(
     return { action: "call", confidence: 0.85, reasoning: "Calling with strong hand" };
   }
 
-  // Medium hands - pot odds decision
+  // Medium hands - pot odds decision with street adjustment
   if (handStrength > 0.35) {
-    // Adjust required equity based on fold tendency
-    const requiredEquity = potOdds * (0.7 + profile.foldToCbet * 0.6);
+    const requiredEquity = potOdds * (0.8 + profile.foldToCbet * 0.4) / defenseMultiplier;
 
     if (handStrength > requiredEquity) {
+      // Floating IP with medium hands on flop/turn
+      if (isInPosition && street !== "river" && handStrength > 0.4) {
+        return { action: "call", confidence: 0.7, reasoning: "Floating in position" };
+      }
       return { action: "call", confidence: 0.65, reasoning: "Calling with odds" };
     }
   }
 
-  // Weak hands - fold or bluff raise
-  if (Math.random() < profile.bluffFreq * 0.15 && toCall < pot * 0.5) {
-    // Round to 0.5 BB
+  // Drawing hands - consider implied odds on earlier streets
+  if (street !== "river" && boardTexture.hasFlushDraw || boardTexture.hasStraightDraw) {
+    if (handStrength > 0.25 && betSize < 0.75) {
+      return { action: "call", confidence: 0.55, reasoning: "Chasing draw with implied odds" };
+    }
+  }
+
+  // Weak hands - fold or bluff raise (less on river)
+  const bluffRaiseProb = street === "river"
+    ? profile.bluffFreq * 0.08
+    : profile.bluffFreq * 0.15;
+
+  if (Math.random() < bluffRaiseProb && toCall < pot * 0.5) {
     const raiseSize = Math.round(currentBet * 2.5 * 2) / 2;
     return {
       action: "raise",
@@ -825,8 +969,9 @@ function getFacingBetDecision(
     };
   }
 
-  // Calling stations call more
-  if (profile.foldToCbet < 0.30 && toCall < pot * 0.6) {
+  // Calling stations call more (but less on river)
+  const stationThreshold = street === "river" ? 0.20 : 0.30;
+  if (profile.foldToCbet < stationThreshold && toCall < pot * 0.6) {
     return { action: "call", confidence: 0.5, reasoning: "Calling as station" };
   }
 
