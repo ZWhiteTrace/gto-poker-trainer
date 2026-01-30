@@ -24,16 +24,16 @@ function getDefaultAIProfile(seatIndex: number): AIPlayerProfile {
   return AI_PROFILES[seatIndex % AI_PROFILES.length];
 }
 
-// Hero 固定底部，對手在上方弧形排列的座位位置
-const HERO_POSITION = { top: "85%", left: "50%", transform: "translate(-50%, -50%)" };
+// Hero 固定底部，對手在上方弧形排列的座位位置（適配更扁平的牌桌）
+const HERO_POSITION = { top: "82%", left: "50%", transform: "translate(-50%, -50%)" };
 
-// 5 個對手的位置（從左到右弧形排列）
+// 5 個對手的位置（從左到右弧形排列，調整為扁平牌桌）
 const OPPONENT_POSITIONS = [
-  { top: "20%", left: "8%", transform: "translate(-50%, -50%)" },   // 左上
-  { top: "8%", left: "30%", transform: "translate(-50%, -50%)" },   // 左中上
-  { top: "8%", left: "50%", transform: "translate(-50%, -50%)" },   // 頂部中央
-  { top: "8%", left: "70%", transform: "translate(-50%, -50%)" },   // 右中上
-  { top: "20%", left: "92%", transform: "translate(-50%, -50%)" },  // 右上
+  { top: "22%", left: "6%", transform: "translate(-50%, -50%)" },   // 左上
+  { top: "10%", left: "28%", transform: "translate(-50%, -50%)" },  // 左中上
+  { top: "10%", left: "50%", transform: "translate(-50%, -50%)" },  // 頂部中央
+  { top: "10%", left: "72%", transform: "translate(-50%, -50%)" },  // 右中上
+  { top: "22%", left: "94%", transform: "translate(-50%, -50%)" },  // 右上
 ];
 
 // 根據 Hero 位置計算其他玩家的螢幕顯示位置
@@ -69,11 +69,11 @@ export function PokerTable({
   className,
 }: PokerTableProps) {
   return (
-    <div className={cn("relative w-full aspect-[16/10] max-w-4xl xl:max-w-5xl 2xl:max-w-6xl mx-auto", className)}>
-      {/* 桌面背景 */}
-      <div className="absolute inset-0 rounded-[40%] bg-gradient-to-br from-green-800 to-green-900 border-8 border-amber-900 shadow-2xl">
+    <div className={cn("relative w-full aspect-[16/7] max-w-4xl xl:max-w-5xl 2xl:max-w-6xl mx-auto", className)}>
+      {/* 桌面背景 - 更扁平的橢圓形 */}
+      <div className="absolute inset-0 rounded-[50%/40%] bg-gradient-to-br from-green-800 to-green-900 border-8 border-amber-900 shadow-2xl">
         {/* 桌面紋理 */}
-        <div className="absolute inset-4 rounded-[38%] border-4 border-green-700/50" />
+        <div className="absolute inset-4 rounded-[48%/38%] border-4 border-green-700/50" />
 
         {/* 中央標誌 */}
         <div className="absolute inset-0 flex items-center justify-center">
@@ -83,8 +83,8 @@ export function PokerTable({
         </div>
       </div>
 
-      {/* POT - 左下角固定 */}
-      <div className="absolute bottom-4 left-4 z-30">
+      {/* POT - 左邊中間位置 */}
+      <div className="absolute top-1/2 left-6 -translate-y-1/2 z-30">
         <PotDisplay amount={pot} />
       </div>
 
@@ -154,15 +154,15 @@ export function PokerTable({
   );
 }
 
-// 新佈局的下注籌碼位置（Hero 底部，對手上方）
-const HERO_BET_POSITION = { top: "70%", left: "50%" };
+// 新佈局的下注籌碼位置（Hero 底部，對手上方，適配扁平牌桌）
+const HERO_BET_POSITION = { top: "65%", left: "50%" };
 
 const OPPONENT_BET_POSITIONS = [
-  { top: "35%", left: "15%" },   // 左上對應
-  { top: "25%", left: "32%" },   // 左中上對應
-  { top: "25%", left: "50%" },   // 頂部中央對應
-  { top: "25%", left: "68%" },   // 右中上對應
-  { top: "35%", left: "85%" },   // 右上對應
+  { top: "40%", left: "15%" },   // 左上對應
+  { top: "28%", left: "32%" },   // 左中上對應
+  { top: "28%", left: "50%" },   // 頂部中央對應
+  { top: "28%", left: "68%" },   // 右中上對應
+  { top: "40%", left: "85%" },   // 右上對應
 ];
 
 function getBetPositionForNewLayout(
