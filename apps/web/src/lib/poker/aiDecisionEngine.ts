@@ -521,18 +521,8 @@ function getRFIDecision(
 
   // Decision based on probability
   if (Math.random() < openProb) {
-    // Calculate raise size based on position (rounded to 0.5 BB)
-    const positionSizes: Record<Position, number> = {
-      UTG: 2.5,
-      HJ: 2.5,
-      CO: 2.5,
-      BTN: 2.5,
-      SB: 3.0,
-      BB: 3.0,
-    };
-    const baseSize = positionSizes[position] || 2.5;
-    // Round to 0.5 BB
-    const raiseSize = Math.round(baseSize * (0.9 + profile.aggression * 0.2) * 2) / 2;
+    const baseSize = getOpenRaiseSize(position, getEffectiveStack(context), profile);
+    const raiseSize = roundToHalf(baseSize);
 
     return {
       action: "raise",
@@ -621,7 +611,7 @@ function getVsRFIDecision(
   if (rand < threeBetProb) {
     // 3bet sizing: IP ~3x, OOP ~3.5-4x (rounded to 0.5 BB)
     const isIP = isInPosition(position, raiserPosition);
-    const threeBetSize = Math.round(currentBet * (isIP ? 3 : 3.5) * 2) / 2;
+    const threeBetSize = roundToHalf(getThreeBetSize(currentBet, isIP, getEffectiveStack(context)));
 
     return {
       action: "raise",
@@ -687,7 +677,19 @@ function getVs3BetDecision(
   const rand = Math.random();
 
   if (rand < fourBetProb) {
-    const fourBetSize = currentBet * 2.5;
+    const effectiveStack = getEffectiveStack(context);
+    const isIP = isInPosition(position, threeBetterPosition);
+    const fourBetSize = getFourBetSize(currentBet, isIP, effectiveStack);
+
+    if (effectiveStack <= 35) {
+      return {
+        action: "allin",
+        amount: stack + playerBet,
+        confidence: fourBetProb,
+        reasoning: `4-betting all-in ${handNotation} vs ${threeBetterPosition}`,
+      };
+    }
+
     return {
       action: "raise",
       amount: Math.min(fourBetSize, stack + playerBet),
@@ -842,6 +844,7 @@ function getPostflopBetDecision(
   isPreflopAggressor: boolean = false
 ): AIDecision {
   const { pot, stack, street, isInPosition } = context;
+  const spr = getSPR(context);
 
   // Base c-bet probability
   let betProb = profile.cbetFreq;
@@ -904,7 +907,16 @@ function getPostflopBetDecision(
       }
     }
 
-    const betSize = Math.round(pot * betMultiplier * 2) / 2;
+    // Adjust sizing based on SPR
+    if (spr <= 3) {
+      betMultiplier *= handStrength > 0.6 ? 1.2 : 0.85;
+    } else if (spr >= 10) {
+      betMultiplier *= 0.9;
+    }
+
+    betMultiplier = clamp(betMultiplier, 0.25, 0.9);
+
+    const betSize = roundToHalf(pot * betMultiplier);
 
     return {
       action: "bet",
@@ -933,6 +945,7 @@ function getProbeBetDecision(
   profile: AIPlayerProfile
 ): AIDecision {
   const { pot, stack, street } = context;
+  const spr = getSPR(context);
 
   // Probe bet frequency - villain showed weakness
   let probeProb = 0.35 + profile.aggression * 0.25;
@@ -949,7 +962,8 @@ function getProbeBetDecision(
   if (Math.random() < probeProb) {
     // Probe sizing: usually smaller (40-50% pot)
     const betMultiplier = 0.4 + profile.aggression * 0.1;
-    const betSize = Math.round(pot * betMultiplier * 2) / 2;
+    const adjustedMultiplier = clamp(spr <= 3 ? betMultiplier * 1.1 : betMultiplier, 0.25, 0.75);
+    const betSize = roundToHalf(pot * adjustedMultiplier);
 
     return {
       action: "bet",
@@ -981,6 +995,7 @@ function getFacingBetDecision(
   const toCall = currentBet - playerBet;
   const potOdds = toCall / (pot + toCall);
   const betSize = currentBet / pot; // Bet as fraction of pot
+  const spr = getSPR(context);
 
   // Street-specific defense frequency adjustments
   // Should defend less on later streets with marginal hands
@@ -1006,7 +1021,15 @@ function getFacingBetDecision(
     }
 
     if (Math.random() < raiseProb) {
-      const raiseSize = Math.round(currentBet * (2 + profile.aggression) * 2) / 2;
+      const raiseSize = roundToHalf(currentBet * (2 + profile.aggression));
+      if (spr <= 2) {
+        return {
+          action: "allin",
+          amount: stack + playerBet,
+          confidence: 0.9,
+          reasoning: "Value jam with low SPR",
+        };
+      }
       return {
         action: "raise",
         amount: Math.min(raiseSize, stack + playerBet),
@@ -1019,9 +1042,12 @@ function getFacingBetDecision(
 
   // Strong hands - mostly call, sometimes raise
   if (handStrength > 0.6) {
-    const raiseProb = profile.aggression * 0.3 * defenseMultiplier;
+    let raiseProb = profile.aggression * 0.3 * defenseMultiplier;
+    if (spr <= 3) {
+      raiseProb *= 1.2;
+    }
     if (Math.random() < raiseProb) {
-      const raiseSize = Math.round(currentBet * 2.5 * 2) / 2;
+      const raiseSize = roundToHalf(currentBet * 2.5);
       return {
         action: "raise",
         amount: Math.min(raiseSize, stack + playerBet),
@@ -1058,7 +1084,7 @@ function getFacingBetDecision(
     : profile.bluffFreq * 0.15;
 
   if (Math.random() < bluffRaiseProb && toCall < pot * 0.5) {
-    const raiseSize = Math.round(currentBet * 2.5 * 2) / 2;
+    const raiseSize = roundToHalf(currentBet * 2.5);
     return {
       action: "raise",
       amount: Math.min(raiseSize, stack + playerBet),
@@ -1158,6 +1184,62 @@ function analyzeBoardTexture(communityCards: Card[]): BoardTexture {
 function isInPosition(ourPosition: Position, villainPosition: Position): boolean {
   const order: Position[] = ["UTG", "HJ", "CO", "BTN", "SB", "BB"];
   return order.indexOf(ourPosition) > order.indexOf(villainPosition);
+}
+
+function getEffectiveStack(context: GameContext): number {
+  return Math.max(0, context.stack + context.playerBet);
+}
+
+function getSPR(context: GameContext): number {
+  const toCall = Math.max(0, context.currentBet - context.playerBet);
+  const potIfCall = Math.max(0.5, context.pot + toCall);
+  return getEffectiveStack(context) / potIfCall;
+}
+
+function roundToHalf(value: number): number {
+  return Math.round(value * 2) / 2;
+}
+
+function clamp(value: number, min: number, max: number): number {
+  return Math.max(min, Math.min(max, value));
+}
+
+function getOpenRaiseSize(position: Position, effectiveStack: number, profile: AIPlayerProfile): number {
+  let base = 2.5;
+  if (effectiveStack <= 20) {
+    base = 2.0;
+  } else if (effectiveStack <= 40) {
+    base = 2.2;
+  } else if (effectiveStack >= 120) {
+    base = 2.7;
+  }
+
+  if (position === "SB") {
+    base += effectiveStack <= 20 ? 0.3 : 0.5;
+  }
+
+  const aggressionScale = 0.9 + profile.aggression * 0.2;
+  return base * aggressionScale;
+}
+
+function getThreeBetSize(openSize: number, isIP: boolean, effectiveStack: number): number {
+  let multiplier = isIP ? 3.0 : 3.5;
+  if (effectiveStack <= 25) {
+    multiplier = isIP ? 2.6 : 3.0;
+  } else if (effectiveStack >= 120) {
+    multiplier = isIP ? 3.5 : 4.0;
+  }
+  return openSize * multiplier;
+}
+
+function getFourBetSize(threeBetSize: number, isIP: boolean, effectiveStack: number): number {
+  let multiplier = isIP ? 2.2 : 2.4;
+  if (effectiveStack <= 40) {
+    multiplier = 2.1;
+  } else if (effectiveStack >= 120) {
+    multiplier = isIP ? 2.3 : 2.5;
+  }
+  return threeBetSize * multiplier;
 }
 
 function estimatePreflopStrength(hand: string): number {
