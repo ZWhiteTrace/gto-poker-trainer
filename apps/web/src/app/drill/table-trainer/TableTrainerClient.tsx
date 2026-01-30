@@ -585,6 +585,25 @@ export default function TableTrainerClient() {
                   disabled={aiThinking}
                 />
               )}
+
+              {/* GTO Hint Panel - Mobile */}
+              <div className="lg:hidden">
+                {(hintMode === "before" || hintMode === "detailed") && isHeroTurn && gtoHint && (
+                  <GTOHintPanel
+                    hint={gtoHint}
+                    mode={hintMode}
+                    className="mt-3"
+                  />
+                )}
+                {hintMode === "after" && lastHeroAction && gtoHint && (
+                  <GTOHintPanel
+                    hint={gtoHint}
+                    mode={hintMode}
+                    lastAction={lastHeroAction}
+                    className="mt-3"
+                  />
+                )}
+              </div>
             </div>
           </div>
 
