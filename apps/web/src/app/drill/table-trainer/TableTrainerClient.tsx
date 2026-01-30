@@ -34,7 +34,8 @@ import {
   type StatFeedback,
 } from "@/lib/poker/statsFeedback";
 import { cn } from "@/lib/utils";
-import { ChevronUp, ChevronDown, History, RotateCw, BarChart3, FileText } from "lucide-react";
+import { ChevronUp, ChevronDown, History, RotateCw, BarChart3, FileText, Home } from "lucide-react";
+import Link from "next/link";
 import { HandHistoryPanel } from "@/components/poker/HandHistoryPanel";
 import { GTOHintPanel, HintModeSelector } from "@/components/poker/GTOHintPanel";
 import { AIExploitAnalysis } from "@/components/poker/AIExploitAnalysis";
@@ -318,8 +319,10 @@ export default function TableTrainerClient() {
       {/* Header */}
       <header data-table-trainer-header className="border-b border-gray-800 bg-gray-900/50 backdrop-blur-sm shrink-0 z-50">
         <div className="container mx-auto px-4 py-2 sm:py-3 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <h1 className="text-xl font-bold">GTO Table Trainer</h1>
+          <div className="flex items-center gap-2 sm:gap-4">
+            <Link href="/" className="p-2 hover:bg-gray-800 rounded-lg transition-colors" title="回首頁">
+              <Home className="h-5 w-5" />
+            </Link>
             <Badge variant="outline" className="text-xs">
               Beta
             </Badge>

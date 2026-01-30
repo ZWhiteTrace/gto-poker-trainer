@@ -2,11 +2,27 @@
 
 import { cn } from "@/lib/utils";
 import type { Player, Card } from "@/lib/poker/types";
+import { SUIT_SYMBOLS, SUIT_COLORS } from "@/lib/poker/types";
 import { Seat } from "./Seat";
 import { CommunityCards } from "./CommunityCards";
 import { PotDisplay } from "./PotDisplay";
 import { AllInBadge } from "./AllInBadge";
 import { AI_PROFILES, type AIPlayerProfile } from "@/lib/poker/aiDecisionEngine";
+
+// Tiny card component for compact player display
+function MiniCard({ card }: { card: Card }) {
+  return (
+    <div
+      className={cn(
+        "w-5 h-7 bg-white rounded-sm border flex flex-col items-center justify-center text-[8px] font-bold",
+        SUIT_COLORS[card.suit]
+      )}
+    >
+      <span>{card.rank}</span>
+      <span className="text-[7px]">{SUIT_SYMBOLS[card.suit]}</span>
+    </div>
+  );
+}
 
 interface PokerTableProps {
   players: Player[];

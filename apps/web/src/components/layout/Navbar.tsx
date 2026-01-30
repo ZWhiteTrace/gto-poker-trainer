@@ -21,6 +21,8 @@ export function Navbar() {
     { href: "/drill/vs-3bet", label: t("nav.vs3betDrill") },
     { href: "/drill/vs-4bet", label: t("nav.vs4betDrill") },
     { href: "/drill/postflop", label: t("nav.postflopDrill") },
+    { href: "/drill/flop-texture", label: t("nav.flopTexture") || "翻牌質地" },
+    { href: "/drill/table-trainer", label: t("nav.tableTrainer") || "GTO 牌桌" },
     { href: "/drill/gto-practice", label: t("nav.gtoPractice") },
   ];
 
@@ -125,6 +127,36 @@ export function Navbar() {
         {/* Mobile Navigation */}
         <div className="flex flex-1 items-center justify-end gap-2 md:hidden">
           <LanguageSwitcher currentLocale={locale} />
+          {!user && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={signInWithGoogle}
+              disabled={isLoading}
+              className="text-xs px-2"
+            >
+              <User className="h-4 w-4 mr-1" />
+              {t("common.signIn")}
+            </Button>
+          )}
+          {user && (
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setIsOpen(true)}
+              className="h-8 w-8"
+            >
+              {user.user_metadata?.avatar_url ? (
+                <img
+                  src={user.user_metadata.avatar_url}
+                  alt="Avatar"
+                  className="h-6 w-6 rounded-full"
+                />
+              ) : (
+                <User className="h-4 w-4" />
+              )}
+            </Button>
+          )}
           <Sheet open={isOpen} onOpenChange={setIsOpen}>
             <SheetTrigger asChild>
               <Button variant="ghost" size="icon">

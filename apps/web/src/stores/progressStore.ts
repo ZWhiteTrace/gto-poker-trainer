@@ -112,6 +112,10 @@ interface ProgressState {
     completionRate: number;
     masteryRate: number;
   };
+  getMasteredQuestionIds: () => string[];
+  getNeedsReviewQuestionIds: () => string[];
+  getUnansweredQuestionIds: (allQuestionIds: string[]) => string[];
+  setTotalQuestionsInBank: (total: number) => void;
   resetStats: () => void;
 }
 
@@ -128,8 +132,8 @@ const initialQuizStats: QuizStats = {
   byCategory: {},
 };
 
-// Total questions available in the quiz bank (updated as questions are added)
-const TOTAL_QUIZ_QUESTIONS = 45; // Current exam has ~45 questions
+// Total questions available in the quiz bank (will be dynamically updated by exam page)
+const TOTAL_QUIZ_QUESTIONS = 45; // Default value, updated dynamically
 
 const initialState = {
   stats: {
@@ -515,6 +519,35 @@ export const useProgressStore = create<ProgressState>()(
           completionRate: total > 0 ? Math.round((attempted / total) * 100) : 0,
           masteryRate: attempted > 0 ? Math.round((mastered / attempted) * 100) : 0,
         };
+      },
+
+      getMasteredQuestionIds: () => {
+        const { quizProgress } = get();
+        return Object.values(quizProgress.attemptedQuestions)
+          .filter((a) => a.correctOnFirstTry || a.lastAttemptCorrect)
+          .map((a) => a.questionId);
+      },
+
+      getNeedsReviewQuestionIds: () => {
+        const { quizProgress } = get();
+        return Object.values(quizProgress.attemptedQuestions)
+          .filter((a) => !a.lastAttemptCorrect)
+          .map((a) => a.questionId);
+      },
+
+      getUnansweredQuestionIds: (allQuestionIds: string[]) => {
+        const { quizProgress } = get();
+        const attemptedIds = new Set(Object.keys(quizProgress.attemptedQuestions));
+        return allQuestionIds.filter((id) => !attemptedIds.has(id));
+      },
+
+      setTotalQuestionsInBank: (total: number) => {
+        set((state) => ({
+          quizProgress: {
+            ...state.quizProgress,
+            totalQuestionsInBank: total,
+          },
+        }));
       },
 
       resetStats: () => {

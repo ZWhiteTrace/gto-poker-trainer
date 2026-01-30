@@ -606,7 +606,14 @@ interface ExamResult {
 export default function MockExamPage() {
   const t = useTranslations();
   const { user } = useAuthStore();
-  const { recordQuestionAttempt, getQuizCompletionStats } = useProgressStore();
+  const {
+    recordQuestionAttempt,
+    getQuizCompletionStats,
+    getMasteredQuestionIds,
+    getNeedsReviewQuestionIds,
+    getUnansweredQuestionIds,
+    setTotalQuestionsInBank,
+  } = useProgressStore();
   const [examState, setExamState] = useState<ExamState>("intro");
   const [questions, setQuestions] = useState<ExamQuestion[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -643,15 +650,46 @@ export default function MockExamPage() {
     }
   };
 
-  // Shuffle and select questions
+  // Shuffle and select questions - prioritize unanswered, then needs-review
   const initializeExam = useCallback(() => {
-    const shuffled = [...EXAM_QUESTIONS].sort(() => Math.random() - 0.5);
-    const selected = shuffled.slice(0, EXAM_CONFIG.totalQuestions);
+    const allQuestionIds = EXAM_QUESTIONS.map((q) => q.id);
+    const unansweredIds = new Set(getUnansweredQuestionIds(allQuestionIds));
+    const needsReviewIds = new Set(getNeedsReviewQuestionIds());
+    const masteredIds = new Set(getMasteredQuestionIds());
+
+    // Priority: 1. Unanswered, 2. Needs Review, 3. Mastered (if nothing else)
+    const unansweredQuestions = EXAM_QUESTIONS.filter((q) => unansweredIds.has(q.id));
+    const needsReviewQuestions = EXAM_QUESTIONS.filter((q) => needsReviewIds.has(q.id) && !unansweredIds.has(q.id));
+    const masteredQuestions = EXAM_QUESTIONS.filter((q) => masteredIds.has(q.id));
+
+    let selected: ExamQuestion[] = [];
+
+    // First fill with unanswered questions (shuffled)
+    const shuffledUnanswered = [...unansweredQuestions].sort(() => Math.random() - 0.5);
+    selected = [...shuffledUnanswered];
+
+    // If not enough, add needs-review questions
+    if (selected.length < EXAM_CONFIG.totalQuestions) {
+      const shuffledNeedsReview = [...needsReviewQuestions].sort(() => Math.random() - 0.5);
+      const remaining = EXAM_CONFIG.totalQuestions - selected.length;
+      selected = [...selected, ...shuffledNeedsReview.slice(0, remaining)];
+    }
+
+    // If still not enough (all questions mastered), add mastered questions for review
+    if (selected.length < EXAM_CONFIG.totalQuestions) {
+      const shuffledMastered = [...masteredQuestions].sort(() => Math.random() - 0.5);
+      const remaining = EXAM_CONFIG.totalQuestions - selected.length;
+      selected = [...selected, ...shuffledMastered.slice(0, remaining)];
+    }
+
+    // Final shuffle of selected questions
+    selected = selected.sort(() => Math.random() - 0.5);
+
     setQuestions(selected);
     setCurrentIndex(0);
     setResults(new Map());
     setTimeLeft(EXAM_CONFIG.timeLimit);
-  }, []);
+  }, [getUnansweredQuestionIds, getNeedsReviewQuestionIds, getMasteredQuestionIds]);
 
   // Start the exam
   const startExam = () => {
@@ -742,11 +780,59 @@ export default function MockExamPage() {
     return `${mins}:${secs.toString().padStart(2, "0")}`;
   };
 
+  // Set total questions in bank on mount
+  useEffect(() => {
+    setTotalQuestionsInBank(EXAM_QUESTIONS.length);
+  }, [setTotalQuestionsInBank]);
+
   const currentQuestion = questions[currentIndex];
   const currentResult = currentQuestion ? results.get(currentQuestion.id) : null;
 
   if (examState === "intro") {
     const quizStats = getQuizCompletionStats();
+    const allQuestionIds = EXAM_QUESTIONS.map((q) => q.id);
+    const unansweredCount = getUnansweredQuestionIds(allQuestionIds).length;
+    const needsReviewCount = getNeedsReviewQuestionIds().length;
+
+    // Circular progress component
+    const CircularProgress = ({ value, size = 120 }: { value: number; size?: number }) => {
+      const strokeWidth = 8;
+      const radius = (size - strokeWidth) / 2;
+      const circumference = radius * 2 * Math.PI;
+      const offset = circumference - (value / 100) * circumference;
+
+      return (
+        <div className="relative inline-flex items-center justify-center">
+          <svg width={size} height={size} className="-rotate-90">
+            <circle
+              cx={size / 2}
+              cy={size / 2}
+              r={radius}
+              fill="none"
+              stroke="currentColor"
+              strokeWidth={strokeWidth}
+              className="text-muted"
+            />
+            <circle
+              cx={size / 2}
+              cy={size / 2}
+              r={radius}
+              fill="none"
+              stroke="currentColor"
+              strokeWidth={strokeWidth}
+              strokeLinecap="round"
+              strokeDasharray={circumference}
+              strokeDashoffset={offset}
+              className="text-primary transition-all duration-500"
+            />
+          </svg>
+          <div className="absolute inset-0 flex flex-col items-center justify-center">
+            <span className="text-2xl font-bold">{value}%</span>
+            <span className="text-xs text-muted-foreground">{t("exam.completed") || "完成"}</span>
+          </div>
+        </div>
+      );
+    };
 
     return (
       <div className="container max-w-2xl py-8">
@@ -758,6 +844,11 @@ export default function MockExamPage() {
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
+            {/* Circular Progress */}
+            <div className="flex justify-center">
+              <CircularProgress value={quizStats.completionRate} />
+            </div>
+
             <div className="grid grid-cols-2 gap-4 text-center">
               <div className="p-4 bg-muted rounded-lg">
                 <div className="text-3xl font-bold">{EXAM_CONFIG.totalQuestions}</div>
@@ -769,32 +860,34 @@ export default function MockExamPage() {
               </div>
             </div>
 
-            {/* Quiz Progress Section */}
-            {quizStats.attempted > 0 && (
-              <div className="p-4 bg-muted/50 rounded-lg space-y-3">
-                <div className="flex items-center gap-2 text-sm font-medium">
-                  <TrendingUp className="h-4 w-4" />
-                  {t("exam.yourProgress") || "Your Progress"}
+            {/* Question Status Summary */}
+            <div className="p-4 bg-muted/50 rounded-lg space-y-3">
+              <div className="flex items-center gap-2 text-sm font-medium">
+                <TrendingUp className="h-4 w-4" />
+                {t("exam.questionBank") || "題庫狀態"}
+              </div>
+              <div className="grid grid-cols-3 gap-2 text-center">
+                <div className="p-2 bg-background rounded">
+                  <div className="text-lg font-bold text-blue-500">{unansweredCount}</div>
+                  <div className="text-xs text-muted-foreground">{t("exam.unanswered") || "未作答"}</div>
                 </div>
-                <div className="space-y-2">
-                  <div className="flex justify-between text-sm">
-                    <span>{t("exam.questionsAttempted") || "Questions Attempted"}</span>
-                    <span>{quizStats.attempted}/{quizStats.total} ({quizStats.completionRate}%)</span>
-                  </div>
-                  <Progress value={quizStats.completionRate} className="h-2" />
+                <div className="p-2 bg-background rounded">
+                  <div className="text-lg font-bold text-amber-500">{needsReviewCount}</div>
+                  <div className="text-xs text-muted-foreground">{t("exam.needsReview") || "需複習"}</div>
                 </div>
-                <div className="grid grid-cols-2 gap-2 text-xs">
-                  <div className="flex items-center gap-1">
-                    <CheckCircle2 className="h-3 w-3 text-green-500" />
-                    <span>{t("exam.mastered") || "Mastered"}: {quizStats.mastered}</span>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <XCircle className="h-3 w-3 text-amber-500" />
-                    <span>{t("exam.needsReview") || "Needs Review"}: {quizStats.needsReview}</span>
-                  </div>
+                <div className="p-2 bg-background rounded">
+                  <div className="text-lg font-bold text-green-500">{quizStats.mastered}</div>
+                  <div className="text-xs text-muted-foreground">{t("exam.mastered") || "已掌握"}</div>
                 </div>
               </div>
-            )}
+              <div className="text-xs text-muted-foreground text-center">
+                {unansweredCount > 0
+                  ? t("exam.priorityUnanswered") || "本次考試將優先出未作答的題目"
+                  : needsReviewCount > 0
+                  ? t("exam.priorityReview") || "所有題目已作答，本次將複習錯題"
+                  : t("exam.allMastered") || "恭喜！所有題目都已掌握"}
+              </div>
+            </div>
 
             <div className="text-sm text-muted-foreground space-y-2">
               <p>{t("exam.instruction1") || "This exam covers:"}</p>
@@ -817,6 +910,10 @@ export default function MockExamPage() {
   }
 
   if (examState === "review") {
+    // Calculate score in points (each question = 100/totalQuestions points)
+    const pointsPerQuestion = Math.round(100 / questions.length * 10) / 10;
+    const totalPoints = Math.round(score * pointsPerQuestion * 10) / 10;
+
     return (
       <div className="container max-w-3xl py-8">
         <Card className="mb-6">
@@ -829,23 +926,23 @@ export default function MockExamPage() {
                 ? t("exam.resultGood") || "Good Job!"
                 : t("exam.resultKeepPracticing") || "Keep Practicing!"}
             </CardTitle>
-            <CardDescription>
-              {t("exam.yourScore") || "Your Score"}: {score}/{questions.length} ({percentage}%)
+            <CardDescription className="text-xl mt-2">
+              {t("exam.yourScore") || "Your Score"}: <span className="font-bold text-primary">{totalPoints} {t("exam.points") || "分"}</span>
             </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-3 gap-4 text-center mb-6">
               <div className="p-4 bg-green-500/10 rounded-lg">
                 <div className="text-2xl font-bold text-green-500">{score}</div>
-                <div className="text-sm text-muted-foreground">{t("common.correct")}</div>
+                <div className="text-sm text-muted-foreground">{t("common.correct") || "正確"}</div>
               </div>
               <div className="p-4 bg-red-500/10 rounded-lg">
                 <div className="text-2xl font-bold text-red-500">{questions.length - score}</div>
-                <div className="text-sm text-muted-foreground">{t("exam.incorrect") || "Incorrect"}</div>
+                <div className="text-sm text-muted-foreground">{t("exam.incorrect") || "錯誤"}</div>
               </div>
               <div className="p-4 bg-muted rounded-lg">
                 <div className="text-2xl font-bold">{formatTime(EXAM_CONFIG.timeLimit - timeLeft)}</div>
-                <div className="text-sm text-muted-foreground">{t("exam.timeTaken") || "Time Taken"}</div>
+                <div className="text-sm text-muted-foreground">{t("exam.timeTaken") || "用時"}</div>
               </div>
             </div>
 
@@ -985,11 +1082,14 @@ export default function MockExamPage() {
           </div>
           <div className="flex items-center gap-2">
             <span className="text-sm text-muted-foreground">
-              {answered}/{questions.length} {t("exam.answered") || "answered"}
+              {answered}/{questions.length} {t("exam.answered") || "已答"}
+            </span>
+            <span className="text-sm font-medium text-green-500">
+              {score} {t("exam.points") || "分"}
             </span>
             <Button variant="destructive" size="sm" onClick={submitExam}>
               <Flag className="h-4 w-4 mr-1" />
-              {t("exam.submit") || "Submit"}
+              {t("exam.submit") || "提交"}
             </Button>
           </div>
         </div>
