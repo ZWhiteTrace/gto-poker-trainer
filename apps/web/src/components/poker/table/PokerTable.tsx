@@ -209,6 +209,8 @@ interface CompactPokerTableProps {
   pot: number;
   activePlayerIndex: number;
   heroIndex: number;
+  showAllCards?: boolean;
+  devMode?: boolean;
   className?: string;
 }
 
@@ -218,6 +220,8 @@ export function CompactPokerTable({
   pot,
   activePlayerIndex,
   heroIndex,
+  showAllCards = false,
+  devMode = false,
   className,
 }: CompactPokerTableProps) {
   const hero = players[heroIndex];
@@ -244,6 +248,7 @@ export function CompactPokerTable({
                 key={player.id}
                 player={player}
                 isActive={isActive}
+                showCards={showAllCards || devMode}
               />
             );
           })}
@@ -276,9 +281,10 @@ export function CompactPokerTable({
 interface MobileOpponentSeatProps {
   player: Player;
   isActive: boolean;
+  showCards?: boolean;
 }
 
-function MobileOpponentSeat({ player, isActive }: MobileOpponentSeatProps) {
+function MobileOpponentSeat({ player, isActive, showCards = false }: MobileOpponentSeatProps) {
   return (
     <div
       className={cn(
@@ -307,6 +313,11 @@ function MobileOpponentSeat({ player, isActive }: MobileOpponentSeatProps) {
       <div className="flex gap-0.5 my-0.5">
         {player.isFolded ? (
           <span className="text-[9px] text-gray-500 italic">Folded</span>
+        ) : showCards && player.holeCards ? (
+          <div className="flex gap-0.5">
+            <MiniCard card={player.holeCards[0]} />
+            <MiniCard card={player.holeCards[1]} />
+          </div>
         ) : (
           <>
             <div className="w-5 h-7 bg-gradient-to-br from-blue-500 to-blue-700 rounded-sm border border-blue-400/50" />

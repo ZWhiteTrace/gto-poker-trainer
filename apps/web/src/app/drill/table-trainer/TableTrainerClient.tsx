@@ -496,6 +496,8 @@ export default function TableTrainerClient() {
                   pot={displayPot}
                   activePlayerIndex={activePlayerIndex}
                   heroIndex={heroIndex}
+                  showAllCards={phase === "showdown" || phase === "result"}
+                  devMode={devMode}
                 />
               ) : (
                 <PokerTable
