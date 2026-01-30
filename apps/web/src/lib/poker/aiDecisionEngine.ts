@@ -4,6 +4,8 @@
 // ============================================
 
 import type { Card, Position, ActionType, Street, AIStyle } from "./types";
+import type { PlayerStats } from "./playerStats";
+import { getPlayerVPIP } from "./playerStats";
 
 // ============================================
 // Import GTO Range Data (will be loaded dynamically)
@@ -297,6 +299,7 @@ interface GameContext {
  *
  * @param context - Current game state including position, cards, betting info
  * @param profile - AI player profile defining play style and tendencies
+ * @param heroStats - Optional hero player statistics for AI adaptation
  * @returns AIDecision containing action type and optional bet amount
  *
  * @example
@@ -310,27 +313,59 @@ interface GameContext {
  *   playerBet: 0,
  *   stack: 100,
  *   communityCards: [],
- * }, AI_PROFILES[0]);
+ * }, AI_PROFILES[0], heroStats);
  * ```
  */
 export function getAIDecision(
   context: GameContext,
-  profile: AIPlayerProfile = AI_PROFILES[0]
+  profile: AIPlayerProfile = AI_PROFILES[0],
+  heroStats?: PlayerStats
 ): AIDecision {
   const { street, holeCards, currentBet, playerBet, stack } = context;
   const handNotation = getHandNotation(holeCards);
   const toCall = currentBet - playerBet;
 
+  // Adapt profile based on hero stats (if available and enough sample size)
+  const adaptedProfile = heroStats && heroStats.handsPlayed >= 10
+    ? adaptProfileToHero(profile, heroStats)
+    : profile;
+
   // Check if we're facing an all-in
   if (toCall >= stack) {
-    return getAllInResponse(context, handNotation, profile);
+    return getAllInResponse(context, handNotation, adaptedProfile);
   }
 
   if (street === "preflop") {
-    return getPreflopDecision(context, handNotation, profile);
+    return getPreflopDecision(context, handNotation, adaptedProfile);
   } else {
-    return getPostflopDecision(context, handNotation, profile);
+    return getPostflopDecision(context, handNotation, adaptedProfile);
   }
+}
+
+/**
+ * Adapt AI profile based on hero's playing tendencies.
+ * If hero plays too loose, AI increases 3-bet frequency.
+ * If hero plays too tight, AI increases steal frequency.
+ */
+function adaptProfileToHero(
+  profile: AIPlayerProfile,
+  heroStats: PlayerStats
+): AIPlayerProfile {
+  const heroVPIP = getPlayerVPIP(heroStats);
+  const adapted = { ...profile };
+
+  // If hero plays too loose (VPIP > 35%), AI 3-bets more aggressively
+  if (heroVPIP > 0.35) {
+    adapted.threeBetFreq = Math.min(0.18, profile.threeBetFreq * 1.3);
+  }
+
+  // If hero plays too tight (VPIP < 15%), AI steals more
+  if (heroVPIP < 0.15) {
+    adapted.vpip = Math.min(0.40, profile.vpip * 1.2);
+    adapted.pfr = Math.min(0.35, profile.pfr * 1.2);
+  }
+
+  return adapted;
 }
 
 /**

@@ -3,7 +3,6 @@
 import { memo } from "react";
 import { cn } from "@/lib/utils";
 import type { Player, Position } from "@/lib/poker/types";
-import { POSITION_LABELS } from "@/lib/poker/types";
 import { HoleCards, CardBack } from "../cards";
 import { AllInBadge } from "./AllInBadge";
 import type { AIPlayerProfile } from "@/lib/poker/aiDecisionEngine";
@@ -44,8 +43,8 @@ export const Seat = memo(function Seat({ player, isActive = false, isHero = fals
     return (
       <div
         className={cn(
-          "flex flex-col items-center justify-center",
-          "w-24 h-32 sm:w-28 sm:h-36",
+          "flex items-center justify-center",
+          "px-3 py-2 min-w-[100px]",
           "rounded-xl border-2 border-dashed border-gray-600/50",
           "bg-gray-800/30",
           className
@@ -56,13 +55,10 @@ export const Seat = memo(function Seat({ player, isActive = false, isHero = fals
     );
   }
 
-  const positionLabel = POSITION_LABELS[player.position];
-
   return (
     <div
       className={cn(
-        "flex flex-col items-center gap-1.5 p-2",
-        "w-24 sm:w-28",
+        "flex items-center gap-2 px-3 py-2",
         "rounded-xl border-2",
         "transition-all duration-300",
         // Active player - prominent glow effect
@@ -81,38 +77,11 @@ export const Seat = memo(function Seat({ player, isActive = false, isHero = fals
         className
       )}
     >
-      {/* AI Avatar */}
-      {!isHero && aiProfile && (
-        <span className="text-2xl" title={aiProfile.descriptionZh}>
-          {aiProfile.avatar}
-        </span>
-      )}
-
-      {/* 位置標籤 */}
-      <div
-        className={cn(
-          "px-2 py-0.5 rounded-full text-xs font-semibold",
-          isHero
-            ? "bg-yellow-500 text-black"
-            : player.isDealer
-              ? "bg-amber-500 text-black"
-              : "bg-gray-700 text-gray-200"
-        )}
-      >
-        {player.position}
-      </div>
-
-      {/* 玩家名稱 */}
-      <span className={cn("text-xs sm:text-sm font-medium", isHero ? "text-yellow-400" : "text-white")}>
-        {player.name}
-      </span>
-
       {/* 手牌 */}
-      <div className="my-1">
+      <div className="shrink-0">
         {player.holeCards && (showCards || isHero) ? (
           <HoleCards cards={player.holeCards} size="sm" highlighted={isActive} />
         ) : player.holeCards && devMode && !isHero ? (
-          // Dev mode: show AI cards with transparency
           <div className="opacity-50">
             <HoleCards cards={player.holeCards} size="sm" highlighted={isActive} />
           </div>
@@ -122,36 +91,52 @@ export const Seat = memo(function Seat({ player, isActive = false, isHero = fals
             <CardBack size="sm" />
           </div>
         ) : player.isFolded ? (
-          <div className="text-gray-500 text-xs italic">Folded</div>
+          <div className="text-gray-500 text-xs italic">Fold</div>
         ) : null}
       </div>
 
-      {/* 籌碼堆 */}
-      <div className="flex flex-col items-center">
+      {/* 資訊區 - 水平排列 */}
+      <div className="flex items-center gap-2">
+        {/* 位置標籤 */}
+        <span
+          className={cn(
+            "px-2 py-0.5 rounded text-xs font-bold",
+            isHero
+              ? "bg-yellow-500 text-black"
+              : player.isDealer
+                ? "bg-amber-500 text-black"
+                : "bg-gray-700 text-gray-200"
+          )}
+        >
+          {player.position}
+        </span>
+
+        {/* BB 顯示 */}
         <span
           className={cn(
             "text-sm font-bold",
             player.stack > 50 ? "text-green-400" : player.stack > 20 ? "text-yellow-400" : "text-red-400"
           )}
         >
-          {player.stack.toFixed(1)} BB
+          {player.stack.toFixed(1)}
         </span>
+
+        {/* Bet 顯示 */}
         {player.currentBet > 0 && (
           <span className="text-xs text-orange-400">
-            Bet: {player.currentBet.toFixed(1)}
+            ({player.currentBet.toFixed(1)})
           </span>
         )}
-      </div>
 
-      {/* 狀態指示器 */}
-      {player.isAllIn && <AllInBadge />}
+        {/* All-in 標記 */}
+        {player.isAllIn && <AllInBadge size="sm" />}
+      </div>
 
       {/* Dev mode: AI profile info */}
       {devMode && !isHero && aiProfile && (
-        <div className="mt-1 px-1.5 py-0.5 bg-purple-900/50 rounded text-[10px] text-purple-300 border border-purple-500/30">
-          <div className="font-semibold">{aiProfile.style}</div>
+        <div className="px-1.5 py-0.5 bg-purple-900/50 rounded text-[10px] text-purple-300 border border-purple-500/30">
           <div className="text-purple-400">
-            VPIP:{Math.round(aiProfile.vpip * 100)}% PFR:{Math.round(aiProfile.pfr * 100)}% 3bet:{Math.round(aiProfile.threeBetFreq * 100)}%
+            {aiProfile.style} {Math.round(aiProfile.vpip * 100)}/{Math.round(aiProfile.pfr * 100)}/{Math.round(aiProfile.threeBetFreq * 100)}
           </div>
         </div>
       )}

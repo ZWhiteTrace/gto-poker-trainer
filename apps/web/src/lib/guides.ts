@@ -414,6 +414,48 @@ const guideMetadata: Record<string, Omit<GuideMetadata, "slug">> = {
     order: 69,
     difficulty: "advanced",
   },
+  "vs-calling-station": {
+    title: "打跟注站完整指南",
+    description: "如何識別跟注站並最大化取值：停止詐唬、擴大價值範圍、增大下注尺度",
+    category: "advanced",
+    order: 70,
+    difficulty: "intermediate",
+  },
+  "vs-lag-player": {
+    title: "對抗鬆兇玩家指南",
+    description: "識別 LAG vs 瘋子的差異，學習陷阱策略和正確的跟注範圍",
+    category: "advanced",
+    order: 71,
+    difficulty: "intermediate",
+  },
+  "vs-tag-player": {
+    title: "對抗緊兇玩家指南",
+    description: "如何對付打得好的常規玩家：利用 ABC TAG 弱點、浮牌時機",
+    category: "advanced",
+    order: 72,
+    difficulty: "advanced",
+  },
+  "vs-nit-player": {
+    title: "對抗 Nit 玩家指南",
+    description: "偷盲的藝術：瘋狂偷盲、他加注就跑、河牌不詐唬",
+    category: "advanced",
+    order: 73,
+    difficulty: "intermediate",
+  },
+  "player-pool-by-stakes": {
+    title: "不同級別玩家池分析",
+    description: "從 NL2 到 NL500+ 的玩家組成特性、策略調整與升級指南",
+    category: "advanced",
+    order: 74,
+    difficulty: "intermediate",
+  },
+  "private-game-strategy": {
+    title: "私人局完整攻略",
+    description: "社交與獲利的平衡：長期思維、角色識別、贏錢的藝術",
+    category: "advanced",
+    order: 75,
+    difficulty: "intermediate",
+  },
 };
 
 export function getAllGuides(): GuideMetadata[] {

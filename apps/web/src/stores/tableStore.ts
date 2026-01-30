@@ -168,6 +168,20 @@ function getPositionIndex(position: Position): number {
   return POSITIONS.indexOf(position);
 }
 
+// Get position name for a seat based on dealer position
+// Positions relative to dealer: BTN = dealer, SB = dealer+1, BB = dealer+2, etc.
+function getPositionForSeat(seatIndex: number, dealerSeatIndex: number): Position {
+  // Calculate relative position from dealer
+  // seatIndex 0-5, dealerSeatIndex 0-5
+  // If dealer is at seat 3:
+  //   seat 3 = BTN, seat 4 = SB, seat 5 = BB, seat 0 = UTG, seat 1 = MP, seat 2 = CO
+  const relativePos = (seatIndex - dealerSeatIndex + 6) % 6;
+
+  // Mapping: 0=BTN, 1=SB, 2=BB, 3=UTG, 4=MP, 5=CO
+  const positionMap: Position[] = ["BTN", "SB", "BB", "UTG", "MP", "CO"];
+  return positionMap[relativePos];
+}
+
 // ============================================
 // Initial State
 // ============================================
@@ -206,9 +220,17 @@ const initialState: Omit<TableState, keyof TableActions> = {
     totalProfit: 0,
     biggestPot: 0,
   },
+  heroStats: {
+    handsPlayed: 0,
+    handsVPIP: 0,
+    handsPFR: 0,
+    foldTo3BetCount: 0,
+    faced3BetCount: 0,
+  },
   aiThinking: false,
   showBetSlider: false,
   selectedBetSize: 0,
+  autoRotate: true,
 };
 
 // ============================================
@@ -388,14 +410,17 @@ export const useTableStore = create<TableState & TableActions>()(
       // ========================================
 
       startNewHand: () => {
-        const { config, dealerSeatIndex, players, sessionStats } = get();
+        const { config, dealerSeatIndex, players, sessionStats, autoRotate } = get();
 
-        // Rotate dealer
-        const newDealerIndex = (dealerSeatIndex + 1) % 6;
+        // Rotate dealer only if autoRotate is enabled
+        const newDealerIndex = autoRotate
+          ? (dealerSeatIndex + 1) % 6
+          : dealerSeatIndex;
 
-        // Reset players for new hand
+        // Reset players for new hand, update positions based on new dealer
         const resetPlayers = players.map((p, i) => ({
           ...p,
+          position: getPositionForSeat(i, newDealerIndex),
           holeCards: null,
           currentBet: 0,
           totalInvested: 0,
@@ -746,6 +771,22 @@ export const useTableStore = create<TableState & TableActions>()(
         // Add to action history
         const newActionHistory = [...state.actionHistory, actionRecord];
 
+        // Track hero stats for AI adaptation (preflop only)
+        let newHeroStats = state.heroStats;
+        if (player.isHero && currentStreet === "preflop") {
+          newHeroStats = { ...state.heroStats };
+
+          // Track VPIP (voluntarily put money in pot - call or raise)
+          if (action === "call" || action === "raise" || action === "bet" || action === "allin") {
+            newHeroStats.handsVPIP++;
+          }
+
+          // Track PFR (preflop raise)
+          if (action === "raise" || action === "bet") {
+            newHeroStats.handsPFR++;
+          }
+        }
+
         // Check if hand should end (only 1 player left)
         const activePlayers = countActivePlayers(newPlayers);
         if (activePlayers === 1) {
@@ -754,6 +795,7 @@ export const useTableStore = create<TableState & TableActions>()(
             players: newPlayers,
             pot: newPot,
             actionHistory: newActionHistory,
+            heroStats: newHeroStats,
             phase: "result",
           });
           get().determineWinners();
@@ -769,6 +811,7 @@ export const useTableStore = create<TableState & TableActions>()(
             players: newPlayers,
             pot: newPot,
             actionHistory: newActionHistory,
+            heroStats: newHeroStats,
             phase: "showdown",
           });
           get().determineWinners();
@@ -788,6 +831,7 @@ export const useTableStore = create<TableState & TableActions>()(
             actionsThisRound: 0, // Reset action counter for new street
             lastAggressorIndex: newLastAggressor,
             actionHistory: newActionHistory,
+            heroStats: newHeroStats,
           });
 
           // Mark as transitioning to prevent race conditions
@@ -831,6 +875,7 @@ export const useTableStore = create<TableState & TableActions>()(
             lastAggressorIndex: newLastAggressor,
             activePlayerIndex: nextPlayerIndex,
             actionHistory: newActionHistory,
+            heroStats: newHeroStats,
           });
 
           // If next player is AI, trigger AI turn
@@ -959,7 +1004,7 @@ export const useTableStore = create<TableState & TableActions>()(
         // Simulate AI thinking time
         await new Promise(resolve => setTimeout(resolve, TIMING.AI_THINKING_MIN + Math.random() * TIMING.AI_THINKING_RANDOM));
 
-        const { players, activePlayerIndex, currentBet, pot, currentStreet, communityCards, lastAggressorIndex } = get();
+        const { players, activePlayerIndex, currentBet, pot, currentStreet, communityCards, lastAggressorIndex, heroStats } = get();
         const aiPlayer = players[activePlayerIndex];
 
         if (!aiPlayer || aiPlayer.isHero || !aiPlayer.holeCards) {
@@ -977,6 +1022,7 @@ export const useTableStore = create<TableState & TableActions>()(
         const hasRaiseInFront = currentBet > 1 && lastAggressorIndex !== activePlayerIndex;
 
         // Get AI decision using the decision engine with the player's profile
+        // Pass heroStats for AI adaptation
         const decision = getAIDecision(
           {
             position: aiPlayer.position,
@@ -991,7 +1037,8 @@ export const useTableStore = create<TableState & TableActions>()(
             hasRaiseInFront,
             communityCards,
           },
-          aiProfile
+          aiProfile,
+          heroStats
         );
 
         set({ aiThinking: false });
@@ -1024,10 +1071,11 @@ export const useTableStore = create<TableState & TableActions>()(
             phase: "result",
           });
 
-          // Update session stats - always increment handsPlayed
+          // Update session stats and hero stats - always increment handsPlayed
           const heroPlayer = players.find(p => p.isHero);
           const heroInvested = heroPlayer?.totalInvested ?? 0;
-          const { sessionStats } = get();
+          const { sessionStats, heroStats } = get();
+          const newHeroStats = { ...heroStats, handsPlayed: heroStats.handsPlayed + 1 };
 
           if (winner.isHero) {
             // Hero won the pot
@@ -1040,6 +1088,7 @@ export const useTableStore = create<TableState & TableActions>()(
                 totalProfit: sessionStats.totalProfit + netProfit,
                 biggestPot: Math.max(sessionStats.biggestPot, pot),
               },
+              heroStats: newHeroStats,
             });
           } else {
             // Hero lost (folded or was the one remaining when everyone folded)
@@ -1050,6 +1099,7 @@ export const useTableStore = create<TableState & TableActions>()(
                 totalProfit: sessionStats.totalProfit - heroInvested,
                 biggestPot: Math.max(sessionStats.biggestPot, pot),
               },
+              heroStats: newHeroStats,
             });
           }
         } else {
@@ -1144,12 +1194,13 @@ export const useTableStore = create<TableState & TableActions>()(
             phase: "showdown",
           });
 
-          // Update session stats - get hero from all players (may have folded)
+          // Update session stats and hero stats - get hero from all players (may have folded)
           const heroPlayer = players.find(p => p.isHero);
           const heroInvested = heroPlayer?.totalInvested ?? 0;
           const heroWinnings = heroPlayer ? (winnings.get(heroPlayer.id) || 0) : 0;
           const heroWon = heroWinnings > 0;
-          const { sessionStats } = get();
+          const { sessionStats, heroStats } = get();
+          const newHeroStats = { ...heroStats, handsPlayed: heroStats.handsPlayed + 1 };
 
           if (heroWon) {
             // Hero won (or split a pot)
@@ -1162,6 +1213,7 @@ export const useTableStore = create<TableState & TableActions>()(
                 totalProfit: sessionStats.totalProfit + netProfit,
                 biggestPot: Math.max(sessionStats.biggestPot, pot),
               },
+              heroStats: newHeroStats,
             });
           } else {
             // Hero lost (folded earlier or lost at showdown)
@@ -1172,6 +1224,7 @@ export const useTableStore = create<TableState & TableActions>()(
                 totalProfit: sessionStats.totalProfit - heroInvested,
                 biggestPot: Math.max(sessionStats.biggestPot, pot),
               },
+              heroStats: newHeroStats,
             });
           }
         }
@@ -1208,12 +1261,17 @@ export const useTableStore = create<TableState & TableActions>()(
 
       setShowBetSlider: (show: boolean) => set({ showBetSlider: show }),
       setSelectedBetSize: (size: number) => set({ selectedBetSize: size }),
+
+      // Auto rotation
+      setAutoRotate: (autoRotate: boolean) => set({ autoRotate }),
     }),
     {
       name: "table-store",
       partialize: (state) => ({
         sessionStats: state.sessionStats,
         trainingMode: state.trainingMode,
+        autoRotate: state.autoRotate,
+        heroStats: state.heroStats,
       }),
     }
   )

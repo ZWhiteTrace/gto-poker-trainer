@@ -241,10 +241,22 @@ export interface TableState {
     biggestPot: number;
   };
 
+  // Hero Statistics (for AI adaptation)
+  heroStats: {
+    handsPlayed: number;
+    handsVPIP: number;
+    handsPFR: number;
+    foldTo3BetCount: number;
+    faced3BetCount: number;
+  };
+
   // UI State
   aiThinking: boolean;
   showBetSlider: boolean;
   selectedBetSize: number;
+
+  // Auto rotation
+  autoRotate: boolean;
 }
 
 // ============================================
@@ -285,6 +297,9 @@ export interface TableActions {
   // UI
   setShowBetSlider: (show: boolean) => void;
   setSelectedBetSize: (size: number) => void;
+
+  // Auto rotation
+  setAutoRotate: (autoRotate: boolean) => void;
 }
 
 // ============================================

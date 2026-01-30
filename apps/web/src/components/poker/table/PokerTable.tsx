@@ -2,7 +2,7 @@
 
 import { cn } from "@/lib/utils";
 import type { Player, Card } from "@/lib/poker/types";
-import { Seat, SEAT_POSITIONS } from "./Seat";
+import { Seat } from "./Seat";
 import { CommunityCards } from "./CommunityCards";
 import { PotDisplay } from "./PotDisplay";
 import { AllInBadge } from "./AllInBadge";
@@ -22,6 +22,40 @@ interface PokerTableProps {
 // Default AI profile assignment
 function getDefaultAIProfile(seatIndex: number): AIPlayerProfile {
   return AI_PROFILES[seatIndex % AI_PROFILES.length];
+}
+
+// Hero 固定底部，對手在上方弧形排列的座位位置
+const HERO_POSITION = { top: "85%", left: "50%", transform: "translate(-50%, -50%)" };
+
+// 5 個對手的位置（從左到右弧形排列）
+const OPPONENT_POSITIONS = [
+  { top: "20%", left: "8%", transform: "translate(-50%, -50%)" },   // 左上
+  { top: "8%", left: "30%", transform: "translate(-50%, -50%)" },   // 左中上
+  { top: "8%", left: "50%", transform: "translate(-50%, -50%)" },   // 頂部中央
+  { top: "8%", left: "70%", transform: "translate(-50%, -50%)" },   // 右中上
+  { top: "20%", left: "92%", transform: "translate(-50%, -50%)" },  // 右上
+];
+
+// 根據 Hero 位置計算其他玩家的螢幕顯示位置
+function getPlayerScreenPosition(
+  player: Player,
+  heroSeatIndex: number,
+  totalPlayers: number
+): { top: string; left: string; transform: string } {
+  if (player.isHero) {
+    return HERO_POSITION;
+  }
+
+  // 計算相對於 Hero 的位置（順時針）
+  // Hero 右邊第一個是 index 0，依次遞增
+  let relativeIndex = (player.seatIndex - heroSeatIndex - 1 + totalPlayers) % totalPlayers;
+
+  // 確保 relativeIndex 在 0-4 範圍內（5個對手位置）
+  if (relativeIndex >= OPPONENT_POSITIONS.length) {
+    relativeIndex = OPPONENT_POSITIONS.length - 1;
+  }
+
+  return OPPONENT_POSITIONS[relativeIndex];
 }
 
 export function PokerTable({
@@ -49,77 +83,103 @@ export function PokerTable({
         </div>
       </div>
 
-      {/* 公牌區域 */}
-      <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 flex flex-col items-center gap-3 z-10">
-        <CommunityCards cards={communityCards} />
+      {/* POT - 左上角固定 */}
+      <div className="absolute top-4 left-4 z-30">
         <PotDisplay amount={pot} />
       </div>
 
-      {/* 座位 */}
-      {players.map((player, index) => {
-        const position = SEAT_POSITIONS[player.seatIndex];
-        if (!position) return null;
+      {/* 公牌區域 - 中央 */}
+      <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10">
+        <CommunityCards cards={communityCards} />
+      </div>
 
-        return (
-          <div
-            key={player.id}
-            className="absolute z-20"
-            style={{
-              top: position.top,
-              left: position.left,
-              transform: position.transform,
-            }}
-          >
-            <Seat
-              player={player}
-              isActive={index === activePlayerIndex && !player.isFolded}
-              isHero={player.isHero}
-              showCards={showAllCards || player.isHero}
-              aiProfile={!player.isHero ? (aiProfiles?.get(player.seatIndex) || getDefaultAIProfile(player.seatIndex)) : undefined}
-              devMode={devMode}
-            />
-          </div>
-        );
-      })}
+      {/* 座位 - Hero 固定底部，對手在上方 */}
+      {(() => {
+        const heroPlayer = players.find(p => p.isHero);
+        const heroSeatIndex = heroPlayer?.seatIndex ?? 0;
+
+        return players.map((player, index) => {
+          const position = getPlayerScreenPosition(player, heroSeatIndex, players.length);
+
+          return (
+            <div
+              key={player.id}
+              className="absolute z-20"
+              style={{
+                top: position.top,
+                left: position.left,
+                transform: position.transform,
+              }}
+            >
+              <Seat
+                player={player}
+                isActive={index === activePlayerIndex && !player.isFolded}
+                isHero={player.isHero}
+                showCards={showAllCards || player.isHero}
+                aiProfile={!player.isHero ? (aiProfiles?.get(player.seatIndex) || getDefaultAIProfile(player.seatIndex)) : undefined}
+                devMode={devMode}
+              />
+            </div>
+          );
+        });
+      })()}
 
       {/* 當前下注指示 */}
-      {players.map((player) => {
-        if (player.currentBet <= 0) return null;
-        const position = SEAT_POSITIONS[player.seatIndex];
-        if (!position) return null;
+      {(() => {
+        const heroPlayer = players.find(p => p.isHero);
+        const heroSeatIndex = heroPlayer?.seatIndex ?? 0;
 
-        // 計算下注籌碼顯示位置 (靠近桌子中心)
-        const betPosition = getBetPosition(player.seatIndex);
+        return players.map((player) => {
+          if (player.currentBet <= 0) return null;
 
-        return (
-          <div
-            key={`bet-${player.id}`}
-            className="absolute z-15"
-            style={{
-              top: betPosition.top,
-              left: betPosition.left,
-              transform: "translate(-50%, -50%)",
-            }}
-          >
-            <BetChip amount={player.currentBet} />
-          </div>
-        );
-      })}
+          // 根據新佈局計算下注籌碼位置
+          const betPosition = getBetPositionForNewLayout(player, heroSeatIndex, players.length);
+
+          return (
+            <div
+              key={`bet-${player.id}`}
+              className="absolute z-15"
+              style={{
+                top: betPosition.top,
+                left: betPosition.left,
+                transform: "translate(-50%, -50%)",
+              }}
+            >
+              <BetChip amount={player.currentBet} />
+            </div>
+          );
+        });
+      })()}
     </div>
   );
 }
 
-// 計算下注籌碼位置
-function getBetPosition(seatIndex: number): { top: string; left: string } {
-  const positions: Record<number, { top: string; left: string }> = {
-    0: { top: "70%", left: "50%" },   // BB
-    1: { top: "65%", left: "25%" },   // SB
-    2: { top: "45%", left: "20%" },   // BTN
-    3: { top: "25%", left: "50%" },   // CO
-    4: { top: "45%", left: "80%" },   // MP
-    5: { top: "65%", left: "75%" },   // UTG
-  };
-  return positions[seatIndex] || { top: "50%", left: "50%" };
+// 新佈局的下注籌碼位置（Hero 底部，對手上方）
+const HERO_BET_POSITION = { top: "70%", left: "50%" };
+
+const OPPONENT_BET_POSITIONS = [
+  { top: "35%", left: "15%" },   // 左上對應
+  { top: "25%", left: "32%" },   // 左中上對應
+  { top: "25%", left: "50%" },   // 頂部中央對應
+  { top: "25%", left: "68%" },   // 右中上對應
+  { top: "35%", left: "85%" },   // 右上對應
+];
+
+function getBetPositionForNewLayout(
+  player: Player,
+  heroSeatIndex: number,
+  totalPlayers: number
+): { top: string; left: string } {
+  if (player.isHero) {
+    return HERO_BET_POSITION;
+  }
+
+  let relativeIndex = (player.seatIndex - heroSeatIndex - 1 + totalPlayers) % totalPlayers;
+  if (relativeIndex >= OPPONENT_BET_POSITIONS.length) {
+    relativeIndex = OPPONENT_BET_POSITIONS.length - 1;
+  }
+
+  return OPPONENT_BET_POSITIONS[relativeIndex];
 }
 
 // 下注籌碼顯示
