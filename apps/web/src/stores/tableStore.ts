@@ -185,6 +185,14 @@ function getPositionForSeat(seatIndex: number, dealerSeatIndex: number): Positio
   return positionMap[relativePos];
 }
 
+// Check if all remaining players are all-in (no one can act)
+function areAllPlayersAllIn(players: Player[]): boolean {
+  const activePlayers = players.filter(p => p.isActive && !p.isFolded);
+  if (activePlayers.length <= 1) return false;
+  // All active players must be all-in
+  return activePlayers.every(p => p.isAllIn);
+}
+
 // ============================================
 // Initial State
 // ============================================
@@ -645,6 +653,106 @@ export const useTableStore = create<TableState & TableActions>()(
         });
       },
 
+      // Run out board when all players are all-in
+      // Deals remaining community cards with delays for dramatic effect
+      runOutBoard: () => {
+        const { deck, communityCards, currentStreet, players, phase } = get();
+
+        // Abort if not in playing state
+        if (phase !== "playing") {
+          set({ isTransitioning: false });
+          return;
+        }
+
+        const newDeck = [...deck];
+        const newCommunityCards = [...communityCards];
+
+        // Calculate how many cards we need to deal
+        const cardsNeeded = 5 - communityCards.length;
+
+        if (cardsNeeded <= 0) {
+          // Already have 5 cards, go to showdown
+          set({
+            isTransitioning: false,
+            phase: "showdown",
+          });
+          get().determineWinners();
+          return;
+        }
+
+        // Deal cards based on current street
+        const dealSequence: { street: Street; cardsCount: number }[] = [];
+
+        if (currentStreet === "preflop") {
+          dealSequence.push({ street: "flop", cardsCount: 3 });
+          dealSequence.push({ street: "turn", cardsCount: 1 });
+          dealSequence.push({ street: "river", cardsCount: 1 });
+        } else if (currentStreet === "flop") {
+          dealSequence.push({ street: "turn", cardsCount: 1 });
+          dealSequence.push({ street: "river", cardsCount: 1 });
+        } else if (currentStreet === "turn") {
+          dealSequence.push({ street: "river", cardsCount: 1 });
+        }
+
+        // Reset player bets for new street
+        const resetPlayers = players.map(p => ({ ...p, currentBet: 0 }));
+
+        // Deal with recursive delays
+        let currentIndex = 0;
+
+        const dealNext = () => {
+          if (currentIndex >= dealSequence.length) {
+            // Done dealing, go to showdown
+            set({
+              isTransitioning: false,
+              phase: "showdown",
+            });
+            get().determineWinners();
+            return;
+          }
+
+          const { street, cardsCount } = dealSequence[currentIndex];
+          const cardsDealt: Card[] = [];
+
+          // Burn card
+          newDeck.pop();
+
+          // Deal cards
+          for (let i = 0; i < cardsCount; i++) {
+            const card = newDeck.pop();
+            if (card) cardsDealt.push(card);
+          }
+
+          set({
+            deck: newDeck,
+            communityCards: [...get().communityCards, ...cardsDealt],
+            currentStreet: street,
+            players: resetPlayers,
+            currentBet: 0,
+            actionsThisRound: 0,
+          });
+
+          currentIndex++;
+
+          // Delay before dealing next street (dramatic effect)
+          if (currentIndex < dealSequence.length) {
+            setTimeout(dealNext, TIMING.ALL_IN_CARD_DELAY ?? 1000);
+          } else {
+            // Last cards dealt, slight delay before showdown
+            setTimeout(() => {
+              set({
+                isTransitioning: false,
+                phase: "showdown",
+              });
+              get().determineWinners();
+            }, TIMING.ALL_IN_CARD_DELAY ?? 1000);
+          }
+        };
+
+        // Start dealing sequence
+        setTimeout(dealNext, TIMING.ALL_IN_CARD_DELAY ?? 1000);
+      },
+
       // ========================================
       // Player Actions
       // ========================================
@@ -945,8 +1053,24 @@ export const useTableStore = create<TableState & TableActions>()(
         // Find next player to act
         const nextPlayerIndex = getNextActivePlayerIndex(newPlayers, activePlayerIndex);
 
-        // Safety check: if no active players found, go to showdown
+        // If no one can act (all players all-in or only 1 active), run out the board
         if (nextPlayerIndex === -1) {
+          // Check if all remaining players are all-in (need to deal remaining cards)
+          if (areAllPlayersAllIn(newPlayers)) {
+            set({
+              players: newPlayers,
+              pot: newPot,
+              actionHistory: newActionHistory,
+              heroStats: newHeroStats,
+              isTransitioning: true,
+            });
+
+            // Deal remaining community cards with delays for dramatic effect
+            get().runOutBoard();
+            return;
+          }
+
+          // Only 1 player left scenario (shouldn't happen, handled above)
           set({
             players: newPlayers,
             pot: newPot,
@@ -1321,21 +1445,27 @@ export const useTableStore = create<TableState & TableActions>()(
 
           // Only evaluate if we have 5 community cards
           if (communityCards.length < 5) {
-            // Not at showdown yet, pick first active player
-            const winner = activePlayers[0];
-            const winnerIndex = players.findIndex(p => p.id === winner.id);
-            const newPlayers = [...players];
-            newPlayers[winnerIndex] = {
-              ...winner,
-              stack: winner.stack + pot,
-            };
+            // This shouldn't happen - runOutBoard should be called first
+            // But if it does, deal remaining cards synchronously
+            console.warn("[determineWinners] Called with < 5 community cards, dealing remaining cards...");
+
+            const newDeck = [...get().deck];
+            const newCommunityCards = [...communityCards];
+
+            while (newCommunityCards.length < 5) {
+              newDeck.pop(); // Burn
+              const card = newDeck.pop();
+              if (card) newCommunityCards.push(card);
+            }
+
             set({
-              players: newPlayers,
-              winners: [winner],
-              lastWonPot: pot, // Store pot for display
-              pot: 0,
-              phase: "result",
+              deck: newDeck,
+              communityCards: newCommunityCards,
+              currentStreet: "river",
             });
+
+            // Re-evaluate with full board
+            get().determineWinners();
             return;
           }
 
@@ -1523,6 +1653,7 @@ export const useTableStore = create<TableState & TableActions>()(
     }),
     {
       name: "table-store",
+      version: 2, // Bump version to clear corrupted stats data
       partialize: (state) => ({
         sessionStats: state.sessionStats,
         trainingMode: state.trainingMode,
@@ -1530,6 +1661,32 @@ export const useTableStore = create<TableState & TableActions>()(
         heroStats: state.heroStats,
         positionStats: state.positionStats,
       }),
+      migrate: (persistedState: unknown, version: number) => {
+        // Clear old corrupted data from version 0/1
+        if (version < 2) {
+          return {
+            sessionStats: { handsPlayed: 0, handsWon: 0, totalProfit: 0, biggestPot: 0 },
+            trainingMode: {
+              enabled: false,
+              scenario: null,
+              showGTOHints: false,
+              showEV: false,
+              hintMode: "off" as const,
+            },
+            autoRotate: true,
+            heroStats: { ...DEFAULT_HERO_STATS },
+            positionStats: {
+              BTN: { handsPlayed: 0, handsWon: 0, totalProfit: 0 },
+              CO: { handsPlayed: 0, handsWon: 0, totalProfit: 0 },
+              MP: { handsPlayed: 0, handsWon: 0, totalProfit: 0 },
+              UTG: { handsPlayed: 0, handsWon: 0, totalProfit: 0 },
+              SB: { handsPlayed: 0, handsWon: 0, totalProfit: 0 },
+              BB: { handsPlayed: 0, handsWon: 0, totalProfit: 0 },
+            },
+          };
+        }
+        return persistedState as TableState;
+      },
     }
   )
 );

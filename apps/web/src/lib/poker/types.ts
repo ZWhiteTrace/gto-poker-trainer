@@ -404,6 +404,7 @@ export interface TableActions {
   dealFlop: () => void;
   dealTurn: () => void;
   dealRiver: () => void;
+  runOutBoard: () => void;
 
   // Player Actions
   handleAction: (action: ActionType, amount?: number) => void;

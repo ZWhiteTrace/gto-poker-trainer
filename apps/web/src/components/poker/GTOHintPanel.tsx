@@ -196,11 +196,11 @@ interface HintModeSelectorProps {
 }
 
 export function HintModeSelector({ mode, onChange, className }: HintModeSelectorProps) {
-  const modes: { value: HintMode; label: string; icon: string; tooltip: string }[] = [
-    { value: "off", label: "關閉", icon: "🔇", tooltip: "不顯示 GTO 提示" },
-    { value: "after", label: "行動後", icon: "📊", tooltip: "你行動後顯示分析（複盤模式）" },
-    { value: "before", label: "行動前", icon: "💡", tooltip: "輪到你時就顯示建議（引導模式）" },
-    { value: "detailed", label: "詳細", icon: "🎓", tooltip: "顯示詳細的決策因素說明" },
+  const modes: { value: HintMode; label: string; tooltip: string }[] = [
+    { value: "off", label: "關閉", tooltip: "不顯示 GTO 提示" },
+    { value: "after", label: "行動後", tooltip: "你行動後顯示分析（複盤模式）" },
+    { value: "before", label: "行動前", tooltip: "輪到你時就顯示建議（引導模式）" },
+    { value: "detailed", label: "詳細", tooltip: "顯示詳細的決策因素說明" },
   ];
 
   return (
@@ -217,7 +217,6 @@ export function HintModeSelector({ mode, onChange, className }: HintModeSelector
               : "text-gray-400 hover:text-white hover:bg-gray-700"
           )}
         >
-          <span className="mr-1">{m.icon}</span>
           {m.label}
         </button>
       ))}

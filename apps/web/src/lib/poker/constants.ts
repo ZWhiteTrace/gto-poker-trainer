@@ -8,6 +8,8 @@ export const TIMING = {
   AI_THINKING_RANDOM: 600,
   /** Delay between street transitions for better UX */
   STREET_TRANSITION: 600,
+  /** Delay between cards when running out the board (all-in) */
+  ALL_IN_CARD_DELAY: 1200,
 } as const;
 
 /**
