@@ -512,7 +512,7 @@ export default function TableTrainerClient() {
             </div>
 
             {/* Mobile Action Area - only show on mobile */}
-            <div className="lg:hidden space-y-2 relative z-30 max-h-[45vh] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-700">
+            <div className="lg:hidden space-y-2 relative z-30 shrink-0">
               {/* Start / New Hand Button */}
               {(phase === "setup" || phase === "result" || phase === "showdown") && (
                 <div className="flex justify-center">
@@ -767,8 +767,8 @@ export default function TableTrainerClient() {
           <div className={cn(
             showMobileSidebar ? "block mt-2" : "hidden lg:block"
           )}>
-            {/* Desktop: Horizontal action history bar */}
-            <div className="hidden lg:block">
+            {/* Desktop: Horizontal action history bar - limited width to not overlap right panel */}
+            <div className="hidden lg:block lg:mr-[21rem]">
               <Card className="bg-gray-800/50 border-gray-700 overflow-hidden">
                 <CardContent className="py-2 px-4">
                   <div className="flex items-center gap-4 max-w-full">
