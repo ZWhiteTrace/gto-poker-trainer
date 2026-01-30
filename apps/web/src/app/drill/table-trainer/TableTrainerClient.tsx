@@ -211,42 +211,53 @@ export default function TableTrainerClient() {
         return;
       }
 
-      if (phase !== "playing") return;
-      const activePlayer = players[activePlayerIndex];
-      if (!activePlayer?.isHero) return;
-
-      const actions = getAvailableActions();
       let handled = false;
 
-      switch (e.key.toLowerCase()) {
-        case "f":
-          if (actions.find((a) => a.type === "fold")) {
-            handleAction("fold");
-            handled = true;
+      // Space/Enter to start new hand (when not playing)
+      if (e.key === " " || e.key === "Enter") {
+        if (phase === "setup" || phase === "result" || phase === "showdown") {
+          startNewHand();
+          handled = true;
+        }
+      }
+
+      // Action shortcuts (only when playing and hero's turn)
+      if (phase === "playing") {
+        const activePlayer = players[activePlayerIndex];
+        if (activePlayer?.isHero) {
+          const actions = getAvailableActions();
+
+          switch (e.key.toLowerCase()) {
+            case "f":
+              if (actions.find((a) => a.type === "fold")) {
+                handleAction("fold");
+                handled = true;
+              }
+              break;
+            case "c":
+              if (actions.find((a) => a.type === "check")) {
+                handleAction("check");
+                handled = true;
+              } else if (actions.find((a) => a.type === "call")) {
+                handleAction("call");
+                handled = true;
+              }
+              break;
+            case "r":
+              const betAction = actions.find((a) => a.type === "bet" || a.type === "raise");
+              if (betAction) {
+                handleAction(betAction.type, selectedBetSize || betAction.minAmount);
+                handled = true;
+              }
+              break;
+            case "a":
+              if (actions.find((a) => a.type === "allin")) {
+                handleAction("allin");
+                handled = true;
+              }
+              break;
           }
-          break;
-        case "c":
-          if (actions.find((a) => a.type === "check")) {
-            handleAction("check");
-            handled = true;
-          } else if (actions.find((a) => a.type === "call")) {
-            handleAction("call");
-            handled = true;
-          }
-          break;
-        case "r":
-          const betAction = actions.find((a) => a.type === "bet" || a.type === "raise");
-          if (betAction) {
-            handleAction(betAction.type, selectedBetSize || betAction.minAmount);
-            handled = true;
-          }
-          break;
-        case "a":
-          if (actions.find((a) => a.type === "allin")) {
-            handleAction("allin");
-            handled = true;
-          }
-          break;
+        }
       }
 
       // Prevent default only if we handled the key
@@ -257,7 +268,7 @@ export default function TableTrainerClient() {
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [phase, activePlayerIndex, players, getAvailableActions, handleAction, selectedBetSize]);
+  }, [phase, activePlayerIndex, players, getAvailableActions, handleAction, selectedBetSize, startNewHand]);
 
   // Set default bet size when actions change
   useEffect(() => {
@@ -759,6 +770,9 @@ export default function TableTrainerClient() {
                       </span>
                       <span className="text-[10px] text-gray-500">
                         <kbd className="px-1 bg-gray-700 rounded">A</kbd> All-in
+                      </span>
+                      <span className="text-[10px] text-gray-500">
+                        <kbd className="px-1 bg-gray-700 rounded">Space</kbd> 下一手
                       </span>
                     </div>
                   </div>

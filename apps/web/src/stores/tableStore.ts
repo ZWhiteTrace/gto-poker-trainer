@@ -806,13 +806,22 @@ export const useTableStore = create<TableState & TableActions>()(
           // Preflop stats
           // ============================================
           if (currentStreet === "preflop") {
-            // Track VPIP (voluntarily put money in pot)
-            if (action === "call" || action === "raise" || action === "bet" || action === "allin") {
+            // Check if hero has already made voluntary actions this hand
+            const heroPreflopActions = actionHistory.filter(a => a.street === "preflop" && a.isHero);
+            const heroAlreadyVPIP = heroPreflopActions.some(
+              a => a.action === "call" || a.action === "raise" || a.action === "bet" || a.action === "allin"
+            );
+            const heroAlreadyPFR = heroPreflopActions.some(
+              a => a.action === "raise" || a.action === "bet"
+            );
+
+            // Track VPIP (voluntarily put money in pot) - only count once per hand
+            if (!heroAlreadyVPIP && (action === "call" || action === "raise" || action === "bet" || action === "allin")) {
               newHeroStats.handsVPIP++;
             }
 
-            // Track PFR (preflop raise)
-            if (action === "raise" || action === "bet") {
+            // Track PFR (preflop raise) - only count once per hand
+            if (!heroAlreadyPFR && (action === "raise" || action === "bet")) {
               newHeroStats.handsPFR++;
             }
 
