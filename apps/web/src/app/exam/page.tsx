@@ -67,7 +67,7 @@ const EXAM_QUESTIONS: ExamQuestion[] = [
   {
     id: "l2",
     type: "logic",
-    question: "什麼是 Minimum Defense Frequency (MDF)？",
+    question: "什麼是 Minimum Defense Frequency (MDF，最小防禦頻率)？",
     options: [
       { key: "a", text: "面對下注時需要繼續的最低頻率，防止對手有利可圖地詐唬" },
       { key: "b", text: "最少的防守手牌數量" },
@@ -80,9 +80,9 @@ const EXAM_QUESTIONS: ExamQuestion[] = [
   {
     id: "l3",
     type: "logic",
-    question: "為什麼在乾燥 A 高牌面適合使用小注高頻 C-bet？",
+    question: "為什麼在乾燥 A 高牌面適合使用小注高頻 C-bet（持續下注）？",
     options: [
-      { key: "a", text: "因為你有範圍優勢，小注即可達成目標" },
+      { key: "a", text: "因為你有範圍優勢（你的牌比對手整體更好），小注即可達成目標" },
       { key: "b", text: "因為對手會棄牌" },
       { key: "c", text: "因為籌碼不夠" },
       { key: "d", text: "因為想要詐唬" },
@@ -134,7 +134,7 @@ const EXAM_QUESTIONS: ExamQuestion[] = [
   {
     id: "p1",
     type: "position",
-    question: "在 6-max 中，哪個位置的 RFI 範圍最寬？",
+    question: "在 6-max 中，哪個位置的 RFI（首次加注）範圍最寬？",
     options: [
       { key: "a", text: "UTG" },
       { key: "b", text: "HJ" },
@@ -149,18 +149,18 @@ const EXAM_QUESTIONS: ExamQuestion[] = [
     type: "position",
     question: "為什麼 BB 面對 BTN 的開牌應該寬防守？",
     options: [
-      { key: "a", text: "因為 BB 已經投入盲注，底池賠率有利" },
+      { key: "a", text: "因為 BB 已經投入盲注，底池賠率（Pot Odds）有利" },
       { key: "b", text: "因為 BB 的牌力更強" },
       { key: "c", text: "因為 BTN 一定在詐唬" },
       { key: "d", text: "因為 BB 想看翻牌" },
     ],
     correctAnswer: "a",
-    explanation: "BB 已投入 1BB，面對 2.5BB 加注只需再投 1.5BB，底池賠率使寬防守有利可圖。",
+    explanation: "BB 已投入 1BB，面對 2.5BB 加注只需再投 1.5BB，底池賠率（Pot Odds）使寬防守有利可圖。",
   },
   {
     id: "p3",
     type: "position",
-    question: "UTG 的標準 RFI 範圍大約是多少？",
+    question: "UTG 的標準 RFI（首次加注）範圍大約是多少？",
     options: [
       { key: "a", text: "約 8-10%" },
       { key: "b", text: "約 12-15%" },
@@ -174,7 +174,7 @@ const EXAM_QUESTIONS: ExamQuestion[] = [
   {
     id: "pf1",
     type: "push_fold",
-    question: "在 10bb 時，BTN 面對前面全部棄牌，A2o 應該？",
+    question: "有效籌碼 10BB（你與對手較小者）時，BTN 面對前面全部棄牌，A2o 應該？",
     options: [
       { key: "a", text: "棄牌" },
       { key: "b", text: "加注" },
@@ -182,25 +182,25 @@ const EXAM_QUESTIONS: ExamQuestion[] = [
       { key: "d", text: "跛入" },
     ],
     correctAnswer: "c",
-    explanation: "10bb BTN 的 push 範圍很寬，A2o 有阻擋效應且能贏翻牌，應該全下。",
+    explanation: "10BB BTN 的 push 範圍很寬，A2o 有阻擋（持有 A 讓對手有 A 的機率下降）且能贏翻牌，應該全下。",
   },
   {
     id: "pf2",
     type: "push_fold",
-    question: "BB 面對 SB 在 8bb 有效籌碼時全下，87s 應該？",
+    question: "BB 面對 SB 在 8BB 有效籌碼時全下，87s 應該？",
     options: [
       { key: "a", text: "棄牌 - 勝率不夠" },
-      { key: "b", text: "跟注 - 底池賠率有利且有 playability" },
+      { key: "b", text: "跟注 - 底池賠率（Pot Odds）有利且有 playability（翻後可玩性）" },
       { key: "c", text: "取決於對手" },
       { key: "d", text: "加注" },
     ],
     correctAnswer: "b",
-    explanation: "BB vs SB 全下，底池賠率約 2:1，87s 有足夠 equity 跟注。",
+    explanation: "BB vs SB 全下，底池賠率（Pot Odds）約 2:1，87s 有足夠 equity 跟注。",
   },
   {
     id: "pf3",
     type: "push_fold",
-    question: "5bb 時，SB 面對前面全部棄牌，什麼範圍應該全下？",
+    question: "有效籌碼 5BB 時，SB 面對前面全部棄牌，什麼範圍應該全下？",
     options: [
       { key: "a", text: "只有超強牌 (TT+/AQ+)" },
       { key: "b", text: "約 40% 手牌" },
@@ -208,7 +208,7 @@ const EXAM_QUESTIONS: ExamQuestion[] = [
       { key: "d", text: "任何兩張牌" },
     ],
     correctAnswer: "c",
-    explanation: "5bb 很短，SB 對 BB 有位置優勢，應該用很寬的範圍（約 60-70%）全下。",
+    explanation: "5BB 很短，SB 對 BB 有位置優勢，應該用很寬的範圍（約 60-70%）全下。",
   },
   // More Logic
   {
@@ -216,20 +216,20 @@ const EXAM_QUESTIONS: ExamQuestion[] = [
     type: "logic",
     question: "為什麼在泡沫期應該收緊範圍？",
     options: [
-      { key: "a", text: "因為出局的代價大於加倍籌碼的收益 (ICM 壓力)" },
+      { key: "a", text: "因為出局的代價大於加倍籌碼的收益（ICM 獨立籌碼模型壓力）" },
       { key: "b", text: "因為對手會更激進" },
       { key: "c", text: "因為牌會變差" },
       { key: "d", text: "因為想要生存" },
     ],
     correctAnswer: "a",
-    explanation: "ICM 的核心是籌碼價值非線性，泡沫期出局意味著失去所有已累積的獎金期望值。",
+    explanation: "ICM（獨立籌碼模型）的核心是籌碼價值非線性，泡沫期出局意味著失去所有已累積的獎金期望值。",
   },
   {
     id: "l5",
     type: "logic",
     question: "為什麼 GTO 需要在河牌有一定的詐唬頻率？",
     options: [
-      { key: "a", text: "為了讓對手的 bluff-catch 手牌變成零 EV" },
+      { key: "a", text: "為了讓對手的 bluff-catch（抓詐）手牌變成零 EV" },
       { key: "b", text: "因為詐唬很刺激" },
       { key: "c", text: "因為有時候沒有好牌" },
       { key: "d", text: "為了贏更多" },
@@ -241,7 +241,7 @@ const EXAM_QUESTIONS: ExamQuestion[] = [
   {
     id: "cb1",
     type: "logic",
-    question: "在乾燥 K72r 牌面，IP 玩家作為翻前加注者應該使用什麼 C-bet 策略？",
+    question: "在乾燥 K72r（彩虹面）牌面，IP（有位置）玩家作為翻前加注者應該使用什麼 C-bet（持續下注）策略？",
     options: [
       { key: "a", text: "高頻小注（25-33% pot）" },
       { key: "b", text: "低頻大注（75% pot）" },
@@ -249,12 +249,12 @@ const EXAM_QUESTIONS: ExamQuestion[] = [
       { key: "d", text: "總是 check" },
     ],
     correctAnswer: "a",
-    explanation: "乾燥高牌面對開牌者非常有利，小注高頻可以有效利用範圍優勢。",
+    explanation: "乾燥高牌面對開牌者非常有利，小注高頻可以有效利用範圍優勢（你的牌比對手整體更好）。",
   },
   {
     id: "cb2",
     type: "logic",
-    question: "為什麼在 JT9 連接牌面應該降低 C-bet 頻率？",
+    question: "為什麼在 JT9 連接牌面應該降低 C-bet（持續下注）頻率？",
     options: [
       { key: "a", text: "這種牌面對跟注者範圍有利，開牌者沒有明顯範圍優勢" },
       { key: "b", text: "因為對手可能有順子" },
@@ -267,7 +267,7 @@ const EXAM_QUESTIONS: ExamQuestion[] = [
   {
     id: "cb3",
     type: "logic",
-    question: "OOP 玩家在翻牌的 C-bet 策略應該和 IP 有什麼不同？",
+    question: "OOP（沒位置）玩家在翻牌的 C-bet（持續下注）策略應該和 IP（有位置）有什麼不同？",
     options: [
       { key: "a", text: "OOP 應該使用更極化的策略（要嘛 check 要嘛大注）" },
       { key: "b", text: "OOP 應該總是 check" },
@@ -281,7 +281,7 @@ const EXAM_QUESTIONS: ExamQuestion[] = [
   {
     id: "df1",
     type: "logic",
-    question: "面對 1/3 pot 的下注，MDF (Minimum Defense Frequency) 大約是多少？",
+    question: "面對 1/3 pot 的下注，MDF（最小防禦頻率）大約是多少？",
     options: [
       { key: "a", text: "50%" },
       { key: "b", text: "67%" },
@@ -294,7 +294,7 @@ const EXAM_QUESTIONS: ExamQuestion[] = [
   {
     id: "df2",
     type: "logic",
-    question: "為什麼面對大注（如 pot size bet）可以棄牌更多？",
+    question: "為什麼面對大注（如 pot size bet，底池大小下注）可以棄牌更多？",
     options: [
       { key: "a", text: "因為 MDF 較低（約 50%），且大注代表更強的範圍" },
       { key: "b", text: "因為害怕輸大鍋" },
@@ -309,13 +309,13 @@ const EXAM_QUESTIONS: ExamQuestion[] = [
     type: "logic",
     question: "在 BB 面對 BTN 的開牌，應該傾向哪種防守方式？",
     options: [
-      { key: "a", text: "多 call 少 3-bet，因為底池賠率好且 BTN 範圍寬" },
+      { key: "a", text: "多 call 少 3-bet，因為底池賠率（Pot Odds）好且 BTN 範圍寬" },
       { key: "b", text: "總是 3-bet" },
       { key: "c", text: "總是 fold" },
       { key: "d", text: "對半分" },
     ],
     correctAnswer: "a",
-    explanation: "BB 已投入 1BB，底池賠率有利，加上 BTN 範圍寬，適合用更多跟注防守。",
+    explanation: "BB 已投入 1BB，底池賠率（Pot Odds）有利，加上 BTN 範圍寬，適合用更多跟注防守。",
   },
   // EV Questions
   {
@@ -455,33 +455,33 @@ const EXAM_QUESTIONS: ExamQuestion[] = [
   {
     id: "pf4",
     type: "push_fold",
-    question: "15bb 時，UTG 的 open raise 策略應該是？",
+    question: "有效籌碼 15BB 時，UTG 的 open raise（開局加注）策略應該是？",
     options: [
-      { key: "a", text: "使用標準 open raise，但範圍收緊" },
+      { key: "a", text: "使用標準 open raise（開局加注），但範圍收緊" },
       { key: "b", text: "全部全下" },
       { key: "c", text: "全部 limp" },
       { key: "d", text: "只打 premium" },
     ],
     correctAnswer: "a",
-    explanation: "15bb 仍有足夠籌碼使用標準加注，但應該選擇更強的手牌。",
+    explanation: "15BB 仍有足夠籌碼使用標準加注，但應該選擇更強的手牌。",
   },
   {
     id: "pf5",
     type: "push_fold",
-    question: "什麼籌碼深度開始考慮 push-fold 策略？",
+    question: "有效籌碼多少 BB 開始考慮 push-fold 策略？",
     options: [
-      { key: "a", text: "10bb 以下" },
-      { key: "b", text: "15bb 以下" },
-      { key: "c", text: "20bb 以下" },
-      { key: "d", text: "25bb 以下" },
+      { key: "a", text: "10BB 以下" },
+      { key: "b", text: "15BB 以下" },
+      { key: "c", text: "20BB 以下" },
+      { key: "d", text: "25BB 以下" },
     ],
     correctAnswer: "a",
-    explanation: "當籌碼低於 10bb，standard raise 後如果被 3-bet 會很尷尬，全下通常是更好的選擇。",
+    explanation: "當有效籌碼低於 10BB，standard raise 後如果被 3-bet 會很尷尬，全下通常是更好的選擇。",
   },
   {
     id: "pf6",
     type: "push_fold",
-    question: "CO 10bb 全下，BB 25bb，BB 應該用什麼範圍 call？",
+    question: "CO 有效籌碼 10BB 全下，BB 25BB，BB 應該用什麼範圍 call？",
     options: [
       { key: "a", text: "約 top 25% 手牌" },
       { key: "b", text: "約 top 15% 手牌" },
@@ -489,7 +489,7 @@ const EXAM_QUESTIONS: ExamQuestion[] = [
       { key: "d", text: "只有 premium" },
     ],
     correctAnswer: "a",
-    explanation: "面對 CO 的寬 push 範圍，BB 有好的底池賠率，應該用約 25% 範圍 call。",
+    explanation: "面對 CO 的寬 push 範圍，BB 有好的底池賠率（Pot Odds），應該用約 25% 範圍 call。",
   },
   // Advanced Logic
   {
@@ -1115,6 +1115,23 @@ export default function MockExamPage() {
           })}
         </div>
       </div>
+
+      <Card className="mb-4">
+        <CardHeader className="pb-2">
+          <CardTitle className="text-base">名詞提示</CardTitle>
+          <CardDescription className="text-sm">
+            題目中的 BB 指大盲，「10BB」代表有效籌碼（你與對手較小者）。
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="text-sm text-muted-foreground space-y-1">
+          <p>若涉及底池大小，題目會標示「底池 = X BB」。</p>
+          <p>Pot Odds = 底池賠率。</p>
+          <p>RFI = Raise First In（首次加注）；C-bet = Continuation Bet（持續下注）。</p>
+          <p>MDF = Minimum Defense Frequency（最小防禦頻率）；ICM = Independent Chip Model（獨立籌碼模型）。</p>
+          <p>IP / OOP = In Position / Out of Position（有位置 / 沒位置）。</p>
+          <p>r = rainbow（彩虹面，無同花）。</p>
+        </CardContent>
+      </Card>
 
       {/* Question */}
       {currentQuestion && (
