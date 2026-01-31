@@ -7,6 +7,7 @@ import type { Card, Position, ActionType, Street, AIStyle, Rank } from "./types"
 import type { PlayerStats } from "./playerStats";
 import { getPlayerVPIP } from "./playerStats";
 import { evaluateHand } from "./handEvaluator";
+import { analyzeBoardTexture, type BoardAnalysis } from "./boardTexture";
 
 // ============================================
 // Import GTO Range Data (will be loaded dynamically)
@@ -839,7 +840,7 @@ function getPostflopDecision(
 function getPostflopBetDecision(
   context: GameContext,
   handStrength: number,
-  boardTexture: BoardTexture,
+  boardTexture: BoardAnalysis,
   profile: AIPlayerProfile,
   isPreflopAggressor: boolean = false
 ): AIDecision {
@@ -941,7 +942,7 @@ function getPostflopBetDecision(
 function getProbeBetDecision(
   context: GameContext,
   handStrength: number,
-  boardTexture: BoardTexture,
+  boardTexture: BoardAnalysis,
   profile: AIPlayerProfile
 ): AIDecision {
   const { pot, stack, street } = context;
@@ -987,7 +988,7 @@ function getProbeBetDecision(
 function getFacingBetDecision(
   context: GameContext,
   handStrength: number,
-  boardTexture: BoardTexture,
+  boardTexture: BoardAnalysis,
   profile: AIPlayerProfile,
   street: Street = "flop"
 ): AIDecision {
@@ -1106,76 +1107,6 @@ function getFacingBetDecision(
 // Board Texture Analysis
 // ============================================
 
-interface BoardTexture {
-  isDry: boolean;
-  isWet: boolean;
-  isPaired: boolean;
-  hasFlushDraw: boolean;
-  hasStraightDraw: boolean;
-  highCard: string;
-  connectedness: number;
-}
-
-function analyzeBoardTexture(communityCards: Card[]): BoardTexture {
-  if (communityCards.length === 0) {
-    return {
-      isDry: true,
-      isWet: false,
-      isPaired: false,
-      hasFlushDraw: false,
-      hasStraightDraw: false,
-      highCard: "",
-      connectedness: 0,
-    };
-  }
-
-  const suits = communityCards.map(c => c.suit);
-  const ranks = communityCards.map(c => "AKQJT98765432".indexOf(c.rank));
-
-  // Check for flush potential
-  const suitCounts = new Map<string, number>();
-  suits.forEach(s => suitCounts.set(s, (suitCounts.get(s) || 0) + 1));
-  const maxSuitCount = Math.max(...suitCounts.values());
-  const hasFlushDraw = maxSuitCount >= 2;
-
-  // Check for pairing
-  const rankCounts = new Map<number, number>();
-  ranks.forEach(r => rankCounts.set(r, (rankCounts.get(r) || 0) + 1));
-  const isPaired = Array.from(rankCounts.values()).some(c => c >= 2);
-
-  // Check for straight potential
-  const sortedRanks = [...new Set(ranks)].sort((a, b) => a - b);
-  let maxConnected = 1;
-  let currentConnected = 1;
-  for (let i = 1; i < sortedRanks.length; i++) {
-    if (sortedRanks[i] - sortedRanks[i - 1] <= 2) {
-      currentConnected++;
-      maxConnected = Math.max(maxConnected, currentConnected);
-    } else {
-      currentConnected = 1;
-    }
-  }
-  const hasStraightDraw = maxConnected >= 2;
-
-  // Determine texture
-  const highCard = communityCards.reduce((max, c) =>
-    "AKQJT98765432".indexOf(c.rank) < "AKQJT98765432".indexOf(max.rank) ? c : max
-  ).rank;
-
-  const connectedness = maxConnected / communityCards.length;
-  const isWet = hasFlushDraw || hasStraightDraw || connectedness > 0.5;
-  const isDry = !isWet && !isPaired;
-
-  return {
-    isDry,
-    isWet,
-    isPaired,
-    hasFlushDraw,
-    hasStraightDraw,
-    highCard,
-    connectedness,
-  };
-}
 
 // ============================================
 // Helper Functions
