@@ -887,6 +887,17 @@ function getPostflopBetDecision(
     betProb = profile.bluffFreq * (boardTexture.isDry ? 0.8 : 0.3);
   }
 
+  // Low SPR: reduce bluffs, lean into value
+  if (spr <= 2) {
+    if (handStrength > 0.7) {
+      betProb = Math.min(0.98, betProb * 1.1);
+    } else if (handStrength < 0.4) {
+      betProb *= 0.75;
+    }
+  } else if (spr <= 4 && handStrength < 0.4) {
+    betProb *= 0.9;
+  }
+
   if (Math.random() < betProb) {
     // Sizing based on street, board texture, and position
     let betMultiplier: number;
@@ -909,7 +920,13 @@ function getPostflopBetDecision(
     }
 
     // Adjust sizing based on SPR
-    if (spr <= 3) {
+    if (spr <= 2) {
+      if (handStrength > 0.7) {
+        betMultiplier = Math.max(betMultiplier, 0.75);
+      } else if (handStrength < 0.4) {
+        betMultiplier *= 0.8;
+      }
+    } else if (spr <= 3) {
       betMultiplier *= handStrength > 0.6 ? 1.2 : 0.85;
     } else if (spr >= 10) {
       betMultiplier *= 0.9;
@@ -960,10 +977,22 @@ function getProbeBetDecision(
     probeProb *= 1.2;
   }
 
+  if (spr <= 2) {
+    probeProb *= handStrength > 0.6 ? 1.1 : 0.75;
+  } else if (spr <= 4 && handStrength < 0.4) {
+    probeProb *= 0.9;
+  }
+
   if (Math.random() < probeProb) {
     // Probe sizing: usually smaller (40-50% pot)
     const betMultiplier = 0.4 + profile.aggression * 0.1;
-    const adjustedMultiplier = clamp(spr <= 3 ? betMultiplier * 1.1 : betMultiplier, 0.25, 0.75);
+    let adjustedMultiplier = betMultiplier;
+    if (spr <= 2) {
+      adjustedMultiplier *= handStrength > 0.6 ? 1.2 : 0.8;
+    } else if (spr <= 3) {
+      adjustedMultiplier *= 1.05;
+    }
+    adjustedMultiplier = clamp(adjustedMultiplier, 0.25, 0.75);
     const betSize = roundToHalf(pot * adjustedMultiplier);
 
     return {
@@ -1049,6 +1078,14 @@ function getFacingBetDecision(
     }
     if (Math.random() < raiseProb) {
       const raiseSize = roundToHalf(currentBet * 2.5);
+      if (spr <= 1.5) {
+        return {
+          action: "allin",
+          amount: stack + playerBet,
+          confidence: 0.8,
+          reasoning: "Value jam with low SPR",
+        };
+      }
       return {
         action: "raise",
         amount: Math.min(raiseSize, stack + playerBet),
