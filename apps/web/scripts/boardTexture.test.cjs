@@ -51,6 +51,11 @@ const cases = [
     expect: { texture: "connected", hasStraightDraw: true, isWet: true },
   },
   {
+    name: "wet flop (two-tone connected)",
+    board: [c("Q", "h"), c("J", "h"), c("9", "d")],
+    expect: { texture: "wet", hasFlushDraw: true, hasStraightDraw: true, isWet: true },
+  },
+  {
     name: "semi-wet flop",
     board: [c("K", "h"), c("9", "h"), c("2", "d")],
     expect: { texture: "semi_wet", hasFlushDraw: true, isWet: true },

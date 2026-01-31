@@ -65,17 +65,34 @@ export function analyzeBoardTexture(communityCards: Card[]): BoardAnalysis {
   const rankValues = communityCards
     .map((c) => RANK_VALUES[c.rank])
     .sort((a, b) => b - a);
+  const uniqueRankValues = Array.from(new Set(rankValues));
   let connectedness = 0;
   let hasStraightDraw = false;
 
-  for (let i = 0; i < rankValues.length - 1; i++) {
-    const gap = rankValues[i] - rankValues[i + 1];
-    if (gap <= 2) connectedness += 0.3;
-    if (gap <= 3) hasStraightDraw = true;
+  for (let i = 0; i < uniqueRankValues.length - 1; i++) {
+    const gap = uniqueRankValues[i] - uniqueRankValues[i + 1];
+    if (gap === 1) {
+      connectedness += 0.5;
+      hasStraightDraw = true;
+    } else if (gap === 2) {
+      connectedness += 0.25;
+      hasStraightDraw = true;
+    } else if (gap === 3) {
+      connectedness += 0.1;
+    }
+  }
+
+  const maxRank = Math.max(...uniqueRankValues);
+  const minRank = Math.min(...uniqueRankValues);
+  const rankSpan = maxRank - minRank;
+  const spanThreshold = communityCards.length >= 4 ? 5 : 4;
+  if (rankSpan <= spanThreshold) {
+    connectedness += 0.2;
+    hasStraightDraw = true;
   }
 
   // Wheel possibilities (A-2-3-4-5)
-  if (rankValues.includes(14) && rankValues.some((r) => r <= 5)) {
+  if (uniqueRankValues.includes(14) && uniqueRankValues.some((r) => r <= 5)) {
     connectedness += 0.2;
     hasStraightDraw = true;
   }
@@ -92,15 +109,18 @@ export function analyzeBoardTexture(communityCards: Card[]): BoardAnalysis {
   } else if (isPaired) {
     texture = "paired";
     textureZh = "對子面";
-  } else if (connectedness > 0.6 || hasStraightDraw) {
-    texture = "connected";
-    textureZh = "連接面 (順子可能)";
-  } else if (hasFlushDraw && connectedness > 0.3) {
+  } else if (hasFlushDraw && connectedness >= 0.6) {
     texture = "wet";
     textureZh = "濕潤面 (多重聽牌)";
-  } else if (hasFlushDraw || connectedness > 0.2) {
+  } else if (hasStraightDraw && connectedness >= 0.6) {
+    texture = "connected";
+    textureZh = "連接面 (順子可能)";
+  } else if (hasFlushDraw) {
     texture = "semi_wet";
     textureZh = "半濕潤面";
+  } else if (hasStraightDraw || connectedness >= 0.35) {
+    texture = "connected";
+    textureZh = "連接面 (順子可能)";
   } else {
     texture = "dry";
     textureZh = "乾燥面 (無明顯聽牌)";

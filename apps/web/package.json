@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "eslint",
     "test:board-texture": "node scripts/boardTexture.test.cjs",
+    "test:sizing": "node scripts/sizing.test.cjs",
     "test:e2e": "playwright test --config=e2e/playwright.config.ts",
     "test:e2e:ui": "playwright test --config=e2e/playwright.config.ts --ui"
   },
