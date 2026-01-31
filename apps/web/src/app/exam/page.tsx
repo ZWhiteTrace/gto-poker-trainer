@@ -37,7 +37,7 @@ import {
 } from "@/lib/quiz/articleRecommendations";
 
 // Question types for the exam
-type QuestionType = "logic" | "equity" | "position" | "push_fold";
+type QuestionType = "logic" | "equity" | "position" | "push_fold" | "postflop" | "sizing" | "range";
 
 interface ExamQuestion {
   id: string;
@@ -585,15 +585,808 @@ const EXAM_QUESTIONS: ExamQuestion[] = [
     correctAnswer: "a",
     explanation: "河牌不需要保護手牌，所以策略自然極化：用強牌和詐唬下注，中等牌 check-call 或 check-fold。",
   },
+
+  // ========== 新增 Push/Fold 題目 ==========
+  {
+    id: "pf9",
+    type: "push_fold",
+    question: "有效籌碼 7BB，UTG 面對前面棄牌，KQo 應該？",
+    options: [
+      { key: "a", text: "棄牌 - 位置太前" },
+      { key: "b", text: "標準加注 - 留有餘地" },
+      { key: "c", text: "全下 - 這是標準 push" },
+      { key: "d", text: "跛入 - 控制底池" },
+    ],
+    correctAnswer: "c",
+    explanation: "7BB 時籌碼太短，KQo 在 UTG 是標準全下牌，有阻擋效應且翻牌後難以遊戲。",
+  },
+  {
+    id: "pf10",
+    type: "push_fold",
+    question: "錦標賽泡沫期，有效籌碼 12BB，BTN 全下。你是大籌碼 BB（40BB），持 A5s，應該？",
+    options: [
+      { key: "a", text: "跟注 - 底池賠率好" },
+      { key: "b", text: "棄牌 - ICM 壓力，邊緣跟注風險大" },
+      { key: "c", text: "一定要跟" },
+      { key: "d", text: "取決於對手形象" },
+    ],
+    correctAnswer: "b",
+    explanation: "泡沫期大籌碼應該收緊跟注範圍。即使 A5s 有足夠 equity，ICM（獨立籌碼模型）考量下應該放棄邊緣跟注。",
+  },
+  {
+    id: "pf11",
+    type: "push_fold",
+    question: "有效籌碼 6BB，SB 全下，你在 BB 持 T8s，應該？",
+    options: [
+      { key: "a", text: "棄牌" },
+      { key: "b", text: "跟注" },
+      { key: "c", text: "要看對手類型" },
+      { key: "d", text: "6BB 永遠要棄牌" },
+    ],
+    correctAnswer: "b",
+    explanation: "面對 SB 的極寬 push 範圍，底池賠率約 2:1，T8s 有足夠的 equity 和可玩性應該跟注。",
+  },
+  {
+    id: "pf12",
+    type: "push_fold",
+    question: "有效籌碼 4BB，你在 CO，前面全棄，應該？",
+    options: [
+      { key: "a", text: "只 push 強牌（22+, A2s+, KT+）" },
+      { key: "b", text: "Push 約 50% 手牌" },
+      { key: "c", text: "Push 約 80% 手牌" },
+      { key: "d", text: "任意兩張" },
+    ],
+    correctAnswer: "c",
+    explanation: "4BB 非常短，CO 對上 BTN/SB/BB 應該用極寬的範圍（約 80%）push，等待好牌風險更大。",
+  },
+  {
+    id: "pf13",
+    type: "push_fold",
+    question: "有效籌碼 15BB，HJ 加注 2.2BB，你在 BB 持 99，應該？",
+    options: [
+      { key: "a", text: "跟注看翻牌" },
+      { key: "b", text: "3-bet 全下" },
+      { key: "c", text: "棄牌" },
+      { key: "d", text: "小額 3-bet" },
+    ],
+    correctAnswer: "b",
+    explanation: "15BB 時，99 面對 HJ 開牌是標準 3-bet 全下牌。跟注翻後難以遊戲，小額 3-bet 沒意義。",
+  },
+  {
+    id: "pf14",
+    type: "push_fold",
+    question: "有效籌碼 8BB，BTN 全下，SB 棄牌，你在 BB 持 K7o，應該？",
+    options: [
+      { key: "a", text: "跟注 - 底池賠率好" },
+      { key: "b", text: "棄牌 - K7o 太弱" },
+      { key: "c", text: "取決於對手鬆緊" },
+      { key: "d", text: "跟注但很勉強" },
+    ],
+    correctAnswer: "a",
+    explanation: "BB 已投入 1BB，面對 8BB push 的底池賠率約 1.5:1。BTN 範圍很寬，K7o 有足夠 equity。",
+  },
+  {
+    id: "pf15",
+    type: "push_fold",
+    question: "有效籌碼 20BB，你在 BTN 加注被 BB 3-bet 到 8BB。你持 AJo，應該？",
+    options: [
+      { key: "a", text: "棄牌" },
+      { key: "b", text: "跟注" },
+      { key: "c", text: "4-bet 全下" },
+      { key: "d", text: "小額 4-bet" },
+    ],
+    correctAnswer: "c",
+    explanation: "20BB 有效籌碼，面對 8BB 的 3-bet，AJo 沒有足夠深度跟注。要嘛 4-bet 全下，要嘛棄牌。AJo 通常是全下。",
+  },
+  {
+    id: "pf16",
+    type: "push_fold",
+    question: "錦標賽 final table，有效籌碼 25BB，籌碼最少的玩家只有 3BB。你應該？",
+    options: [
+      { key: "a", text: "照常打牌" },
+      { key: "b", text: "收緊範圍，等短籌碼出局" },
+      { key: "c", text: "激進攻擊" },
+      { key: "d", text: "全下頻率增加" },
+    ],
+    correctAnswer: "b",
+    explanation: "當有極短籌碼時，ICM 價值使等待其出局非常有利。應該避免邊緣對抗，等排名自然上升。",
+  },
+
+  // ========== 新增 Position 題目 ==========
+  {
+    id: "pos6",
+    type: "position",
+    question: "為什麼 BTN 的 3-bet 範圍比 SB 的 3-bet 範圍更寬？",
+    options: [
+      { key: "a", text: "BTN 翻後有位置優勢，可以用更多邊緣牌 3-bet" },
+      { key: "b", text: "BTN 籌碼更多" },
+      { key: "c", text: "BTN 的牌更好" },
+      { key: "d", text: "BTN 比較有經驗" },
+    ],
+    correctAnswer: "a",
+    explanation: "BTN 翻後總是有位置（對除了 BTN 外所有位置），可以用更寬的範圍 3-bet 獲取位置優勢。",
+  },
+  {
+    id: "pos7",
+    type: "position",
+    question: "什麼是「位置優勢」的主要來源？",
+    options: [
+      { key: "a", text: "後行動能看到對手的動作，獲得更多資訊" },
+      { key: "b", text: "後行動可以下更大的注" },
+      { key: "c", text: "後行動的牌會更好" },
+      { key: "d", text: "後行動的底池賠率更好" },
+    ],
+    correctAnswer: "a",
+    explanation: "位置優勢的核心是資訊優勢：後行動能根據對手的行動調整策略，做出更精準的決策。",
+  },
+  {
+    id: "pos8",
+    type: "position",
+    question: "在 6-max 中，HJ vs CO 的 3-bet 應該多還是少？",
+    options: [
+      { key: "a", text: "少 - HJ 範圍緊，難以輕鬆 3-bet" },
+      { key: "b", text: "多 - 要爭取位置" },
+      { key: "c", text: "完全不 3-bet" },
+      { key: "d", text: "只用 AA/KK 3-bet" },
+    ],
+    correctAnswer: "a",
+    explanation: "HJ 的開牌範圍相對緊，所以 CO 的 3-bet 範圍也應該收緊，因為 HJ 被 3-bet 後會棄牌較少。",
+  },
+  {
+    id: "pos9",
+    type: "position",
+    question: "為什麼盲注位的防守範圍比其他位置寬？",
+    options: [
+      { key: "a", text: "已經投入盲注，底池賠率（Pot Odds）有利" },
+      { key: "b", text: "盲注位的牌更好" },
+      { key: "c", text: "盲注位可以全下" },
+      { key: "d", text: "盲注位更有經驗" },
+    ],
+    correctAnswer: "a",
+    explanation: "BB 已投入 1BB，面對 2.5BB 加注只需 1.5BB 看翻牌，底池賠率約 3.5:1，可以用很寬的範圍防守。",
+  },
+  {
+    id: "pos10",
+    type: "position",
+    question: "UTG+1 開牌，你在 LJ 有 AQo。最佳行動是？",
+    options: [
+      { key: "a", text: "跟注" },
+      { key: "b", text: "3-bet" },
+      { key: "c", text: "棄牌" },
+      { key: "d", text: "混合策略（3-bet/call 各半）" },
+    ],
+    correctAnswer: "b",
+    explanation: "AQo 面對早位開牌是標準 3-bet 牌。跟注會讓你翻後面對多人底池且沒位置，3-bet 可以隔離並取得主動權。",
+  },
+  {
+    id: "pos11",
+    type: "position",
+    question: "為什麼 SB vs BB 單挑時，現代策略傾向 limp-heavy？",
+    options: [
+      { key: "a", text: "節省籌碼且 BB 難以有效剝削 limp 範圍" },
+      { key: "b", text: "因為 SB 的牌比較差" },
+      { key: "c", text: "因為想看便宜的翻牌" },
+      { key: "d", text: "因為怕被 3-bet" },
+    ],
+    correctAnswer: "a",
+    explanation: "Solver 研究顯示，SB vs BB limp-heavy 策略非常接近 EV 最優，因為 BB 難以有效懲罰大量的 limp。",
+  },
+  {
+    id: "pos12",
+    type: "position",
+    question: "在什麼情況下，OOP（沒位置）的玩家應該 check-raise 翻牌？",
+    options: [
+      { key: "a", text: "當有強牌或聽牌，想要建立大底池或爭取免費牌" },
+      { key: "b", text: "任何時候都可以" },
+      { key: "c", text: "只有強牌時" },
+      { key: "d", text: "永遠不應該 check-raise" },
+    ],
+    correctAnswer: "a",
+    explanation: "OOP check-raise 用於建立大底池（強牌）或獲得詐唬/半詐唬的摺疊勝率。是重要的平衡策略。",
+  },
+  {
+    id: "pos13",
+    type: "position",
+    question: "BTN 開牌 2.5BB，SB 3-bet 到 10BB，BB 棄牌。BTN 應該？",
+    options: [
+      { key: "a", text: "用很寬的範圍 4-bet 或 call" },
+      { key: "b", text: "收緊範圍，SB 的 3-bet 通常很強" },
+      { key: "c", text: "總是 4-bet" },
+      { key: "d", text: "總是棄牌" },
+    ],
+    correctAnswer: "a",
+    explanation: "BTN 翻後有位置，可以用較寬的範圍跟注。而且 SB cold 3-bet 頻率通常不高，但 BTN 仍有位置優勢。",
+  },
+  {
+    id: "pos14",
+    type: "position",
+    question: "CO 開牌，你在 BTN 持 87s。最佳行動是？",
+    options: [
+      { key: "a", text: "棄牌" },
+      { key: "b", text: "跟注" },
+      { key: "c", text: "3-bet" },
+      { key: "d", text: "跟注或 3-bet 都可以" },
+    ],
+    correctAnswer: "d",
+    explanation: "87s 是彈性手牌，既可以 call 利用位置翻後玩牌，也可以 3-bet bluff 作為平衡。取決於對手和桌上動態。",
+  },
+  {
+    id: "pos15",
+    type: "position",
+    question: "為什麼多人底池時，位置優勢更重要？",
+    options: [
+      { key: "a", text: "後行動可以看到更多玩家的行動，資訊優勢倍增" },
+      { key: "b", text: "底池更大" },
+      { key: "c", text: "對手更多" },
+      { key: "d", text: "可以詐唬更多" },
+    ],
+    correctAnswer: "a",
+    explanation: "多人底池中，後位可以看到所有人的行動再做決定。check 到你代表弱，有人下注代表強，資訊價值大增。",
+  },
+
+  // ========== 新增 Postflop 題目 ==========
+  {
+    id: "post1",
+    type: "postflop",
+    question: "翻牌 A♠K♦7♣（乾燥面），你是 IP（有位置）翻前加注者。最佳 C-bet（持續下注）策略是？",
+    options: [
+      { key: "a", text: "高頻小注（25-33% pot）" },
+      { key: "b", text: "低頻大注（75% pot）" },
+      { key: "c", text: "check 頻率高" },
+      { key: "d", text: "只用強牌下注" },
+    ],
+    correctAnswer: "a",
+    explanation: "AK7r 對開牌者範圍非常有利，小注高頻可以有效利用範圍優勢，讓對手的邊緣牌難以繼續。",
+  },
+  {
+    id: "post2",
+    type: "postflop",
+    question: "翻牌 8♠7♠6♦（濕潤連接面），作為翻前加注者應該？",
+    options: [
+      { key: "a", text: "高頻 C-bet" },
+      { key: "b", text: "降低 C-bet 頻率，這個牌面對跟注者有利" },
+      { key: "c", text: "總是 check" },
+      { key: "d", text: "全下" },
+    ],
+    correctAnswer: "b",
+    explanation: "876 連接面對 BB 防守範圍非常有利（兩對、順子、聽牌多），開牌者範圍優勢不明顯，應該謹慎。",
+  },
+  {
+    id: "post3",
+    type: "postflop",
+    question: "在單花面（monotone flop），C-bet 頻率應該？",
+    options: [
+      { key: "a", text: "提高，因為對手會害怕同花" },
+      { key: "b", text: "降低，因為對手棄牌率下降" },
+      { key: "c", text: "和其他牌面一樣" },
+      { key: "d", text: "只用同花下注" },
+    ],
+    correctAnswer: "b",
+    explanation: "單花面對手的同花聽牌和已完成同花很多，會更傾向繼續遊戲，C-bet 成功率下降。",
+  },
+  {
+    id: "post4",
+    type: "postflop",
+    question: "轉牌掉落一張「嚇牌」（scare card）如 A。翻牌時的詐唬者應該？",
+    options: [
+      { key: "a", text: "繼續 barrel（持續下注）- A 代表你的範圍" },
+      { key: "b", text: "放棄詐唬" },
+      { key: "c", text: "check-raise" },
+      { key: "d", text: "全下" },
+    ],
+    correctAnswer: "a",
+    explanation: "嚇牌如 A 對開牌者範圍有利，是好的 double barrel 時機。對手會擔心你有 Ax。",
+  },
+  {
+    id: "post5",
+    type: "postflop",
+    question: "河牌時，你有 bluff-catch（抓詐）手牌。對手下注底池大小。你應該？",
+    options: [
+      { key: "a", text: "總是跟注" },
+      { key: "b", text: "總是棄牌" },
+      { key: "c", text: "用 MDF（最小防禦頻率）約 50% 決定是否跟注" },
+      { key: "d", text: "加注" },
+    ],
+    correctAnswer: "c",
+    explanation: "面對底池大小下注，MDF 約 50%。你需要用一定頻率的 bluff-catch 手牌防守，防止對手過度詐唬。",
+  },
+  {
+    id: "post6",
+    type: "postflop",
+    question: "什麼是「probe bet」（刺探下注）？",
+    options: [
+      { key: "a", text: "翻前加注者 check 後，非加注者在後面街下注" },
+      { key: "b", text: "翻牌的小額下注" },
+      { key: "c", text: "河牌的大額下注" },
+      { key: "d", text: "全下" },
+    ],
+    correctAnswer: "a",
+    explanation: "Probe bet 是當翻前加注者 check 表示弱勢時，其他玩家用來爭取底池的下注。",
+  },
+  {
+    id: "post7",
+    type: "postflop",
+    question: "SPR（籌碼底池比）很低（<3）時，翻後策略應該？",
+    options: [
+      { key: "a", text: "更傾向 commit 或全下" },
+      { key: "b", text: "更傾向慢打" },
+      { key: "c", text: "更傾向詐唬" },
+      { key: "d", text: "和正常 SPR 一樣" },
+    ],
+    correctAnswer: "a",
+    explanation: "低 SPR 時籌碼相對底池很少，容易全進。強牌應該 commit，詐唬空間變小。",
+  },
+  {
+    id: "post8",
+    type: "postflop",
+    question: "什麼情況適合使用 overbet（超底池下注）？",
+    options: [
+      { key: "a", text: "當你的範圍有很多 nuts 而對手沒有時" },
+      { key: "b", text: "想要嚇跑對手時" },
+      { key: "c", text: "籌碼很深時" },
+      { key: "d", text: "任何河牌都可以" },
+    ],
+    correctAnswer: "a",
+    explanation: "Overbet 在你有 nuts 優勢（堅果牌優勢）時最有效，可以從對手的強牌抽取更多價值，同時平衡詐唬。",
+  },
+  {
+    id: "post9",
+    type: "postflop",
+    question: "對手在翻牌 donk bet（領先下注），這通常代表？",
+    options: [
+      { key: "a", text: "對手可能有中等牌力，想要控制底池" },
+      { key: "b", text: "對手一定有 nuts" },
+      { key: "c", text: "對手一定在詐唬" },
+      { key: "d", text: "沒有任何資訊" },
+    ],
+    correctAnswer: "a",
+    explanation: "Donk bet 通常代表中等牌力或聽牌，對手不想 check-call 也不想 check-fold，想主動控制底池大小。",
+  },
+  {
+    id: "post10",
+    type: "postflop",
+    question: "在什麼牌面應該使用較大的 C-bet（持續下注）尺寸？",
+    options: [
+      { key: "a", text: "動態牌面，有很多聽牌和可能的連接" },
+      { key: "b", text: "乾燥的 A 高牌面" },
+      { key: "c", text: "配對牌面" },
+      { key: "d", text: "任何牌面都用大注" },
+    ],
+    correctAnswer: "a",
+    explanation: "動態牌面（如 T98 雙花）需要大注來對聽牌收費，因為對手會有很多繼續的牌。乾燥面小注即可。",
+  },
+  {
+    id: "post11",
+    type: "postflop",
+    question: "「thin value bet」（薄價值下注）是什麼意思？",
+    options: [
+      { key: "a", text: "用中等牌力下注，期望被更差的牌跟注" },
+      { key: "b", text: "小額下注" },
+      { key: "c", text: "詐唬下注" },
+      { key: "d", text: "全下" },
+    ],
+    correctAnswer: "a",
+    explanation: "Thin value 是用不是最強但比對手跟注範圍好的牌下注。需要判斷對手會用什麼牌跟注。",
+  },
+  {
+    id: "post12",
+    type: "postflop",
+    question: "什麼是「delay C-bet」（延遲持續下注）？",
+    options: [
+      { key: "a", text: "翻牌 check，轉牌才下注" },
+      { key: "b", text: "等很久才下注" },
+      { key: "c", text: "小額下注" },
+      { key: "d", text: "河牌才下注" },
+    ],
+    correctAnswer: "a",
+    explanation: "Delay C-bet 是翻牌選擇 check，然後轉牌下注。可以用於保護 check 範圍或對抗喜歡 float 的對手。",
+  },
+  {
+    id: "post13",
+    type: "postflop",
+    question: "什麼是「protection bet」（保護性下注）？",
+    options: [
+      { key: "a", text: "用脆弱牌力下注，阻止對手看免費牌實現 equity" },
+      { key: "b", text: "詐唬" },
+      { key: "c", text: "價值下注" },
+      { key: "d", text: "全下" },
+    ],
+    correctAnswer: "a",
+    explanation: "Protection bet 用於保護脆弱的好牌（如頂對弱踢腳），阻止對手免費看牌追聽牌或改進。",
+  },
+  {
+    id: "post14",
+    type: "postflop",
+    question: "河牌時，什麼情況應該 check 而非 value bet？",
+    options: [
+      { key: "a", text: "當對手的跟注範圍大多比你強時" },
+      { key: "b", text: "當你有 nuts 時" },
+      { key: "c", text: "永遠都應該下注" },
+      { key: "d", text: "當底池很大時" },
+    ],
+    correctAnswer: "a",
+    explanation: "如果下注後對手只會用比你好的牌跟注（way ahead/way behind 情況），check 讓對手詐唬更好。",
+  },
+  {
+    id: "post15",
+    type: "postflop",
+    question: "面對對手的河牌 overbet（超底池下注），應該？",
+    options: [
+      { key: "a", text: "收緊防守範圍，只用強牌跟注" },
+      { key: "b", text: "頻繁跟注因為可能是詐唬" },
+      { key: "c", text: "總是棄牌" },
+      { key: "d", text: "加注" },
+    ],
+    correctAnswer: "a",
+    explanation: "Overbet 的 MDF 較低（如 1.5x pot 只需防守 40%），而且對手通常會用極化範圍 overbet。",
+  },
+
+  // ========== 新增 Sizing 題目 ==========
+  {
+    id: "sz1",
+    type: "sizing",
+    question: "標準的 6-max 開局加注尺寸（100BB 深度）是？",
+    options: [
+      { key: "a", text: "2BB" },
+      { key: "b", text: "2.5BB" },
+      { key: "c", text: "3BB" },
+      { key: "d", text: "4BB" },
+    ],
+    correctAnswer: "b",
+    explanation: "現代 6-max 標準加注尺寸是 2.5BB。這個尺寸在風險和獎勵之間取得平衡。",
+  },
+  {
+    id: "sz2",
+    type: "sizing",
+    question: "深籌碼（200BB+）時，開局加注尺寸應該？",
+    options: [
+      { key: "a", text: "和 100BB 一樣" },
+      { key: "b", text: "稍微增加到 2.7-3BB" },
+      { key: "c", text: "減少到 2BB" },
+      { key: "d", text: "總是 3BB" },
+    ],
+    correctAnswer: "b",
+    explanation: "深籌碼時可以適度增加開局尺寸，因為 postflop 可玩性更重要，且可以建立更大的底池。",
+  },
+  {
+    id: "sz3",
+    type: "sizing",
+    question: "IP（有位置）的標準 3-bet 尺寸是開牌的幾倍？",
+    options: [
+      { key: "a", text: "2 倍" },
+      { key: "b", text: "3 倍" },
+      { key: "c", text: "4 倍" },
+      { key: "d", text: "5 倍" },
+    ],
+    correctAnswer: "b",
+    explanation: "IP 3-bet 通常是開牌的 3 倍。例如面對 2.5BB 開牌，3-bet 到 7.5BB 左右。",
+  },
+  {
+    id: "sz4",
+    type: "sizing",
+    question: "OOP（沒位置）的 3-bet 尺寸相比 IP 應該？",
+    options: [
+      { key: "a", text: "更小" },
+      { key: "b", text: "更大（約 3.5-4 倍）" },
+      { key: "c", text: "一樣" },
+      { key: "d", text: "不重要" },
+    ],
+    correctAnswer: "b",
+    explanation: "OOP 3-bet 需要更大尺寸（約 3.5-4 倍開牌），因為翻後沒位置需要補償這個劣勢。",
+  },
+  {
+    id: "sz5",
+    type: "sizing",
+    question: "乾燥 A 高牌面的標準 C-bet（持續下注）尺寸是？",
+    options: [
+      { key: "a", text: "25-33% pot" },
+      { key: "b", text: "50% pot" },
+      { key: "c", text: "66-75% pot" },
+      { key: "d", text: "100% pot" },
+    ],
+    correctAnswer: "a",
+    explanation: "乾燥 A 高面你有範圍優勢，小注高頻最有效。對手沒有足夠的續行牌，不需要大注。",
+  },
+  {
+    id: "sz6",
+    type: "sizing",
+    question: "動態連接牌面（如 J♠T♠9♥）的 C-bet 尺寸應該？",
+    options: [
+      { key: "a", text: "25% pot" },
+      { key: "b", text: "50% pot" },
+      { key: "c", text: "66-75% pot" },
+      { key: "d", text: "check 更多" },
+    ],
+    correctAnswer: "c",
+    explanation: "動態牌面對手有很多聽牌和連接牌，需要大注來對聽牌收費，否則會給太好的賠率追牌。",
+  },
+  {
+    id: "sz7",
+    type: "sizing",
+    question: "當你有 nuts（堅果牌）在河牌，下注尺寸應該？",
+    options: [
+      { key: "a", text: "小注誘導跟注" },
+      { key: "b", text: "根據對手範圍選擇能讓對手跟注最多價值的尺寸" },
+      { key: "c", text: "總是 overbet" },
+      { key: "d", text: "check-raise" },
+    ],
+    correctAnswer: "b",
+    explanation: "河牌 value bet 尺寸取決於對手的跟注範圍。有時大注抽更多價值，有時小注讓更多牌跟注。",
+  },
+  {
+    id: "sz8",
+    type: "sizing",
+    question: "河牌詐唬的理想尺寸是？",
+    options: [
+      { key: "a", text: "最小下注，風險最小" },
+      { key: "b", text: "能讓對手棄牌同時風險報酬比合理的尺寸" },
+      { key: "c", text: "總是全下" },
+      { key: "d", text: "33% pot" },
+    ],
+    correctAnswer: "b",
+    explanation: "詐唬尺寸需要平衡成功率和風險。通常 66-100% pot 是合理範圍，讓詐唬有足夠摺疊勝率。",
+  },
+  {
+    id: "sz9",
+    type: "sizing",
+    question: "什麼是「geometric sizing」（幾何尺寸）？",
+    options: [
+      { key: "a", text: "計算能在剩餘街數剛好全進的下注尺寸" },
+      { key: "b", text: "固定下注尺寸" },
+      { key: "c", text: "隨機下注尺寸" },
+      { key: "d", text: "總是小注" },
+    ],
+    correctAnswer: "a",
+    explanation: "Geometric sizing 是計算在翻/轉/河能剛好全進的尺寸。如 100BB 想在河全進，翻牌約 33% pot。",
+  },
+  {
+    id: "sz10",
+    type: "sizing",
+    question: "短籌碼（20BB）的開局加注尺寸應該？",
+    options: [
+      { key: "a", text: "2BB - 保留更多 postflop 操作空間" },
+      { key: "b", text: "2.5BB - 標準尺寸" },
+      { key: "c", text: "3BB - 更大壓力" },
+      { key: "d", text: "直接全下" },
+    ],
+    correctAnswer: "a",
+    explanation: "短籌碼時開局可以用 2-2.2BB，保留更多 postflop 籌碼深度。太大尺寸會使 pot committed。",
+  },
+
+  // ========== 新增 Range 題目 ==========
+  {
+    id: "rg1",
+    type: "range",
+    question: "UTG 的標準 RFI（首次加注）範圍包含？",
+    options: [
+      { key: "a", text: "22+, ATs+, KQs, AJo+" },
+      { key: "b", text: "任何 Ax" },
+      { key: "c", text: "只有 TT+, AQ+" },
+      { key: "d", text: "任何同花連張" },
+    ],
+    correctAnswer: "a",
+    explanation: "UTG 範圍約 12-15%，包含所有對子、強 Ax、KQs 等。需要能面對後位 3-bet 的牌。",
+  },
+  {
+    id: "rg2",
+    type: "range",
+    question: "BTN vs CO 的 3-bet bluff 牌通常是？",
+    options: [
+      { key: "a", text: "A5s-A2s、小同花連張如 76s-54s" },
+      { key: "b", text: "任何兩張" },
+      { key: "c", text: "只有 AA/KK" },
+      { key: "d", text: "不應該 3-bet bluff" },
+    ],
+    correctAnswer: "a",
+    explanation: "3-bet bluff 用有阻擋（A blocker）和可玩性的牌。A5s 阻擋 AA/AK，小同花連張翻後有潛力。",
+  },
+  {
+    id: "rg3",
+    type: "range",
+    question: "什麼是「線性範圍」（linear range）？",
+    options: [
+      { key: "a", text: "按牌力排序，取最強的牌組成的範圍" },
+      { key: "b", text: "只有對子的範圍" },
+      { key: "c", text: "只有同花的範圍" },
+      { key: "d", text: "隨機的範圍" },
+    ],
+    correctAnswer: "a",
+    explanation: "線性範圍是按牌力從高到低選擇的範圍，如 top 10% = AA-TT, AK-AJ, KQs 等最強牌。",
+  },
+  {
+    id: "rg4",
+    type: "range",
+    question: "什麼是「極化範圍」（polarized range）？",
+    options: [
+      { key: "a", text: "包含最強牌（nuts）和詐唬牌，排除中間牌力" },
+      { key: "b", text: "只有強牌" },
+      { key: "c", text: "只有弱牌" },
+      { key: "d", text: "所有牌" },
+    ],
+    correctAnswer: "a",
+    explanation: "極化範圍用於河牌等不需要保護的情況。下注範圍包含 nuts 和詐唬，中間牌 check。",
+  },
+  {
+    id: "rg5",
+    type: "range",
+    question: "BB 面對 BTN 2.5BB 開牌的防守範圍約是？",
+    options: [
+      { key: "a", text: "約 40-50% 手牌" },
+      { key: "b", text: "約 20% 手牌" },
+      { key: "c", text: "約 60% 手牌" },
+      { key: "d", text: "只有強牌" },
+    ],
+    correctAnswer: "a",
+    explanation: "BB 有 1BB 投入，底池賠率約 3.5:1 非常好。面對 BTN 寬開牌，應該用 40-50% 防守。",
+  },
+  {
+    id: "rg6",
+    type: "range",
+    question: "什麼牌適合做「cold 4-bet bluff」（冷 4-bet 詐唬）？",
+    options: [
+      { key: "a", text: "A5s、A4s - 有 A blocker 但不想 call 3-bet" },
+      { key: "b", text: "任何同花" },
+      { key: "c", text: "72o" },
+      { key: "d", text: "不應該 4-bet bluff" },
+    ],
+    correctAnswer: "a",
+    explanation: "Cold 4-bet bluff 用有 A blocker 的牌（減少對手 AA/AK 的組合數）但翻後可玩性有限的牌。",
+  },
+  {
+    id: "rg7",
+    type: "range",
+    question: "SB 面對 BTN 開牌的 3-bet 範圍應該是？",
+    options: [
+      { key: "a", text: "線性範圍 - 用強牌 3-bet，弱牌棄牌" },
+      { key: "b", text: "極化範圍" },
+      { key: "c", text: "任何牌都 3-bet" },
+      { key: "d", text: "不應該 3-bet" },
+    ],
+    correctAnswer: "a",
+    explanation: "SB vs BTN 用線性範圍 3-bet。因為 OOP 翻後難打，用強牌直接 3-bet 爭取 fold equity。",
+  },
+  {
+    id: "rg8",
+    type: "range",
+    question: "什麼是「capped range」（封頂範圍）？",
+    options: [
+      { key: "a", text: "範圍中缺少最強牌組合的情況" },
+      { key: "b", text: "只有強牌的範圍" },
+      { key: "c", text: "有上限的範圍" },
+      { key: "d", text: "平衡的範圍" },
+    ],
+    correctAnswer: "a",
+    explanation: "Capped range 是指某條行動線已經排除了最強牌。例如翻牌 check 後範圍通常 capped。",
+  },
+  {
+    id: "rg9",
+    type: "range",
+    question: "為什麼同花連張在深籌碼時更有價值？",
+    options: [
+      { key: "a", text: "可以做大同花或順子，隱含賠率（implied odds）更高" },
+      { key: "b", text: "翻牌前更強" },
+      { key: "c", text: "可以更常 3-bet" },
+      { key: "d", text: "對手看不出來" },
+    ],
+    correctAnswer: "a",
+    explanation: "深籌碼時完成同花或順子可以贏得大底池，隱含賠率（implied odds）使這些牌價值上升。",
+  },
+  {
+    id: "rg10",
+    type: "range",
+    question: "CO 面對 UTG 開牌應該用什麼策略？",
+    options: [
+      { key: "a", text: "收緊 3-bet 範圍，UTG 範圍強，不要輕易 bluff" },
+      { key: "b", text: "寬鬆 3-bet" },
+      { key: "c", text: "總是跟注" },
+      { key: "d", text: "總是棄牌" },
+    ],
+    correctAnswer: "a",
+    explanation: "UTG 開牌範圍很緊（約 12-15%），所以 3-bet 需要更強的牌。3-bet bluff 成功率較低。",
+  },
+
+  // ========== 新增 Equity 題目 ==========
+  {
+    id: "e9",
+    type: "equity",
+    question: "兩對 vs 同花聽牌在翻牌時的勝率約是？",
+    options: [
+      { key: "a", text: "55% vs 45%" },
+      { key: "b", text: "65% vs 35%" },
+      { key: "c", text: "75% vs 25%" },
+      { key: "d", text: "50% vs 50%" },
+    ],
+    correctAnswer: "b",
+    explanation: "兩對約 65% 領先同花聽牌。聽牌有 9 outs（約 35%），但兩對還可能改進為葫蘆。",
+  },
+  {
+    id: "e10",
+    type: "equity",
+    question: "AKo vs 22 全押時的勝率約是？",
+    options: [
+      { key: "a", text: "AK 52% vs 22 48%" },
+      { key: "b", text: "AK 45% vs 22 55%" },
+      { key: "c", text: "AK 65% vs 22 35%" },
+      { key: "d", text: "50% vs 50%" },
+    ],
+    correctAnswer: "b",
+    explanation: "AKo vs 小對子是經典「硬幣賭博」（coin flip），對子略佔優勢約 52-55%。",
+  },
+  {
+    id: "e11",
+    type: "equity",
+    question: "什麼是「後門聽牌」（backdoor draw）的 equity 價值？",
+    options: [
+      { key: "a", text: "約 3-4% 額外 equity" },
+      { key: "b", text: "約 10% 額外 equity" },
+      { key: "c", text: "沒有價值" },
+      { key: "d", text: "約 15% 額外 equity" },
+    ],
+    correctAnswer: "a",
+    explanation: "後門聽牌（需要轉牌和河牌都配合）約增加 3-4% equity，是邊緣決策的重要因素。",
+  },
+  {
+    id: "e12",
+    type: "equity",
+    question: "頂對頂踢腳 vs 中暗三在翻牌時的勝率？",
+    options: [
+      { key: "a", text: "TPTK 約 10%" },
+      { key: "b", text: "TPTK 約 25%" },
+      { key: "c", text: "TPTK 約 35%" },
+      { key: "d", text: "TPTK 約 50%" },
+    ],
+    correctAnswer: "a",
+    explanation: "面對暗三條，TPTK（頂對頂踢腳）只有約 10% 勝率（需要跑跑全對或更好），是典型的 cooler 場景。",
+  },
+  {
+    id: "e13",
+    type: "equity",
+    question: "「卡順」（gutshot）聽牌有多少 outs？",
+    options: [
+      { key: "a", text: "4 outs" },
+      { key: "b", text: "6 outs" },
+      { key: "c", text: "8 outs" },
+      { key: "d", text: "9 outs" },
+    ],
+    correctAnswer: "a",
+    explanation: "Gutshot（內順聽牌）只有 4 張牌可以完成順子，約 8-9% 從轉牌到河牌的機率。",
+  },
+  {
+    id: "e14",
+    type: "equity",
+    question: "KK vs AKs 全押時的勝率約是？",
+    options: [
+      { key: "a", text: "KK 70% vs AKs 30%" },
+      { key: "b", text: "KK 65% vs AKs 35%" },
+      { key: "c", text: "KK 55% vs AKs 45%" },
+      { key: "d", text: "50% vs 50%" },
+    ],
+    correctAnswer: "a",
+    explanation: "KK 對上 AKs 約 70% vs 30%。AK 需要中 A 才能贏，而且 KK 阻擋了兩張 K。",
+  },
+  {
+    id: "l9",
+    type: "logic",
+    question: "為什麼「範圍 vs 範圍」思維比「手牌 vs 手牌」更重要？",
+    options: [
+      { key: "a", text: "GTO 策略針對對手可能的所有牌，而非猜測特定手牌" },
+      { key: "b", text: "因為看不到對手的牌" },
+      { key: "c", text: "因為這樣比較簡單" },
+      { key: "d", text: "因為撲克是運氣遊戲" },
+    ],
+    correctAnswer: "a",
+    explanation: "GTO 策略的核心是對抗對手的整個範圍做出最優決策，而非試圖猜測對手的具體手牌。",
+  },
 ];
+
+// Update exam config for larger question bank
+const EXAM_CONFIG = {
+  totalQuestions: 40, // Still show 40 questions per exam, but draw from larger pool
+  timeLimit: 40 * 60, // 40 minutes in seconds
+};
 
 // Question type for categorization
 type QuestionCategory = "preflop" | "postflop" | "math" | "exploit";
-
-const EXAM_CONFIG = {
-  totalQuestions: 40,
-  timeLimit: 40 * 60, // 40 minutes in seconds
-};
 
 type ExamState = "intro" | "active" | "review";
 
@@ -896,6 +1689,9 @@ export default function MockExamPage() {
                 <li>{t("exam.topic2") || "Hand Equity"}</li>
                 <li>{t("exam.topic3") || "Position Strategy"}</li>
                 <li>{t("exam.topic4") || "Push/Fold Decisions"}</li>
+                <li>Postflop Strategy（翻後策略）</li>
+                <li>Bet Sizing（下注尺寸）</li>
+                <li>Range Construction（範圍建構）</li>
               </ul>
             </div>
 
