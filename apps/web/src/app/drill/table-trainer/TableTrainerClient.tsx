@@ -969,7 +969,7 @@ export default function TableTrainerClient() {
                     <h3 className="text-sm font-semibold text-gray-300 mb-2">各位置盈虧</h3>
                     <div className="grid grid-cols-6 gap-1">
                       {(["BTN", "CO", "HJ", "UTG", "SB", "BB"] as const).map((pos) => {
-                        const stats = positionStats[pos];
+                        const stats = positionStats?.[pos] ?? { handsPlayed: 0, handsWon: 0, totalProfit: 0 };
                         return (
                           <div key={pos} className="text-center bg-gray-800/30 rounded p-1.5">
                             <p className="text-xs font-semibold text-gray-400">{pos}</p>
@@ -1079,7 +1079,7 @@ export default function TableTrainerClient() {
                     <h3 className="text-sm font-semibold text-gray-300 mb-2">各位置盈虧</h3>
                     <div className="grid grid-cols-6 gap-1">
                       {(["BTN", "CO", "HJ", "UTG", "SB", "BB"] as const).map((pos) => {
-                        const stats = positionStats[pos];
+                        const stats = positionStats?.[pos] ?? { handsPlayed: 0, handsWon: 0, totalProfit: 0 };
                         return (
                           <div key={pos} className="text-center bg-gray-800/30 rounded p-1.5">
                             <p className="text-xs font-semibold text-gray-400">{pos}</p>
