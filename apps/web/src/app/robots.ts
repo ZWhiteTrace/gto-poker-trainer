@@ -7,6 +7,6 @@ export default function robots(): MetadataRoute.Robots {
       allow: "/",
       disallow: ["/api/", "/auth/", "/progress"],
     },
-    sitemap: "https://gto-trainer.com/sitemap.xml",
+    sitemap: "https://gto-poker-trainer-six.vercel.app/sitemap.xml",
   };
 }
