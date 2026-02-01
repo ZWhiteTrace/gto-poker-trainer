@@ -16,8 +16,8 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: {
-    default: "Free GTO Poker Trainer - Practice Preflop Ranges Online",
-    template: "%s | GTO Poker Trainer",
+    default: "免费德州扑克 GTO 练习工具 - 在线扑克范围训练器",
+    template: "%s | GTO 扑克训练器",
   },
   manifest: "/manifest.webmanifest",
   appleWebApp: {
@@ -42,7 +42,7 @@ export const metadata: Metadata = {
     "mobile-web-app-capable": "yes",
   },
   description:
-    "Master GTO poker strategy with our free online trainer. Practice preflop ranges, push/fold charts & ICM calculations. No download, no signup - start training now.",
+    "提升德扑技巧的免费 GTO 训练器。提供翻前范围表 (Preflop Ranges)、推图 (Push/Fold) 练习及 ICM 计算。无需下载注册，立即开启在线练习。",
   keywords: [
     "GTO poker",
     "poker trainer",
@@ -50,21 +50,29 @@ export const metadata: Metadata = {
     "push fold chart",
     "poker strategy",
     "poker GTO",
+    "德州扑克",
+    "GTO训练",
+    "扑克训练器",
+    "翻前范围",
+    "推图",
+    "ICM计算",
+    "免费扑克工具",
+    "德扑技巧",
     "撲克訓練",
     "翻前範圍",
   ],
   openGraph: {
     type: "website",
-    locale: "en_US",
+    locale: "zh_TW",
     url: "https://gto-poker-trainer-six.vercel.app",
-    siteName: "GTO Poker Trainer",
-    title: "Free GTO Poker Trainer - Practice Preflop Ranges Online",
-    description: "Master GTO poker strategy with our free online trainer. Practice preflop ranges, push/fold charts & ICM calculations. No download, no signup - start training now.",
+    siteName: "GTO 扑克训练器",
+    title: "免费德州扑克 GTO 练习工具 - 在线扑克范围训练器",
+    description: "提升德扑技巧的免费 GTO 训练器。提供翻前范围表 (Preflop Ranges)、推图 (Push/Fold) 练习及 ICM 计算。无需下载注册，立即开启在线练习。",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Free GTO Poker Trainer - Practice Preflop Ranges Online",
-    description: "Master GTO poker strategy with our free online trainer. Practice preflop ranges, push/fold charts & ICM calculations. No download, no signup - start training now.",
+    title: "免费德州扑克 GTO 练习工具 - 在线扑克范围训练器",
+    description: "提升德扑技巧的免费 GTO 训练器。提供翻前范围表 (Preflop Ranges)、推图 (Push/Fold) 练习及 ICM 计算。无需下载注册，立即开启在线练习。",
   },
   alternates: {
     canonical: "https://gto-poker-trainer-six.vercel.app",
@@ -78,10 +86,10 @@ function WebsiteJsonLd() {
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "WebSite",
-    name: "GTO Poker Trainer",
+    name: "GTO 扑克训练器 - 免费德州扑克练习工具",
     url: "https://gto-poker-trainer-six.vercel.app",
-    description: "Free GTO poker trainer for mastering preflop ranges and poker strategy",
-    inLanguage: ["en", "zh-TW"],
+    description: "提升德扑技巧的免费 GTO 训练器。提供翻前范围表、推图练习及 ICM 计算。",
+    inLanguage: ["zh-TW", "zh-CN"],
     potentialAction: {
       "@type": "SearchAction",
       target: "https://gto-poker-trainer-six.vercel.app/learn?q={search_term_string}",
@@ -101,7 +109,7 @@ function OrganizationJsonLd() {
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "Organization",
-    name: "GTO Poker Trainer",
+    name: "GTO 扑克训练器",
     url: "https://gto-poker-trainer-six.vercel.app",
     logo: "https://gto-poker-trainer-six.vercel.app/icon-512.png",
     sameAs: [],
@@ -119,7 +127,7 @@ function SoftwareApplicationJsonLd() {
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "SoftwareApplication",
-    name: "GTO Poker Trainer",
+    name: "GTO 扑克训练器",
     applicationCategory: "GameApplication",
     operatingSystem: "Web Browser",
     offers: {
@@ -134,13 +142,13 @@ function SoftwareApplicationJsonLd() {
       bestRating: "5",
       worstRating: "1",
     },
-    description: "Free GTO poker training app with preflop range drills, push/fold charts, and AI hand analysis",
+    description: "免费 GTO 德州扑克训练应用，提供翻前范围练习、推图表和 AI 手牌分析",
     featureList: [
-      "Preflop Range Training",
-      "Push/Fold Charts",
-      "ICM Calculator",
-      "AI Hand Analysis",
-      "Progress Tracking",
+      "翻前范围训练",
+      "推图 (Push/Fold) 练习",
+      "ICM 计算器",
+      "AI 手牌分析",
+      "学习进度追踪",
     ],
   };
 
@@ -156,11 +164,11 @@ function CourseJsonLd() {
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "Course",
-    name: "GTO Poker Strategy Training",
-    description: "Master game theory optimal poker strategy with interactive drills and range charts",
+    name: "GTO 扑克策略训练",
+    description: "通过互动练习和范围表掌握 GTO 最优扑克策略",
     provider: {
       "@type": "Organization",
-      name: "GTO Poker Trainer",
+      name: "GTO 扑克训练器",
       url: "https://gto-poker-trainer-six.vercel.app",
     },
     offers: {
@@ -177,10 +185,10 @@ function CourseJsonLd() {
       },
     ],
     teaches: [
-      "Preflop ranges for all positions",
-      "3-bet and 4-bet strategy",
-      "Push/fold tournament strategy",
-      "ICM considerations",
+      "各位置的翻前范围",
+      "3-bet 和 4-bet 策略",
+      "锦标赛推图策略",
+      "ICM 考量",
     ],
   };
 
