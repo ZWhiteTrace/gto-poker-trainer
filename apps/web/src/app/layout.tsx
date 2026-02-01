@@ -56,7 +56,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: "https://gto-trainer.com",
+    url: "https://gto-poker-trainer-six.vercel.app",
     siteName: "GTO Poker Trainer",
     title: "GTO Poker Trainer - Master Poker Strategy",
     description: "Free GTO poker trainer: preflop range charts, push/fold strategy, ICM calculator.",
@@ -67,10 +67,10 @@ export const metadata: Metadata = {
     description: "Free GTO poker trainer: preflop range charts, push/fold strategy, ICM calculator.",
   },
   alternates: {
-    canonical: "https://gto-trainer.com",
+    canonical: "https://gto-poker-trainer-six.vercel.app",
   },
   verification: {
-    google: "your-google-verification-code", // Replace with actual code
+    google: "qpFj8lm0xp4HSdFNKqKKNshhirIaQeKa-Sgd9zzsHis",
   },
 };
 
@@ -79,12 +79,12 @@ function WebsiteJsonLd() {
     "@context": "https://schema.org",
     "@type": "WebSite",
     name: "GTO Poker Trainer",
-    url: "https://gto-trainer.com",
+    url: "https://gto-poker-trainer-six.vercel.app",
     description: "Free GTO poker trainer for mastering preflop ranges and poker strategy",
     inLanguage: ["en", "zh-TW"],
     potentialAction: {
       "@type": "SearchAction",
-      target: "https://gto-trainer.com/learn?q={search_term_string}",
+      target: "https://gto-poker-trainer-six.vercel.app/learn?q={search_term_string}",
       "query-input": "required name=search_term_string",
     },
   };
@@ -102,8 +102,8 @@ function OrganizationJsonLd() {
     "@context": "https://schema.org",
     "@type": "Organization",
     name: "GTO Poker Trainer",
-    url: "https://gto-trainer.com",
-    logo: "https://gto-trainer.com/icon-512.png",
+    url: "https://gto-poker-trainer-six.vercel.app",
+    logo: "https://gto-poker-trainer-six.vercel.app/icon-512.png",
     sameAs: [],
   };
 
@@ -161,7 +161,7 @@ function CourseJsonLd() {
     provider: {
       "@type": "Organization",
       name: "GTO Poker Trainer",
-      url: "https://gto-trainer.com",
+      url: "https://gto-poker-trainer-six.vercel.app",
     },
     offers: {
       "@type": "Offer",
