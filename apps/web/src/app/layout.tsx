@@ -16,7 +16,7 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: {
-    default: "GTO Poker Trainer - Master Poker Strategy",
+    default: "Free GTO Poker Trainer - Practice Preflop Ranges Online",
     template: "%s | GTO Poker Trainer",
   },
   manifest: "/manifest.webmanifest",
@@ -42,7 +42,7 @@ export const metadata: Metadata = {
     "mobile-web-app-capable": "yes",
   },
   description:
-    "Free GTO poker trainer: preflop range charts, push/fold strategy, ICM calculator. Master game theory optimal poker strategy.",
+    "Master GTO poker strategy with our free online trainer. Practice preflop ranges, push/fold charts & ICM calculations. No download, no signup - start training now.",
   keywords: [
     "GTO poker",
     "poker trainer",
@@ -58,13 +58,13 @@ export const metadata: Metadata = {
     locale: "en_US",
     url: "https://gto-poker-trainer-six.vercel.app",
     siteName: "GTO Poker Trainer",
-    title: "GTO Poker Trainer - Master Poker Strategy",
-    description: "Free GTO poker trainer: preflop range charts, push/fold strategy, ICM calculator.",
+    title: "Free GTO Poker Trainer - Practice Preflop Ranges Online",
+    description: "Master GTO poker strategy with our free online trainer. Practice preflop ranges, push/fold charts & ICM calculations. No download, no signup - start training now.",
   },
   twitter: {
     card: "summary_large_image",
-    title: "GTO Poker Trainer",
-    description: "Free GTO poker trainer: preflop range charts, push/fold strategy, ICM calculator.",
+    title: "Free GTO Poker Trainer - Practice Preflop Ranges Online",
+    description: "Master GTO poker strategy with our free online trainer. Practice preflop ranges, push/fold charts & ICM calculations. No download, no signup - start training now.",
   },
   alternates: {
     canonical: "https://gto-poker-trainer-six.vercel.app",
