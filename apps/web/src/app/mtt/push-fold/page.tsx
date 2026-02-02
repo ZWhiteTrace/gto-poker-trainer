@@ -167,7 +167,7 @@ export default function PushFoldPage() {
     if (activeTab === "push") {
       setLoading(true);
       fetch(
-        `${process.env.NEXT_PUBLIC_API_URL || "https://gto-poker-trainer-production.up.railway.app"}/api/mtt/push_fold/${position}/${stackDepth}`
+        `${process.env.NEXT_PUBLIC_API_URL || "https://api.grindgto.com"}/api/mtt/push_fold/${position}/${stackDepth}`
       )
         .then((res) => res.json())
         .then((data) => {
@@ -186,7 +186,7 @@ export default function PushFoldPage() {
     if (activeTab === "defense") {
       setLoading(true);
       fetch(
-        `${process.env.NEXT_PUBLIC_API_URL || "https://gto-poker-trainer-production.up.railway.app"}/api/mtt/defense/${defenseScenario}/${stackDepth}`
+        `${process.env.NEXT_PUBLIC_API_URL || "https://api.grindgto.com"}/api/mtt/defense/${defenseScenario}/${stackDepth}`
       )
         .then((res) => res.json())
         .then((data) => {
@@ -205,7 +205,7 @@ export default function PushFoldPage() {
     if (activeTab === "resteal") {
       setLoading(true);
       fetch(
-        `${process.env.NEXT_PUBLIC_API_URL || "https://gto-poker-trainer-production.up.railway.app"}/api/mtt/resteal/${restealScenario}/${restealStack}`
+        `${process.env.NEXT_PUBLIC_API_URL || "https://api.grindgto.com"}/api/mtt/resteal/${restealScenario}/${restealStack}`
       )
         .then((res) => res.json())
         .then((data) => {
@@ -224,7 +224,7 @@ export default function PushFoldPage() {
     if (activeTab === "hu") {
       setLoading(true);
       fetch(
-        `${process.env.NEXT_PUBLIC_API_URL || "https://gto-poker-trainer-production.up.railway.app"}/api/mtt/hu/${huScenario}/${huStack}?format=hu`
+        `${process.env.NEXT_PUBLIC_API_URL || "https://api.grindgto.com"}/api/mtt/hu/${huScenario}/${huStack}?format=hu`
       )
         .then((res) => res.json())
         .then((data) => {

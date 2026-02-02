@@ -134,7 +134,7 @@ export default function AnalyzePage() {
       formData.append("file", file);
 
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL || "https://gto-poker-trainer-production.up.railway.app"}/api/analyze/upload`,
+        `${process.env.NEXT_PUBLIC_API_URL || "https://api.grindgto.com"}/api/analyze/upload`,
         {
           method: "POST",
           body: formData,
@@ -161,7 +161,7 @@ export default function AnalyzePage() {
 
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL || "https://gto-poker-trainer-production.up.railway.app"}/api/analyze/demo`
+        `${process.env.NEXT_PUBLIC_API_URL || "https://api.grindgto.com"}/api/analyze/demo`
       );
 
       if (!response.ok) {

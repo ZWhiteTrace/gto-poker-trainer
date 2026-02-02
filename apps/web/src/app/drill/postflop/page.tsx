@@ -15,7 +15,7 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
 import { RefreshCw, CheckCircle2, XCircle, Trophy } from "lucide-react";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://gto-poker-trainer-production.up.railway.app";
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://api.grindgto.com";
 
 type Street = "flop" | "turn" | "river";
 

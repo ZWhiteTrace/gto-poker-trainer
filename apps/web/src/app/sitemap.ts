@@ -1,7 +1,7 @@
 import { MetadataRoute } from "next";
 import { getAllGuides } from "@/lib/guides";
 
-const BASE_URL = "https://gto-poker-trainer-six.vercel.app";
+const BASE_URL = "https://grindgto.com";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const guides = getAllGuides();

@@ -66,7 +66,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "zh_TW",
-    url: "https://gto-poker-trainer-six.vercel.app",
+    url: "https://grindgto.com",
     siteName: "GTO 撲克訓練器",
     title: "免費德州撲克 GTO 練習工具 - 在線撲克範圍訓練器",
     description: "提升德撲技巧的免費 GTO 訓練器。提供翻前範圍表 (Preflop Ranges)、推圖 (Push/Fold) 練習及 ICM 計算。無需下載註冊，立即開啟在線練習。",
@@ -77,7 +77,7 @@ export const metadata: Metadata = {
     description: "提升德撲技巧的免費 GTO 訓練器。提供翻前範圍表 (Preflop Ranges)、推圖 (Push/Fold) 練習及 ICM 計算。無需下載註冊，立即開啟在線練習。",
   },
   alternates: {
-    canonical: "https://gto-poker-trainer-six.vercel.app",
+    canonical: "https://grindgto.com",
   },
   verification: {
     google: "qpFj8lm0xp4HSdFNKqKKNshhirIaQeKa-Sgd9zzsHis",
@@ -89,12 +89,12 @@ function WebsiteJsonLd() {
     "@context": "https://schema.org",
     "@type": "WebSite",
     name: "GTO 扑克训练器 - 免费德州扑克练习工具",
-    url: "https://gto-poker-trainer-six.vercel.app",
+    url: "https://grindgto.com",
     description: "提升德扑技巧的免费 GTO 训练器。提供翻前范围表、推图练习及 ICM 计算。",
     inLanguage: ["zh-TW", "zh-CN"],
     potentialAction: {
       "@type": "SearchAction",
-      target: "https://gto-poker-trainer-six.vercel.app/learn?q={search_term_string}",
+      target: "https://grindgto.com/learn?q={search_term_string}",
       "query-input": "required name=search_term_string",
     },
   };
@@ -112,8 +112,8 @@ function OrganizationJsonLd() {
     "@context": "https://schema.org",
     "@type": "Organization",
     name: "GTO 扑克训练器",
-    url: "https://gto-poker-trainer-six.vercel.app",
-    logo: "https://gto-poker-trainer-six.vercel.app/icon-512.png",
+    url: "https://grindgto.com",
+    logo: "https://grindgto.com/icon-512.png",
     sameAs: [],
   };
 
@@ -171,7 +171,7 @@ function CourseJsonLd() {
     provider: {
       "@type": "Organization",
       name: "GTO 扑克训练器",
-      url: "https://gto-poker-trainer-six.vercel.app",
+      url: "https://grindgto.com",
     },
     offers: {
       "@type": "Offer",

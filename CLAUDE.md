@@ -42,5 +42,5 @@ cd apps/api && uvicorn main:app --reload
 - BB = 大盲，需在考題中說明「有效籌碼」概念
 
 ## 部署
-- Frontend: Vercel (`gto-poker-trainer-six.vercel.app`)
-- API: Railway (`gto-poker-trainer-production.up.railway.app`)
+- Frontend: Vercel (`grindgto.com`)
+- API: Railway (`api.grindgto.com`)
