@@ -230,9 +230,7 @@ export default async function RootLayout({
             <AchievementToast />
           </AuthProvider>
         </NextIntlClientProvider>
-        {process.env.NEXT_PUBLIC_GA_ID && (
-          <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID} />
-        )}
+        <GoogleAnalytics gaId="G-6M17SD2FQR" />
       </body>
     </html>
   );
