@@ -39,7 +39,7 @@ import Link from "next/link";
 import { HandHistoryPanel } from "@/components/poker/HandHistoryPanel";
 import { GTOHintPanel, HintModeSelector } from "@/components/poker/GTOHintPanel";
 import { AIExploitAnalysis } from "@/components/poker/AIExploitAnalysis";
-import { generateGTOHint } from "@/lib/poker/gtoHintEngine";
+import { generateGTOHint, generateGTOHintWithSolver } from "@/lib/poker/gtoHintEngine";
 
 export default function TableTrainerClient() {
   const {
@@ -147,15 +147,28 @@ export default function TableTrainerClient() {
     return (phase === "result" || phase === "showdown") ? lastWonPot : pot;
   }, [phase, pot, lastWonPot]);
 
+  // GTO hint state - async with solver, fallback to rules-based
+  const [gtoHint, setGtoHint] = useState<GTOHint | null>(null);
+  const [isLoadingSolverHint, setIsLoadingSolverHint] = useState(false);
+
   // Generate GTO hint for current situation
-  const gtoHint = useMemo((): GTOHint | null => {
-    if (hintMode === "off") return null;
+  useEffect(() => {
+    if (hintMode === "off") {
+      setGtoHint(null);
+      return;
+    }
 
     const hero = players.find(p => p.isHero);
-    if (!hero || !hero.holeCards || phase !== "playing") return null;
+    if (!hero || !hero.holeCards || phase !== "playing") {
+      setGtoHint(null);
+      return;
+    }
 
     const activePlayer = players[activePlayerIndex];
-    if (!activePlayer?.isHero) return null;
+    if (!activePlayer?.isHero) {
+      setGtoHint(null);
+      return;
+    }
 
     // Determine if hero is in position
     const dealerIndex = players.findIndex(p => p.isDealer);
@@ -174,7 +187,7 @@ export default function TableTrainerClient() {
     // Check if facing a bet
     const facingBet = currentBet > hero.currentBet;
 
-    return generateGTOHint({
+    const hintContext = {
       holeCards: hero.holeCards,
       communityCards,
       position: hero.position,
@@ -186,7 +199,29 @@ export default function TableTrainerClient() {
       isInPosition,
       facingBet,
       isPreflopAggressor,
-    });
+    };
+
+    // First set rules-based hint immediately for fast response
+    const rulesBasedHint = generateGTOHint(hintContext);
+    setGtoHint(rulesBasedHint);
+
+    // Then try to get solver-based hint for postflop
+    if (currentStreet !== "preflop" && communityCards.length >= 3) {
+      setIsLoadingSolverHint(true);
+      generateGTOHintWithSolver(hintContext)
+        .then((solverHint) => {
+          // Only update if we got solver data
+          if (solverHint.reasoning.solverData) {
+            setGtoHint(solverHint);
+          }
+        })
+        .catch(() => {
+          // Keep rules-based hint on error
+        })
+        .finally(() => {
+          setIsLoadingSolverHint(false);
+        });
+    }
   }, [players, activePlayerIndex, phase, communityCards, currentStreet, pot, currentBet, actionHistory, hintMode]);
 
   // Wrap handleAction to track last hero action

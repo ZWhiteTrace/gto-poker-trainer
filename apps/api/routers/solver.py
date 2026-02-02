@@ -132,6 +132,7 @@ def find_matching_scenario(
     pot_type: str = "srp"
 ) -> Optional[Dict]:
     """Find a scenario matching the given parameters."""
+    # First try exact scenario data
     scenarios = get_solver_data()
 
     for scenario in scenarios:
@@ -143,6 +144,24 @@ def find_matching_scenario(
             continue
         if boards_match(board, scenario.get("board", [])):
             return scenario
+
+    # Fall back to Level 1 texture data (BTN vs BB SRP only for now)
+    if position == "BTN" and villain == "BB" and pot_type == "srp":
+        level1_data = get_level1_data()
+        textures = level1_data.get("textures", [])
+
+        for texture in textures:
+            if boards_match(board, texture.get("representative_board", [])):
+                return {
+                    "scenario_id": f"level1_{texture.get('texture_id')}",
+                    "position": position,
+                    "villain": villain,
+                    "pot_type": pot_type,
+                    "board": texture.get("representative_board"),
+                    "texture": texture.get("texture_id"),
+                    "texture_zh": texture.get("texture_zh"),
+                    "strategies": texture.get("strategies", {})
+                }
 
     return None
 
@@ -182,6 +201,10 @@ def get_postflop_strategy(
                 hand_strategy = strategies.get(normalized_hand[:-1] + "s")
             elif normalized_hand.endswith("s"):
                 hand_strategy = strategies.get(normalized_hand[:-1] + "o")
+
+        # Clean strategy data - remove non-numeric fields like 'note'
+        if hand_strategy:
+            hand_strategy = {k: v for k, v in hand_strategy.items() if isinstance(v, (int, float))}
 
         if not hand_strategy:
             return SolverQueryResponse(

@@ -336,6 +336,12 @@ export interface GTOHint {
     positionAdvantage: "IP" | "OOP";
     keyFactors: string[];   // Key decision factors
     keyFactorsZh: string[];
+    // Solver data (if available)
+    solverData?: {
+      scenarioId?: string;
+      hand?: string;
+      strategy?: Record<string, number>;
+    };
   };
 
   // EV estimate (optional)

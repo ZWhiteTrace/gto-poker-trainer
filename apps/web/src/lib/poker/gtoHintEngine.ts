@@ -16,6 +16,13 @@ import type {
   Suit,
 } from "./types";
 import { analyzeBoardTexture } from "./boardTexture";
+import {
+  querySolverStrategy,
+  holeCardsToHandString,
+  mapBoardToTextureId,
+  solverStrategyToRecommendations,
+  type SolverStrategy,
+} from "./solverClient";
 
 const RANK_VALUES: Record<Rank, number> = {
   "A": 14, "K": 13, "Q": 12, "J": 11, "T": 10,
@@ -495,6 +502,126 @@ export function generateGTOHint(context: HintContext): GTOHint {
       keyFactorsZh,
     },
   };
+}
+
+// ============================================
+// Solver-Enhanced GTO Hint (Async)
+// ============================================
+
+export async function generateGTOHintWithSolver(context: HintContext): Promise<GTOHint> {
+  // For preflop, use the standard logic
+  if (context.street === "preflop") {
+    const handStrength = analyzeHandStrength(context.holeCards, context.communityCards);
+    return generatePreflopHint(context, handStrength);
+  }
+
+  // Try to get solver data for postflop
+  try {
+    const solverResult = await querySolverStrategy(
+      context.communityCards,
+      context.holeCards,
+      context.position,
+      undefined, // Use default villain
+      "srp"
+    );
+
+    if (solverResult.found && solverResult.strategy) {
+      // We have solver data - use it!
+      const boardAnalysis = analyzeBoardTexture(context.communityCards);
+      const handStrength = analyzeHandStrength(context.holeCards, context.communityCards);
+      const handString = holeCardsToHandString(context.holeCards);
+
+      const recommendations = solverStrategyToRecommendations(solverResult.strategy);
+
+      // Build key factors with solver info
+      const keyFactorsZh: string[] = [];
+      keyFactorsZh.push(`[Solver] ${solverResult.texture_zh || boardAnalysis.textureZh}`);
+      keyFactorsZh.push(`手牌: ${handString} (${handStrength.categoryZh})`);
+
+      // Add primary action explanation
+      const primaryAction = recommendations.find(r => r.isPrimary);
+      if (primaryAction) {
+        if (primaryAction.action === "bet" && primaryAction.sizing) {
+          keyFactorsZh.push(`GTO 建議: Bet ${primaryAction.sizing}% pot (${primaryAction.frequency}%)`);
+        } else if (primaryAction.action === "check") {
+          keyFactorsZh.push(`GTO 建議: Check (${primaryAction.frequency}%)`);
+        }
+      }
+
+      // Add position factor
+      if (context.isInPosition) {
+        keyFactorsZh.push("位置優勢 - IP");
+      } else {
+        keyFactorsZh.push("位置劣勢 - OOP");
+      }
+
+      return {
+        recommendations,
+        reasoning: {
+          boardTexture: boardAnalysis.texture,
+          boardTextureZh: solverResult.texture_zh || boardAnalysis.textureZh,
+          handStrength: handStrength.category,
+          handStrengthZh: handStrength.categoryZh,
+          positionAdvantage: context.isInPosition ? "IP" : "OOP",
+          keyFactors: [],
+          keyFactorsZh,
+          solverData: {
+            scenarioId: solverResult.scenario_id,
+            hand: solverResult.hand,
+            strategy: solverResult.strategy as Record<string, number>,
+          },
+        },
+      };
+    }
+  } catch (error) {
+    console.warn("Solver query failed, falling back to rules:", error);
+  }
+
+  // Fallback to rule-based logic
+  return generateGTOHint(context);
+}
+
+// ============================================
+// Get Solver Strategy for Display
+// ============================================
+
+export async function getSolverStrategyForHand(
+  communityCards: Card[],
+  holeCards: HoleCards,
+  position: Position
+): Promise<{
+  found: boolean;
+  strategy?: SolverStrategy;
+  textureId?: string;
+  textureZh?: string;
+  note?: string;
+}> {
+  if (communityCards.length < 3) {
+    return { found: false };
+  }
+
+  try {
+    const result = await querySolverStrategy(
+      communityCards,
+      holeCards,
+      position,
+      undefined,
+      "srp"
+    );
+
+    if (result.found && result.strategy) {
+      return {
+        found: true,
+        strategy: result.strategy,
+        textureId: result.texture,
+        textureZh: result.texture_zh,
+      };
+    }
+  } catch (error) {
+    console.warn("Failed to get solver strategy:", error);
+  }
+
+  return { found: false };
 }
 
 function generatePreflopHint(context: HintContext, handStrength: HandStrengthAnalysis): GTOHint {
