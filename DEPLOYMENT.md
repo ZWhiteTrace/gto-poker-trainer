@@ -1,12 +1,19 @@
 # GTO Poker Trainer - 部署指南
 
+## 正式環境
+
+| 服務 | 域名 |
+|------|------|
+| Frontend | https://grindgto.com |
+| API | https://api.grindgto.com |
+
 ## 架構概覽
 
 ```
 ┌─────────────────┐     ┌─────────────────┐
 │     Vercel      │────▶│     Railway     │
 │   (Next.js)     │     │   (FastAPI)     │
-│   apps/web      │     │   apps/api      │
+│  grindgto.com   │     │api.grindgto.com │
 └─────────────────┘     └─────────────────┘
          │                      │
          └──────────┬───────────┘
@@ -71,7 +78,7 @@ PORT=8000  # Railway 自動設置
 
 ### Vercel (apps/web)
 ```
-NEXT_PUBLIC_API_URL=https://your-app.railway.app
+NEXT_PUBLIC_API_URL=https://api.grindgto.com
 NEXT_PUBLIC_SUPABASE_URL=https://xxx.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJxxx...
 ```
