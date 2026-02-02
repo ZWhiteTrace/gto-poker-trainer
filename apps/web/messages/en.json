@@ -30,6 +30,9 @@
     "vs3betDrill": "VS 3-Bet Drill",
     "vs4betDrill": "VS 4-Bet Drill",
     "postflopDrill": "Postflop C-bet",
+    "flopTexture": "Flop Texture",
+    "textureTraining": "Texture Training",
+    "tableTrainer": "GTO Table",
     "gtoPractice": "GTO Practice",
     "pushFold": "Push/Fold Charts",
     "icm": "ICM Calculator"

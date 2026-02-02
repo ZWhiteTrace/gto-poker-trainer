@@ -22,6 +22,7 @@ export function Navbar() {
     { href: "/drill/vs-4bet", label: t("nav.vs4betDrill") },
     { href: "/drill/postflop", label: t("nav.postflopDrill") },
     { href: "/drill/flop-texture", label: t("nav.flopTexture") || "翻牌質地" },
+    { href: "/drill/texture-training", label: t("nav.textureTraining") || "質地訓練" },
     { href: "/drill/table-trainer", label: t("nav.tableTrainer") || "GTO 牌桌" },
     { href: "/drill/gto-practice", label: t("nav.gtoPractice") },
   ];

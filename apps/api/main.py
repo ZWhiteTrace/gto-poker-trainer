@@ -19,7 +19,7 @@ from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
 
-from routers import drill, evaluate, ranges, mtt, postflop, analyze
+from routers import drill, evaluate, ranges, mtt, postflop, analyze, solver
 
 # Initialize rate limiter
 limiter = Limiter(key_func=get_remote_address, default_limits=["100/minute"])
@@ -72,6 +72,7 @@ app.include_router(ranges.router, prefix="/api/ranges", tags=["ranges"])
 app.include_router(mtt.router, prefix="/api/mtt", tags=["mtt"])
 app.include_router(postflop.router, prefix="/api/postflop", tags=["postflop"])
 app.include_router(analyze.router, prefix="/api/analyze", tags=["analyze"])
+app.include_router(solver.router, prefix="/api/solver", tags=["solver"])
 
 
 @app.get("/")
