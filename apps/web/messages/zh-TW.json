@@ -32,34 +32,36 @@
     "postflopDrill": "翻後 C-bet",
     "gtoPractice": "GTO 對練",
     "pushFold": "Push/Fold 圖表",
-    "icm": "ICM 計算器"
+    "icm": "ICM 計算器",
+    "flopTexture": "牌面結構",
+    "tableTrainer": "牌桌訓練"
   },
   "home": {
-    "badge": "全中文 · 完全免费 · 免注册",
+    "badge": "全中文 · 完全免費 · 免註冊",
     "title": "GTO Poker Trainer",
     "titleHighlight": "中文版",
     "titleSuffix": "",
-    "subtitle": "专为德扑新手和进阶玩家打造的免费 GTO 训练工具。无需下载、无需注册，支持翻前范围、EV 计算、概率练习，随时随地提升你的牌技。",
-    "startTraining": "立即开始练习",
-    "viewRanges": "查看 GTO 范围表",
-    "whyTitle": "为什么选择我们？",
-    "whySubtitle": "专业、免费、全中文界面，由德扑爱好者精心打造",
+    "subtitle": "專為德撲新手和進階玩家打造的免費 GTO 訓練工具。無需下載、無需註冊，支援翻前範圍、EV 計算、概率練習，隨時隨地提升你的牌技。",
+    "startTraining": "立即開始練習",
+    "viewRanges": "查看 GTO 範圍表",
+    "whyTitle": "為什麼選擇我們？",
+    "whySubtitle": "專業、免費、全中文介面，由德撲愛好者精心打造",
     "features": {
       "preflopMastery": {
-        "title": "全中文界面",
-        "description": "专业术语全部中文化，RFI、3-bet、ICM 一看就懂，新手也能快速上手。"
+        "title": "全中文介面",
+        "description": "專業術語全部中文化，RFI、3-bet、ICM 一看就懂，新手也能快速上手。"
       },
       "understandWhy": {
-        "title": "完全免费",
-        "description": "所有功能永久免费开放，无需付费订阅，无隐藏收费，放心使用。"
+        "title": "完全免費",
+        "description": "所有功能永久免費開放，無需付費訂閱，無隱藏收費，放心使用。"
       },
       "trackProgress": {
-        "title": "免注册使用",
-        "description": "打开网页即可练习，无需创建账号，无需下载 APP，随开随练。"
+        "title": "免註冊使用",
+        "description": "打開網頁即可練習，無需建立帳號，無需下載 APP，隨開隨練。"
       },
       "practiceAnywhere": {
-        "title": "EV 与概率计算",
-        "description": "内置 EV 计算、底池赔率、Outs 练习，用数学思维提升决策能力。"
+        "title": "EV 與概率計算",
+        "description": "內建 EV 計算、底池賠率、Outs 練習，用數學思維提升決策能力。"
       }
     },
     "practiceModesTitle": "練習模式",
@@ -82,13 +84,13 @@
         "description": "以視覺方式探索完整 GTO 範圍"
       }
     },
-    "ctaTitle": "准备好成为更强的德扑玩家了吗？",
+    "ctaTitle": "準備好成為更強的德撲玩家了嗎？",
     "ctaFeatures": {
-      "free": "100% 永久免费",
-      "noCard": "无需注册账号",
-      "instant": "打开即用"
+      "free": "100% 永久免費",
+      "noCard": "無需註冊帳號",
+      "instant": "打開即用"
     },
-    "startFreeTraining": "立即开始免费练习"
+    "startFreeTraining": "立即開始免費練習"
   },
   "drill": {
     "rfi": {
