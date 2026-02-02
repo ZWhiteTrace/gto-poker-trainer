@@ -1,9 +1,9 @@
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Outs 计算测验 - 听牌出路练习",
+  title: "Outs 計算測驗 - 聽牌出路練習",
   description:
-    "练习计算翻后听牌的 Outs 数量。同花听牌、顺子听牌、组合听牌，快速判断改进概率。",
+    "練習計算翻後聽牌的 Outs 數量。同花聽牌、順子聽牌、組合聽牌，快速判斷改進概率。",
 };
 
 export default function Layout({ children }: { children: React.ReactNode }) {

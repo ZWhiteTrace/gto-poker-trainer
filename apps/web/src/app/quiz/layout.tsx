@@ -1,9 +1,9 @@
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "扑克测验中心 - 检验你的德扑知识",
+  title: "撲克測驗中心 - 檢驗你的德撲知識",
   description:
-    "通过互动测验检验你的扑克知识。包含勝率计算、Outs 计算、EV 期望值、GTO 逻辑等多种测验类型。",
+    "通過互動測驗檢驗你的撲克知識。包含勝率計算、Outs 計算、EV 期望值、GTO 邏輯等多種測驗類型。",
 };
 
 export default function Layout({ children }: { children: React.ReactNode }) {

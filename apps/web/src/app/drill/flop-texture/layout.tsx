@@ -1,9 +1,9 @@
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "牌面结构分析练习 - Flop Texture 识别训练",
+  title: "牌面結構分析練習 - Flop Texture 識別訓練",
   description:
-    "学习识别不同的翻牌面结构（干燥、湿润、配对等），理解牌面结构如何影响你的策略选择。",
+    "學習識別不同的翻牌面結構（乾燥、濕潤、配對等），理解牌面結構如何影響你的策略選擇。",
 };
 
 export default function Layout({ children }: { children: React.ReactNode }) {

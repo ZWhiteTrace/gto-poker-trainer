@@ -1,9 +1,9 @@
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "RFI 翻前开池练习 - 免费德州扑克 GTO 训练",
+  title: "RFI 翻前開池練習 - 免費德州撲克 GTO 訓練",
   description:
-    "练习各位置的 RFI（Raise First In）开池范围。掌握 UTG、HJ、CO、BTN、SB 的 GTO 开牌策略，即时反馈帮你快速进步。",
+    "練習各位置的 RFI（Raise First In）開池範圍。掌握 UTG、HJ、CO、BTN、SB 的 GTO 開牌策略，即時反饋幫你快速進步。",
 };
 
 export default function Layout({ children }: { children: React.ReactNode }) {

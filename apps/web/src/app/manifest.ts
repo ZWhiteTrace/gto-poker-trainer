@@ -2,9 +2,9 @@ import { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "GTO 扑克训练器 - 免费德州扑克练习工具",
-    short_name: "GTO训练器",
-    description: "专为德扑玩家打造的免费 GTO 训练工具。翻前范围练习、EV 计算、Push/Fold 图表，全中文界面，无需注册。",
+    name: "GTO 撲克訓練器 - 免費德州撲克練習工具",
+    short_name: "GTO訓練器",
+    description: "專為德撲玩家打造的免費 GTO 訓練工具。翻前範圍練習、EV 計算、Push/Fold 圖表，全中文介面，無需註冊。",
     start_url: "/",
     display: "standalone",
     background_color: "#0a0a0a",
@@ -30,20 +30,20 @@ export default function manifest(): MetadataRoute.Manifest {
     screenshots: [],
     shortcuts: [
       {
-        name: "RFI 开池练习",
+        name: "RFI 開池練習",
         short_name: "RFI",
         url: "/drill/rfi",
         icons: [{ src: "/icon-192.png", sizes: "192x192" }],
       },
       {
-        name: "范围表查看器",
-        short_name: "范围表",
+        name: "範圍表查看器",
+        short_name: "範圍表",
         url: "/range",
         icons: [{ src: "/icon-192.png", sizes: "192x192" }],
       },
       {
-        name: "Push/Fold 图表",
-        short_name: "推图",
+        name: "Push/Fold 圖表",
+        short_name: "推圖",
         url: "/mtt/push-fold",
         icons: [{ src: "/icon-192.png", sizes: "192x192" }],
       },

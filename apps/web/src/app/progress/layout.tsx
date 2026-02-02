@@ -1,9 +1,9 @@
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "学习进度 - 追踪你的训练数据",
+  title: "學習進度 - 追蹤你的訓練數據",
   description:
-    "查看你的 GTO 训练进度。统计各练习类型的准确率、弱点区域分析、历史活动记录。",
+    "查看你的 GTO 訓練進度。統計各練習類型的準確率、弱點區域分析、歷史活動記錄。",
 };
 
 export default function Layout({ children }: { children: React.ReactNode }) {

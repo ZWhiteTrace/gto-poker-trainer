@@ -1,9 +1,9 @@
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "GTO 对练模式 - 与 AI 进行翻前实战练习",
+  title: "GTO 對練模式 - 與 AI 進行翻前實戰練習",
   description:
-    "与 GTO AI 进行翻前对练。模拟真实牌局场景，AI 根据 GTO 频率做决策，帮你在实战中理解 GTO 策略。",
+    "與 GTO AI 進行翻前對練。模擬真實牌局場景，AI 根據 GTO 頻率做決策，幫你在實戰中理解 GTO 策略。",
 };
 
 export default function Layout({ children }: { children: React.ReactNode }) {
