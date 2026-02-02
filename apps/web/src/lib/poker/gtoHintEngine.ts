@@ -21,6 +21,10 @@ import {
   holeCardsToHandString,
   mapBoardToTextureId,
   solverStrategyToRecommendations,
+  classifyTurnCard,
+  getTurnAdjustment,
+  categorizeHandForTurn,
+  applyTurnAdjustment,
   type SolverStrategy,
 } from "./solverClient";
 
@@ -517,8 +521,12 @@ export async function generateGTOHintWithSolver(context: HintContext): Promise<G
 
   // Try to get solver data for postflop
   try {
+    // For turn/river, we need the flop cards (first 3)
+    const flopCards = context.communityCards.slice(0, 3);
+
+    // Query flop strategy first
     const solverResult = await querySolverStrategy(
-      context.communityCards,
+      flopCards,
       context.holeCards,
       context.position,
       undefined, // Use default villain
@@ -531,11 +539,48 @@ export async function generateGTOHintWithSolver(context: HintContext): Promise<G
       const handStrength = analyzeHandStrength(context.holeCards, context.communityCards);
       const handString = holeCardsToHandString(context.holeCards);
 
-      const recommendations = solverStrategyToRecommendations(solverResult.strategy);
+      let finalStrategy = solverResult.strategy;
+      let turnInfo: { turnType: string; turnTypeZh: string } | null = null;
+
+      // Apply turn adjustments if on turn or river
+      if (context.street === "turn" && context.communityCards.length >= 4) {
+        const turnCard = context.communityCards[3];
+        const turnClassification = await classifyTurnCard(flopCards, turnCard);
+
+        if (turnClassification && solverResult.texture) {
+          const handCategory = categorizeHandForTurn(
+            handStrength.category,
+            handStrength.hasFlushDraw,
+            handStrength.hasStraightDraw
+          );
+
+          const turnAdjustment = await getTurnAdjustment(
+            solverResult.texture,
+            turnClassification.turn_type,
+            handCategory
+          );
+
+          if (turnAdjustment) {
+            finalStrategy = applyTurnAdjustment(solverResult.strategy, turnAdjustment);
+            turnInfo = {
+              turnType: turnClassification.turn_type,
+              turnTypeZh: turnClassification.turn_type_zh,
+            };
+          }
+        }
+      }
+
+      const recommendations = solverStrategyToRecommendations(finalStrategy);
 
       // Build key factors with solver info
       const keyFactorsZh: string[] = [];
       keyFactorsZh.push(`[Solver] ${solverResult.texture_zh || boardAnalysis.textureZh}`);
+
+      // Add turn card type info
+      if (turnInfo) {
+        keyFactorsZh.push(`Turn: ${turnInfo.turnTypeZh}`);
+      }
+
       keyFactorsZh.push(`手牌: ${handString} (${handStrength.categoryZh})`);
 
       // Add primary action explanation
@@ -568,7 +613,11 @@ export async function generateGTOHintWithSolver(context: HintContext): Promise<G
           solverData: {
             scenarioId: solverResult.scenario_id,
             hand: solverResult.hand,
-            strategy: solverResult.strategy as Record<string, number>,
+            strategy: finalStrategy as Record<string, number>,
+            turnAdjustment: turnInfo ? {
+              turnType: turnInfo.turnType,
+              turnTypeZh: turnInfo.turnTypeZh,
+            } : undefined,
           },
         },
       };

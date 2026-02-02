@@ -341,6 +341,10 @@ export interface GTOHint {
       scenarioId?: string;
       hand?: string;
       strategy?: Record<string, number>;
+      turnAdjustment?: {
+        turnType: string;
+        turnTypeZh: string;
+      };
     };
   };
 

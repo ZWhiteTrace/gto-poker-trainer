@@ -163,8 +163,8 @@ def find_matching_scenario(
         if boards_match(board, scenario.get("board", [])):
             return scenario
 
-    # Fall back to Level 1 texture data (BTN vs BB SRP only for now)
-    if position == "BTN" and villain == "BB" and pot_type == "srp":
+    # Fall back to Level 1 texture data
+    if position in ["BTN", "CO"] and villain == "BB" and pot_type in ["srp", "3bet"]:
         level1_data = get_level1_data()
         textures = level1_data.get("textures", [])
 
@@ -622,4 +622,146 @@ def get_texture_hands(texture_id: str):
         "concept": texture.get("concept"),
         "hands_by_category": hands_by_category,
         "total_hands": len(strategies)
+    }
+
+
+# ============ Turn/River Strategy Adjustments ============
+
+def get_turn_adjustments() -> Dict:
+    """Load turn adjustment data."""
+    if "turn_adjustments" in _solver_cache:
+        return _solver_cache["turn_adjustments"]
+
+    data_path = Path(__file__).parent.parent / "data" / "solver" / "turn_adjustments.json"
+    if not data_path.exists():
+        return {}
+
+    with open(data_path, encoding="utf-8") as f:
+        data = json.load(f)
+
+    _solver_cache["turn_adjustments"] = data
+    return data
+
+
+def classify_turn_card(
+    flop: List[str],
+    turn: str
+) -> str:
+    """Classify the turn card type based on flop texture."""
+    turn_rank = turn[0].upper()
+    turn_suit = turn[1].lower() if len(turn) > 1 else ""
+
+    flop_ranks = [c[0].upper() for c in flop]
+    flop_suits = [c[1].lower() for c in flop if len(c) > 1]
+
+    # Check for pair board
+    if turn_rank in flop_ranks:
+        return "pair_board"
+
+    # Check for flush card
+    suit_count = sum(1 for s in flop_suits if s == turn_suit)
+    if suit_count >= 2:
+        return "flush_card"
+
+    # Check for straight card (simplified: within 2 ranks of any flop card)
+    rank_values = {"A": 14, "K": 13, "Q": 12, "J": 11, "T": 10, "9": 9, "8": 8, "7": 7, "6": 6, "5": 5, "4": 4, "3": 3, "2": 2}
+    turn_value = rank_values.get(turn_rank, 0)
+    flop_values = [rank_values.get(r, 0) for r in flop_ranks]
+
+    for fv in flop_values:
+        if abs(turn_value - fv) <= 2 and turn_value != fv:
+            # Check if it creates more connectivity
+            all_values = sorted(flop_values + [turn_value])
+            gaps = [all_values[i+1] - all_values[i] for i in range(len(all_values)-1)]
+            if max(gaps) <= 2:
+                return "straight_card"
+
+    # Check for overcard
+    high_cards = {"A", "K", "Q", "J", "T"}
+    if turn_rank in high_cards and turn_rank not in flop_ranks:
+        return "overcard"
+
+    return "brick"
+
+
+@router.get("/turn")
+def get_turn_adjustment(
+    flop_texture: str = Query(..., description="Flop texture ID (e.g., 'dry_ace_high')"),
+    turn_type: str = Query(..., description="Turn card type: brick, overcard, pair_board, flush_card, straight_card"),
+    hand_category: Optional[str] = Query(default=None, description="Hand category: strong_value, medium_value, draws, bluffs"),
+):
+    """Get strategy adjustments for turn based on card type."""
+    data = get_turn_adjustments()
+    if not data:
+        raise HTTPException(status_code=404, detail="Turn adjustment data not found")
+
+    # Get texture-specific adjustments or default
+    texture_adjustments = data.get("texture_adjustments", {}).get(flop_texture)
+    if not texture_adjustments:
+        texture_adjustments = data.get("default_adjustments", {})
+
+    turn_adjustment = texture_adjustments.get(turn_type)
+    if not turn_adjustment:
+        return {"error": f"No adjustment data for turn type '{turn_type}'"}
+
+    result = {
+        "flop_texture": flop_texture,
+        "turn_type": turn_type,
+        "description": turn_adjustment.get("description", ""),
+    }
+
+    if hand_category:
+        adj = turn_adjustment.get("adjustments", {}).get(hand_category)
+        if adj:
+            result["hand_category"] = hand_category
+            result["bet_frequency_delta"] = adj.get("bet_delta", 0)
+            result["check_frequency_delta"] = adj.get("check_delta", 0)
+    else:
+        result["adjustments"] = turn_adjustment.get("adjustments", {})
+
+    return result
+
+
+@router.get("/turn/classify")
+def classify_turn(
+    flop: str = Query(..., description="Flop cards (e.g., 'Ah7s2d')"),
+    turn: str = Query(..., description="Turn card (e.g., 'Kc')"),
+):
+    """Classify a turn card based on the flop."""
+    # Parse flop
+    flop_cards = []
+    i = 0
+    while i < len(flop):
+        if i + 1 < len(flop):
+            flop_cards.append(flop[i:i+2])
+            i += 2
+        else:
+            i += 1
+
+    if len(flop_cards) < 3:
+        raise HTTPException(status_code=400, detail="Invalid flop format")
+
+    turn_type = classify_turn_card(flop_cards, turn)
+
+    return {
+        "flop": flop_cards,
+        "turn": turn,
+        "turn_type": turn_type,
+        "turn_type_zh": {
+            "brick": "磚塊牌",
+            "overcard": "高張牌",
+            "pair_board": "配對牌",
+            "flush_card": "同花牌",
+            "straight_card": "順子牌",
+        }.get(turn_type, turn_type)
+    }
+
+
+@router.get("/turn/card-types")
+def list_turn_card_types():
+    """List all turn card type classifications."""
+    data = get_turn_adjustments()
+    return {
+        "turn_card_types": data.get("turn_card_types", {}),
+        "hand_categories": data.get("hand_categories", {})
     }

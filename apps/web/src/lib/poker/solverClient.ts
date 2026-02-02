@@ -354,3 +354,168 @@ export function clearSolverCache(): void {
   solverCache.clear();
   textureCache.clear();
 }
+
+// ============================================
+// Turn/River API Functions
+// ============================================
+
+export interface TurnClassification {
+  flop: string[];
+  turn: string;
+  turn_type: string;
+  turn_type_zh: string;
+}
+
+export interface TurnAdjustment {
+  flop_texture: string;
+  turn_type: string;
+  hand_category: string;
+  bet_frequency_delta: number;
+  check_frequency_delta: number;
+  description: string;
+}
+
+const turnClassificationCache = new Map<string, TurnClassification>();
+const turnAdjustmentCache = new Map<string, TurnAdjustment>();
+
+/**
+ * Classify the turn card type based on flop
+ */
+export async function classifyTurnCard(
+  flop: Card[],
+  turn: Card
+): Promise<TurnClassification | null> {
+  if (flop.length !== 3) return null;
+
+  const flopStr = cardsToString(flop);
+  const turnStr = `${turn.rank}${turn.suit}`;
+  const cacheKey = `${flopStr}-${turnStr}`;
+
+  if (turnClassificationCache.has(cacheKey)) {
+    return turnClassificationCache.get(cacheKey)!;
+  }
+
+  try {
+    const url = `${API_BASE}/api/solver/turn/classify?flop=${flopStr}&turn=${turnStr}`;
+    const response = await fetch(url);
+
+    if (!response.ok) {
+      return null;
+    }
+
+    const result: TurnClassification = await response.json();
+    turnClassificationCache.set(cacheKey, result);
+    return result;
+  } catch (error) {
+    console.error("Turn classification failed:", error);
+    return null;
+  }
+}
+
+/**
+ * Get turn strategy adjustment based on flop texture, turn type, and hand category
+ */
+export async function getTurnAdjustment(
+  flopTexture: string,
+  turnType: string,
+  handCategory: string
+): Promise<TurnAdjustment | null> {
+  const cacheKey = `${flopTexture}-${turnType}-${handCategory}`;
+
+  if (turnAdjustmentCache.has(cacheKey)) {
+    return turnAdjustmentCache.get(cacheKey)!;
+  }
+
+  try {
+    const url = `${API_BASE}/api/solver/turn?flop_texture=${flopTexture}&turn_type=${turnType}&hand_category=${handCategory}`;
+    const response = await fetch(url);
+
+    if (!response.ok) {
+      return null;
+    }
+
+    const result: TurnAdjustment = await response.json();
+    turnAdjustmentCache.set(cacheKey, result);
+    return result;
+  } catch (error) {
+    console.error("Turn adjustment query failed:", error);
+    return null;
+  }
+}
+
+/**
+ * Categorize hand strength into turn adjustment categories
+ */
+export function categorizeHandForTurn(
+  handStrength: string,
+  hasFlushDraw: boolean,
+  hasStraightDraw: boolean
+): string {
+  // Map hand strength to turn adjustment categories
+  if (handStrength === "nuts" || handStrength === "strong") {
+    return "strong_value";
+  }
+  if (handStrength === "medium") {
+    return "medium_value";
+  }
+  if (hasFlushDraw || hasStraightDraw) {
+    return "draws";
+  }
+  return "bluffs";
+}
+
+/**
+ * Apply turn adjustment to flop strategy
+ */
+export function applyTurnAdjustment(
+  flopStrategy: SolverStrategy,
+  adjustment: TurnAdjustment
+): SolverStrategy {
+  const betDelta = adjustment.bet_frequency_delta;
+  const checkDelta = adjustment.check_frequency_delta;
+  const adjusted: SolverStrategy = { ...flopStrategy };
+
+  // Apply bet delta (distribute across bet sizes)
+  const totalBetFreq =
+    (adjusted.bet_33 || 0) +
+    (adjusted.bet_50 || 0) +
+    (adjusted.bet_66 || 0) +
+    (adjusted.bet_75 || 0) +
+    (adjusted.bet_100 || 0);
+
+  if (totalBetFreq > 0) {
+    // Proportionally adjust each bet size
+    const betRatio = (totalBetFreq + betDelta) / totalBetFreq;
+    if (adjusted.bet_33) adjusted.bet_33 = Math.max(0, Math.min(100, adjusted.bet_33 * betRatio));
+    if (adjusted.bet_50) adjusted.bet_50 = Math.max(0, Math.min(100, adjusted.bet_50 * betRatio));
+    if (adjusted.bet_66) adjusted.bet_66 = Math.max(0, Math.min(100, adjusted.bet_66 * betRatio));
+    if (adjusted.bet_75) adjusted.bet_75 = Math.max(0, Math.min(100, adjusted.bet_75 * betRatio));
+    if (adjusted.bet_100) adjusted.bet_100 = Math.max(0, Math.min(100, adjusted.bet_100 * betRatio));
+  }
+
+  // Apply check delta
+  if (adjusted.check !== undefined) {
+    adjusted.check = Math.max(0, Math.min(100, adjusted.check + checkDelta));
+  }
+
+  // Normalize to 100%
+  const total =
+    (adjusted.bet_33 || 0) +
+    (adjusted.bet_50 || 0) +
+    (adjusted.bet_66 || 0) +
+    (adjusted.bet_75 || 0) +
+    (adjusted.bet_100 || 0) +
+    (adjusted.check || 0);
+
+  if (total > 0 && total !== 100) {
+    const scale = 100 / total;
+    if (adjusted.bet_33) adjusted.bet_33 = Math.round(adjusted.bet_33 * scale);
+    if (adjusted.bet_50) adjusted.bet_50 = Math.round(adjusted.bet_50 * scale);
+    if (adjusted.bet_66) adjusted.bet_66 = Math.round(adjusted.bet_66 * scale);
+    if (adjusted.bet_75) adjusted.bet_75 = Math.round(adjusted.bet_75 * scale);
+    if (adjusted.bet_100) adjusted.bet_100 = Math.round(adjusted.bet_100 * scale);
+    if (adjusted.check) adjusted.check = Math.round(adjusted.check * scale);
+  }
+
+  return adjusted;
+}

@@ -1,0 +1,383 @@
+{
+  "meta": {
+    "description": "Turn/River strategy adjustments based on card types",
+    "version": "1.0.0"
+  },
+  "turn_card_types": {
+    "brick": {
+      "description": "無關緊要的低牌 (2-6，不配對、不完成聽牌)",
+      "description_zh": "磚塊牌",
+      "examples": [
+        "2",
+        "3",
+        "4",
+        "5",
+        "6"
+      ]
+    },
+    "overcard": {
+      "description": "新的高牌，可能改變牌力排名",
+      "description_zh": "高張牌",
+      "examples": [
+        "A",
+        "K",
+        "Q",
+        "J",
+        "T"
+      ]
+    },
+    "pair_board": {
+      "description": "公牌配對，改變牌面結構",
+      "description_zh": "配對牌",
+      "examples": [
+        "與 flop 任一張相同"
+      ]
+    },
+    "flush_card": {
+      "description": "第三或第四張同花牌",
+      "description_zh": "同花牌",
+      "examples": [
+        "與 flop 同花色"
+      ]
+    },
+    "straight_card": {
+      "description": "完成順子或增加順子可能",
+      "description_zh": "順子牌",
+      "examples": [
+        "連接 flop 的牌"
+      ]
+    }
+  },
+  "hand_categories": {
+    "strong_value": [
+      "AA",
+      "KK",
+      "QQ",
+      "AKs",
+      "AKo",
+      "Sets"
+    ],
+    "medium_value": [
+      "JJ",
+      "TT",
+      "AQs",
+      "AQo",
+      "KQs",
+      "Top Pair"
+    ],
+    "draws": [
+      "Flush draws",
+      "Straight draws",
+      "Combo draws"
+    ],
+    "bluffs": [
+      "Air",
+      "Weak backdoors",
+      "Overcards only"
+    ]
+  },
+  "texture_adjustments": {
+    "dry_ace_high": {
+      "brick": {
+        "description": "磚塊不改變牌力，繼續原策略",
+        "adjustments": {
+          "strong_value": {
+            "bet_delta": 0,
+            "check_delta": 0
+          },
+          "medium_value": {
+            "bet_delta": 0,
+            "check_delta": 0
+          },
+          "draws": {
+            "bet_delta": -10,
+            "check_delta": 10
+          },
+          "bluffs": {
+            "bet_delta": -15,
+            "check_delta": 15
+          }
+        }
+      },
+      "overcard": {
+        "description": "新高牌可能改變牌力關係",
+        "adjustments": {
+          "strong_value": {
+            "bet_delta": -5,
+            "check_delta": 5
+          },
+          "medium_value": {
+            "bet_delta": -10,
+            "check_delta": 10
+          },
+          "draws": {
+            "bet_delta": 5,
+            "check_delta": -5
+          },
+          "bluffs": {
+            "bet_delta": 10,
+            "check_delta": -10
+          }
+        }
+      },
+      "pair_board": {
+        "description": "配對增加葫蘆可能",
+        "adjustments": {
+          "strong_value": {
+            "bet_delta": 10,
+            "check_delta": -10
+          },
+          "medium_value": {
+            "bet_delta": -5,
+            "check_delta": 5
+          },
+          "draws": {
+            "bet_delta": -20,
+            "check_delta": 20
+          },
+          "bluffs": {
+            "bet_delta": 15,
+            "check_delta": -15
+          }
+        }
+      },
+      "flush_card": {
+        "description": "同花完成威脅",
+        "adjustments": {
+          "strong_value": {
+            "bet_delta": -15,
+            "check_delta": 15
+          },
+          "medium_value": {
+            "bet_delta": -20,
+            "check_delta": 20
+          },
+          "draws": {
+            "bet_delta": -30,
+            "check_delta": 30
+          },
+          "bluffs": {
+            "bet_delta": -25,
+            "check_delta": 25
+          }
+        }
+      },
+      "straight_card": {
+        "description": "順子完成威脅",
+        "adjustments": {
+          "strong_value": {
+            "bet_delta": -10,
+            "check_delta": 10
+          },
+          "medium_value": {
+            "bet_delta": -15,
+            "check_delta": 15
+          },
+          "draws": {
+            "bet_delta": -20,
+            "check_delta": 20
+          },
+          "bluffs": {
+            "bet_delta": -15,
+            "check_delta": 15
+          }
+        }
+      }
+    },
+    "monotone": {
+      "brick": {
+        "description": "磚塊不改變同花威脅",
+        "adjustments": {
+          "strong_value": {
+            "bet_delta": 5,
+            "check_delta": -5
+          },
+          "medium_value": {
+            "bet_delta": 0,
+            "check_delta": 0
+          },
+          "draws": {
+            "bet_delta": -15,
+            "check_delta": 15
+          },
+          "bluffs": {
+            "bet_delta": -10,
+            "check_delta": 10
+          }
+        }
+      },
+      "flush_card": {
+        "description": "第四張同花！極度危險",
+        "adjustments": {
+          "strong_value": {
+            "bet_delta": -30,
+            "check_delta": 30
+          },
+          "medium_value": {
+            "bet_delta": -40,
+            "check_delta": 40
+          },
+          "draws": {
+            "bet_delta": -50,
+            "check_delta": 50
+          },
+          "bluffs": {
+            "bet_delta": -40,
+            "check_delta": 40
+          }
+        }
+      }
+    },
+    "connected_high": {
+      "brick": {
+        "description": "磚塊稍微減少順子威脅",
+        "adjustments": {
+          "strong_value": {
+            "bet_delta": 5,
+            "check_delta": -5
+          },
+          "medium_value": {
+            "bet_delta": 5,
+            "check_delta": -5
+          },
+          "draws": {
+            "bet_delta": -15,
+            "check_delta": 15
+          },
+          "bluffs": {
+            "bet_delta": -10,
+            "check_delta": 10
+          }
+        }
+      },
+      "straight_card": {
+        "description": "順子完成！重新評估",
+        "adjustments": {
+          "strong_value": {
+            "bet_delta": -20,
+            "check_delta": 20
+          },
+          "medium_value": {
+            "bet_delta": -30,
+            "check_delta": 30
+          },
+          "draws": {
+            "bet_delta": -25,
+            "check_delta": 25
+          },
+          "bluffs": {
+            "bet_delta": -20,
+            "check_delta": 20
+          }
+        }
+      }
+    }
+  },
+  "default_adjustments": {
+    "brick": {
+      "description": "磚塊通常不改變太多",
+      "adjustments": {
+        "strong_value": {
+          "bet_delta": 0,
+          "check_delta": 0
+        },
+        "medium_value": {
+          "bet_delta": 0,
+          "check_delta": 0
+        },
+        "draws": {
+          "bet_delta": -10,
+          "check_delta": 10
+        },
+        "bluffs": {
+          "bet_delta": -10,
+          "check_delta": 10
+        }
+      }
+    },
+    "overcard": {
+      "description": "高牌可能改變牌力",
+      "adjustments": {
+        "strong_value": {
+          "bet_delta": -5,
+          "check_delta": 5
+        },
+        "medium_value": {
+          "bet_delta": -10,
+          "check_delta": 10
+        },
+        "draws": {
+          "bet_delta": 0,
+          "check_delta": 0
+        },
+        "bluffs": {
+          "bet_delta": 5,
+          "check_delta": -5
+        }
+      }
+    },
+    "pair_board": {
+      "description": "配對改變結構",
+      "adjustments": {
+        "strong_value": {
+          "bet_delta": 5,
+          "check_delta": -5
+        },
+        "medium_value": {
+          "bet_delta": -5,
+          "check_delta": 5
+        },
+        "draws": {
+          "bet_delta": -15,
+          "check_delta": 15
+        },
+        "bluffs": {
+          "bet_delta": 10,
+          "check_delta": -10
+        }
+      }
+    },
+    "flush_card": {
+      "description": "同花威脅增加",
+      "adjustments": {
+        "strong_value": {
+          "bet_delta": -10,
+          "check_delta": 10
+        },
+        "medium_value": {
+          "bet_delta": -15,
+          "check_delta": 15
+        },
+        "draws": {
+          "bet_delta": -25,
+          "check_delta": 25
+        },
+        "bluffs": {
+          "bet_delta": -20,
+          "check_delta": 20
+        }
+      }
+    },
+    "straight_card": {
+      "description": "順子威脅增加",
+      "adjustments": {
+        "strong_value": {
+          "bet_delta": -10,
+          "check_delta": 10
+        },
+        "medium_value": {
+          "bet_delta": -15,
+          "check_delta": 15
+        },
+        "draws": {
+          "bet_delta": -15,
+          "check_delta": 15
+        },
+        "bluffs": {
+          "bet_delta": -10,
+          "check_delta": 10
+        }
+      }
+    }
+  }
+}
