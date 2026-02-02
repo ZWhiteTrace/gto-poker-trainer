@@ -1,11 +1,11 @@
 # GTO Poker Trainer - robots.txt
-# https://gto-poker-trainer-six.vercel.app
+# https://grindgto.com
 
 User-agent: *
 Allow: /
 
 # Sitemap location
-Sitemap: https://gto-poker-trainer-six.vercel.app/sitemap.xml
+Sitemap: https://grindgto.com/sitemap.xml
 
 # Disallow admin/API routes
 Disallow: /api/
