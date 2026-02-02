@@ -165,8 +165,8 @@ export function Navbar() {
                 <span className="sr-only">Toggle menu</span>
               </Button>
             </SheetTrigger>
-            <SheetContent side="right" className="w-[300px]">
-              <nav className="flex flex-col space-y-4 mt-8">
+            <SheetContent side="right" className="w-[300px] overflow-hidden">
+              <nav className="flex flex-col space-y-4 mt-8 overflow-y-auto h-full pb-8">
                 {user && (
                   <>
                     <div className="flex items-center gap-3 p-3 rounded-lg bg-muted/50">
