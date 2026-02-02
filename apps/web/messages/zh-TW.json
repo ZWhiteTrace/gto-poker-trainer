@@ -35,31 +35,31 @@
     "icm": "ICM 計算器"
   },
   "home": {
-    "badge": "免費 GTO 訓練",
-    "title": "掌握",
-    "titleHighlight": "GTO 撲克",
-    "titleSuffix": "策略",
-    "subtitle": "停止猜測，開始壓制。用即時 GTO 反饋訓練你的翻前決策。理解每個打法背後的原因。",
-    "startTraining": "開始訓練",
-    "viewRanges": "查看範圍",
-    "whyTitle": "為什麼選擇 GTO 訓練器？",
-    "whySubtitle": "由撲克玩家為撲克玩家打造。專注於理解，而非死記。",
+    "badge": "全中文 · 完全免费 · 免注册",
+    "title": "GTO Poker Trainer",
+    "titleHighlight": "中文版",
+    "titleSuffix": "",
+    "subtitle": "专为德扑新手和进阶玩家打造的免费 GTO 训练工具。无需下载、无需注册，支持翻前范围、EV 计算、概率练习，随时随地提升你的牌技。",
+    "startTraining": "立即开始练习",
+    "viewRanges": "查看 GTO 范围表",
+    "whyTitle": "为什么选择我们？",
+    "whySubtitle": "专业、免费、全中文界面，由德扑爱好者精心打造",
     "features": {
       "preflopMastery": {
-        "title": "翻前精通",
-        "description": "掌握 RFI、3-bet 和 4-bet 範圍，獲得即時反饋和基於 GTO 的評估。"
+        "title": "全中文界面",
+        "description": "专业术语全部中文化，RFI、3-bet、ICM 一看就懂，新手也能快速上手。"
       },
       "understandWhy": {
-        "title": "理解原因",
-        "description": "不只是記住頻率。學習每個 GTO 決策背後的邏輯。"
+        "title": "完全免费",
+        "description": "所有功能永久免费开放，无需付费订阅，无隐藏收费，放心使用。"
       },
       "trackProgress": {
-        "title": "追蹤進度",
-        "description": "通過詳細的分析和弱點檢測，找出你遊戲中的弱項。"
+        "title": "免注册使用",
+        "description": "打开网页即可练习，无需创建账号，无需下载 APP，随开随练。"
       },
       "practiceAnywhere": {
-        "title": "隨處練習",
-        "description": "手機優化界面。在通勤或休息時訓練你的撲克大腦。"
+        "title": "EV 与概率计算",
+        "description": "内置 EV 计算、底池赔率、Outs 练习，用数学思维提升决策能力。"
       }
     },
     "practiceModesTitle": "練習模式",
@@ -82,13 +82,13 @@
         "description": "以視覺方式探索完整 GTO 範圍"
       }
     },
-    "ctaTitle": "準備好提升你的遊戲了嗎？",
+    "ctaTitle": "准备好成为更强的德扑玩家了吗？",
     "ctaFeatures": {
-      "free": "100% 免費開始",
-      "noCard": "無需信用卡",
-      "instant": "即時反饋"
+      "free": "100% 永久免费",
+      "noCard": "无需注册账号",
+      "instant": "打开即用"
     },
-    "startFreeTraining": "開始免費訓練"
+    "startFreeTraining": "立即开始免费练习"
   },
   "drill": {
     "rfi": {

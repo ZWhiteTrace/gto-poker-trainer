@@ -26,34 +26,42 @@ function FAQPageJsonLd() {
     mainEntity: [
       {
         "@type": "Question",
-        name: "What is GTO poker strategy?",
+        name: "什么是 GTO 扑克策略？",
         acceptedAnswer: {
           "@type": "Answer",
-          text: "GTO (Game Theory Optimal) poker is a strategy based on mathematical principles that makes your play unexploitable. It involves balanced ranges and frequencies that prevent opponents from gaining an edge against you.",
+          text: "GTO（Game Theory Optimal，博弈论最优）是基于数学原理的扑克策略，让你的打法无法被剥削。它包含平衡的范围和频率，防止对手获得优势。",
         },
       },
       {
         "@type": "Question",
-        name: "How do I use the preflop range trainer?",
+        name: "如何使用翻前范围训练器？",
         acceptedAnswer: {
           "@type": "Answer",
-          text: "Select your position and the drill type (RFI, VS RFI, VS 3-Bet). The trainer will show you random hands and you choose the correct action. It tracks your accuracy and identifies weak spots in your game.",
+          text: "选择你的位置和练习类型（RFI、VS RFI、VS 3-Bet），训练器会随机显示手牌，你选择正确的动作。系统会追踪你的准确率，并识别你游戏中的弱点。",
         },
       },
       {
         "@type": "Question",
-        name: "Is this poker trainer free?",
+        name: "这个扑克训练器是免费的吗？",
         acceptedAnswer: {
           "@type": "Answer",
-          text: "Yes! GTO Poker Trainer is completely free to use. All features including preflop drills, push/fold charts, and progress tracking are available at no cost.",
+          text: "是的！GTO Poker Trainer 完全免费使用。所有功能包括翻前练习、Push/Fold 图表和进度追踪都可以免费使用，无需注册账号。",
         },
       },
       {
         "@type": "Question",
-        name: "What is push/fold strategy in poker tournaments?",
+        name: "什么是 Push/Fold 策略？",
         acceptedAnswer: {
           "@type": "Answer",
-          text: "Push/fold strategy is used in tournaments when stack sizes become short (typically under 15 big blinds). Instead of raising small, you either go all-in (push) or fold. Our trainer teaches optimal push/fold ranges based on position and stack depth.",
+          text: "Push/Fold 策略用于锦标赛中筹码较短时（通常低于 15 个大盲注）。不再小额加注，而是选择全下（Push）或弃牌（Fold）。我们的训练器根据位置和筹码深度教授最优的 Push/Fold 范围。",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "GTO Poker Trainer 中文版有哪些功能？",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "包括：翻前范围训练（RFI、VS RFI、VS 3-Bet、VS 4-Bet）、Push/Fold 图表、ICM 计算器、EV 计算练习、Outs 计算练习、手牌历史分析等。全中文界面，无需下载注册。",
         },
       },
     ],
