@@ -519,3 +519,175 @@ export function applyTurnAdjustment(
 
   return adjusted;
 }
+
+// ============================================
+// River API Functions
+// ============================================
+
+export interface RiverClassification {
+  board: string[];
+  river: string;
+  river_type: string;
+  river_type_zh: string;
+}
+
+export interface RiverAdjustment {
+  board_texture: string;
+  river_type: string;
+  hand_category: string;
+  bet_frequency_delta: number;
+  check_frequency_delta: number;
+  description: string;
+}
+
+const riverClassificationCache = new Map<string, RiverClassification>();
+const riverAdjustmentCache = new Map<string, RiverAdjustment>();
+
+/**
+ * Classify the river card type based on board (flop+turn)
+ */
+export async function classifyRiverCard(
+  board: Card[],
+  river: Card
+): Promise<RiverClassification | null> {
+  if (board.length !== 4) return null;
+
+  const boardStr = cardsToString(board);
+  const riverStr = `${river.rank}${river.suit}`;
+  const cacheKey = `${boardStr}-${riverStr}`;
+
+  if (riverClassificationCache.has(cacheKey)) {
+    return riverClassificationCache.get(cacheKey)!;
+  }
+
+  try {
+    const url = `${API_BASE}/api/solver/river/classify?board=${boardStr}&river=${riverStr}`;
+    const response = await fetch(url);
+
+    if (!response.ok) {
+      return null;
+    }
+
+    const result: RiverClassification = await response.json();
+    riverClassificationCache.set(cacheKey, result);
+    return result;
+  } catch (error) {
+    console.error("River classification failed:", error);
+    return null;
+  }
+}
+
+/**
+ * Get river strategy adjustment based on board texture, river type, and hand category
+ */
+export async function getRiverAdjustment(
+  boardTexture: string,
+  riverType: string,
+  handCategory: string
+): Promise<RiverAdjustment | null> {
+  const cacheKey = `river-${boardTexture}-${riverType}-${handCategory}`;
+
+  if (riverAdjustmentCache.has(cacheKey)) {
+    return riverAdjustmentCache.get(cacheKey)!;
+  }
+
+  try {
+    const url = `${API_BASE}/api/solver/river?board_texture=${boardTexture}&river_type=${riverType}&hand_category=${handCategory}`;
+    const response = await fetch(url);
+
+    if (!response.ok) {
+      return null;
+    }
+
+    const result: RiverAdjustment = await response.json();
+    riverAdjustmentCache.set(cacheKey, result);
+    return result;
+  } catch (error) {
+    console.error("River adjustment query failed:", error);
+    return null;
+  }
+}
+
+/**
+ * Categorize hand strength for river (different from turn - draws are now missed)
+ */
+export function categorizeHandForRiver(
+  handStrength: string,
+  hasFlushDraw: boolean,
+  hasStraightDraw: boolean,
+  madeHand: boolean
+): string {
+  // On river, draws are either made or missed
+  if (handStrength === "nuts") {
+    return "nuts";
+  }
+  if (handStrength === "strong") {
+    return "strong_value";
+  }
+  if (handStrength === "medium") {
+    return madeHand ? "medium_value" : "thin_value";
+  }
+  // If we had a draw but didn't make it
+  if ((hasFlushDraw || hasStraightDraw) && !madeHand) {
+    return "missed_draws";
+  }
+  if (handStrength === "weak" || !madeHand) {
+    return "air";
+  }
+  return "thin_value";
+}
+
+/**
+ * Apply river adjustment to strategy
+ */
+export function applyRiverAdjustment(
+  strategy: SolverStrategy,
+  adjustment: RiverAdjustment
+): SolverStrategy {
+  const betDelta = adjustment.bet_frequency_delta;
+  const checkDelta = adjustment.check_frequency_delta;
+  const adjusted: SolverStrategy = { ...strategy };
+
+  // Apply bet delta (distribute across bet sizes)
+  const totalBetFreq =
+    (adjusted.bet_33 || 0) +
+    (adjusted.bet_50 || 0) +
+    (adjusted.bet_66 || 0) +
+    (adjusted.bet_75 || 0) +
+    (adjusted.bet_100 || 0);
+
+  if (totalBetFreq > 0) {
+    const betRatio = (totalBetFreq + betDelta) / totalBetFreq;
+    if (adjusted.bet_33) adjusted.bet_33 = Math.max(0, Math.min(100, adjusted.bet_33 * betRatio));
+    if (adjusted.bet_50) adjusted.bet_50 = Math.max(0, Math.min(100, adjusted.bet_50 * betRatio));
+    if (adjusted.bet_66) adjusted.bet_66 = Math.max(0, Math.min(100, adjusted.bet_66 * betRatio));
+    if (adjusted.bet_75) adjusted.bet_75 = Math.max(0, Math.min(100, adjusted.bet_75 * betRatio));
+    if (adjusted.bet_100) adjusted.bet_100 = Math.max(0, Math.min(100, adjusted.bet_100 * betRatio));
+  }
+
+  // Apply check delta
+  if (adjusted.check !== undefined) {
+    adjusted.check = Math.max(0, Math.min(100, adjusted.check + checkDelta));
+  }
+
+  // Normalize to 100%
+  const total =
+    (adjusted.bet_33 || 0) +
+    (adjusted.bet_50 || 0) +
+    (adjusted.bet_66 || 0) +
+    (adjusted.bet_75 || 0) +
+    (adjusted.bet_100 || 0) +
+    (adjusted.check || 0);
+
+  if (total > 0 && total !== 100) {
+    const scale = 100 / total;
+    if (adjusted.bet_33) adjusted.bet_33 = Math.round(adjusted.bet_33 * scale);
+    if (adjusted.bet_50) adjusted.bet_50 = Math.round(adjusted.bet_50 * scale);
+    if (adjusted.bet_66) adjusted.bet_66 = Math.round(adjusted.bet_66 * scale);
+    if (adjusted.bet_75) adjusted.bet_75 = Math.round(adjusted.bet_75 * scale);
+    if (adjusted.bet_100) adjusted.bet_100 = Math.round(adjusted.bet_100 * scale);
+    if (adjusted.check) adjusted.check = Math.round(adjusted.check * scale);
+  }
+
+  return adjusted;
+}

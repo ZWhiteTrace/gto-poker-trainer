@@ -1,0 +1,233 @@
+{
+  "meta": {
+    "description": "River strategy adjustments based on card types",
+    "version": "1.0.0",
+    "note": "River 是最後一張牌，聽牌已經完成或破滅"
+  },
+  "river_card_types": {
+    "brick": {
+      "description": "無關緊要的牌，不改變牌面結構",
+      "description_zh": "磚塊牌",
+      "examples": ["低牌", "不配對", "不完成聽牌"]
+    },
+    "overcard": {
+      "description": "新的高牌出現",
+      "description_zh": "高張牌",
+      "examples": ["A", "K", "Q", "J", "T"]
+    },
+    "pair_board": {
+      "description": "公牌再次配對（可能雙對公牌）",
+      "description_zh": "配對牌",
+      "examples": ["與 turn 或 flop 相同"]
+    },
+    "flush_complete": {
+      "description": "同花完成（第4或第5張同花）",
+      "description_zh": "同花完成",
+      "examples": ["第4張同花色", "第5張同花色"]
+    },
+    "straight_complete": {
+      "description": "順子完成",
+      "description_zh": "順子完成",
+      "examples": ["連接牌完成順子"]
+    },
+    "counterfeit": {
+      "description": "反殺牌（使小兩對/底對貶值）",
+      "description_zh": "反殺牌",
+      "examples": ["配對比你的對子大的牌"]
+    }
+  },
+  "river_hand_categories": {
+    "nuts": ["同花", "順子", "葫蘆", "Set on paired board"],
+    "strong_value": ["Overpair", "Top pair good kicker", "Two pair"],
+    "medium_value": ["Top pair weak kicker", "Second pair", "Underpair"],
+    "thin_value": ["Third pair", "Ace high"],
+    "missed_draws": ["Busted flush draw", "Busted straight draw"],
+    "air": ["No pair", "No showdown value"]
+  },
+  "texture_adjustments": {
+    "dry_ace_high": {
+      "brick": {
+        "description": "磚塊河牌，聽牌破滅，價值牌加注",
+        "adjustments": {
+          "nuts": {"bet_delta": 15, "check_delta": -15},
+          "strong_value": {"bet_delta": 10, "check_delta": -10},
+          "medium_value": {"bet_delta": 5, "check_delta": -5},
+          "thin_value": {"bet_delta": -5, "check_delta": 5},
+          "missed_draws": {"bet_delta": -30, "check_delta": 30},
+          "air": {"bet_delta": -20, "check_delta": 20}
+        }
+      },
+      "overcard": {
+        "description": "新高牌，需重新評估牌力",
+        "adjustments": {
+          "nuts": {"bet_delta": 5, "check_delta": -5},
+          "strong_value": {"bet_delta": -5, "check_delta": 5},
+          "medium_value": {"bet_delta": -15, "check_delta": 15},
+          "thin_value": {"bet_delta": -20, "check_delta": 20},
+          "missed_draws": {"bet_delta": 10, "check_delta": -10},
+          "air": {"bet_delta": 15, "check_delta": -15}
+        }
+      },
+      "pair_board": {
+        "description": "公牌配對，葫蘆可能，中等牌貶值",
+        "adjustments": {
+          "nuts": {"bet_delta": 20, "check_delta": -20},
+          "strong_value": {"bet_delta": -10, "check_delta": 10},
+          "medium_value": {"bet_delta": -25, "check_delta": 25},
+          "thin_value": {"bet_delta": -30, "check_delta": 30},
+          "missed_draws": {"bet_delta": 5, "check_delta": -5},
+          "air": {"bet_delta": 20, "check_delta": -20}
+        }
+      },
+      "flush_complete": {
+        "description": "同花完成！沒有同花就要小心",
+        "adjustments": {
+          "nuts": {"bet_delta": 25, "check_delta": -25},
+          "strong_value": {"bet_delta": -25, "check_delta": 25},
+          "medium_value": {"bet_delta": -35, "check_delta": 35},
+          "thin_value": {"bet_delta": -40, "check_delta": 40},
+          "missed_draws": {"bet_delta": -40, "check_delta": 40},
+          "air": {"bet_delta": -30, "check_delta": 30}
+        }
+      },
+      "straight_complete": {
+        "description": "順子完成！需要小心",
+        "adjustments": {
+          "nuts": {"bet_delta": 20, "check_delta": -20},
+          "strong_value": {"bet_delta": -15, "check_delta": 15},
+          "medium_value": {"bet_delta": -25, "check_delta": 25},
+          "thin_value": {"bet_delta": -30, "check_delta": 30},
+          "missed_draws": {"bet_delta": -25, "check_delta": 25},
+          "air": {"bet_delta": -20, "check_delta": 20}
+        }
+      }
+    },
+    "wet_board": {
+      "brick": {
+        "description": "濕潤牌面的磚塊，聽牌破滅",
+        "adjustments": {
+          "nuts": {"bet_delta": 20, "check_delta": -20},
+          "strong_value": {"bet_delta": 15, "check_delta": -15},
+          "medium_value": {"bet_delta": 5, "check_delta": -5},
+          "thin_value": {"bet_delta": -10, "check_delta": 10},
+          "missed_draws": {"bet_delta": -35, "check_delta": 35},
+          "air": {"bet_delta": -25, "check_delta": 25}
+        }
+      },
+      "flush_complete": {
+        "description": "同花完成！極化下注",
+        "adjustments": {
+          "nuts": {"bet_delta": 30, "check_delta": -30},
+          "strong_value": {"bet_delta": -30, "check_delta": 30},
+          "medium_value": {"bet_delta": -40, "check_delta": 40},
+          "thin_value": {"bet_delta": -45, "check_delta": 45},
+          "missed_draws": {"bet_delta": -45, "check_delta": 45},
+          "air": {"bet_delta": -35, "check_delta": 35}
+        }
+      },
+      "straight_complete": {
+        "description": "順子完成！",
+        "adjustments": {
+          "nuts": {"bet_delta": 25, "check_delta": -25},
+          "strong_value": {"bet_delta": -20, "check_delta": 20},
+          "medium_value": {"bet_delta": -30, "check_delta": 30},
+          "thin_value": {"bet_delta": -35, "check_delta": 35},
+          "missed_draws": {"bet_delta": -30, "check_delta": 30},
+          "air": {"bet_delta": -25, "check_delta": 25}
+        }
+      }
+    },
+    "paired_board": {
+      "brick": {
+        "description": "配對牌面的磚塊",
+        "adjustments": {
+          "nuts": {"bet_delta": 15, "check_delta": -15},
+          "strong_value": {"bet_delta": 10, "check_delta": -10},
+          "medium_value": {"bet_delta": 0, "check_delta": 0},
+          "thin_value": {"bet_delta": -15, "check_delta": 15},
+          "missed_draws": {"bet_delta": -25, "check_delta": 25},
+          "air": {"bet_delta": -15, "check_delta": 15}
+        }
+      },
+      "pair_board": {
+        "description": "雙配對公牌！葫蘆和四條可能",
+        "adjustments": {
+          "nuts": {"bet_delta": 25, "check_delta": -25},
+          "strong_value": {"bet_delta": -20, "check_delta": 20},
+          "medium_value": {"bet_delta": -35, "check_delta": 35},
+          "thin_value": {"bet_delta": -40, "check_delta": 40},
+          "missed_draws": {"bet_delta": 10, "check_delta": -10},
+          "air": {"bet_delta": 25, "check_delta": -25}
+        }
+      }
+    }
+  },
+  "default_adjustments": {
+    "brick": {
+      "description": "標準磚塊調整",
+      "adjustments": {
+        "nuts": {"bet_delta": 10, "check_delta": -10},
+        "strong_value": {"bet_delta": 5, "check_delta": -5},
+        "medium_value": {"bet_delta": 0, "check_delta": 0},
+        "thin_value": {"bet_delta": -10, "check_delta": 10},
+        "missed_draws": {"bet_delta": -25, "check_delta": 25},
+        "air": {"bet_delta": -15, "check_delta": 15}
+      }
+    },
+    "overcard": {
+      "description": "標準高牌調整",
+      "adjustments": {
+        "nuts": {"bet_delta": 5, "check_delta": -5},
+        "strong_value": {"bet_delta": -5, "check_delta": 5},
+        "medium_value": {"bet_delta": -15, "check_delta": 15},
+        "thin_value": {"bet_delta": -20, "check_delta": 20},
+        "missed_draws": {"bet_delta": 5, "check_delta": -5},
+        "air": {"bet_delta": 10, "check_delta": -10}
+      }
+    },
+    "pair_board": {
+      "description": "標準配對調整",
+      "adjustments": {
+        "nuts": {"bet_delta": 15, "check_delta": -15},
+        "strong_value": {"bet_delta": -10, "check_delta": 10},
+        "medium_value": {"bet_delta": -20, "check_delta": 20},
+        "thin_value": {"bet_delta": -25, "check_delta": 25},
+        "missed_draws": {"bet_delta": 5, "check_delta": -5},
+        "air": {"bet_delta": 15, "check_delta": -15}
+      }
+    },
+    "flush_complete": {
+      "description": "標準同花完成調整",
+      "adjustments": {
+        "nuts": {"bet_delta": 20, "check_delta": -20},
+        "strong_value": {"bet_delta": -20, "check_delta": 20},
+        "medium_value": {"bet_delta": -30, "check_delta": 30},
+        "thin_value": {"bet_delta": -35, "check_delta": 35},
+        "missed_draws": {"bet_delta": -35, "check_delta": 35},
+        "air": {"bet_delta": -25, "check_delta": 25}
+      }
+    },
+    "straight_complete": {
+      "description": "標準順子完成調整",
+      "adjustments": {
+        "nuts": {"bet_delta": 15, "check_delta": -15},
+        "strong_value": {"bet_delta": -15, "check_delta": 15},
+        "medium_value": {"bet_delta": -25, "check_delta": 25},
+        "thin_value": {"bet_delta": -30, "check_delta": 30},
+        "missed_draws": {"bet_delta": -25, "check_delta": 25},
+        "air": {"bet_delta": -20, "check_delta": 20}
+      }
+    },
+    "counterfeit": {
+      "description": "反殺牌調整",
+      "adjustments": {
+        "nuts": {"bet_delta": 10, "check_delta": -10},
+        "strong_value": {"bet_delta": 5, "check_delta": -5},
+        "medium_value": {"bet_delta": -20, "check_delta": 20},
+        "thin_value": {"bet_delta": -30, "check_delta": 30},
+        "missed_draws": {"bet_delta": -20, "check_delta": 20},
+        "air": {"bet_delta": -10, "check_delta": 10}
+      }
+    }
+  }
+}

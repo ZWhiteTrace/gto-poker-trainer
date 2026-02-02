@@ -345,6 +345,10 @@ export interface GTOHint {
         turnType: string;
         turnTypeZh: string;
       };
+      riverAdjustment?: {
+        riverType: string;
+        riverTypeZh: string;
+      };
     };
   };
 

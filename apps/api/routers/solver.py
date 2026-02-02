@@ -765,3 +765,167 @@ def list_turn_card_types():
         "turn_card_types": data.get("turn_card_types", {}),
         "hand_categories": data.get("hand_categories", {})
     }
+
+
+# ============ River Strategy Adjustments ============
+
+def get_river_adjustments() -> Dict:
+    """Load river adjustment data."""
+    if "river_adjustments" in _solver_cache:
+        return _solver_cache["river_adjustments"]
+
+    data_path = Path(__file__).parent.parent / "data" / "solver" / "river_adjustments.json"
+    if not data_path.exists():
+        return {}
+
+    with open(data_path, encoding="utf-8") as f:
+        data = json.load(f)
+
+    _solver_cache["river_adjustments"] = data
+    return data
+
+
+def classify_river_card(
+    board: List[str],
+    river: str
+) -> str:
+    """Classify the river card type based on the 4-card board."""
+    river_rank = river[0].upper()
+    river_suit = river[1].lower() if len(river) > 1 else ""
+
+    board_ranks = [c[0].upper() for c in board]
+    board_suits = [c[1].lower() for c in board if len(c) > 1]
+
+    # Count suits on board
+    suit_counts: Dict[str, int] = {}
+    for s in board_suits:
+        suit_counts[s] = suit_counts.get(s, 0) + 1
+
+    # Check for flush complete (4th card of same suit)
+    if river_suit in suit_counts and suit_counts[river_suit] >= 3:
+        return "flush_complete"
+
+    # Check for pair board (adds to existing pair or creates new pair)
+    rank_counts: Dict[str, int] = {}
+    for r in board_ranks:
+        rank_counts[r] = rank_counts.get(r, 0) + 1
+
+    if river_rank in rank_counts:
+        return "pair_board"
+
+    # Check for straight complete
+    rank_values = {"A": 14, "K": 13, "Q": 12, "J": 11, "T": 10, "9": 9, "8": 8, "7": 7, "6": 6, "5": 5, "4": 4, "3": 3, "2": 2}
+    river_value = rank_values.get(river_rank, 0)
+    board_values = sorted([rank_values.get(r, 0) for r in board_ranks])
+
+    # Check if river completes a straight
+    all_values = sorted(set(board_values + [river_value]))
+    for i in range(len(all_values) - 4):
+        if all_values[i+4] - all_values[i] == 4:
+            return "straight_complete"
+
+    # Check for wheel (A-2-3-4-5)
+    if 14 in all_values:
+        wheel_values = [1 if v == 14 else v for v in all_values]
+        wheel_values = sorted(set(wheel_values))
+        for i in range(len(wheel_values) - 4):
+            if wheel_values[i+4] - wheel_values[i] == 4:
+                return "straight_complete"
+
+    # Check for overcard
+    high_cards = {"A", "K", "Q", "J", "T"}
+    if river_rank in high_cards and river_rank not in board_ranks:
+        return "overcard"
+
+    # Check for counterfeit (river pairs a low card, counterfeiting low two pairs)
+    low_cards = {"2", "3", "4", "5", "6", "7"}
+    if river_rank in low_cards:
+        # If board already has pairs, this could counterfeit
+        if any(count >= 2 for count in rank_counts.values()):
+            return "counterfeit"
+
+    return "brick"
+
+
+@router.get("/river")
+def get_river_adjustment(
+    board_texture: str = Query(..., description="Board texture ID (e.g., 'dry_ace_high', 'wet_board')"),
+    river_type: str = Query(..., description="River card type: brick, overcard, pair_board, flush_complete, straight_complete, counterfeit"),
+    hand_category: Optional[str] = Query(default=None, description="Hand category: nuts, strong_value, medium_value, thin_value, missed_draws, air"),
+):
+    """Get strategy adjustments for river based on card type."""
+    data = get_river_adjustments()
+    if not data:
+        raise HTTPException(status_code=404, detail="River adjustment data not found")
+
+    # Get texture-specific adjustments or default
+    texture_adjustments = data.get("texture_adjustments", {}).get(board_texture)
+    if not texture_adjustments:
+        texture_adjustments = data.get("default_adjustments", {})
+
+    river_adjustment = texture_adjustments.get(river_type)
+    if not river_adjustment:
+        return {"error": f"No adjustment data for river type '{river_type}'"}
+
+    result = {
+        "board_texture": board_texture,
+        "river_type": river_type,
+        "description": river_adjustment.get("description", ""),
+    }
+
+    if hand_category:
+        adj = river_adjustment.get("adjustments", {}).get(hand_category)
+        if adj:
+            result["hand_category"] = hand_category
+            result["bet_frequency_delta"] = adj.get("bet_delta", 0)
+            result["check_frequency_delta"] = adj.get("check_delta", 0)
+    else:
+        result["adjustments"] = river_adjustment.get("adjustments", {})
+
+    return result
+
+
+@router.get("/river/classify")
+def classify_river(
+    board: str = Query(..., description="Board cards (flop+turn, e.g., 'Ah7s2dKc')"),
+    river: str = Query(..., description="River card (e.g., '3h')"),
+):
+    """Classify a river card based on the 4-card board."""
+    # Parse board
+    board_cards = []
+    i = 0
+    while i < len(board):
+        if i + 1 < len(board):
+            board_cards.append(board[i:i+2])
+            i += 2
+        else:
+            i += 1
+
+    if len(board_cards) < 4:
+        raise HTTPException(status_code=400, detail="Invalid board format (need 4 cards)")
+
+    river_type = classify_river_card(board_cards, river)
+
+    return {
+        "board": board_cards,
+        "river": river,
+        "river_type": river_type,
+        "river_type_zh": {
+            "brick": "磚塊牌",
+            "overcard": "高張牌",
+            "pair_board": "配對牌",
+            "flush_complete": "同花完成",
+            "straight_complete": "順子完成",
+            "counterfeit": "反殺牌",
+        }.get(river_type, river_type)
+    }
+
+
+@router.get("/river/card-types")
+def list_river_card_types():
+    """List all river card type classifications."""
+    data = get_river_adjustments()
+    return {
+        "river_card_types": data.get("river_card_types", {}),
+        "river_hand_categories": data.get("river_hand_categories", {})
+    }

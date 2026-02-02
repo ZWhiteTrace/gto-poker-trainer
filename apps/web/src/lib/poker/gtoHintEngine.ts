@@ -25,6 +25,10 @@ import {
   getTurnAdjustment,
   categorizeHandForTurn,
   applyTurnAdjustment,
+  classifyRiverCard,
+  getRiverAdjustment,
+  categorizeHandForRiver,
+  applyRiverAdjustment,
   type SolverStrategy,
 } from "./solverClient";
 
@@ -570,6 +574,41 @@ export async function generateGTOHintWithSolver(context: HintContext): Promise<G
         }
       }
 
+      // Apply river adjustments if on river
+      let riverInfo: { riverType: string; riverTypeZh: string } | null = null;
+      if (context.street === "river" && context.communityCards.length >= 5) {
+        const boardCards = context.communityCards.slice(0, 4); // flop + turn
+        const riverCard = context.communityCards[4];
+        const riverClassification = await classifyRiverCard(boardCards, riverCard);
+
+        if (riverClassification && solverResult.texture) {
+          // Determine if we made our hand (simplified check)
+          const madeHand = handStrength.category === "nuts" || handStrength.category === "strong" ||
+                          handStrength.hasSet || handStrength.hasTwoPair || handStrength.hasTopPair;
+
+          const handCategory = categorizeHandForRiver(
+            handStrength.category,
+            handStrength.hasFlushDraw,
+            handStrength.hasStraightDraw,
+            madeHand
+          );
+
+          const riverAdjustment = await getRiverAdjustment(
+            solverResult.texture,
+            riverClassification.river_type,
+            handCategory
+          );
+
+          if (riverAdjustment) {
+            finalStrategy = applyRiverAdjustment(finalStrategy, riverAdjustment);
+            riverInfo = {
+              riverType: riverClassification.river_type,
+              riverTypeZh: riverClassification.river_type_zh,
+            };
+          }
+        }
+      }
+
       const recommendations = solverStrategyToRecommendations(finalStrategy);
 
       // Build key factors with solver info
@@ -579,6 +618,11 @@ export async function generateGTOHintWithSolver(context: HintContext): Promise<G
       // Add turn card type info
       if (turnInfo) {
         keyFactorsZh.push(`Turn: ${turnInfo.turnTypeZh}`);
+      }
+
+      // Add river card type info
+      if (riverInfo) {
+        keyFactorsZh.push(`River: ${riverInfo.riverTypeZh}`);
       }
 
       keyFactorsZh.push(`手牌: ${handString} (${handStrength.categoryZh})`);
@@ -617,6 +661,10 @@ export async function generateGTOHintWithSolver(context: HintContext): Promise<G
             turnAdjustment: turnInfo ? {
               turnType: turnInfo.turnType,
               turnTypeZh: turnInfo.turnTypeZh,
+            } : undefined,
+            riverAdjustment: riverInfo ? {
+              riverType: riverInfo.riverType,
+              riverTypeZh: riverInfo.riverTypeZh,
             } : undefined,
           },
         },
