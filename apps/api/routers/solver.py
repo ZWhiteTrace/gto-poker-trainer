@@ -115,14 +115,32 @@ def normalize_hand(hand: str) -> str:
     return hand.upper()[:2]  # Truncate invalid input
 
 
+def get_suit_pattern(board: List[str]) -> str:
+    """Get suit pattern: monotone, two_tone, or rainbow."""
+    suits = [c[1].lower() for c in board if len(c) >= 2]
+    unique_suits = len(set(suits))
+    if unique_suits == 1:
+        return "monotone"
+    elif unique_suits == 2:
+        return "two_tone"
+    return "rainbow"
+
+
 def boards_match(board1: List[str], board2: List[str]) -> bool:
-    """Check if two boards match (rank-only comparison, suits flexible)."""
+    """Check if two boards match (ranks + suit pattern)."""
     if len(board1) != len(board2):
         return False
 
+    # Match ranks
     ranks1 = sorted([c[0].upper() for c in board1])
     ranks2 = sorted([c[0].upper() for c in board2])
-    return ranks1 == ranks2
+    if ranks1 != ranks2:
+        return False
+
+    # Match suit pattern (monotone, two_tone, rainbow)
+    pattern1 = get_suit_pattern(board1)
+    pattern2 = get_suit_pattern(board2)
+    return pattern1 == pattern2
 
 
 def find_matching_scenario(
