@@ -16,6 +16,7 @@ export function Navbar() {
   const { user, isLoading, signInWithGoogle, signOut } = useAuthStore();
 
   const drillItems = [
+    { href: "/drill/endless", label: t("nav.endlessDrill") || "無限練習" },
     { href: "/drill/rfi", label: t("nav.rfiDrill") },
     { href: "/drill/vs-rfi", label: t("nav.vsRfiDrill") },
     { href: "/drill/vs-3bet", label: t("nav.vs3betDrill") },
