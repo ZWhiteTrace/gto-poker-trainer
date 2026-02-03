@@ -9,6 +9,12 @@ import {
   exportToGGPokerFormat,
   exportHandsToGGPokerFormat,
 } from "@/lib/poker/handHistory";
+import {
+  analyzeHandHistory,
+  analyzeMultipleHands,
+  type HandAnalysis,
+  type GTOComparison,
+} from "@/lib/poker/handAnalyzer";
 
 interface HandHistoryPanelProps {
   className?: string;
@@ -96,14 +102,161 @@ function HandHistoryRow({
   );
 }
 
+// GTO Analysis Display Component
+function GTOAnalysisDisplay({ analysis }: { analysis: HandAnalysis }) {
+  const gradeColors: Record<string, string> = {
+    A: "bg-green-600",
+    B: "bg-blue-600",
+    C: "bg-yellow-600",
+    D: "bg-orange-600",
+    F: "bg-red-600",
+  };
+
+  const deviationColors: Record<string, string> = {
+    correct: "text-green-400",
+    minor: "text-yellow-400",
+    significant: "text-orange-400",
+    major: "text-red-400",
+  };
+
+  return (
+    <div className="space-y-3 p-3 bg-gray-800/50 rounded-lg text-sm">
+      {/* Grade */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <span className={cn("px-2 py-1 rounded font-bold text-white", gradeColors[analysis.grade])}>
+            {analysis.grade}
+          </span>
+          <span className="text-gray-300">{analysis.gradeDescriptionZh}</span>
+        </div>
+        <span className="text-xs text-gray-500">
+          偏離分數: {analysis.averageDeviationScore.toFixed(1)}
+        </span>
+      </div>
+
+      {/* Decisions */}
+      {analysis.decisions.length > 0 && (
+        <div className="space-y-2">
+          <div className="text-xs text-gray-400 font-semibold">決策分析：</div>
+          {analysis.decisions.map((d, i) => (
+            <div key={i} className="flex items-start gap-2 p-2 bg-gray-900/50 rounded">
+              <span className="text-xs px-1.5 py-0.5 bg-gray-700 rounded capitalize">
+                {d.decisionPoint.street}
+              </span>
+              <div className="flex-1">
+                <div className="flex items-center gap-2">
+                  <span className={cn("font-semibold capitalize", deviationColors[d.deviationType])}>
+                    {d.heroAction}
+                    {d.heroAmount && ` ${d.heroAmount.toFixed(1)}`}
+                  </span>
+                  <span className="text-xs text-gray-500">
+                    (GTO: {d.heroActionFrequency.toFixed(0)}%)
+                  </span>
+                </div>
+                <div className="text-xs text-gray-400 mt-1">
+                  {d.analysisZh}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Biggest Mistake */}
+      {analysis.biggestMistake && analysis.biggestMistake.deviationType !== "correct" && (
+        <div className="p-2 bg-red-900/30 border border-red-800/50 rounded">
+          <div className="text-xs text-red-400 font-semibold mb-1">最大錯誤：</div>
+          <div className="text-sm text-gray-300">
+            {analysis.biggestMistake.decisionPoint.street} 街：
+            應 {analysis.biggestMistake.recommendedAction} ({analysis.biggestMistake.recommendedFrequency.toFixed(0)}%)
+            而非 {analysis.biggestMistake.heroAction} ({analysis.biggestMistake.heroActionFrequency.toFixed(0)}%)
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// Session Analysis Summary
+function SessionAnalysisSummary({ summary }: {
+  summary: {
+    totalHands: number;
+    averageGrade: string;
+    averageDeviationScore: number;
+    mostCommonMistake: string;
+    improvementAreas: string[];
+  }
+}) {
+  const gradeColors: Record<string, string> = {
+    A: "bg-green-600",
+    B: "bg-blue-600",
+    C: "bg-yellow-600",
+    D: "bg-orange-600",
+    F: "bg-red-600",
+  };
+
+  return (
+    <div className="space-y-3 p-3 bg-gradient-to-br from-gray-800/80 to-gray-900/80 rounded-lg text-sm border border-gray-700/50">
+      <div className="flex items-center justify-between">
+        <div className="text-gray-300 font-semibold">Session 分析</div>
+        <span className={cn("px-2 py-1 rounded font-bold text-white", gradeColors[summary.averageGrade])}>
+          平均 {summary.averageGrade}
+        </span>
+      </div>
+
+      <div className="grid grid-cols-2 gap-2 text-xs">
+        <div className="p-2 bg-gray-900/50 rounded">
+          <div className="text-gray-500">總手數</div>
+          <div className="text-lg font-bold text-gray-200">{summary.totalHands}</div>
+        </div>
+        <div className="p-2 bg-gray-900/50 rounded">
+          <div className="text-gray-500">平均偏離</div>
+          <div className="text-lg font-bold text-gray-200">{summary.averageDeviationScore.toFixed(1)}</div>
+        </div>
+      </div>
+
+      {summary.mostCommonMistake !== "None" && (
+        <div className="p-2 bg-orange-900/30 border border-orange-800/50 rounded">
+          <div className="text-xs text-orange-400 font-semibold">最常見錯誤：</div>
+          <div className="text-gray-300">{summary.mostCommonMistake}</div>
+        </div>
+      )}
+
+      {summary.improvementAreas.length > 0 && (
+        <div className="p-2 bg-blue-900/30 border border-blue-800/50 rounded">
+          <div className="text-xs text-blue-400 font-semibold mb-1">改進建議：</div>
+          <ul className="text-xs text-gray-300 space-y-1">
+            {summary.improvementAreas.map((area, i) => (
+              <li key={i}>• {area}</li>
+            ))}
+          </ul>
+        </div>
+      )}
+    </div>
+  );
+}
+
 function HandHistoryDetail({ history }: { history: HandHistory }) {
   const [copied, setCopied] = useState(false);
+  const [analysis, setAnalysis] = useState<HandAnalysis | null>(null);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
 
   const handleCopy = async () => {
     const text = exportToGGPokerFormat(history);
     await navigator.clipboard.writeText(text);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
+  };
+
+  const handleAnalyze = async () => {
+    setIsAnalyzing(true);
+    try {
+      const result = await analyzeHandHistory(history);
+      setAnalysis(result);
+    } catch (error) {
+      // Analysis failed silently
+    }
+    setIsAnalyzing(false);
   };
 
   const heroPlayer = history.players.find(p => p.isHero);
@@ -119,17 +272,31 @@ function HandHistoryDetail({ history }: { history: HandHistory }) {
             {new Date(history.timestamp).toLocaleString()}
           </span>
         </div>
-        <button
-          onClick={handleCopy}
-          className={cn(
-            "px-2 py-1 text-xs rounded transition-colors",
-            copied
-              ? "bg-green-600 text-white"
-              : "bg-gray-700 hover:bg-gray-600 text-gray-300"
-          )}
-        >
-          {copied ? "Copied!" : "Copy"}
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={handleAnalyze}
+            disabled={isAnalyzing}
+            className={cn(
+              "px-2 py-1 text-xs rounded transition-colors",
+              isAnalyzing
+                ? "bg-gray-600 text-gray-400"
+                : "bg-purple-600 hover:bg-purple-500 text-white"
+            )}
+          >
+            {isAnalyzing ? "分析中..." : "GTO 分析"}
+          </button>
+          <button
+            onClick={handleCopy}
+            className={cn(
+              "px-2 py-1 text-xs rounded transition-colors",
+              copied
+                ? "bg-green-600 text-white"
+                : "bg-gray-700 hover:bg-gray-600 text-gray-300"
+            )}
+          >
+            {copied ? "Copied!" : "Copy"}
+          </button>
+        </div>
       </div>
 
       {/* Hero info */}
@@ -203,6 +370,13 @@ function HandHistoryDetail({ history }: { history: HandHistory }) {
           </div>
         )}
       </div>
+
+      {/* GTO Analysis Result */}
+      {analysis && (
+        <div className="mt-3 pt-3 border-t border-gray-700">
+          <GTOAnalysisDisplay analysis={analysis} />
+        </div>
+      )}
     </div>
   );
 }
@@ -211,6 +385,8 @@ export function HandHistoryPanel({ className }: HandHistoryPanelProps) {
   const [histories, setHistories] = useState<HandHistory[]>([]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [isExporting, setIsExporting] = useState(false);
+  const [sessionAnalysis, setSessionAnalysis] = useState<Awaited<ReturnType<typeof analyzeMultipleHands>> | null>(null);
+  const [isAnalyzingSession, setIsAnalyzingSession] = useState(false);
 
   useEffect(() => {
     setHistories(getStoredHandHistories());
@@ -251,7 +427,20 @@ export function HandHistoryPanel({ className }: HandHistoryPanelProps) {
       clearHandHistories();
       setHistories([]);
       setSelectedId(null);
+      setSessionAnalysis(null);
     }
+  };
+
+  const handleAnalyzeSession = async () => {
+    if (histories.length === 0) return;
+    setIsAnalyzingSession(true);
+    try {
+      const result = await analyzeMultipleHands(histories);
+      setSessionAnalysis(result);
+    } catch (error) {
+      // Analysis failed silently
+    }
+    setIsAnalyzingSession(false);
   };
 
   const totalProfit = histories.reduce((sum, h) => sum + h.heroProfit, 0);
@@ -268,11 +457,18 @@ export function HandHistoryPanel({ className }: HandHistoryPanelProps) {
           {histories.length > 0 && (
             <>
               <button
+                onClick={handleAnalyzeSession}
+                disabled={isAnalyzingSession}
+                className="px-2 py-1 text-xs bg-purple-600 hover:bg-purple-500 rounded transition-colors disabled:opacity-50"
+              >
+                {isAnalyzingSession ? "分析中..." : "GTO 分析"}
+              </button>
+              <button
                 onClick={handleExportAll}
                 disabled={isExporting}
                 className="px-2 py-1 text-xs bg-blue-600 hover:bg-blue-500 rounded transition-colors disabled:opacity-50"
               >
-                {isExporting ? "Exporting..." : "Export All"}
+                {isExporting ? "Exporting..." : "Export"}
               </button>
               <button
                 onClick={handleClear}
@@ -290,6 +486,13 @@ export function HandHistoryPanel({ className }: HandHistoryPanelProps) {
         <div className="flex items-center gap-2 mb-3 px-2 py-1.5 bg-gray-800/50 rounded">
           <span className="text-xs text-gray-400">Session:</span>
           {formatProfit(totalProfit)}
+        </div>
+      )}
+
+      {/* Session Analysis */}
+      {sessionAnalysis && (
+        <div className="mb-3">
+          <SessionAnalysisSummary summary={sessionAnalysis.summary} />
         </div>
       )}
 
