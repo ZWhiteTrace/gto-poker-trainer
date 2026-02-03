@@ -281,7 +281,7 @@ export default function PostflopDrillPage() {
           <div className="text-sm text-muted-foreground mb-2 text-center">Board</div>
           <div className="flex gap-2 justify-center bg-green-800/30 py-4 px-6 rounded-lg flex-wrap">
             {riverScenario.board.map((rank, i) => (
-              <BoardCard key={i} rank={rank} suit={riverScenario.board_suits[i]} />
+              <BoardCard key={i} rank={rank} suit={riverScenario.board_suits?.[i]} />
             ))}
           </div>
         </div>
@@ -295,7 +295,7 @@ export default function PostflopDrillPage() {
           <div className="text-sm text-muted-foreground mb-2 text-center">Board</div>
           <div className="flex gap-2 justify-center bg-green-800/30 py-4 px-6 rounded-lg">
             {turnScenario.flop.map((rank, i) => (
-              <BoardCard key={i} rank={rank} suit={turnScenario.flop_suits[i]} />
+              <BoardCard key={i} rank={rank} suit={turnScenario.flop_suits?.[i]} />
             ))}
             <div className="w-2" />
             <BoardCard rank={turnScenario.turn} suit={turnScenario.turn_suit} />
@@ -311,7 +311,7 @@ export default function PostflopDrillPage() {
         <div className="text-sm text-muted-foreground mb-2 text-center">Flop</div>
         <div className="flex gap-2 justify-center bg-green-800/30 py-4 px-6 rounded-lg">
           {flopScenario.flop.map((rank, i) => (
-            <BoardCard key={i} rank={rank} suit={flopScenario.flop_suits[i]} />
+            <BoardCard key={i} rank={rank} suit={flopScenario.flop_suits?.[i]} />
           ))}
         </div>
       </div>
