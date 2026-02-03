@@ -253,7 +253,7 @@ function TextureDetail({
           </div>
 
           {texture.concept?.summary && (
-            <div className="bg-slate-50 rounded-lg p-4">
+            <div className="bg-slate-50 dark:bg-slate-800 rounded-lg p-4">
               <p className="text-lg">{texture.concept.summary}</p>
             </div>
           )}
@@ -434,7 +434,7 @@ function DrillMode({
 
             <div className="text-center">
               <div className="text-sm text-muted-foreground mb-2">Your Hand</div>
-              <div className="inline-flex items-center gap-2 px-6 py-3 bg-slate-100 rounded-lg">
+              <div className="inline-flex items-center gap-2 px-6 py-3 bg-slate-100 dark:bg-slate-800 rounded-lg">
                 <span className="text-2xl font-bold">{question.hand}</span>
               </div>
             </div>
@@ -497,7 +497,7 @@ function DrillMode({
                   </div>
                 </div>
 
-                <div className="bg-slate-50 rounded-lg p-4">
+                <div className="bg-slate-50 dark:bg-slate-800 rounded-lg p-4">
                   <div className="text-sm font-medium mb-2">完整策略分布</div>
                   <div className="space-y-2">
                     {Object.entries(result.full_strategy)
@@ -522,7 +522,7 @@ function DrillMode({
                   </div>
                 )}
 
-                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                <div className="bg-blue-50 dark:bg-blue-950 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
                   <div className="font-medium mb-2">概念提醒</div>
                   <p className="text-sm">{result.concept_summary}</p>
                 </div>
