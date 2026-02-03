@@ -935,3 +935,85 @@ def list_river_card_types():
         "river_card_types": data.get("river_card_types", {}),
         "river_hand_categories": data.get("river_hand_categories", {})
     }
+
+
+# ============ Random Drill (Endless Practice) ============
+
+@router.get("/random-drill")
+def get_random_drill(
+    pot_type: Optional[str] = Query(default=None, description="Filter by pot type: srp, 3bet, 4bet, multiway, limp, squeeze"),
+):
+    """Get a random drill question from all available scenarios."""
+    scenarios = get_solver_data()
+
+    if not scenarios:
+        raise HTTPException(status_code=404, detail="No scenarios available")
+
+    # Filter by pot type if specified
+    if pot_type:
+        scenarios = [s for s in scenarios if s.get("pot_type") == pot_type]
+
+    if not scenarios:
+        raise HTTPException(status_code=404, detail=f"No scenarios for pot type '{pot_type}'")
+
+    # Pick random scenario
+    scenario = random.choice(scenarios)
+    strategies = scenario.get("strategies", {})
+
+    if not strategies:
+        raise HTTPException(status_code=404, detail="No strategies in this scenario")
+
+    # Pick random hand
+    hand = random.choice(list(strategies.keys()))
+    hand_data = strategies[hand]
+
+    # Build options based on available actions
+    options = set()
+    for action in hand_data.keys():
+        if action == "note":
+            continue
+        options.add(action)
+
+    # Ensure we have standard options if missing
+    if not options:
+        options = {"bet_33", "bet_75", "check"}
+
+    # Add common options that might not be in this hand's strategy
+    if any(a.startswith("bet_") for a in options):
+        options.update(["bet_33", "bet_75", "check"])
+    if "check_raise" in options:
+        options.update(["check", "check_raise", "donk_33"])
+    if "all_in" in options:
+        options.update(["bet_33", "bet_75", "all_in", "check"])
+
+    # Clean strategy (remove note)
+    strategy_clean = {k: v for k, v in hand_data.items() if k != "note" and isinstance(v, (int, float))}
+
+    return {
+        "scenario_id": scenario.get("scenario_id"),
+        "position": scenario.get("position"),
+        "villain": scenario.get("villain"),
+        "pot_type": scenario.get("pot_type"),
+        "board": scenario.get("board"),
+        "texture": scenario.get("texture"),
+        "texture_zh": scenario.get("texture_zh"),
+        "hand": hand,
+        "options": list(options),
+        "correct_strategy": strategy_clean,
+    }
+
+
+@router.get("/pot-types")
+def list_pot_types():
+    """List all available pot types with scenario counts."""
+    scenarios = get_solver_data()
+
+    pot_type_counts: Dict[str, int] = {}
+    for s in scenarios:
+        pt = s.get("pot_type", "unknown")
+        pot_type_counts[pt] = pot_type_counts.get(pt, 0) + 1
+
+    return {
+        "pot_types": pot_type_counts,
+        "total_scenarios": len(scenarios)
+    }
