@@ -164,7 +164,7 @@ def find_matching_scenario(
             return scenario
 
     # Fall back to Level 1 texture data
-    if position in ["BTN", "CO"] and villain == "BB" and pot_type in ["srp", "3bet"]:
+    if position in ["BTN", "CO", "UTG", "HJ", "SB"] and villain == "BB" and pot_type in ["srp", "3bet"]:
         level1_data = get_level1_data()
         textures = level1_data.get("textures", [])
 

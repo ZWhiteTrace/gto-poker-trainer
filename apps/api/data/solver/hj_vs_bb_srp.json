@@ -1,0 +1,6601 @@
+{
+  "meta": {
+    "description": "HJ vs BB SRP postflop solver data",
+    "position": "HJ",
+    "villain": "BB",
+    "pot_type": "srp",
+    "note": "HJ 範圍中等 (~20-25%)"
+  },
+  "scenarios": [
+    {
+      "scenario_id": "hj_vs_bb_srp_AK5_hsd",
+      "position": "HJ",
+      "villain": "BB",
+      "pot_type": "srp",
+      "board": [
+        "Ah",
+        "Ks",
+        "5d"
+      ],
+      "texture": "dry_ace_high",
+      "texture_zh": "乾燥 A 高牌面",
+      "strategies": {
+        "AA": {
+          "bet_33": 75,
+          "bet_50": 15,
+          "check": 10,
+          "note": "堅果牌，高頻率下注"
+        },
+        "KK": {
+          "bet_33": 70,
+          "bet_50": 15,
+          "check": 15,
+          "note": "強牌，高頻率下注"
+        },
+        "QQ": {
+          "bet_33": 60,
+          "bet_50": 15,
+          "check": 25,
+          "note": "強牌"
+        },
+        "AKs": {
+          "bet_33": 70,
+          "bet_50": 15,
+          "check": 15,
+          "note": "強牌"
+        },
+        "AKo": {
+          "bet_33": 65,
+          "bet_50": 15,
+          "check": 20,
+          "note": "強牌"
+        },
+        "AQs": {
+          "bet_33": 55,
+          "bet_50": 15,
+          "check": 30,
+          "note": "強牌"
+        },
+        "AQo": {
+          "bet_33": 50,
+          "bet_50": 10,
+          "check": 40,
+          "note": "中等強牌"
+        },
+        "AJs": {
+          "bet_33": 50,
+          "bet_50": 10,
+          "check": 40,
+          "note": "中等強牌"
+        },
+        "ATs": {
+          "bet_33": 45,
+          "bet_50": 10,
+          "check": 45,
+          "note": "中等強牌"
+        },
+        "A7s": {
+          "bet_33": 80,
+          "check": 20,
+          "note": "兩對！強力取值"
+        },
+        "A2s": {
+          "bet_33": 75,
+          "check": 25,
+          "note": "兩對！"
+        },
+        "KQs": {
+          "bet_33": 50,
+          "bet_50": 10,
+          "check": 40,
+          "note": "Broadway"
+        },
+        "KQo": {
+          "bet_33": 45,
+          "bet_50": 10,
+          "check": 45,
+          "note": "Broadway"
+        },
+        "JTs": {
+          "bet_33": 35,
+          "bet_50": 5,
+          "check": 60,
+          "note": "連接牌"
+        },
+        "98s": {
+          "bet_33": 25,
+          "bet_50": 5,
+          "check": 70,
+          "note": "連接牌"
+        },
+        "76s": {
+          "bet_33": 20,
+          "bet_50": 5,
+          "check": 75,
+          "note": "低連接牌"
+        },
+        "22": {
+          "bet_33": 65,
+          "check": 35,
+          "note": "底 set，取值"
+        }
+      }
+    },
+    {
+      "scenario_id": "hj_vs_bb_srp_AQ7_hsd",
+      "position": "HJ",
+      "villain": "BB",
+      "pot_type": "srp",
+      "board": [
+        "Ah",
+        "Qs",
+        "7d"
+      ],
+      "texture": "dry_ace_high",
+      "texture_zh": "乾燥 A 高牌面",
+      "strategies": {
+        "AA": {
+          "bet_33": 75,
+          "bet_50": 15,
+          "check": 10,
+          "note": "堅果牌，高頻率下注"
+        },
+        "KK": {
+          "bet_33": 70,
+          "bet_50": 15,
+          "check": 15,
+          "note": "強牌，高頻率下注"
+        },
+        "QQ": {
+          "bet_33": 60,
+          "bet_50": 15,
+          "check": 25,
+          "note": "強牌"
+        },
+        "AKs": {
+          "bet_33": 70,
+          "bet_50": 15,
+          "check": 15,
+          "note": "強牌"
+        },
+        "AKo": {
+          "bet_33": 65,
+          "bet_50": 15,
+          "check": 20,
+          "note": "強牌"
+        },
+        "AQs": {
+          "bet_33": 55,
+          "bet_50": 15,
+          "check": 30,
+          "note": "強牌"
+        },
+        "AQo": {
+          "bet_33": 50,
+          "bet_50": 10,
+          "check": 40,
+          "note": "中等強牌"
+        },
+        "AJs": {
+          "bet_33": 50,
+          "bet_50": 10,
+          "check": 40,
+          "note": "中等強牌"
+        },
+        "ATs": {
+          "bet_33": 45,
+          "bet_50": 10,
+          "check": 45,
+          "note": "中等強牌"
+        },
+        "A7s": {
+          "bet_33": 80,
+          "check": 20,
+          "note": "兩對！強力取值"
+        },
+        "A2s": {
+          "bet_33": 75,
+          "check": 25,
+          "note": "兩對！"
+        },
+        "KQs": {
+          "bet_33": 50,
+          "bet_50": 10,
+          "check": 40,
+          "note": "Broadway"
+        },
+        "KQo": {
+          "bet_33": 45,
+          "bet_50": 10,
+          "check": 45,
+          "note": "Broadway"
+        },
+        "JTs": {
+          "bet_33": 35,
+          "bet_50": 5,
+          "check": 60,
+          "note": "連接牌"
+        },
+        "98s": {
+          "bet_33": 25,
+          "bet_50": 5,
+          "check": 70,
+          "note": "連接牌"
+        },
+        "76s": {
+          "bet_33": 20,
+          "bet_50": 5,
+          "check": 75,
+          "note": "低連接牌"
+        },
+        "22": {
+          "bet_33": 65,
+          "check": 35,
+          "note": "底 set，取值"
+        }
+      }
+    },
+    {
+      "scenario_id": "hj_vs_bb_srp_AJ3_hsd",
+      "position": "HJ",
+      "villain": "BB",
+      "pot_type": "srp",
+      "board": [
+        "Ah",
+        "Js",
+        "3d"
+      ],
+      "texture": "dry_ace_high",
+      "texture_zh": "乾燥 A 高牌面",
+      "strategies": {
+        "AA": {
+          "bet_33": 75,
+          "bet_50": 15,
+          "check": 10,
+          "note": "堅果牌，高頻率下注"
+        },
+        "KK": {
+          "bet_33": 70,
+          "bet_50": 15,
+          "check": 15,
+          "note": "強牌，高頻率下注"
+        },
+        "QQ": {
+          "bet_33": 60,
+          "bet_50": 15,
+          "check": 25,
+          "note": "強牌"
+        },
+        "AKs": {
+          "bet_33": 70,
+          "bet_50": 15,
+          "check": 15,
+          "note": "強牌"
+        },
+        "AKo": {
+          "bet_33": 65,
+          "bet_50": 15,
+          "check": 20,
+          "note": "強牌"
+        },
+        "AQs": {
+          "bet_33": 55,
+          "bet_50": 15,
+          "check": 30,
+          "note": "強牌"
+        },
+        "AQo": {
+          "bet_33": 50,
+          "bet_50": 10,
+          "check": 40,
+          "note": "中等強牌"
+        },
+        "AJs": {
+          "bet_33": 50,
+          "bet_50": 10,
+          "check": 40,
+          "note": "中等強牌"
+        },
+        "ATs": {
+          "bet_33": 45,
+          "bet_50": 10,
+          "check": 45,
+          "note": "中等強牌"
+        },
+        "A7s": {
+          "bet_33": 80,
+          "check": 20,
+          "note": "兩對！強力取值"
+        },
+        "A2s": {
+          "bet_33": 75,
+          "check": 25,
+          "note": "兩對！"
+        },
+        "KQs": {
+          "bet_33": 50,
+          "bet_50": 10,
+          "check": 40,
+          "note": "Broadway"
+        },
+        "KQo": {
+          "bet_33": 45,
+          "bet_50": 10,
+          "check": 45,
+          "note": "Broadway"
+        },
+        "JTs": {
+          "bet_33": 35,
+          "bet_50": 5,
+          "check": 60,
+          "note": "連接牌"
+        },
+        "98s": {
+          "bet_33": 25,
+          "bet_50": 5,
+          "check": 70,
+          "note": "連接牌"
+        },
+        "76s": {
+          "bet_33": 20,
+          "bet_50": 5,
+          "check": 75,
+          "note": "低連接牌"
+        },
+        "22": {
+          "bet_33": 65,
+          "check": 35,
+          "note": "底 set，取值"
+        }
+      }
+    },
+    {
+      "scenario_id": "hj_vs_bb_srp_A94_hsd",
+      "position": "HJ",
+      "villain": "BB",
+      "pot_type": "srp",
+      "board": [
+        "Ah",
+        "9s",
+        "4d"
+      ],
+      "texture": "dry_ace_high",
+      "texture_zh": "乾燥 A 高牌面",
+      "strategies": {
+        "AA": {
+          "bet_33": 75,
+          "bet_50": 15,
+          "check": 10,
+          "note": "堅果牌，高頻率下注"
+        },
+        "KK": {
+          "bet_33": 70,
+          "bet_50": 15,
+          "check": 15,
+          "note": "強牌，高頻率下注"
+        },
+        "QQ": {
+          "bet_33": 60,
+          "bet_50": 15,
+          "check": 25,
+          "note": "強牌"
+        },
+        "AKs": {
+          "bet_33": 70,
+          "bet_50": 15,
+          "check": 15,
+          "note": "強牌"
+        },
+        "AKo": {
+          "bet_33": 65,
+          "bet_50": 15,
+          "check": 20,
+          "note": "強牌"
+        },
+        "AQs": {
+          "bet_33": 55,
+          "bet_50": 15,
+          "check": 30,
+          "note": "強牌"
+        },
+        "AQo": {
+          "bet_33": 50,
+          "bet_50": 10,
+          "check": 40,
+          "note": "中等強牌"
+        },
+        "AJs": {
+          "bet_33": 50,
+          "bet_50": 10,
+          "check": 40,
+          "note": "中等強牌"
+        },
+        "ATs": {
+          "bet_33": 45,
+          "bet_50": 10,
+          "check": 45,
+          "note": "中等強牌"
+        },
+        "A7s": {
+          "bet_33": 80,
+          "check": 20,
+          "note": "兩對！強力取值"
+        },
+        "A2s": {
+          "bet_33": 75,
+          "check": 25,
+          "note": "兩對！"
+        },
+        "KQs": {
+          "bet_33": 50,
+          "bet_50": 10,
+          "check": 40,
+          "note": "Broadway"
+        },
+        "KQo": {
+          "bet_33": 45,
+          "bet_50": 10,
+          "check": 45,
+          "note": "Broadway"
+        },
+        "JTs": {
+          "bet_33": 35,
+          "bet_50": 5,
+          "check": 60,
+          "note": "連接牌"
+        },
+        "98s": {
+          "bet_33": 25,
+          "bet_50": 5,
+          "check": 70,
+          "note": "連接牌"
+        },
+        "76s": {
+          "bet_33": 20,
+          "bet_50": 5,
+          "check": 75,
+          "note": "低連接牌"
+        },
+        "22": {
+          "bet_33": 65,
+          "check": 35,
+          "note": "底 set，取值"
+        }
+      }
+    },
+    {
+      "scenario_id": "hj_vs_bb_srp_A72_hsd",
+      "position": "HJ",
+      "villain": "BB",
+      "pot_type": "srp",
+      "board": [
+        "Ah",
+        "7s",
+        "2d"
+      ],
+      "texture": "dry_ace_high",
+      "texture_zh": "乾燥 A 高牌面",
+      "strategies": {
+        "AA": {
+          "bet_33": 75,
+          "bet_50": 15,
+          "check": 10,
+          "note": "堅果牌，高頻率下注"
+        },
+        "KK": {
+          "bet_33": 70,
+          "bet_50": 15,
+          "check": 15,
+          "note": "強牌，高頻率下注"
+        },
+        "QQ": {
+          "bet_33": 60,
+          "bet_50": 15,
+          "check": 25,
+          "note": "強牌"
+        },
+        "AKs": {
+          "bet_33": 70,
+          "bet_50": 15,
+          "check": 15,
+          "note": "強牌"
+        },
+        "AKo": {
+          "bet_33": 65,
+          "bet_50": 15,
+          "check": 20,
+          "note": "強牌"
+        },
+        "AQs": {
+          "bet_33": 55,
+          "bet_50": 15,
+          "check": 30,
+          "note": "強牌"
+        },
+        "AQo": {
+          "bet_33": 50,
+          "bet_50": 10,
+          "check": 40,
+          "note": "中等強牌"
+        },
+        "AJs": {
+          "bet_33": 50,
+          "bet_50": 10,
+          "check": 40,
+          "note": "中等強牌"
+        },
+        "ATs": {
+          "bet_33": 45,
+          "bet_50": 10,
+          "check": 45,
+          "note": "中等強牌"
+        },
+        "A7s": {
+          "bet_33": 80,
+          "check": 20,
+          "note": "兩對！強力取值"
+        },
+        "A2s": {
+          "bet_33": 75,
+          "check": 25,
+          "note": "兩對！"
+        },
+        "KQs": {
+          "bet_33": 50,
+          "bet_50": 10,
+          "check": 40,
+          "note": "Broadway"
+        },
+        "KQo": {
+          "bet_33": 45,
+          "bet_50": 10,
+          "check": 45,
+          "note": "Broadway"
+        },
+        "JTs": {
+          "bet_33": 35,
+          "bet_50": 5,
+          "check": 60,
+          "note": "連接牌"
+        },
+        "98s": {
+          "bet_33": 25,
+          "bet_50": 5,
+          "check": 70,
+          "note": "連接牌"
+        },
+        "76s": {
+          "bet_33": 20,
+          "bet_50": 5,
+          "check": 75,
+          "note": "低連接牌"
+        },
+        "22": {
+          "bet_33": 65,
+          "check": 35,
+          "note": "底 set，取值"
+        }
+      }
+    },
+    {
+      "scenario_id": "hj_vs_bb_srp_KQ7_hsd",
+      "position": "HJ",
+      "villain": "BB",
+      "pot_type": "srp",
+      "board": [
+        "Kh",
+        "Qs",
+        "7d"
+      ],
+      "texture": "dry_king_high",
+      "texture_zh": "乾燥 K 高牌面",
+      "strategies": {
+        "AA": {
+          "bet_33": 75,
+          "bet_50": 15,
+          "check": 10,
+          "note": "堅果牌，高頻率下注"
+        },
+        "KK": {
+          "bet_33": 70,
+          "bet_50": 15,
+          "check": 15,
+          "note": "強牌，高頻率下注"
+        },
+        "QQ": {
+          "bet_33": 60,
+          "bet_50": 15,
+          "check": 25,
+          "note": "強牌"
+        },
+        "JJ": {
+          "bet_33": 50,
+          "bet_50": 10,
+          "check": 40,
+          "note": "中等強度"
+        },
+        "AKs": {
+          "bet_33": 70,
+          "bet_50": 15,
+          "check": 15,
+          "note": "強牌"
+        },
+        "AKo": {
+          "bet_33": 65,
+          "bet_50": 15,
+          "check": 20,
+          "note": "強牌"
+        },
+        "KQs": {
+          "bet_33": 50,
+          "bet_50": 10,
+          "check": 40,
+          "note": "Broadway"
+        },
+        "KQo": {
+          "bet_33": 45,
+          "bet_50": 10,
+          "check": 45,
+          "note": "Broadway"
+        },
+        "KJs": {
+          "bet_33": 45,
+          "bet_50": 5,
+          "check": 50,
+          "note": "Broadway"
+        },
+        "KTs": {
+          "bet_33": 40,
+          "bet_50": 5,
+          "check": 55,
+          "note": "Broadway suited"
+        },
+        "K7s": {
+          "bet_50": 90,
+          "check": 20,
+          "note": "兩對！"
+        },
+        "AQs": {
+          "bet_33": 55,
+          "bet_50": 15,
+          "check": 30,
+          "note": "強牌"
+        },
+        "AQo": {
+          "bet_33": 50,
+          "bet_50": 10,
+          "check": 40,
+          "note": "中等強牌"
+        },
+        "QJs": {
+          "bet_33": 40,
+          "bet_50": 5,
+          "check": 55,
+          "note": "連接牌"
+        },
+        "JTs": {
+          "bet_33": 35,
+          "bet_50": 5,
+          "check": 60,
+          "note": "連接牌"
+        },
+        "22": {
+          "bet_50": 70,
+          "check": 40,
+          "note": "底 set"
+        }
+      }
+    },
+    {
+      "scenario_id": "hj_vs_bb_srp_KJ5_hsd",
+      "position": "HJ",
+      "villain": "BB",
+      "pot_type": "srp",
+      "board": [
+        "Kh",
+        "Js",
+        "5d"
+      ],
+      "texture": "dry_king_high",
+      "texture_zh": "乾燥 K 高牌面",
+      "strategies": {
+        "AA": {
+          "bet_33": 75,
+          "bet_50": 15,
+          "check": 10,
+          "note": "堅果牌，高頻率下注"
+        },
+        "KK": {
+          "bet_33": 70,
+          "bet_50": 15,
+          "check": 15,
+          "note": "強牌，高頻率下注"
+        },
+        "QQ": {
+          "bet_33": 60,
+          "bet_50": 15,
+          "check": 25,
+          "note": "強牌"
+        },
+        "JJ": {
+          "bet_33": 50,
+          "bet_50": 10,
+          "check": 40,
+          "note": "中等強度"
+        },
+        "AKs": {
+          "bet_33": 70,
+          "bet_50": 15,
+          "check": 15,
+          "note": "強牌"
+        },
+        "AKo": {
+          "bet_33": 65,
+          "bet_50": 15,
+          "check": 20,
+          "note": "強牌"
+        },
+        "KQs": {
+          "bet_33": 50,
+          "bet_50": 10,
+          "check": 40,
+          "note": "Broadway"
+        },
+        "KQo": {
+          "bet_33": 45,
+          "bet_50": 10,
+          "check": 45,
+          "note": "Broadway"
+        },
+        "KJs": {
+          "bet_33": 45,
+          "bet_50": 5,
+          "check": 50,
+          "note": "Broadway"
+        },
+        "KTs": {
+          "bet_33": 40,
+          "bet_50": 5,
+          "check": 55,
+          "note": "Broadway suited"
+        },
+        "K7s": {
+          "bet_50": 90,
+          "check": 20,
+          "note": "兩對！"
+        },
+        "AQs": {
+          "bet_33": 55,
+          "bet_50": 15,
+          "check": 30,
+          "note": "強牌"
+        },
+        "AQo": {
+          "bet_33": 50,
+          "bet_50": 10,
+          "check": 40,
+          "note": "中等強牌"
+        },
+        "QJs": {
+          "bet_33": 40,
+          "bet_50": 5,
+          "check": 55,
+          "note": "連接牌"
+        },
+        "JTs": {
+          "bet_33": 35,
+          "bet_50": 5,
+          "check": 60,
+          "note": "連接牌"
+        },
+        "22": {
+          "bet_50": 70,
+          "check": 40,
+          "note": "底 set"
+        }
+      }
+    },
+    {
+      "scenario_id": "hj_vs_bb_srp_KT4_hsd",
+      "position": "HJ",
+      "villain": "BB",
+      "pot_type": "srp",
+      "board": [
+        "Kh",
+        "Ts",
+        "4d"
+      ],
+      "texture": "dry_king_high",
+      "texture_zh": "乾燥 K 高牌面",
+      "strategies": {
+        "AA": {
+          "bet_33": 75,
+          "bet_50": 15,
+          "check": 10,
+          "note": "堅果牌，高頻率下注"
+        },
+        "KK": {
+          "bet_33": 70,
+          "bet_50": 15,
+          "check": 15,
+          "note": "強牌，高頻率下注"
+        },
+        "QQ": {
+          "bet_33": 60,
+          "bet_50": 15,
+          "check": 25,
+          "note": "強牌"
+        },
+        "JJ": {
+          "bet_33": 50,
+          "bet_50": 10,
+          "check": 40,
+          "note": "中等強度"
+        },
+        "AKs": {
+          "bet_33": 70,
+          "bet_50": 15,
+          "check": 15,
+          "note": "強牌"
+        },
+        "AKo": {
+          "bet_33": 65,
+          "bet_50": 15,
+          "check": 20,
+          "note": "強牌"
+        },
+        "KQs": {
+          "bet_33": 50,
+          "bet_50": 10,
+          "check": 40,
+          "note": "Broadway"
+        },
+        "KQo": {
+          "bet_33": 45,
+          "bet_50": 10,
+          "check": 45,
+          "note": "Broadway"
+        },
+        "KJs": {
+          "bet_33": 45,
+          "bet_50": 5,
+          "check": 50,
+          "note": "Broadway"
+        },
+        "KTs": {
+          "bet_33": 40,
+          "bet_50": 5,
+          "check": 55,
+          "note": "Broadway suited"
+        },
+        "K7s": {
+          "bet_50": 90,
+          "check": 20,
+          "note": "兩對！"
+        },
+        "AQs": {
+          "bet_33": 55,
+          "bet_50": 15,
+          "check": 30,
+          "note": "強牌"
+        },
+        "AQo": {
+          "bet_33": 50,
+          "bet_50": 10,
+          "check": 40,
+          "note": "中等強牌"
+        },
+        "QJs": {
+          "bet_33": 40,
+          "bet_50": 5,
+          "check": 55,
+          "note": "連接牌"
+        },
+        "JTs": {
+          "bet_33": 35,
+          "bet_50": 5,
+          "check": 60,
+          "note": "連接牌"
+        },
+        "22": {
+          "bet_50": 70,
+          "check": 40,
+          "note": "底 set"
+        }
+      }
+    },
+    {
+      "scenario_id": "hj_vs_bb_srp_K93_hsd",
+      "position": "HJ",
+      "villain": "BB",
+      "pot_type": "srp",
+      "board": [
+        "Kh",
+        "9s",
+        "3d"
+      ],
+      "texture": "dry_king_high",
+      "texture_zh": "乾燥 K 高牌面",
+      "strategies": {
+        "AA": {
+          "bet_33": 75,
+          "bet_50": 15,
+          "check": 10,
+          "note": "堅果牌，高頻率下注"
+        },
+        "KK": {
+          "bet_33": 70,
+          "bet_50": 15,
+          "check": 15,
+          "note": "強牌，高頻率下注"
+        },
+        "QQ": {
+          "bet_33": 60,
+          "bet_50": 15,
+          "check": 25,
+          "note": "強牌"
+        },
+        "JJ": {
+          "bet_33": 50,
+          "bet_50": 10,
+          "check": 40,
+          "note": "中等強度"
+        },
+        "AKs": {
+          "bet_33": 70,
+          "bet_50": 15,
+          "check": 15,
+          "note": "強牌"
+        },
+        "AKo": {
+          "bet_33": 65,
+          "bet_50": 15,
+          "check": 20,
+          "note": "強牌"
+        },
+        "KQs": {
+          "bet_33": 50,
+          "bet_50": 10,
+          "check": 40,
+          "note": "Broadway"
+        },
+        "KQo": {
+          "bet_33": 45,
+          "bet_50": 10,
+          "check": 45,
+          "note": "Broadway"
+        },
+        "KJs": {
+          "bet_33": 45,
+          "bet_50": 5,
+          "check": 50,
+          "note": "Broadway"
+        },
+        "KTs": {
+          "bet_33": 40,
+          "bet_50": 5,
+          "check": 55,
+          "note": "Broadway suited"
+        },
+        "K7s": {
+          "bet_50": 90,
+          "check": 20,
+          "note": "兩對！"
+        },
+        "AQs": {
+          "bet_33": 55,
+          "bet_50": 15,
+          "check": 30,
+          "note": "強牌"
+        },
+        "AQo": {
+          "bet_33": 50,
+          "bet_50": 10,
+          "check": 40,
+          "note": "中等強牌"
+        },
+        "QJs": {
+          "bet_33": 40,
+          "bet_50": 5,
+          "check": 55,
+          "note": "連接牌"
+        },
+        "JTs": {
+          "bet_33": 35,
+          "bet_50": 5,
+          "check": 60,
+          "note": "連接牌"
+        },
+        "22": {
+          "bet_50": 70,
+          "check": 40,
+          "note": "底 set"
+        }
+      }
+    },
+    {
+      "scenario_id": "hj_vs_bb_srp_K72_hsd",
+      "position": "HJ",
+      "villain": "BB",
+      "pot_type": "srp",
+      "board": [
+        "Kh",
+        "7s",
+        "2d"
+      ],
+      "texture": "dry_king_high",
+      "texture_zh": "乾燥 K 高牌面",
+      "strategies": {
+        "AA": {
+          "bet_33": 75,
+          "bet_50": 15,
+          "check": 10,
+          "note": "堅果牌，高頻率下注"
+        },
+        "KK": {
+          "bet_33": 70,
+          "bet_50": 15,
+          "check": 15,
+          "note": "強牌，高頻率下注"
+        },
+        "QQ": {
+          "bet_33": 60,
+          "bet_50": 15,
+          "check": 25,
+          "note": "強牌"
+        },
+        "JJ": {
+          "bet_33": 50,
+          "bet_50": 10,
+          "check": 40,
+          "note": "中等強度"
+        },
+        "AKs": {
+          "bet_33": 70,
+          "bet_50": 15,
+          "check": 15,
+          "note": "強牌"
+        },
+        "AKo": {
+          "bet_33": 65,
+          "bet_50": 15,
+          "check": 20,
+          "note": "強牌"
+        },
+        "KQs": {
+          "bet_33": 50,
+          "bet_50": 10,
+          "check": 40,
+          "note": "Broadway"
+        },
+        "KQo": {
+          "bet_33": 45,
+          "bet_50": 10,
+          "check": 45,
+          "note": "Broadway"
+        },
+        "KJs": {
+          "bet_33": 45,
+          "bet_50": 5,
+          "check": 50,
+          "note": "Broadway"
+        },
+        "KTs": {
+          "bet_33": 40,
+          "bet_50": 5,
+          "check": 55,
+          "note": "Broadway suited"
+        },
+        "K7s": {
+          "bet_50": 90,
+          "check": 20,
+          "note": "兩對！"
+        },
+        "AQs": {
+          "bet_33": 55,
+          "bet_50": 15,
+          "check": 30,
+          "note": "強牌"
+        },
+        "AQo": {
+          "bet_33": 50,
+          "bet_50": 10,
+          "check": 40,
+          "note": "中等強牌"
+        },
+        "QJs": {
+          "bet_33": 40,
+          "bet_50": 5,
+          "check": 55,
+          "note": "連接牌"
+        },
+        "JTs": {
+          "bet_33": 35,
+          "bet_50": 5,
+          "check": 60,
+          "note": "連接牌"
+        },
+        "22": {
+          "bet_50": 70,
+          "check": 40,
+          "note": "底 set"
+        }
+      }
+    },
+    {
+      "scenario_id": "hj_vs_bb_srp_Q94_hsd",
+      "position": "HJ",
+      "villain": "BB",
+      "pot_type": "srp",
+      "board": [
+        "Qh",
+        "9s",
+        "4d"
+      ],
+      "texture": "dry_queen_high",
+      "texture_zh": "乾燥 Q 高牌面",
+      "strategies": {
+        "AA": {
+          "bet_33": 75,
+          "bet_50": 15,
+          "check": 10,
+          "note": "堅果牌，高頻率下注"
+        },
+        "KK": {
+          "bet_33": 70,
+          "bet_50": 15,
+          "check": 15,
+          "note": "強牌，高頻率下注"
+        },
+        "QQ": {
+          "bet_33": 60,
+          "bet_50": 15,
+          "check": 25,
+          "note": "強牌"
+        },
+        "JJ": {
+          "bet_33": 50,
+          "bet_50": 10,
+          "check": 40,
+          "note": "中等強度"
+        },
+        "AQs": {
+          "bet_33": 55,
+          "bet_50": 15,
+          "check": 30,
+          "note": "強牌"
+        },
+        "AQo": {
+          "bet_33": 50,
+          "bet_50": 10,
+          "check": 40,
+          "note": "中等強牌"
+        },
+        "KQs": {
+          "bet_33": 50,
+          "bet_50": 10,
+          "check": 40,
+          "note": "Broadway"
+        },
+        "KQo": {
+          "bet_33": 45,
+          "bet_50": 10,
+          "check": 45,
+          "note": "Broadway"
+        },
+        "QJs": {
+          "bet_33": 40,
+          "bet_50": 5,
+          "check": 55,
+          "note": "連接牌"
+        },
+        "QTs": {
+          "bet_33": 35,
+          "bet_50": 5,
+          "check": 60,
+          "note": "連接牌"
+        },
+        "AKs": {
+          "bet_33": 70,
+          "bet_50": 15,
+          "check": 15,
+          "note": "強牌"
+        },
+        "AKo": {
+          "bet_33": 65,
+          "bet_50": 15,
+          "check": 20,
+          "note": "強牌"
+        },
+        "AJs": {
+          "bet_33": 50,
+          "bet_50": 10,
+          "check": 40,
+          "note": "中等強牌"
+        },
+        "KJs": {
+          "bet_33": 45,
+          "bet_50": 5,
+          "check": 50,
+          "note": "Broadway"
+        },
+        "JTs": {
+          "bet_33": 35,
+          "bet_50": 5,
+          "check": 60,
+          "note": "連接牌"
+        },
+        "77": {
+          "bet_33": 30,
+          "bet_50": 5,
+          "check": 65,
+          "note": "小對"
+        },
+        "33": {
+          "bet_50": 80,
+          "check": 30,
+          "note": "底 set"
+        }
+      }
+    },
+    {
+      "scenario_id": "hj_vs_bb_srp_Q83_hsd",
+      "position": "HJ",
+      "villain": "BB",
+      "pot_type": "srp",
+      "board": [
+        "Qh",
+        "8s",
+        "3d"
+      ],
+      "texture": "dry_queen_high",
+      "texture_zh": "乾燥 Q 高牌面",
+      "strategies": {
+        "AA": {
+          "bet_33": 75,
+          "bet_50": 15,
+          "check": 10,
+          "note": "堅果牌，高頻率下注"
+        },
+        "KK": {
+          "bet_33": 70,
+          "bet_50": 15,
+          "check": 15,
+          "note": "強牌，高頻率下注"
+        },
+        "QQ": {
+          "bet_33": 60,
+          "bet_50": 15,
+          "check": 25,
+          "note": "強牌"
+        },
+        "JJ": {
+          "bet_33": 50,
+          "bet_50": 10,
+          "check": 40,
+          "note": "中等強度"
+        },
+        "AQs": {
+          "bet_33": 55,
+          "bet_50": 15,
+          "check": 30,
+          "note": "強牌"
+        },
+        "AQo": {
+          "bet_33": 50,
+          "bet_50": 10,
+          "check": 40,
+          "note": "中等強牌"
+        },
+        "KQs": {
+          "bet_33": 50,
+          "bet_50": 10,
+          "check": 40,
+          "note": "Broadway"
+        },
+        "KQo": {
+          "bet_33": 45,
+          "bet_50": 10,
+          "check": 45,
+          "note": "Broadway"
+        },
+        "QJs": {
+          "bet_33": 40,
+          "bet_50": 5,
+          "check": 55,
+          "note": "連接牌"
+        },
+        "QTs": {
+          "bet_33": 35,
+          "bet_50": 5,
+          "check": 60,
+          "note": "連接牌"
+        },
+        "AKs": {
+          "bet_33": 70,
+          "bet_50": 15,
+          "check": 15,
+          "note": "強牌"
+        },
+        "AKo": {
+          "bet_33": 65,
+          "bet_50": 15,
+          "check": 20,
+          "note": "強牌"
+        },
+        "AJs": {
+          "bet_33": 50,
+          "bet_50": 10,
+          "check": 40,
+          "note": "中等強牌"
+        },
+        "KJs": {
+          "bet_33": 45,
+          "bet_50": 5,
+          "check": 50,
+          "note": "Broadway"
+        },
+        "JTs": {
+          "bet_33": 35,
+          "bet_50": 5,
+          "check": 60,
+          "note": "連接牌"
+        },
+        "77": {
+          "bet_33": 30,
+          "bet_50": 5,
+          "check": 65,
+          "note": "小對"
+        },
+        "33": {
+          "bet_50": 80,
+          "check": 30,
+          "note": "底 set"
+        }
+      }
+    },
+    {
+      "scenario_id": "hj_vs_bb_srp_Q72_hsd",
+      "position": "HJ",
+      "villain": "BB",
+      "pot_type": "srp",
+      "board": [
+        "Qh",
+        "7s",
+        "2d"
+      ],
+      "texture": "dry_queen_high",
+      "texture_zh": "乾燥 Q 高牌面",
+      "strategies": {
+        "AA": {
+          "bet_33": 75,
+          "bet_50": 15,
+          "check": 10,
+          "note": "堅果牌，高頻率下注"
+        },
+        "KK": {
+          "bet_33": 70,
+          "bet_50": 15,
+          "check": 15,
+          "note": "強牌，高頻率下注"
+        },
+        "QQ": {
+          "bet_33": 60,
+          "bet_50": 15,
+          "check": 25,
+          "note": "強牌"
+        },
+        "JJ": {
+          "bet_33": 50,
+          "bet_50": 10,
+          "check": 40,
+          "note": "中等強度"
+        },
+        "AQs": {
+          "bet_33": 55,
+          "bet_50": 15,
+          "check": 30,
+          "note": "強牌"
+        },
+        "AQo": {
+          "bet_33": 50,
+          "bet_50": 10,
+          "check": 40,
+          "note": "中等強牌"
+        },
+        "KQs": {
+          "bet_33": 50,
+          "bet_50": 10,
+          "check": 40,
+          "note": "Broadway"
+        },
+        "KQo": {
+          "bet_33": 45,
+          "bet_50": 10,
+          "check": 45,
+          "note": "Broadway"
+        },
+        "QJs": {
+          "bet_33": 40,
+          "bet_50": 5,
+          "check": 55,
+          "note": "連接牌"
+        },
+        "QTs": {
+          "bet_33": 35,
+          "bet_50": 5,
+          "check": 60,
+          "note": "連接牌"
+        },
+        "AKs": {
+          "bet_33": 70,
+          "bet_50": 15,
+          "check": 15,
+          "note": "強牌"
+        },
+        "AKo": {
+          "bet_33": 65,
+          "bet_50": 15,
+          "check": 20,
+          "note": "強牌"
+        },
+        "AJs": {
+          "bet_33": 50,
+          "bet_50": 10,
+          "check": 40,
+          "note": "中等強牌"
+        },
+        "KJs": {
+          "bet_33": 45,
+          "bet_50": 5,
+          "check": 50,
+          "note": "Broadway"
+        },
+        "JTs": {
+          "bet_33": 35,
+          "bet_50": 5,
+          "check": 60,
+          "note": "連接牌"
+        },
+        "77": {
+          "bet_33": 30,
+          "bet_50": 5,
+          "check": 65,
+          "note": "小對"
+        },
+        "33": {
+          "bet_50": 80,
+          "check": 30,
+          "note": "底 set"
+        }
+      }
+    },
+    {
+      "scenario_id": "hj_vs_bb_srp_QJ5_hsd",
+      "position": "HJ",
+      "villain": "BB",
+      "pot_type": "srp",
+      "board": [
+        "Qh",
+        "Js",
+        "5d"
+      ],
+      "texture": "dry_queen_high",
+      "texture_zh": "乾燥 Q 高牌面",
+      "strategies": {
+        "AA": {
+          "bet_33": 75,
+          "bet_50": 15,
+          "check": 10,
+          "note": "堅果牌，高頻率下注"
+        },
+        "KK": {
+          "bet_33": 70,
+          "bet_50": 15,
+          "check": 15,
+          "note": "強牌，高頻率下注"
+        },
+        "QQ": {
+          "bet_33": 60,
+          "bet_50": 15,
+          "check": 25,
+          "note": "強牌"
+        },
+        "JJ": {
+          "bet_33": 50,
+          "bet_50": 10,
+          "check": 40,
+          "note": "中等強度"
+        },
+        "AQs": {
+          "bet_33": 55,
+          "bet_50": 15,
+          "check": 30,
+          "note": "強牌"
+        },
+        "AQo": {
+          "bet_33": 50,
+          "bet_50": 10,
+          "check": 40,
+          "note": "中等強牌"
+        },
+        "KQs": {
+          "bet_33": 50,
+          "bet_50": 10,
+          "check": 40,
+          "note": "Broadway"
+        },
+        "KQo": {
+          "bet_33": 45,
+          "bet_50": 10,
+          "check": 45,
+          "note": "Broadway"
+        },
+        "QJs": {
+          "bet_33": 40,
+          "bet_50": 5,
+          "check": 55,
+          "note": "連接牌"
+        },
+        "QTs": {
+          "bet_33": 35,
+          "bet_50": 5,
+          "check": 60,
+          "note": "連接牌"
+        },
+        "AKs": {
+          "bet_33": 70,
+          "bet_50": 15,
+          "check": 15,
+          "note": "強牌"
+        },
+        "AKo": {
+          "bet_33": 65,
+          "bet_50": 15,
+          "check": 20,
+          "note": "強牌"
+        },
+        "AJs": {
+          "bet_33": 50,
+          "bet_50": 10,
+          "check": 40,
+          "note": "中等強牌"
+        },
+        "KJs": {
+          "bet_33": 45,
+          "bet_50": 5,
+          "check": 50,
+          "note": "Broadway"
+        },
+        "JTs": {
+          "bet_33": 35,
+          "bet_50": 5,
+          "check": 60,
+          "note": "連接牌"
+        },
+        "77": {
+          "bet_33": 30,
+          "bet_50": 5,
+          "check": 65,
+          "note": "小對"
+        },
+        "33": {
+          "bet_50": 80,
+          "check": 30,
+          "note": "底 set"
+        }
+      }
+    },
+    {
+      "scenario_id": "hj_vs_bb_srp_Q73_hsd",
+      "position": "HJ",
+      "villain": "BB",
+      "pot_type": "srp",
+      "board": [
+        "Qh",
+        "7s",
+        "3d"
+      ],
+      "texture": "dry_queen_high",
+      "texture_zh": "乾燥 Q 高牌面",
+      "strategies": {
+        "AA": {
+          "bet_33": 75,
+          "bet_50": 15,
+          "check": 10,
+          "note": "堅果牌，高頻率下注"
+        },
+        "KK": {
+          "bet_33": 70,
+          "bet_50": 15,
+          "check": 15,
+          "note": "強牌，高頻率下注"
+        },
+        "QQ": {
+          "bet_33": 60,
+          "bet_50": 15,
+          "check": 25,
+          "note": "強牌"
+        },
+        "JJ": {
+          "bet_33": 50,
+          "bet_50": 10,
+          "check": 40,
+          "note": "中等強度"
+        },
+        "AQs": {
+          "bet_33": 55,
+          "bet_50": 15,
+          "check": 30,
+          "note": "強牌"
+        },
+        "AQo": {
+          "bet_33": 50,
+          "bet_50": 10,
+          "check": 40,
+          "note": "中等強牌"
+        },
+        "KQs": {
+          "bet_33": 50,
+          "bet_50": 10,
+          "check": 40,
+          "note": "Broadway"
+        },
+        "KQo": {
+          "bet_33": 45,
+          "bet_50": 10,
+          "check": 45,
+          "note": "Broadway"
+        },
+        "QJs": {
+          "bet_33": 40,
+          "bet_50": 5,
+          "check": 55,
+          "note": "連接牌"
+        },
+        "QTs": {
+          "bet_33": 35,
+          "bet_50": 5,
+          "check": 60,
+          "note": "連接牌"
+        },
+        "AKs": {
+          "bet_33": 70,
+          "bet_50": 15,
+          "check": 15,
+          "note": "強牌"
+        },
+        "AKo": {
+          "bet_33": 65,
+          "bet_50": 15,
+          "check": 20,
+          "note": "強牌"
+        },
+        "AJs": {
+          "bet_33": 50,
+          "bet_50": 10,
+          "check": 40,
+          "note": "中等強牌"
+        },
+        "KJs": {
+          "bet_33": 45,
+          "bet_50": 5,
+          "check": 50,
+          "note": "Broadway"
+        },
+        "JTs": {
+          "bet_33": 35,
+          "bet_50": 5,
+          "check": 60,
+          "note": "連接牌"
+        },
+        "77": {
+          "bet_33": 30,
+          "bet_50": 5,
+          "check": 65,
+          "note": "小對"
+        },
+        "33": {
+          "bet_50": 80,
+          "check": 30,
+          "note": "底 set"
+        }
+      }
+    },
+    {
+      "scenario_id": "hj_vs_bb_srp_T72_hsd",
+      "position": "HJ",
+      "villain": "BB",
+      "pot_type": "srp",
+      "board": [
+        "Th",
+        "7s",
+        "2d"
+      ],
+      "texture": "dry_low",
+      "texture_zh": "乾燥低牌面",
+      "strategies": {
+        "AA": {
+          "bet_33": 75,
+          "bet_50": 15,
+          "check": 10,
+          "note": "堅果牌，高頻率下注"
+        },
+        "KK": {
+          "bet_33": 70,
+          "bet_50": 15,
+          "check": 15,
+          "note": "強牌，高頻率下注"
+        },
+        "QQ": {
+          "bet_33": 60,
+          "bet_50": 15,
+          "check": 25,
+          "note": "強牌"
+        },
+        "JJ": {
+          "bet_33": 50,
+          "bet_50": 10,
+          "check": 40,
+          "note": "中等強度"
+        },
+        "TT": {
+          "bet_33": 45,
+          "bet_50": 5,
+          "check": 50,
+          "note": "中等強度"
+        },
+        "99": {
+          "bet_33": 40,
+          "bet_50": 5,
+          "check": 55,
+          "note": "中對"
+        },
+        "88": {
+          "bet_33": 35,
+          "bet_50": 5,
+          "check": 60,
+          "note": "中對"
+        },
+        "55": {
+          "bet_50": 80,
+          "check": 30,
+          "note": "中 set"
+        },
+        "22": {
+          "bet_50": 75,
+          "check": 35,
+          "note": "底 set"
+        },
+        "A8s": {
+          "bet_50": 75,
+          "check": 35,
+          "note": "頂對 + A踢腳"
+        },
+        "A5s": {
+          "bet_50": 70,
+          "check": 40,
+          "note": "中對"
+        },
+        "AKs": {
+          "bet_33": 70,
+          "bet_50": 15,
+          "check": 15,
+          "note": "強牌"
+        },
+        "AKo": {
+          "bet_33": 65,
+          "bet_50": 15,
+          "check": 20,
+          "note": "強牌"
+        },
+        "KQs": {
+          "bet_33": 50,
+          "bet_50": 10,
+          "check": 40,
+          "note": "Broadway"
+        },
+        "87s": {
+          "bet_33": 25,
+          "bet_50": 5,
+          "check": 70,
+          "note": "連接牌"
+        },
+        "76s": {
+          "bet_33": 20,
+          "bet_50": 5,
+          "check": 75,
+          "note": "低連接牌"
+        },
+        "65s": {
+          "bet_50": 70,
+          "check": 40,
+          "note": "中對 + 順子聽牌"
+        }
+      }
+    },
+    {
+      "scenario_id": "hj_vs_bb_srp_962_hsd",
+      "position": "HJ",
+      "villain": "BB",
+      "pot_type": "srp",
+      "board": [
+        "9h",
+        "6s",
+        "2d"
+      ],
+      "texture": "dry_low",
+      "texture_zh": "乾燥低牌面",
+      "strategies": {
+        "AA": {
+          "bet_33": 75,
+          "bet_50": 15,
+          "check": 10,
+          "note": "堅果牌，高頻率下注"
+        },
+        "KK": {
+          "bet_33": 70,
+          "bet_50": 15,
+          "check": 15,
+          "note": "強牌，高頻率下注"
+        },
+        "QQ": {
+          "bet_33": 60,
+          "bet_50": 15,
+          "check": 25,
+          "note": "強牌"
+        },
+        "JJ": {
+          "bet_33": 50,
+          "bet_50": 10,
+          "check": 40,
+          "note": "中等強度"
+        },
+        "TT": {
+          "bet_33": 45,
+          "bet_50": 5,
+          "check": 50,
+          "note": "中等強度"
+        },
+        "99": {
+          "bet_33": 40,
+          "bet_50": 5,
+          "check": 55,
+          "note": "中對"
+        },
+        "88": {
+          "bet_33": 35,
+          "bet_50": 5,
+          "check": 60,
+          "note": "中對"
+        },
+        "55": {
+          "bet_50": 80,
+          "check": 30,
+          "note": "中 set"
+        },
+        "22": {
+          "bet_50": 75,
+          "check": 35,
+          "note": "底 set"
+        },
+        "A8s": {
+          "bet_50": 75,
+          "check": 35,
+          "note": "頂對 + A踢腳"
+        },
+        "A5s": {
+          "bet_50": 70,
+          "check": 40,
+          "note": "中對"
+        },
+        "AKs": {
+          "bet_33": 70,
+          "bet_50": 15,
+          "check": 15,
+          "note": "強牌"
+        },
+        "AKo": {
+          "bet_33": 65,
+          "bet_50": 15,
+          "check": 20,
+          "note": "強牌"
+        },
+        "KQs": {
+          "bet_33": 50,
+          "bet_50": 10,
+          "check": 40,
+          "note": "Broadway"
+        },
+        "87s": {
+          "bet_33": 25,
+          "bet_50": 5,
+          "check": 70,
+          "note": "連接牌"
+        },
+        "76s": {
+          "bet_33": 20,
+          "bet_50": 5,
+          "check": 75,
+          "note": "低連接牌"
+        },
+        "65s": {
+          "bet_50": 70,
+          "check": 40,
+          "note": "中對 + 順子聽牌"
+        }
+      }
+    },
+    {
+      "scenario_id": "hj_vs_bb_srp_852_hsd",
+      "position": "HJ",
+      "villain": "BB",
+      "pot_type": "srp",
+      "board": [
+        "8h",
+        "5s",
+        "2d"
+      ],
+      "texture": "dry_low",
+      "texture_zh": "乾燥低牌面",
+      "strategies": {
+        "AA": {
+          "bet_33": 75,
+          "bet_50": 15,
+          "check": 10,
+          "note": "堅果牌，高頻率下注"
+        },
+        "KK": {
+          "bet_33": 70,
+          "bet_50": 15,
+          "check": 15,
+          "note": "強牌，高頻率下注"
+        },
+        "QQ": {
+          "bet_33": 60,
+          "bet_50": 15,
+          "check": 25,
+          "note": "強牌"
+        },
+        "JJ": {
+          "bet_33": 50,
+          "bet_50": 10,
+          "check": 40,
+          "note": "中等強度"
+        },
+        "TT": {
+          "bet_33": 45,
+          "bet_50": 5,
+          "check": 50,
+          "note": "中等強度"
+        },
+        "99": {
+          "bet_33": 40,
+          "bet_50": 5,
+          "check": 55,
+          "note": "中對"
+        },
+        "88": {
+          "bet_33": 35,
+          "bet_50": 5,
+          "check": 60,
+          "note": "中對"
+        },
+        "55": {
+          "bet_50": 80,
+          "check": 30,
+          "note": "中 set"
+        },
+        "22": {
+          "bet_50": 75,
+          "check": 35,
+          "note": "底 set"
+        },
+        "A8s": {
+          "bet_50": 75,
+          "check": 35,
+          "note": "頂對 + A踢腳"
+        },
+        "A5s": {
+          "bet_50": 70,
+          "check": 40,
+          "note": "中對"
+        },
+        "AKs": {
+          "bet_33": 70,
+          "bet_50": 15,
+          "check": 15,
+          "note": "強牌"
+        },
+        "AKo": {
+          "bet_33": 65,
+          "bet_50": 15,
+          "check": 20,
+          "note": "強牌"
+        },
+        "KQs": {
+          "bet_33": 50,
+          "bet_50": 10,
+          "check": 40,
+          "note": "Broadway"
+        },
+        "87s": {
+          "bet_33": 25,
+          "bet_50": 5,
+          "check": 70,
+          "note": "連接牌"
+        },
+        "76s": {
+          "bet_33": 20,
+          "bet_50": 5,
+          "check": 75,
+          "note": "低連接牌"
+        },
+        "65s": {
+          "bet_50": 70,
+          "check": 40,
+          "note": "中對 + 順子聽牌"
+        }
+      }
+    },
+    {
+      "scenario_id": "hj_vs_bb_srp_742_hsd",
+      "position": "HJ",
+      "villain": "BB",
+      "pot_type": "srp",
+      "board": [
+        "7h",
+        "4s",
+        "2d"
+      ],
+      "texture": "dry_low",
+      "texture_zh": "乾燥低牌面",
+      "strategies": {
+        "AA": {
+          "bet_33": 75,
+          "bet_50": 15,
+          "check": 10,
+          "note": "堅果牌，高頻率下注"
+        },
+        "KK": {
+          "bet_33": 70,
+          "bet_50": 15,
+          "check": 15,
+          "note": "強牌，高頻率下注"
+        },
+        "QQ": {
+          "bet_33": 60,
+          "bet_50": 15,
+          "check": 25,
+          "note": "強牌"
+        },
+        "JJ": {
+          "bet_33": 50,
+          "bet_50": 10,
+          "check": 40,
+          "note": "中等強度"
+        },
+        "TT": {
+          "bet_33": 45,
+          "bet_50": 5,
+          "check": 50,
+          "note": "中等強度"
+        },
+        "99": {
+          "bet_33": 40,
+          "bet_50": 5,
+          "check": 55,
+          "note": "中對"
+        },
+        "88": {
+          "bet_33": 35,
+          "bet_50": 5,
+          "check": 60,
+          "note": "中對"
+        },
+        "55": {
+          "bet_50": 80,
+          "check": 30,
+          "note": "中 set"
+        },
+        "22": {
+          "bet_50": 75,
+          "check": 35,
+          "note": "底 set"
+        },
+        "A8s": {
+          "bet_50": 75,
+          "check": 35,
+          "note": "頂對 + A踢腳"
+        },
+        "A5s": {
+          "bet_50": 70,
+          "check": 40,
+          "note": "中對"
+        },
+        "AKs": {
+          "bet_33": 70,
+          "bet_50": 15,
+          "check": 15,
+          "note": "強牌"
+        },
+        "AKo": {
+          "bet_33": 65,
+          "bet_50": 15,
+          "check": 20,
+          "note": "強牌"
+        },
+        "KQs": {
+          "bet_33": 50,
+          "bet_50": 10,
+          "check": 40,
+          "note": "Broadway"
+        },
+        "87s": {
+          "bet_33": 25,
+          "bet_50": 5,
+          "check": 70,
+          "note": "連接牌"
+        },
+        "76s": {
+          "bet_33": 20,
+          "bet_50": 5,
+          "check": 75,
+          "note": "低連接牌"
+        },
+        "65s": {
+          "bet_50": 70,
+          "check": 40,
+          "note": "中對 + 順子聽牌"
+        }
+      }
+    },
+    {
+      "scenario_id": "hj_vs_bb_srp_J63_hsd",
+      "position": "HJ",
+      "villain": "BB",
+      "pot_type": "srp",
+      "board": [
+        "Jh",
+        "6s",
+        "3d"
+      ],
+      "texture": "dry_low",
+      "texture_zh": "乾燥低牌面",
+      "strategies": {
+        "AA": {
+          "bet_33": 75,
+          "bet_50": 15,
+          "check": 10,
+          "note": "堅果牌，高頻率下注"
+        },
+        "KK": {
+          "bet_33": 70,
+          "bet_50": 15,
+          "check": 15,
+          "note": "強牌，高頻率下注"
+        },
+        "QQ": {
+          "bet_33": 60,
+          "bet_50": 15,
+          "check": 25,
+          "note": "強牌"
+        },
+        "JJ": {
+          "bet_33": 50,
+          "bet_50": 10,
+          "check": 40,
+          "note": "中等強度"
+        },
+        "TT": {
+          "bet_33": 45,
+          "bet_50": 5,
+          "check": 50,
+          "note": "中等強度"
+        },
+        "99": {
+          "bet_33": 40,
+          "bet_50": 5,
+          "check": 55,
+          "note": "中對"
+        },
+        "88": {
+          "bet_33": 35,
+          "bet_50": 5,
+          "check": 60,
+          "note": "中對"
+        },
+        "55": {
+          "bet_50": 80,
+          "check": 30,
+          "note": "中 set"
+        },
+        "22": {
+          "bet_50": 75,
+          "check": 35,
+          "note": "底 set"
+        },
+        "A8s": {
+          "bet_50": 75,
+          "check": 35,
+          "note": "頂對 + A踢腳"
+        },
+        "A5s": {
+          "bet_50": 70,
+          "check": 40,
+          "note": "中對"
+        },
+        "AKs": {
+          "bet_33": 70,
+          "bet_50": 15,
+          "check": 15,
+          "note": "強牌"
+        },
+        "AKo": {
+          "bet_33": 65,
+          "bet_50": 15,
+          "check": 20,
+          "note": "強牌"
+        },
+        "KQs": {
+          "bet_33": 50,
+          "bet_50": 10,
+          "check": 40,
+          "note": "Broadway"
+        },
+        "87s": {
+          "bet_33": 25,
+          "bet_50": 5,
+          "check": 70,
+          "note": "連接牌"
+        },
+        "76s": {
+          "bet_33": 20,
+          "bet_50": 5,
+          "check": 75,
+          "note": "低連接牌"
+        },
+        "65s": {
+          "bet_50": 70,
+          "check": 40,
+          "note": "中對 + 順子聽牌"
+        }
+      }
+    },
+    {
+      "scenario_id": "hj_vs_bb_srp_AA7_hsd",
+      "position": "HJ",
+      "villain": "BB",
+      "pot_type": "srp",
+      "board": [
+        "Ah",
+        "As",
+        "7d"
+      ],
+      "texture": "paired_high",
+      "texture_zh": "高對子牌面",
+      "strategies": {
+        "KK": {
+          "bet_33": 70,
+          "bet_50": 15,
+          "check": 15,
+          "note": "強牌，高頻率下注"
+        },
+        "AA": {
+          "bet_33": 75,
+          "bet_50": 15,
+          "check": 10,
+          "note": "堅果牌，高頻率下注"
+        },
+        "QQ": {
+          "bet_33": 60,
+          "bet_50": 15,
+          "check": 25,
+          "note": "強牌"
+        },
+        "JJ": {
+          "bet_33": 50,
+          "bet_50": 10,
+          "check": 40,
+          "note": "中等強度"
+        },
+        "AKs": {
+          "bet_33": 70,
+          "bet_50": 15,
+          "check": 15,
+          "note": "強牌"
+        },
+        "AKo": {
+          "bet_33": 65,
+          "bet_50": 15,
+          "check": 20,
+          "note": "強牌"
+        },
+        "KQs": {
+          "bet_33": 50,
+          "bet_50": 10,
+          "check": 40,
+          "note": "Broadway"
+        },
+        "KJs": {
+          "bet_33": 45,
+          "bet_50": 5,
+          "check": 50,
+          "note": "Broadway"
+        },
+        "KTs": {
+          "bet_33": 40,
+          "bet_50": 5,
+          "check": 55,
+          "note": "Broadway suited"
+        },
+        "K9s": {
+          "bet_75": 70,
+          "check": 40,
+          "note": "trips"
+        },
+        "AQs": {
+          "bet_33": 55,
+          "bet_50": 15,
+          "check": 30,
+          "note": "強牌"
+        },
+        "AQo": {
+          "bet_33": 50,
+          "bet_50": 10,
+          "check": 40,
+          "note": "中等強牌"
+        },
+        "AJs": {
+          "bet_33": 50,
+          "bet_50": 10,
+          "check": 40,
+          "note": "中等強牌"
+        },
+        "QJs": {
+          "bet_33": 40,
+          "bet_50": 5,
+          "check": 55,
+          "note": "連接牌"
+        },
+        "77": {
+          "bet_33": 30,
+          "bet_50": 5,
+          "check": 65,
+          "note": "小對"
+        },
+        "22": {
+          "check": 70,
+          "bet_75": 40,
+          "note": "底對，謹慎"
+        }
+      }
+    },
+    {
+      "scenario_id": "hj_vs_bb_srp_KK5_hsd",
+      "position": "HJ",
+      "villain": "BB",
+      "pot_type": "srp",
+      "board": [
+        "Kh",
+        "Ks",
+        "5d"
+      ],
+      "texture": "paired_high",
+      "texture_zh": "高對子牌面",
+      "strategies": {
+        "KK": {
+          "bet_33": 70,
+          "bet_50": 15,
+          "check": 15,
+          "note": "強牌，高頻率下注"
+        },
+        "AA": {
+          "bet_33": 75,
+          "bet_50": 15,
+          "check": 10,
+          "note": "堅果牌，高頻率下注"
+        },
+        "QQ": {
+          "bet_33": 60,
+          "bet_50": 15,
+          "check": 25,
+          "note": "強牌"
+        },
+        "JJ": {
+          "bet_33": 50,
+          "bet_50": 10,
+          "check": 40,
+          "note": "中等強度"
+        },
+        "AKs": {
+          "bet_33": 70,
+          "bet_50": 15,
+          "check": 15,
+          "note": "強牌"
+        },
+        "AKo": {
+          "bet_33": 65,
+          "bet_50": 15,
+          "check": 20,
+          "note": "強牌"
+        },
+        "KQs": {
+          "bet_33": 50,
+          "bet_50": 10,
+          "check": 40,
+          "note": "Broadway"
+        },
+        "KJs": {
+          "bet_33": 45,
+          "bet_50": 5,
+          "check": 50,
+          "note": "Broadway"
+        },
+        "KTs": {
+          "bet_33": 40,
+          "bet_50": 5,
+          "check": 55,
+          "note": "Broadway suited"
+        },
+        "K9s": {
+          "bet_75": 70,
+          "check": 40,
+          "note": "trips"
+        },
+        "AQs": {
+          "bet_33": 55,
+          "bet_50": 15,
+          "check": 30,
+          "note": "強牌"
+        },
+        "AQo": {
+          "bet_33": 50,
+          "bet_50": 10,
+          "check": 40,
+          "note": "中等強牌"
+        },
+        "AJs": {
+          "bet_33": 50,
+          "bet_50": 10,
+          "check": 40,
+          "note": "中等強牌"
+        },
+        "QJs": {
+          "bet_33": 40,
+          "bet_50": 5,
+          "check": 55,
+          "note": "連接牌"
+        },
+        "77": {
+          "bet_33": 30,
+          "bet_50": 5,
+          "check": 65,
+          "note": "小對"
+        },
+        "22": {
+          "check": 70,
+          "bet_75": 40,
+          "note": "底對，謹慎"
+        }
+      }
+    },
+    {
+      "scenario_id": "hj_vs_bb_srp_QQ4_hsd",
+      "position": "HJ",
+      "villain": "BB",
+      "pot_type": "srp",
+      "board": [
+        "Qh",
+        "Qs",
+        "4d"
+      ],
+      "texture": "paired_high",
+      "texture_zh": "高對子牌面",
+      "strategies": {
+        "KK": {
+          "bet_33": 70,
+          "bet_50": 15,
+          "check": 15,
+          "note": "強牌，高頻率下注"
+        },
+        "AA": {
+          "bet_33": 75,
+          "bet_50": 15,
+          "check": 10,
+          "note": "堅果牌，高頻率下注"
+        },
+        "QQ": {
+          "bet_33": 60,
+          "bet_50": 15,
+          "check": 25,
+          "note": "強牌"
+        },
+        "JJ": {
+          "bet_33": 50,
+          "bet_50": 10,
+          "check": 40,
+          "note": "中等強度"
+        },
+        "AKs": {
+          "bet_33": 70,
+          "bet_50": 15,
+          "check": 15,
+          "note": "強牌"
+        },
+        "AKo": {
+          "bet_33": 65,
+          "bet_50": 15,
+          "check": 20,
+          "note": "強牌"
+        },
+        "KQs": {
+          "bet_33": 50,
+          "bet_50": 10,
+          "check": 40,
+          "note": "Broadway"
+        },
+        "KJs": {
+          "bet_33": 45,
+          "bet_50": 5,
+          "check": 50,
+          "note": "Broadway"
+        },
+        "KTs": {
+          "bet_33": 40,
+          "bet_50": 5,
+          "check": 55,
+          "note": "Broadway suited"
+        },
+        "K9s": {
+          "bet_75": 70,
+          "check": 40,
+          "note": "trips"
+        },
+        "AQs": {
+          "bet_33": 55,
+          "bet_50": 15,
+          "check": 30,
+          "note": "強牌"
+        },
+        "AQo": {
+          "bet_33": 50,
+          "bet_50": 10,
+          "check": 40,
+          "note": "中等強牌"
+        },
+        "AJs": {
+          "bet_33": 50,
+          "bet_50": 10,
+          "check": 40,
+          "note": "中等強牌"
+        },
+        "QJs": {
+          "bet_33": 40,
+          "bet_50": 5,
+          "check": 55,
+          "note": "連接牌"
+        },
+        "77": {
+          "bet_33": 30,
+          "bet_50": 5,
+          "check": 65,
+          "note": "小對"
+        },
+        "22": {
+          "check": 70,
+          "bet_75": 40,
+          "note": "底對，謹慎"
+        }
+      }
+    },
+    {
+      "scenario_id": "hj_vs_bb_srp_JJ3_hsd",
+      "position": "HJ",
+      "villain": "BB",
+      "pot_type": "srp",
+      "board": [
+        "Jh",
+        "Js",
+        "3d"
+      ],
+      "texture": "paired_high",
+      "texture_zh": "高對子牌面",
+      "strategies": {
+        "KK": {
+          "bet_33": 70,
+          "bet_50": 15,
+          "check": 15,
+          "note": "強牌，高頻率下注"
+        },
+        "AA": {
+          "bet_33": 75,
+          "bet_50": 15,
+          "check": 10,
+          "note": "堅果牌，高頻率下注"
+        },
+        "QQ": {
+          "bet_33": 60,
+          "bet_50": 15,
+          "check": 25,
+          "note": "強牌"
+        },
+        "JJ": {
+          "bet_33": 50,
+          "bet_50": 10,
+          "check": 40,
+          "note": "中等強度"
+        },
+        "AKs": {
+          "bet_33": 70,
+          "bet_50": 15,
+          "check": 15,
+          "note": "強牌"
+        },
+        "AKo": {
+          "bet_33": 65,
+          "bet_50": 15,
+          "check": 20,
+          "note": "強牌"
+        },
+        "KQs": {
+          "bet_33": 50,
+          "bet_50": 10,
+          "check": 40,
+          "note": "Broadway"
+        },
+        "KJs": {
+          "bet_33": 45,
+          "bet_50": 5,
+          "check": 50,
+          "note": "Broadway"
+        },
+        "KTs": {
+          "bet_33": 40,
+          "bet_50": 5,
+          "check": 55,
+          "note": "Broadway suited"
+        },
+        "K9s": {
+          "bet_75": 70,
+          "check": 40,
+          "note": "trips"
+        },
+        "AQs": {
+          "bet_33": 55,
+          "bet_50": 15,
+          "check": 30,
+          "note": "強牌"
+        },
+        "AQo": {
+          "bet_33": 50,
+          "bet_50": 10,
+          "check": 40,
+          "note": "中等強牌"
+        },
+        "AJs": {
+          "bet_33": 50,
+          "bet_50": 10,
+          "check": 40,
+          "note": "中等強牌"
+        },
+        "QJs": {
+          "bet_33": 40,
+          "bet_50": 5,
+          "check": 55,
+          "note": "連接牌"
+        },
+        "77": {
+          "bet_33": 30,
+          "bet_50": 5,
+          "check": 65,
+          "note": "小對"
+        },
+        "22": {
+          "check": 70,
+          "bet_75": 40,
+          "note": "底對，謹慎"
+        }
+      }
+    },
+    {
+      "scenario_id": "hj_vs_bb_srp_KK7_hsd",
+      "position": "HJ",
+      "villain": "BB",
+      "pot_type": "srp",
+      "board": [
+        "Kh",
+        "Ks",
+        "7d"
+      ],
+      "texture": "paired_high",
+      "texture_zh": "高對子牌面",
+      "strategies": {
+        "KK": {
+          "bet_33": 70,
+          "bet_50": 15,
+          "check": 15,
+          "note": "強牌，高頻率下注"
+        },
+        "AA": {
+          "bet_33": 75,
+          "bet_50": 15,
+          "check": 10,
+          "note": "堅果牌，高頻率下注"
+        },
+        "QQ": {
+          "bet_33": 60,
+          "bet_50": 15,
+          "check": 25,
+          "note": "強牌"
+        },
+        "JJ": {
+          "bet_33": 50,
+          "bet_50": 10,
+          "check": 40,
+          "note": "中等強度"
+        },
+        "AKs": {
+          "bet_33": 70,
+          "bet_50": 15,
+          "check": 15,
+          "note": "強牌"
+        },
+        "AKo": {
+          "bet_33": 65,
+          "bet_50": 15,
+          "check": 20,
+          "note": "強牌"
+        },
+        "KQs": {
+          "bet_33": 50,
+          "bet_50": 10,
+          "check": 40,
+          "note": "Broadway"
+        },
+        "KJs": {
+          "bet_33": 45,
+          "bet_50": 5,
+          "check": 50,
+          "note": "Broadway"
+        },
+        "KTs": {
+          "bet_33": 40,
+          "bet_50": 5,
+          "check": 55,
+          "note": "Broadway suited"
+        },
+        "K9s": {
+          "bet_75": 70,
+          "check": 40,
+          "note": "trips"
+        },
+        "AQs": {
+          "bet_33": 55,
+          "bet_50": 15,
+          "check": 30,
+          "note": "強牌"
+        },
+        "AQo": {
+          "bet_33": 50,
+          "bet_50": 10,
+          "check": 40,
+          "note": "中等強牌"
+        },
+        "AJs": {
+          "bet_33": 50,
+          "bet_50": 10,
+          "check": 40,
+          "note": "中等強牌"
+        },
+        "QJs": {
+          "bet_33": 40,
+          "bet_50": 5,
+          "check": 55,
+          "note": "連接牌"
+        },
+        "77": {
+          "bet_33": 30,
+          "bet_50": 5,
+          "check": 65,
+          "note": "小對"
+        },
+        "22": {
+          "check": 70,
+          "bet_75": 40,
+          "note": "底對，謹慎"
+        }
+      }
+    },
+    {
+      "scenario_id": "hj_vs_bb_srp_882_hsd",
+      "position": "HJ",
+      "villain": "BB",
+      "pot_type": "srp",
+      "board": [
+        "8h",
+        "8s",
+        "2d"
+      ],
+      "texture": "paired_low",
+      "texture_zh": "低對子牌面",
+      "strategies": {
+        "AA": {
+          "bet_33": 75,
+          "bet_50": 15,
+          "check": 10,
+          "note": "堅果牌，高頻率下注"
+        },
+        "KK": {
+          "bet_33": 70,
+          "bet_50": 15,
+          "check": 15,
+          "note": "強牌，高頻率下注"
+        },
+        "QQ": {
+          "bet_33": 60,
+          "bet_50": 15,
+          "check": 25,
+          "note": "強牌"
+        },
+        "JJ": {
+          "bet_33": 50,
+          "bet_50": 10,
+          "check": 40,
+          "note": "中等強度"
+        },
+        "TT": {
+          "bet_33": 45,
+          "bet_50": 5,
+          "check": 50,
+          "note": "中等強度"
+        },
+        "99": {
+          "bet_33": 40,
+          "bet_50": 5,
+          "check": 55,
+          "note": "中對"
+        },
+        "88": {
+          "bet_33": 35,
+          "bet_50": 5,
+          "check": 60,
+          "note": "中對"
+        },
+        "77": {
+          "bet_33": 30,
+          "bet_50": 5,
+          "check": 65,
+          "note": "小對"
+        },
+        "66": {
+          "bet_33": 25,
+          "bet_50": 5,
+          "check": 70,
+          "note": "小對"
+        },
+        "55": {
+          "check": 100,
+          "note": "四條，慢打"
+        },
+        "A5s": {
+          "bet_33": 75,
+          "check": 25,
+          "note": "trips 頂踢腳"
+        },
+        "K5s": {
+          "bet_33": 70,
+          "check": 30,
+          "note": "trips"
+        },
+        "AKs": {
+          "bet_33": 70,
+          "bet_50": 15,
+          "check": 15,
+          "note": "強牌"
+        },
+        "AKo": {
+          "bet_33": 65,
+          "bet_50": 15,
+          "check": 20,
+          "note": "強牌"
+        },
+        "AQs": {
+          "bet_33": 55,
+          "bet_50": 15,
+          "check": 30,
+          "note": "強牌"
+        },
+        "KQs": {
+          "bet_33": 50,
+          "bet_50": 10,
+          "check": 40,
+          "note": "Broadway"
+        },
+        "22": {
+          "bet_33": 80,
+          "check": 20,
+          "note": "葫蘆！取值"
+        }
+      }
+    },
+    {
+      "scenario_id": "hj_vs_bb_srp_773_hsd",
+      "position": "HJ",
+      "villain": "BB",
+      "pot_type": "srp",
+      "board": [
+        "7h",
+        "7s",
+        "3d"
+      ],
+      "texture": "paired_low",
+      "texture_zh": "低對子牌面",
+      "strategies": {
+        "AA": {
+          "bet_33": 75,
+          "bet_50": 15,
+          "check": 10,
+          "note": "堅果牌，高頻率下注"
+        },
+        "KK": {
+          "bet_33": 70,
+          "bet_50": 15,
+          "check": 15,
+          "note": "強牌，高頻率下注"
+        },
+        "QQ": {
+          "bet_33": 60,
+          "bet_50": 15,
+          "check": 25,
+          "note": "強牌"
+        },
+        "JJ": {
+          "bet_33": 50,
+          "bet_50": 10,
+          "check": 40,
+          "note": "中等強度"
+        },
+        "TT": {
+          "bet_33": 45,
+          "bet_50": 5,
+          "check": 50,
+          "note": "中等強度"
+        },
+        "99": {
+          "bet_33": 40,
+          "bet_50": 5,
+          "check": 55,
+          "note": "中對"
+        },
+        "88": {
+          "bet_33": 35,
+          "bet_50": 5,
+          "check": 60,
+          "note": "中對"
+        },
+        "77": {
+          "bet_33": 30,
+          "bet_50": 5,
+          "check": 65,
+          "note": "小對"
+        },
+        "66": {
+          "bet_33": 25,
+          "bet_50": 5,
+          "check": 70,
+          "note": "小對"
+        },
+        "55": {
+          "check": 100,
+          "note": "四條，慢打"
+        },
+        "A5s": {
+          "bet_33": 75,
+          "check": 25,
+          "note": "trips 頂踢腳"
+        },
+        "K5s": {
+          "bet_33": 70,
+          "check": 30,
+          "note": "trips"
+        },
+        "AKs": {
+          "bet_33": 70,
+          "bet_50": 15,
+          "check": 15,
+          "note": "強牌"
+        },
+        "AKo": {
+          "bet_33": 65,
+          "bet_50": 15,
+          "check": 20,
+          "note": "強牌"
+        },
+        "AQs": {
+          "bet_33": 55,
+          "bet_50": 15,
+          "check": 30,
+          "note": "強牌"
+        },
+        "KQs": {
+          "bet_33": 50,
+          "bet_50": 10,
+          "check": 40,
+          "note": "Broadway"
+        },
+        "22": {
+          "bet_33": 80,
+          "check": 20,
+          "note": "葫蘆！取值"
+        }
+      }
+    },
+    {
+      "scenario_id": "hj_vs_bb_srp_662_hsd",
+      "position": "HJ",
+      "villain": "BB",
+      "pot_type": "srp",
+      "board": [
+        "6h",
+        "6s",
+        "2d"
+      ],
+      "texture": "paired_low",
+      "texture_zh": "低對子牌面",
+      "strategies": {
+        "AA": {
+          "bet_33": 75,
+          "bet_50": 15,
+          "check": 10,
+          "note": "堅果牌，高頻率下注"
+        },
+        "KK": {
+          "bet_33": 70,
+          "bet_50": 15,
+          "check": 15,
+          "note": "強牌，高頻率下注"
+        },
+        "QQ": {
+          "bet_33": 60,
+          "bet_50": 15,
+          "check": 25,
+          "note": "強牌"
+        },
+        "JJ": {
+          "bet_33": 50,
+          "bet_50": 10,
+          "check": 40,
+          "note": "中等強度"
+        },
+        "TT": {
+          "bet_33": 45,
+          "bet_50": 5,
+          "check": 50,
+          "note": "中等強度"
+        },
+        "99": {
+          "bet_33": 40,
+          "bet_50": 5,
+          "check": 55,
+          "note": "中對"
+        },
+        "88": {
+          "bet_33": 35,
+          "bet_50": 5,
+          "check": 60,
+          "note": "中對"
+        },
+        "77": {
+          "bet_33": 30,
+          "bet_50": 5,
+          "check": 65,
+          "note": "小對"
+        },
+        "66": {
+          "bet_33": 25,
+          "bet_50": 5,
+          "check": 70,
+          "note": "小對"
+        },
+        "55": {
+          "check": 100,
+          "note": "四條，慢打"
+        },
+        "A5s": {
+          "bet_33": 75,
+          "check": 25,
+          "note": "trips 頂踢腳"
+        },
+        "K5s": {
+          "bet_33": 70,
+          "check": 30,
+          "note": "trips"
+        },
+        "AKs": {
+          "bet_33": 70,
+          "bet_50": 15,
+          "check": 15,
+          "note": "強牌"
+        },
+        "AKo": {
+          "bet_33": 65,
+          "bet_50": 15,
+          "check": 20,
+          "note": "強牌"
+        },
+        "AQs": {
+          "bet_33": 55,
+          "bet_50": 15,
+          "check": 30,
+          "note": "強牌"
+        },
+        "KQs": {
+          "bet_33": 50,
+          "bet_50": 10,
+          "check": 40,
+          "note": "Broadway"
+        },
+        "22": {
+          "bet_33": 80,
+          "check": 20,
+          "note": "葫蘆！取值"
+        }
+      }
+    },
+    {
+      "scenario_id": "hj_vs_bb_srp_552_hsd",
+      "position": "HJ",
+      "villain": "BB",
+      "pot_type": "srp",
+      "board": [
+        "5h",
+        "5s",
+        "2d"
+      ],
+      "texture": "paired_low",
+      "texture_zh": "低對子牌面",
+      "strategies": {
+        "AA": {
+          "bet_33": 75,
+          "bet_50": 15,
+          "check": 10,
+          "note": "堅果牌，高頻率下注"
+        },
+        "KK": {
+          "bet_33": 70,
+          "bet_50": 15,
+          "check": 15,
+          "note": "強牌，高頻率下注"
+        },
+        "QQ": {
+          "bet_33": 60,
+          "bet_50": 15,
+          "check": 25,
+          "note": "強牌"
+        },
+        "JJ": {
+          "bet_33": 50,
+          "bet_50": 10,
+          "check": 40,
+          "note": "中等強度"
+        },
+        "TT": {
+          "bet_33": 45,
+          "bet_50": 5,
+          "check": 50,
+          "note": "中等強度"
+        },
+        "99": {
+          "bet_33": 40,
+          "bet_50": 5,
+          "check": 55,
+          "note": "中對"
+        },
+        "88": {
+          "bet_33": 35,
+          "bet_50": 5,
+          "check": 60,
+          "note": "中對"
+        },
+        "77": {
+          "bet_33": 30,
+          "bet_50": 5,
+          "check": 65,
+          "note": "小對"
+        },
+        "66": {
+          "bet_33": 25,
+          "bet_50": 5,
+          "check": 70,
+          "note": "小對"
+        },
+        "55": {
+          "check": 100,
+          "note": "四條，慢打"
+        },
+        "A5s": {
+          "bet_33": 75,
+          "check": 25,
+          "note": "trips 頂踢腳"
+        },
+        "K5s": {
+          "bet_33": 70,
+          "check": 30,
+          "note": "trips"
+        },
+        "AKs": {
+          "bet_33": 70,
+          "bet_50": 15,
+          "check": 15,
+          "note": "強牌"
+        },
+        "AKo": {
+          "bet_33": 65,
+          "bet_50": 15,
+          "check": 20,
+          "note": "強牌"
+        },
+        "AQs": {
+          "bet_33": 55,
+          "bet_50": 15,
+          "check": 30,
+          "note": "強牌"
+        },
+        "KQs": {
+          "bet_33": 50,
+          "bet_50": 10,
+          "check": 40,
+          "note": "Broadway"
+        },
+        "22": {
+          "bet_33": 80,
+          "check": 20,
+          "note": "葫蘆！取值"
+        }
+      }
+    },
+    {
+      "scenario_id": "hj_vs_bb_srp_442_hsd",
+      "position": "HJ",
+      "villain": "BB",
+      "pot_type": "srp",
+      "board": [
+        "4h",
+        "4s",
+        "2d"
+      ],
+      "texture": "paired_low",
+      "texture_zh": "低對子牌面",
+      "strategies": {
+        "AA": {
+          "bet_33": 75,
+          "bet_50": 15,
+          "check": 10,
+          "note": "堅果牌，高頻率下注"
+        },
+        "KK": {
+          "bet_33": 70,
+          "bet_50": 15,
+          "check": 15,
+          "note": "強牌，高頻率下注"
+        },
+        "QQ": {
+          "bet_33": 60,
+          "bet_50": 15,
+          "check": 25,
+          "note": "強牌"
+        },
+        "JJ": {
+          "bet_33": 50,
+          "bet_50": 10,
+          "check": 40,
+          "note": "中等強度"
+        },
+        "TT": {
+          "bet_33": 45,
+          "bet_50": 5,
+          "check": 50,
+          "note": "中等強度"
+        },
+        "99": {
+          "bet_33": 40,
+          "bet_50": 5,
+          "check": 55,
+          "note": "中對"
+        },
+        "88": {
+          "bet_33": 35,
+          "bet_50": 5,
+          "check": 60,
+          "note": "中對"
+        },
+        "77": {
+          "bet_33": 30,
+          "bet_50": 5,
+          "check": 65,
+          "note": "小對"
+        },
+        "66": {
+          "bet_33": 25,
+          "bet_50": 5,
+          "check": 70,
+          "note": "小對"
+        },
+        "55": {
+          "check": 100,
+          "note": "四條，慢打"
+        },
+        "A5s": {
+          "bet_33": 75,
+          "check": 25,
+          "note": "trips 頂踢腳"
+        },
+        "K5s": {
+          "bet_33": 70,
+          "check": 30,
+          "note": "trips"
+        },
+        "AKs": {
+          "bet_33": 70,
+          "bet_50": 15,
+          "check": 15,
+          "note": "強牌"
+        },
+        "AKo": {
+          "bet_33": 65,
+          "bet_50": 15,
+          "check": 20,
+          "note": "強牌"
+        },
+        "AQs": {
+          "bet_33": 55,
+          "bet_50": 15,
+          "check": 30,
+          "note": "強牌"
+        },
+        "KQs": {
+          "bet_33": 50,
+          "bet_50": 10,
+          "check": 40,
+          "note": "Broadway"
+        },
+        "22": {
+          "bet_33": 80,
+          "check": 20,
+          "note": "葫蘆！取值"
+        }
+      }
+    },
+    {
+      "scenario_id": "hj_vs_bb_srp_A94_hhh",
+      "position": "HJ",
+      "villain": "BB",
+      "pot_type": "srp",
+      "board": [
+        "Ah",
+        "9h",
+        "4h"
+      ],
+      "texture": "monotone",
+      "texture_zh": "同花牌面",
+      "strategies": {
+        "AhKh": {
+          "bet_75": 95,
+          "check": 15,
+          "note": "堅果同花！"
+        },
+        "AhQh": {
+          "bet_75": 90,
+          "check": 20,
+          "note": "第二堅果同花"
+        },
+        "Ah2h": {
+          "bet_75": 85,
+          "check": 25,
+          "note": "同花"
+        },
+        "KhQh": {
+          "bet_75": 85,
+          "check": 25,
+          "note": "同花"
+        },
+        "9h8h": {
+          "bet_75": 80,
+          "check": 30,
+          "note": "同花"
+        },
+        "AA": {
+          "bet_33": 75,
+          "bet_50": 15,
+          "check": 10,
+          "note": "堅果牌，高頻率下注"
+        },
+        "KK": {
+          "bet_33": 70,
+          "bet_50": 15,
+          "check": 15,
+          "note": "強牌，高頻率下注"
+        },
+        "JJ": {
+          "bet_33": 50,
+          "bet_50": 10,
+          "check": 40,
+          "note": "中等強度"
+        },
+        "77": {
+          "bet_33": 30,
+          "bet_50": 5,
+          "check": 65,
+          "note": "小對"
+        },
+        "AhKs": {
+          "bet_75": 70,
+          "check": 40,
+          "note": "堅果同花聽牌！"
+        },
+        "AhQs": {
+          "bet_75": 65,
+          "check": 45,
+          "note": "同花聽牌 + A高"
+        },
+        "KhJs": {
+          "bet_75": 60,
+          "check": 50,
+          "note": "同花聽牌 + 對子"
+        },
+        "AKo": {
+          "bet_33": 65,
+          "bet_50": 15,
+          "check": 20,
+          "note": "強牌"
+        },
+        "QQ": {
+          "bet_33": 60,
+          "bet_50": 15,
+          "check": 25,
+          "note": "強牌"
+        },
+        "KQo": {
+          "bet_33": 45,
+          "bet_50": 10,
+          "check": 45,
+          "note": "Broadway"
+        }
+      }
+    },
+    {
+      "scenario_id": "hj_vs_bb_srp_K83_hhh",
+      "position": "HJ",
+      "villain": "BB",
+      "pot_type": "srp",
+      "board": [
+        "Kh",
+        "8h",
+        "3h"
+      ],
+      "texture": "monotone",
+      "texture_zh": "同花牌面",
+      "strategies": {
+        "AhKh": {
+          "bet_75": 95,
+          "check": 15,
+          "note": "堅果同花！"
+        },
+        "AhQh": {
+          "bet_75": 90,
+          "check": 20,
+          "note": "第二堅果同花"
+        },
+        "Ah2h": {
+          "bet_75": 85,
+          "check": 25,
+          "note": "同花"
+        },
+        "KhQh": {
+          "bet_75": 85,
+          "check": 25,
+          "note": "同花"
+        },
+        "9h8h": {
+          "bet_75": 80,
+          "check": 30,
+          "note": "同花"
+        },
+        "AA": {
+          "bet_33": 75,
+          "bet_50": 15,
+          "check": 10,
+          "note": "堅果牌，高頻率下注"
+        },
+        "KK": {
+          "bet_33": 70,
+          "bet_50": 15,
+          "check": 15,
+          "note": "強牌，高頻率下注"
+        },
+        "JJ": {
+          "bet_33": 50,
+          "bet_50": 10,
+          "check": 40,
+          "note": "中等強度"
+        },
+        "77": {
+          "bet_33": 30,
+          "bet_50": 5,
+          "check": 65,
+          "note": "小對"
+        },
+        "AhKs": {
+          "bet_75": 70,
+          "check": 40,
+          "note": "堅果同花聽牌！"
+        },
+        "AhQs": {
+          "bet_75": 65,
+          "check": 45,
+          "note": "同花聽牌 + A高"
+        },
+        "KhJs": {
+          "bet_75": 60,
+          "check": 50,
+          "note": "同花聽牌 + 對子"
+        },
+        "AKo": {
+          "bet_33": 65,
+          "bet_50": 15,
+          "check": 20,
+          "note": "強牌"
+        },
+        "QQ": {
+          "bet_33": 60,
+          "bet_50": 15,
+          "check": 25,
+          "note": "強牌"
+        },
+        "KQo": {
+          "bet_33": 45,
+          "bet_50": 10,
+          "check": 45,
+          "note": "Broadway"
+        }
+      }
+    },
+    {
+      "scenario_id": "hj_vs_bb_srp_Q72_hhh",
+      "position": "HJ",
+      "villain": "BB",
+      "pot_type": "srp",
+      "board": [
+        "Qh",
+        "7h",
+        "2h"
+      ],
+      "texture": "monotone",
+      "texture_zh": "同花牌面",
+      "strategies": {
+        "AhKh": {
+          "bet_75": 95,
+          "check": 15,
+          "note": "堅果同花！"
+        },
+        "AhQh": {
+          "bet_75": 90,
+          "check": 20,
+          "note": "第二堅果同花"
+        },
+        "Ah2h": {
+          "bet_75": 85,
+          "check": 25,
+          "note": "同花"
+        },
+        "KhQh": {
+          "bet_75": 85,
+          "check": 25,
+          "note": "同花"
+        },
+        "9h8h": {
+          "bet_75": 80,
+          "check": 30,
+          "note": "同花"
+        },
+        "AA": {
+          "bet_33": 75,
+          "bet_50": 15,
+          "check": 10,
+          "note": "堅果牌，高頻率下注"
+        },
+        "KK": {
+          "bet_33": 70,
+          "bet_50": 15,
+          "check": 15,
+          "note": "強牌，高頻率下注"
+        },
+        "JJ": {
+          "bet_33": 50,
+          "bet_50": 10,
+          "check": 40,
+          "note": "中等強度"
+        },
+        "77": {
+          "bet_33": 30,
+          "bet_50": 5,
+          "check": 65,
+          "note": "小對"
+        },
+        "AhKs": {
+          "bet_75": 70,
+          "check": 40,
+          "note": "堅果同花聽牌！"
+        },
+        "AhQs": {
+          "bet_75": 65,
+          "check": 45,
+          "note": "同花聽牌 + A高"
+        },
+        "KhJs": {
+          "bet_75": 60,
+          "check": 50,
+          "note": "同花聽牌 + 對子"
+        },
+        "AKo": {
+          "bet_33": 65,
+          "bet_50": 15,
+          "check": 20,
+          "note": "強牌"
+        },
+        "QQ": {
+          "bet_33": 60,
+          "bet_50": 15,
+          "check": 25,
+          "note": "強牌"
+        },
+        "KQo": {
+          "bet_33": 45,
+          "bet_50": 10,
+          "check": 45,
+          "note": "Broadway"
+        }
+      }
+    },
+    {
+      "scenario_id": "hj_vs_bb_srp_J73_hhh",
+      "position": "HJ",
+      "villain": "BB",
+      "pot_type": "srp",
+      "board": [
+        "Jh",
+        "7h",
+        "3h"
+      ],
+      "texture": "monotone",
+      "texture_zh": "同花牌面",
+      "strategies": {
+        "AhKh": {
+          "bet_75": 95,
+          "check": 15,
+          "note": "堅果同花！"
+        },
+        "AhQh": {
+          "bet_75": 90,
+          "check": 20,
+          "note": "第二堅果同花"
+        },
+        "Ah2h": {
+          "bet_75": 85,
+          "check": 25,
+          "note": "同花"
+        },
+        "KhQh": {
+          "bet_75": 85,
+          "check": 25,
+          "note": "同花"
+        },
+        "9h8h": {
+          "bet_75": 80,
+          "check": 30,
+          "note": "同花"
+        },
+        "AA": {
+          "bet_33": 75,
+          "bet_50": 15,
+          "check": 10,
+          "note": "堅果牌，高頻率下注"
+        },
+        "KK": {
+          "bet_33": 70,
+          "bet_50": 15,
+          "check": 15,
+          "note": "強牌，高頻率下注"
+        },
+        "JJ": {
+          "bet_33": 50,
+          "bet_50": 10,
+          "check": 40,
+          "note": "中等強度"
+        },
+        "77": {
+          "bet_33": 30,
+          "bet_50": 5,
+          "check": 65,
+          "note": "小對"
+        },
+        "AhKs": {
+          "bet_75": 70,
+          "check": 40,
+          "note": "堅果同花聽牌！"
+        },
+        "AhQs": {
+          "bet_75": 65,
+          "check": 45,
+          "note": "同花聽牌 + A高"
+        },
+        "KhJs": {
+          "bet_75": 60,
+          "check": 50,
+          "note": "同花聽牌 + 對子"
+        },
+        "AKo": {
+          "bet_33": 65,
+          "bet_50": 15,
+          "check": 20,
+          "note": "強牌"
+        },
+        "QQ": {
+          "bet_33": 60,
+          "bet_50": 15,
+          "check": 25,
+          "note": "強牌"
+        },
+        "KQo": {
+          "bet_33": 45,
+          "bet_50": 10,
+          "check": 45,
+          "note": "Broadway"
+        }
+      }
+    },
+    {
+      "scenario_id": "hj_vs_bb_srp_T52_hhh",
+      "position": "HJ",
+      "villain": "BB",
+      "pot_type": "srp",
+      "board": [
+        "Th",
+        "5h",
+        "2h"
+      ],
+      "texture": "monotone",
+      "texture_zh": "同花牌面",
+      "strategies": {
+        "AhKh": {
+          "bet_75": 95,
+          "check": 15,
+          "note": "堅果同花！"
+        },
+        "AhQh": {
+          "bet_75": 90,
+          "check": 20,
+          "note": "第二堅果同花"
+        },
+        "Ah2h": {
+          "bet_75": 85,
+          "check": 25,
+          "note": "同花"
+        },
+        "KhQh": {
+          "bet_75": 85,
+          "check": 25,
+          "note": "同花"
+        },
+        "9h8h": {
+          "bet_75": 80,
+          "check": 30,
+          "note": "同花"
+        },
+        "AA": {
+          "bet_33": 75,
+          "bet_50": 15,
+          "check": 10,
+          "note": "堅果牌，高頻率下注"
+        },
+        "KK": {
+          "bet_33": 70,
+          "bet_50": 15,
+          "check": 15,
+          "note": "強牌，高頻率下注"
+        },
+        "JJ": {
+          "bet_33": 50,
+          "bet_50": 10,
+          "check": 40,
+          "note": "中等強度"
+        },
+        "77": {
+          "bet_33": 30,
+          "bet_50": 5,
+          "check": 65,
+          "note": "小對"
+        },
+        "AhKs": {
+          "bet_75": 70,
+          "check": 40,
+          "note": "堅果同花聽牌！"
+        },
+        "AhQs": {
+          "bet_75": 65,
+          "check": 45,
+          "note": "同花聽牌 + A高"
+        },
+        "KhJs": {
+          "bet_75": 60,
+          "check": 50,
+          "note": "同花聽牌 + 對子"
+        },
+        "AKo": {
+          "bet_33": 65,
+          "bet_50": 15,
+          "check": 20,
+          "note": "強牌"
+        },
+        "QQ": {
+          "bet_33": 60,
+          "bet_50": 15,
+          "check": 25,
+          "note": "強牌"
+        },
+        "KQo": {
+          "bet_33": 45,
+          "bet_50": 10,
+          "check": 45,
+          "note": "Broadway"
+        }
+      }
+    },
+    {
+      "scenario_id": "hj_vs_bb_srp_AK5_hhd",
+      "position": "HJ",
+      "villain": "BB",
+      "pot_type": "srp",
+      "board": [
+        "Ah",
+        "Kh",
+        "5d"
+      ],
+      "texture": "two_tone_high",
+      "texture_zh": "雙色高牌面",
+      "strategies": {
+        "AA": {
+          "bet_33": 75,
+          "bet_50": 15,
+          "check": 10,
+          "note": "堅果牌，高頻率下注"
+        },
+        "KK": {
+          "bet_33": 70,
+          "bet_50": 15,
+          "check": 15,
+          "note": "強牌，高頻率下注"
+        },
+        "AKs": {
+          "bet_33": 70,
+          "bet_50": 15,
+          "check": 15,
+          "note": "強牌"
+        },
+        "AKo": {
+          "bet_33": 65,
+          "bet_50": 15,
+          "check": 20,
+          "note": "強牌"
+        },
+        "AQs": {
+          "bet_33": 55,
+          "bet_50": 15,
+          "check": 30,
+          "note": "強牌"
+        },
+        "AQo": {
+          "bet_33": 50,
+          "bet_50": 10,
+          "check": 40,
+          "note": "中等強牌"
+        },
+        "AJs": {
+          "bet_33": 50,
+          "bet_50": 10,
+          "check": 40,
+          "note": "中等強牌"
+        },
+        "KQs": {
+          "bet_33": 50,
+          "bet_50": 10,
+          "check": 40,
+          "note": "Broadway"
+        },
+        "KQo": {
+          "bet_33": 45,
+          "bet_50": 10,
+          "check": 45,
+          "note": "Broadway"
+        },
+        "QhJh": {
+          "bet_50": 75,
+          "check": 35,
+          "note": "同花聽牌 + 兩高張"
+        },
+        "ThJh": {
+          "bet_50": 70,
+          "check": 40,
+          "note": "同花聽牌"
+        },
+        "QQ": {
+          "bet_33": 60,
+          "bet_50": 15,
+          "check": 25,
+          "note": "強牌"
+        },
+        "JJ": {
+          "bet_33": 50,
+          "bet_50": 10,
+          "check": 40,
+          "note": "中等強度"
+        },
+        "77": {
+          "bet_33": 30,
+          "bet_50": 5,
+          "check": 65,
+          "note": "小對"
+        },
+        "JTs": {
+          "bet_33": 35,
+          "bet_50": 5,
+          "check": 60,
+          "note": "連接牌"
+        }
+      }
+    },
+    {
+      "scenario_id": "hj_vs_bb_srp_KQ4_hhd",
+      "position": "HJ",
+      "villain": "BB",
+      "pot_type": "srp",
+      "board": [
+        "Kh",
+        "Qh",
+        "4d"
+      ],
+      "texture": "two_tone_high",
+      "texture_zh": "雙色高牌面",
+      "strategies": {
+        "AA": {
+          "bet_33": 75,
+          "bet_50": 15,
+          "check": 10,
+          "note": "堅果牌，高頻率下注"
+        },
+        "KK": {
+          "bet_33": 70,
+          "bet_50": 15,
+          "check": 15,
+          "note": "強牌，高頻率下注"
+        },
+        "AKs": {
+          "bet_33": 70,
+          "bet_50": 15,
+          "check": 15,
+          "note": "強牌"
+        },
+        "AKo": {
+          "bet_33": 65,
+          "bet_50": 15,
+          "check": 20,
+          "note": "強牌"
+        },
+        "AQs": {
+          "bet_33": 55,
+          "bet_50": 15,
+          "check": 30,
+          "note": "強牌"
+        },
+        "AQo": {
+          "bet_33": 50,
+          "bet_50": 10,
+          "check": 40,
+          "note": "中等強牌"
+        },
+        "AJs": {
+          "bet_33": 50,
+          "bet_50": 10,
+          "check": 40,
+          "note": "中等強牌"
+        },
+        "KQs": {
+          "bet_33": 50,
+          "bet_50": 10,
+          "check": 40,
+          "note": "Broadway"
+        },
+        "KQo": {
+          "bet_33": 45,
+          "bet_50": 10,
+          "check": 45,
+          "note": "Broadway"
+        },
+        "QhJh": {
+          "bet_50": 75,
+          "check": 35,
+          "note": "同花聽牌 + 兩高張"
+        },
+        "ThJh": {
+          "bet_50": 70,
+          "check": 40,
+          "note": "同花聽牌"
+        },
+        "QQ": {
+          "bet_33": 60,
+          "bet_50": 15,
+          "check": 25,
+          "note": "強牌"
+        },
+        "JJ": {
+          "bet_33": 50,
+          "bet_50": 10,
+          "check": 40,
+          "note": "中等強度"
+        },
+        "77": {
+          "bet_33": 30,
+          "bet_50": 5,
+          "check": 65,
+          "note": "小對"
+        },
+        "JTs": {
+          "bet_33": 35,
+          "bet_50": 5,
+          "check": 60,
+          "note": "連接牌"
+        }
+      }
+    },
+    {
+      "scenario_id": "hj_vs_bb_srp_AJ3_hhd",
+      "position": "HJ",
+      "villain": "BB",
+      "pot_type": "srp",
+      "board": [
+        "Ah",
+        "Jh",
+        "3d"
+      ],
+      "texture": "two_tone_high",
+      "texture_zh": "雙色高牌面",
+      "strategies": {
+        "AA": {
+          "bet_33": 75,
+          "bet_50": 15,
+          "check": 10,
+          "note": "堅果牌，高頻率下注"
+        },
+        "KK": {
+          "bet_33": 70,
+          "bet_50": 15,
+          "check": 15,
+          "note": "強牌，高頻率下注"
+        },
+        "AKs": {
+          "bet_33": 70,
+          "bet_50": 15,
+          "check": 15,
+          "note": "強牌"
+        },
+        "AKo": {
+          "bet_33": 65,
+          "bet_50": 15,
+          "check": 20,
+          "note": "強牌"
+        },
+        "AQs": {
+          "bet_33": 55,
+          "bet_50": 15,
+          "check": 30,
+          "note": "強牌"
+        },
+        "AQo": {
+          "bet_33": 50,
+          "bet_50": 10,
+          "check": 40,
+          "note": "中等強牌"
+        },
+        "AJs": {
+          "bet_33": 50,
+          "bet_50": 10,
+          "check": 40,
+          "note": "中等強牌"
+        },
+        "KQs": {
+          "bet_33": 50,
+          "bet_50": 10,
+          "check": 40,
+          "note": "Broadway"
+        },
+        "KQo": {
+          "bet_33": 45,
+          "bet_50": 10,
+          "check": 45,
+          "note": "Broadway"
+        },
+        "QhJh": {
+          "bet_50": 75,
+          "check": 35,
+          "note": "同花聽牌 + 兩高張"
+        },
+        "ThJh": {
+          "bet_50": 70,
+          "check": 40,
+          "note": "同花聽牌"
+        },
+        "QQ": {
+          "bet_33": 60,
+          "bet_50": 15,
+          "check": 25,
+          "note": "強牌"
+        },
+        "JJ": {
+          "bet_33": 50,
+          "bet_50": 10,
+          "check": 40,
+          "note": "中等強度"
+        },
+        "77": {
+          "bet_33": 30,
+          "bet_50": 5,
+          "check": 65,
+          "note": "小對"
+        },
+        "JTs": {
+          "bet_33": 35,
+          "bet_50": 5,
+          "check": 60,
+          "note": "連接牌"
+        }
+      }
+    },
+    {
+      "scenario_id": "hj_vs_bb_srp_AK7_hhd",
+      "position": "HJ",
+      "villain": "BB",
+      "pot_type": "srp",
+      "board": [
+        "Ah",
+        "Kh",
+        "7d"
+      ],
+      "texture": "two_tone_high",
+      "texture_zh": "雙色高牌面",
+      "strategies": {
+        "AA": {
+          "bet_33": 75,
+          "bet_50": 15,
+          "check": 10,
+          "note": "堅果牌，高頻率下注"
+        },
+        "KK": {
+          "bet_33": 70,
+          "bet_50": 15,
+          "check": 15,
+          "note": "強牌，高頻率下注"
+        },
+        "AKs": {
+          "bet_33": 70,
+          "bet_50": 15,
+          "check": 15,
+          "note": "強牌"
+        },
+        "AKo": {
+          "bet_33": 65,
+          "bet_50": 15,
+          "check": 20,
+          "note": "強牌"
+        },
+        "AQs": {
+          "bet_33": 55,
+          "bet_50": 15,
+          "check": 30,
+          "note": "強牌"
+        },
+        "AQo": {
+          "bet_33": 50,
+          "bet_50": 10,
+          "check": 40,
+          "note": "中等強牌"
+        },
+        "AJs": {
+          "bet_33": 50,
+          "bet_50": 10,
+          "check": 40,
+          "note": "中等強牌"
+        },
+        "KQs": {
+          "bet_33": 50,
+          "bet_50": 10,
+          "check": 40,
+          "note": "Broadway"
+        },
+        "KQo": {
+          "bet_33": 45,
+          "bet_50": 10,
+          "check": 45,
+          "note": "Broadway"
+        },
+        "QhJh": {
+          "bet_50": 75,
+          "check": 35,
+          "note": "同花聽牌 + 兩高張"
+        },
+        "ThJh": {
+          "bet_50": 70,
+          "check": 40,
+          "note": "同花聽牌"
+        },
+        "QQ": {
+          "bet_33": 60,
+          "bet_50": 15,
+          "check": 25,
+          "note": "強牌"
+        },
+        "JJ": {
+          "bet_33": 50,
+          "bet_50": 10,
+          "check": 40,
+          "note": "中等強度"
+        },
+        "77": {
+          "bet_33": 30,
+          "bet_50": 5,
+          "check": 65,
+          "note": "小對"
+        },
+        "JTs": {
+          "bet_33": 35,
+          "bet_50": 5,
+          "check": 60,
+          "note": "連接牌"
+        }
+      }
+    },
+    {
+      "scenario_id": "hj_vs_bb_srp_KJ4_hhd",
+      "position": "HJ",
+      "villain": "BB",
+      "pot_type": "srp",
+      "board": [
+        "Kh",
+        "Jh",
+        "4d"
+      ],
+      "texture": "two_tone_high",
+      "texture_zh": "雙色高牌面",
+      "strategies": {
+        "AA": {
+          "bet_33": 75,
+          "bet_50": 15,
+          "check": 10,
+          "note": "堅果牌，高頻率下注"
+        },
+        "KK": {
+          "bet_33": 70,
+          "bet_50": 15,
+          "check": 15,
+          "note": "強牌，高頻率下注"
+        },
+        "AKs": {
+          "bet_33": 70,
+          "bet_50": 15,
+          "check": 15,
+          "note": "強牌"
+        },
+        "AKo": {
+          "bet_33": 65,
+          "bet_50": 15,
+          "check": 20,
+          "note": "強牌"
+        },
+        "AQs": {
+          "bet_33": 55,
+          "bet_50": 15,
+          "check": 30,
+          "note": "強牌"
+        },
+        "AQo": {
+          "bet_33": 50,
+          "bet_50": 10,
+          "check": 40,
+          "note": "中等強牌"
+        },
+        "AJs": {
+          "bet_33": 50,
+          "bet_50": 10,
+          "check": 40,
+          "note": "中等強牌"
+        },
+        "KQs": {
+          "bet_33": 50,
+          "bet_50": 10,
+          "check": 40,
+          "note": "Broadway"
+        },
+        "KQo": {
+          "bet_33": 45,
+          "bet_50": 10,
+          "check": 45,
+          "note": "Broadway"
+        },
+        "QhJh": {
+          "bet_50": 75,
+          "check": 35,
+          "note": "同花聽牌 + 兩高張"
+        },
+        "ThJh": {
+          "bet_50": 70,
+          "check": 40,
+          "note": "同花聽牌"
+        },
+        "QQ": {
+          "bet_33": 60,
+          "bet_50": 15,
+          "check": 25,
+          "note": "強牌"
+        },
+        "JJ": {
+          "bet_33": 50,
+          "bet_50": 10,
+          "check": 40,
+          "note": "中等強度"
+        },
+        "77": {
+          "bet_33": 30,
+          "bet_50": 5,
+          "check": 65,
+          "note": "小對"
+        },
+        "JTs": {
+          "bet_33": 35,
+          "bet_50": 5,
+          "check": 60,
+          "note": "連接牌"
+        }
+      }
+    },
+    {
+      "scenario_id": "hj_vs_bb_srp_862_hhd",
+      "position": "HJ",
+      "villain": "BB",
+      "pot_type": "srp",
+      "board": [
+        "8h",
+        "6h",
+        "2d"
+      ],
+      "texture": "two_tone_low",
+      "texture_zh": "雙色低牌面",
+      "strategies": {
+        "AA": {
+          "bet_33": 75,
+          "bet_50": 15,
+          "check": 10,
+          "note": "堅果牌，高頻率下注"
+        },
+        "KK": {
+          "bet_33": 70,
+          "bet_50": 15,
+          "check": 15,
+          "note": "強牌，高頻率下注"
+        },
+        "QQ": {
+          "bet_33": 60,
+          "bet_50": 15,
+          "check": 25,
+          "note": "強牌"
+        },
+        "JJ": {
+          "bet_33": 50,
+          "bet_50": 10,
+          "check": 40,
+          "note": "中等強度"
+        },
+        "TT": {
+          "bet_33": 45,
+          "bet_50": 5,
+          "check": 50,
+          "note": "中等強度"
+        },
+        "99": {
+          "bet_33": 40,
+          "bet_50": 5,
+          "check": 55,
+          "note": "中對"
+        },
+        "88": {
+          "bet_33": 35,
+          "bet_50": 5,
+          "check": 60,
+          "note": "中對"
+        },
+        "66": {
+          "bet_33": 25,
+          "bet_50": 5,
+          "check": 70,
+          "note": "小對"
+        },
+        "22": {
+          "bet_50": 75,
+          "check": 35,
+          "note": "底 set"
+        },
+        "A8s": {
+          "bet_50": 70,
+          "check": 40,
+          "note": "頂對"
+        },
+        "87s": {
+          "bet_33": 25,
+          "bet_50": 5,
+          "check": 70,
+          "note": "連接牌"
+        },
+        "AhKh": {
+          "bet_50": 65,
+          "check": 45,
+          "note": "堅果同花聽牌！好 bluff"
+        },
+        "AhQh": {
+          "bet_50": 60,
+          "check": 50,
+          "note": "同花聽牌 + overcards"
+        },
+        "AKo": {
+          "bet_33": 65,
+          "bet_50": 15,
+          "check": 20,
+          "note": "強牌"
+        },
+        "KQo": {
+          "bet_33": 45,
+          "bet_50": 10,
+          "check": 45,
+          "note": "Broadway"
+        },
+        "76s": {
+          "bet_33": 20,
+          "bet_50": 5,
+          "check": 75,
+          "note": "低連接牌"
+        }
+      }
+    },
+    {
+      "scenario_id": "hj_vs_bb_srp_973_hhd",
+      "position": "HJ",
+      "villain": "BB",
+      "pot_type": "srp",
+      "board": [
+        "9h",
+        "7h",
+        "3d"
+      ],
+      "texture": "two_tone_low",
+      "texture_zh": "雙色低牌面",
+      "strategies": {
+        "AA": {
+          "bet_33": 75,
+          "bet_50": 15,
+          "check": 10,
+          "note": "堅果牌，高頻率下注"
+        },
+        "KK": {
+          "bet_33": 70,
+          "bet_50": 15,
+          "check": 15,
+          "note": "強牌，高頻率下注"
+        },
+        "QQ": {
+          "bet_33": 60,
+          "bet_50": 15,
+          "check": 25,
+          "note": "強牌"
+        },
+        "JJ": {
+          "bet_33": 50,
+          "bet_50": 10,
+          "check": 40,
+          "note": "中等強度"
+        },
+        "TT": {
+          "bet_33": 45,
+          "bet_50": 5,
+          "check": 50,
+          "note": "中等強度"
+        },
+        "99": {
+          "bet_33": 40,
+          "bet_50": 5,
+          "check": 55,
+          "note": "中對"
+        },
+        "88": {
+          "bet_33": 35,
+          "bet_50": 5,
+          "check": 60,
+          "note": "中對"
+        },
+        "66": {
+          "bet_33": 25,
+          "bet_50": 5,
+          "check": 70,
+          "note": "小對"
+        },
+        "22": {
+          "bet_50": 75,
+          "check": 35,
+          "note": "底 set"
+        },
+        "A8s": {
+          "bet_50": 70,
+          "check": 40,
+          "note": "頂對"
+        },
+        "87s": {
+          "bet_33": 25,
+          "bet_50": 5,
+          "check": 70,
+          "note": "連接牌"
+        },
+        "AhKh": {
+          "bet_50": 65,
+          "check": 45,
+          "note": "堅果同花聽牌！好 bluff"
+        },
+        "AhQh": {
+          "bet_50": 60,
+          "check": 50,
+          "note": "同花聽牌 + overcards"
+        },
+        "AKo": {
+          "bet_33": 65,
+          "bet_50": 15,
+          "check": 20,
+          "note": "強牌"
+        },
+        "KQo": {
+          "bet_33": 45,
+          "bet_50": 10,
+          "check": 45,
+          "note": "Broadway"
+        },
+        "76s": {
+          "bet_33": 20,
+          "bet_50": 5,
+          "check": 75,
+          "note": "低連接牌"
+        }
+      }
+    },
+    {
+      "scenario_id": "hj_vs_bb_srp_752_hhd",
+      "position": "HJ",
+      "villain": "BB",
+      "pot_type": "srp",
+      "board": [
+        "7h",
+        "5h",
+        "2d"
+      ],
+      "texture": "two_tone_low",
+      "texture_zh": "雙色低牌面",
+      "strategies": {
+        "AA": {
+          "bet_33": 75,
+          "bet_50": 15,
+          "check": 10,
+          "note": "堅果牌，高頻率下注"
+        },
+        "KK": {
+          "bet_33": 70,
+          "bet_50": 15,
+          "check": 15,
+          "note": "強牌，高頻率下注"
+        },
+        "QQ": {
+          "bet_33": 60,
+          "bet_50": 15,
+          "check": 25,
+          "note": "強牌"
+        },
+        "JJ": {
+          "bet_33": 50,
+          "bet_50": 10,
+          "check": 40,
+          "note": "中等強度"
+        },
+        "TT": {
+          "bet_33": 45,
+          "bet_50": 5,
+          "check": 50,
+          "note": "中等強度"
+        },
+        "99": {
+          "bet_33": 40,
+          "bet_50": 5,
+          "check": 55,
+          "note": "中對"
+        },
+        "88": {
+          "bet_33": 35,
+          "bet_50": 5,
+          "check": 60,
+          "note": "中對"
+        },
+        "66": {
+          "bet_33": 25,
+          "bet_50": 5,
+          "check": 70,
+          "note": "小對"
+        },
+        "22": {
+          "bet_50": 75,
+          "check": 35,
+          "note": "底 set"
+        },
+        "A8s": {
+          "bet_50": 70,
+          "check": 40,
+          "note": "頂對"
+        },
+        "87s": {
+          "bet_33": 25,
+          "bet_50": 5,
+          "check": 70,
+          "note": "連接牌"
+        },
+        "AhKh": {
+          "bet_50": 65,
+          "check": 45,
+          "note": "堅果同花聽牌！好 bluff"
+        },
+        "AhQh": {
+          "bet_50": 60,
+          "check": 50,
+          "note": "同花聽牌 + overcards"
+        },
+        "AKo": {
+          "bet_33": 65,
+          "bet_50": 15,
+          "check": 20,
+          "note": "強牌"
+        },
+        "KQo": {
+          "bet_33": 45,
+          "bet_50": 10,
+          "check": 45,
+          "note": "Broadway"
+        },
+        "76s": {
+          "bet_33": 20,
+          "bet_50": 5,
+          "check": 75,
+          "note": "低連接牌"
+        }
+      }
+    },
+    {
+      "scenario_id": "hj_vs_bb_srp_T84_hhd",
+      "position": "HJ",
+      "villain": "BB",
+      "pot_type": "srp",
+      "board": [
+        "Th",
+        "8h",
+        "4d"
+      ],
+      "texture": "two_tone_low",
+      "texture_zh": "雙色低牌面",
+      "strategies": {
+        "AA": {
+          "bet_33": 75,
+          "bet_50": 15,
+          "check": 10,
+          "note": "堅果牌，高頻率下注"
+        },
+        "KK": {
+          "bet_33": 70,
+          "bet_50": 15,
+          "check": 15,
+          "note": "強牌，高頻率下注"
+        },
+        "QQ": {
+          "bet_33": 60,
+          "bet_50": 15,
+          "check": 25,
+          "note": "強牌"
+        },
+        "JJ": {
+          "bet_33": 50,
+          "bet_50": 10,
+          "check": 40,
+          "note": "中等強度"
+        },
+        "TT": {
+          "bet_33": 45,
+          "bet_50": 5,
+          "check": 50,
+          "note": "中等強度"
+        },
+        "99": {
+          "bet_33": 40,
+          "bet_50": 5,
+          "check": 55,
+          "note": "中對"
+        },
+        "88": {
+          "bet_33": 35,
+          "bet_50": 5,
+          "check": 60,
+          "note": "中對"
+        },
+        "66": {
+          "bet_33": 25,
+          "bet_50": 5,
+          "check": 70,
+          "note": "小對"
+        },
+        "22": {
+          "bet_50": 75,
+          "check": 35,
+          "note": "底 set"
+        },
+        "A8s": {
+          "bet_50": 70,
+          "check": 40,
+          "note": "頂對"
+        },
+        "87s": {
+          "bet_33": 25,
+          "bet_50": 5,
+          "check": 70,
+          "note": "連接牌"
+        },
+        "AhKh": {
+          "bet_50": 65,
+          "check": 45,
+          "note": "堅果同花聽牌！好 bluff"
+        },
+        "AhQh": {
+          "bet_50": 60,
+          "check": 50,
+          "note": "同花聽牌 + overcards"
+        },
+        "AKo": {
+          "bet_33": 65,
+          "bet_50": 15,
+          "check": 20,
+          "note": "強牌"
+        },
+        "KQo": {
+          "bet_33": 45,
+          "bet_50": 10,
+          "check": 45,
+          "note": "Broadway"
+        },
+        "76s": {
+          "bet_33": 20,
+          "bet_50": 5,
+          "check": 75,
+          "note": "低連接牌"
+        }
+      }
+    },
+    {
+      "scenario_id": "hj_vs_bb_srp_642_hhd",
+      "position": "HJ",
+      "villain": "BB",
+      "pot_type": "srp",
+      "board": [
+        "6h",
+        "4h",
+        "2d"
+      ],
+      "texture": "two_tone_low",
+      "texture_zh": "雙色低牌面",
+      "strategies": {
+        "AA": {
+          "bet_33": 75,
+          "bet_50": 15,
+          "check": 10,
+          "note": "堅果牌，高頻率下注"
+        },
+        "KK": {
+          "bet_33": 70,
+          "bet_50": 15,
+          "check": 15,
+          "note": "強牌，高頻率下注"
+        },
+        "QQ": {
+          "bet_33": 60,
+          "bet_50": 15,
+          "check": 25,
+          "note": "強牌"
+        },
+        "JJ": {
+          "bet_33": 50,
+          "bet_50": 10,
+          "check": 40,
+          "note": "中等強度"
+        },
+        "TT": {
+          "bet_33": 45,
+          "bet_50": 5,
+          "check": 50,
+          "note": "中等強度"
+        },
+        "99": {
+          "bet_33": 40,
+          "bet_50": 5,
+          "check": 55,
+          "note": "中對"
+        },
+        "88": {
+          "bet_33": 35,
+          "bet_50": 5,
+          "check": 60,
+          "note": "中對"
+        },
+        "66": {
+          "bet_33": 25,
+          "bet_50": 5,
+          "check": 70,
+          "note": "小對"
+        },
+        "22": {
+          "bet_50": 75,
+          "check": 35,
+          "note": "底 set"
+        },
+        "A8s": {
+          "bet_50": 70,
+          "check": 40,
+          "note": "頂對"
+        },
+        "87s": {
+          "bet_33": 25,
+          "bet_50": 5,
+          "check": 70,
+          "note": "連接牌"
+        },
+        "AhKh": {
+          "bet_50": 65,
+          "check": 45,
+          "note": "堅果同花聽牌！好 bluff"
+        },
+        "AhQh": {
+          "bet_50": 60,
+          "check": 50,
+          "note": "同花聽牌 + overcards"
+        },
+        "AKo": {
+          "bet_33": 65,
+          "bet_50": 15,
+          "check": 20,
+          "note": "強牌"
+        },
+        "KQo": {
+          "bet_33": 45,
+          "bet_50": 10,
+          "check": 45,
+          "note": "Broadway"
+        },
+        "76s": {
+          "bet_33": 20,
+          "bet_50": 5,
+          "check": 75,
+          "note": "低連接牌"
+        }
+      }
+    },
+    {
+      "scenario_id": "hj_vs_bb_srp_QJT_hdc",
+      "position": "HJ",
+      "villain": "BB",
+      "pot_type": "srp",
+      "board": [
+        "Qh",
+        "Jd",
+        "Tc"
+      ],
+      "texture": "connected_high",
+      "texture_zh": "高連接牌面",
+      "strategies": {
+        "AKs": {
+          "bet_33": 70,
+          "bet_50": 15,
+          "check": 15,
+          "note": "強牌"
+        },
+        "AKo": {
+          "bet_33": 65,
+          "bet_50": 15,
+          "check": 20,
+          "note": "強牌"
+        },
+        "K9s": {
+          "bet_75": 85,
+          "check": 25,
+          "note": "第二堅果順子"
+        },
+        "98s": {
+          "bet_33": 25,
+          "bet_50": 5,
+          "check": 70,
+          "note": "連接牌"
+        },
+        "AA": {
+          "bet_33": 75,
+          "bet_50": 15,
+          "check": 10,
+          "note": "堅果牌，高頻率下注"
+        },
+        "KK": {
+          "bet_33": 70,
+          "bet_50": 15,
+          "check": 15,
+          "note": "強牌，高頻率下注"
+        },
+        "QQ": {
+          "bet_33": 60,
+          "bet_50": 15,
+          "check": 25,
+          "note": "強牌"
+        },
+        "JJ": {
+          "bet_33": 50,
+          "bet_50": 10,
+          "check": 40,
+          "note": "中等強度"
+        },
+        "TT": {
+          "bet_33": 45,
+          "bet_50": 5,
+          "check": 50,
+          "note": "中等強度"
+        },
+        "AQs": {
+          "bet_33": 55,
+          "bet_50": 15,
+          "check": 30,
+          "note": "強牌"
+        },
+        "AQo": {
+          "bet_33": 50,
+          "bet_50": 10,
+          "check": 40,
+          "note": "中等強牌"
+        },
+        "KQs": {
+          "bet_33": 50,
+          "bet_50": 10,
+          "check": 40,
+          "note": "Broadway"
+        },
+        "QTs": {
+          "bet_33": 35,
+          "bet_50": 5,
+          "check": 60,
+          "note": "連接牌"
+        },
+        "JTs": {
+          "bet_33": 35,
+          "bet_50": 5,
+          "check": 60,
+          "note": "連接牌"
+        },
+        "A9s": {
+          "bet_33": 35,
+          "bet_50": 5,
+          "check": 60,
+          "note": "弱 Ace suited"
+        },
+        "87s": {
+          "bet_33": 25,
+          "bet_50": 5,
+          "check": 70,
+          "note": "連接牌"
+        }
+      }
+    },
+    {
+      "scenario_id": "hj_vs_bb_srp_KQJ_hds",
+      "position": "HJ",
+      "villain": "BB",
+      "pot_type": "srp",
+      "board": [
+        "Kh",
+        "Qd",
+        "Js"
+      ],
+      "texture": "connected_high",
+      "texture_zh": "高連接牌面",
+      "strategies": {
+        "AKs": {
+          "bet_33": 70,
+          "bet_50": 15,
+          "check": 15,
+          "note": "強牌"
+        },
+        "AKo": {
+          "bet_33": 65,
+          "bet_50": 15,
+          "check": 20,
+          "note": "強牌"
+        },
+        "K9s": {
+          "bet_75": 85,
+          "check": 25,
+          "note": "第二堅果順子"
+        },
+        "98s": {
+          "bet_33": 25,
+          "bet_50": 5,
+          "check": 70,
+          "note": "連接牌"
+        },
+        "AA": {
+          "bet_33": 75,
+          "bet_50": 15,
+          "check": 10,
+          "note": "堅果牌，高頻率下注"
+        },
+        "KK": {
+          "bet_33": 70,
+          "bet_50": 15,
+          "check": 15,
+          "note": "強牌，高頻率下注"
+        },
+        "QQ": {
+          "bet_33": 60,
+          "bet_50": 15,
+          "check": 25,
+          "note": "強牌"
+        },
+        "JJ": {
+          "bet_33": 50,
+          "bet_50": 10,
+          "check": 40,
+          "note": "中等強度"
+        },
+        "TT": {
+          "bet_33": 45,
+          "bet_50": 5,
+          "check": 50,
+          "note": "中等強度"
+        },
+        "AQs": {
+          "bet_33": 55,
+          "bet_50": 15,
+          "check": 30,
+          "note": "強牌"
+        },
+        "AQo": {
+          "bet_33": 50,
+          "bet_50": 10,
+          "check": 40,
+          "note": "中等強牌"
+        },
+        "KQs": {
+          "bet_33": 50,
+          "bet_50": 10,
+          "check": 40,
+          "note": "Broadway"
+        },
+        "QTs": {
+          "bet_33": 35,
+          "bet_50": 5,
+          "check": 60,
+          "note": "連接牌"
+        },
+        "JTs": {
+          "bet_33": 35,
+          "bet_50": 5,
+          "check": 60,
+          "note": "連接牌"
+        },
+        "A9s": {
+          "bet_33": 35,
+          "bet_50": 5,
+          "check": 60,
+          "note": "弱 Ace suited"
+        },
+        "87s": {
+          "bet_33": 25,
+          "bet_50": 5,
+          "check": 70,
+          "note": "連接牌"
+        }
+      }
+    },
+    {
+      "scenario_id": "hj_vs_bb_srp_JT9_hdc",
+      "position": "HJ",
+      "villain": "BB",
+      "pot_type": "srp",
+      "board": [
+        "Jh",
+        "Td",
+        "9c"
+      ],
+      "texture": "connected_high",
+      "texture_zh": "高連接牌面",
+      "strategies": {
+        "AKs": {
+          "bet_33": 70,
+          "bet_50": 15,
+          "check": 15,
+          "note": "強牌"
+        },
+        "AKo": {
+          "bet_33": 65,
+          "bet_50": 15,
+          "check": 20,
+          "note": "強牌"
+        },
+        "K9s": {
+          "bet_75": 85,
+          "check": 25,
+          "note": "第二堅果順子"
+        },
+        "98s": {
+          "bet_33": 25,
+          "bet_50": 5,
+          "check": 70,
+          "note": "連接牌"
+        },
+        "AA": {
+          "bet_33": 75,
+          "bet_50": 15,
+          "check": 10,
+          "note": "堅果牌，高頻率下注"
+        },
+        "KK": {
+          "bet_33": 70,
+          "bet_50": 15,
+          "check": 15,
+          "note": "強牌，高頻率下注"
+        },
+        "QQ": {
+          "bet_33": 60,
+          "bet_50": 15,
+          "check": 25,
+          "note": "強牌"
+        },
+        "JJ": {
+          "bet_33": 50,
+          "bet_50": 10,
+          "check": 40,
+          "note": "中等強度"
+        },
+        "TT": {
+          "bet_33": 45,
+          "bet_50": 5,
+          "check": 50,
+          "note": "中等強度"
+        },
+        "AQs": {
+          "bet_33": 55,
+          "bet_50": 15,
+          "check": 30,
+          "note": "強牌"
+        },
+        "AQo": {
+          "bet_33": 50,
+          "bet_50": 10,
+          "check": 40,
+          "note": "中等強牌"
+        },
+        "KQs": {
+          "bet_33": 50,
+          "bet_50": 10,
+          "check": 40,
+          "note": "Broadway"
+        },
+        "QTs": {
+          "bet_33": 35,
+          "bet_50": 5,
+          "check": 60,
+          "note": "連接牌"
+        },
+        "JTs": {
+          "bet_33": 35,
+          "bet_50": 5,
+          "check": 60,
+          "note": "連接牌"
+        },
+        "A9s": {
+          "bet_33": 35,
+          "bet_50": 5,
+          "check": 60,
+          "note": "弱 Ace suited"
+        },
+        "87s": {
+          "bet_33": 25,
+          "bet_50": 5,
+          "check": 70,
+          "note": "連接牌"
+        }
+      }
+    },
+    {
+      "scenario_id": "hj_vs_bb_srp_AKQ_hds",
+      "position": "HJ",
+      "villain": "BB",
+      "pot_type": "srp",
+      "board": [
+        "Ah",
+        "Kd",
+        "Qs"
+      ],
+      "texture": "connected_high",
+      "texture_zh": "高連接牌面",
+      "strategies": {
+        "AKs": {
+          "bet_33": 70,
+          "bet_50": 15,
+          "check": 15,
+          "note": "強牌"
+        },
+        "AKo": {
+          "bet_33": 65,
+          "bet_50": 15,
+          "check": 20,
+          "note": "強牌"
+        },
+        "K9s": {
+          "bet_75": 85,
+          "check": 25,
+          "note": "第二堅果順子"
+        },
+        "98s": {
+          "bet_33": 25,
+          "bet_50": 5,
+          "check": 70,
+          "note": "連接牌"
+        },
+        "AA": {
+          "bet_33": 75,
+          "bet_50": 15,
+          "check": 10,
+          "note": "堅果牌，高頻率下注"
+        },
+        "KK": {
+          "bet_33": 70,
+          "bet_50": 15,
+          "check": 15,
+          "note": "強牌，高頻率下注"
+        },
+        "QQ": {
+          "bet_33": 60,
+          "bet_50": 15,
+          "check": 25,
+          "note": "強牌"
+        },
+        "JJ": {
+          "bet_33": 50,
+          "bet_50": 10,
+          "check": 40,
+          "note": "中等強度"
+        },
+        "TT": {
+          "bet_33": 45,
+          "bet_50": 5,
+          "check": 50,
+          "note": "中等強度"
+        },
+        "AQs": {
+          "bet_33": 55,
+          "bet_50": 15,
+          "check": 30,
+          "note": "強牌"
+        },
+        "AQo": {
+          "bet_33": 50,
+          "bet_50": 10,
+          "check": 40,
+          "note": "中等強牌"
+        },
+        "KQs": {
+          "bet_33": 50,
+          "bet_50": 10,
+          "check": 40,
+          "note": "Broadway"
+        },
+        "QTs": {
+          "bet_33": 35,
+          "bet_50": 5,
+          "check": 60,
+          "note": "連接牌"
+        },
+        "JTs": {
+          "bet_33": 35,
+          "bet_50": 5,
+          "check": 60,
+          "note": "連接牌"
+        },
+        "A9s": {
+          "bet_33": 35,
+          "bet_50": 5,
+          "check": 60,
+          "note": "弱 Ace suited"
+        },
+        "87s": {
+          "bet_33": 25,
+          "bet_50": 5,
+          "check": 70,
+          "note": "連接牌"
+        }
+      }
+    },
+    {
+      "scenario_id": "hj_vs_bb_srp_QJT_hsd",
+      "position": "HJ",
+      "villain": "BB",
+      "pot_type": "srp",
+      "board": [
+        "Qh",
+        "Js",
+        "Td"
+      ],
+      "texture": "connected_high",
+      "texture_zh": "高連接牌面",
+      "strategies": {
+        "AKs": {
+          "bet_33": 70,
+          "bet_50": 15,
+          "check": 15,
+          "note": "強牌"
+        },
+        "AKo": {
+          "bet_33": 65,
+          "bet_50": 15,
+          "check": 20,
+          "note": "強牌"
+        },
+        "K9s": {
+          "bet_75": 85,
+          "check": 25,
+          "note": "第二堅果順子"
+        },
+        "98s": {
+          "bet_33": 25,
+          "bet_50": 5,
+          "check": 70,
+          "note": "連接牌"
+        },
+        "AA": {
+          "bet_33": 75,
+          "bet_50": 15,
+          "check": 10,
+          "note": "堅果牌，高頻率下注"
+        },
+        "KK": {
+          "bet_33": 70,
+          "bet_50": 15,
+          "check": 15,
+          "note": "強牌，高頻率下注"
+        },
+        "QQ": {
+          "bet_33": 60,
+          "bet_50": 15,
+          "check": 25,
+          "note": "強牌"
+        },
+        "JJ": {
+          "bet_33": 50,
+          "bet_50": 10,
+          "check": 40,
+          "note": "中等強度"
+        },
+        "TT": {
+          "bet_33": 45,
+          "bet_50": 5,
+          "check": 50,
+          "note": "中等強度"
+        },
+        "AQs": {
+          "bet_33": 55,
+          "bet_50": 15,
+          "check": 30,
+          "note": "強牌"
+        },
+        "AQo": {
+          "bet_33": 50,
+          "bet_50": 10,
+          "check": 40,
+          "note": "中等強牌"
+        },
+        "KQs": {
+          "bet_33": 50,
+          "bet_50": 10,
+          "check": 40,
+          "note": "Broadway"
+        },
+        "QTs": {
+          "bet_33": 35,
+          "bet_50": 5,
+          "check": 60,
+          "note": "連接牌"
+        },
+        "JTs": {
+          "bet_33": 35,
+          "bet_50": 5,
+          "check": 60,
+          "note": "連接牌"
+        },
+        "A9s": {
+          "bet_33": 35,
+          "bet_50": 5,
+          "check": 60,
+          "note": "弱 Ace suited"
+        },
+        "87s": {
+          "bet_33": 25,
+          "bet_50": 5,
+          "check": 70,
+          "note": "連接牌"
+        }
+      }
+    },
+    {
+      "scenario_id": "hj_vs_bb_srp_987_hdc",
+      "position": "HJ",
+      "villain": "BB",
+      "pot_type": "srp",
+      "board": [
+        "9h",
+        "8d",
+        "7c"
+      ],
+      "texture": "connected_middle",
+      "texture_zh": "中連接牌面",
+      "strategies": {
+        "JTs": {
+          "bet_33": 35,
+          "bet_50": 5,
+          "check": 60,
+          "note": "連接牌"
+        },
+        "JTo": {
+          "bet_75": 85,
+          "check": 25,
+          "note": "堅果順子"
+        },
+        "T6s": {
+          "bet_75": 80,
+          "check": 30,
+          "note": "順子"
+        },
+        "65s": {
+          "bet_75": 80,
+          "check": 30,
+          "note": "順子"
+        },
+        "AA": {
+          "bet_33": 75,
+          "bet_50": 15,
+          "check": 10,
+          "note": "堅果牌，高頻率下注"
+        },
+        "KK": {
+          "bet_33": 70,
+          "bet_50": 15,
+          "check": 15,
+          "note": "強牌，高頻率下注"
+        },
+        "QQ": {
+          "bet_33": 60,
+          "bet_50": 15,
+          "check": 25,
+          "note": "強牌"
+        },
+        "JJ": {
+          "bet_33": 50,
+          "bet_50": 10,
+          "check": 40,
+          "note": "中等強度"
+        },
+        "TT": {
+          "bet_33": 45,
+          "bet_50": 5,
+          "check": 50,
+          "note": "中等強度"
+        },
+        "99": {
+          "bet_33": 40,
+          "bet_50": 5,
+          "check": 55,
+          "note": "中對"
+        },
+        "88": {
+          "bet_33": 35,
+          "bet_50": 5,
+          "check": 60,
+          "note": "中對"
+        },
+        "77": {
+          "bet_33": 30,
+          "bet_50": 5,
+          "check": 65,
+          "note": "小對"
+        },
+        "QJs": {
+          "bet_33": 40,
+          "bet_50": 5,
+          "check": 55,
+          "note": "連接牌"
+        },
+        "JT": {
+          "bet_66": 90,
+          "check": 20,
+          "note": "堅果！"
+        },
+        "T9s": {
+          "bet_33": 30,
+          "bet_50": 5,
+          "check": 65,
+          "note": "連接牌"
+        },
+        "98s": {
+          "bet_33": 25,
+          "bet_50": 5,
+          "check": 70,
+          "note": "連接牌"
+        },
+        "ATs": {
+          "bet_33": 45,
+          "bet_50": 10,
+          "check": 45,
+          "note": "中等強牌"
+        }
+      }
+    },
+    {
+      "scenario_id": "hj_vs_bb_srp_T98_hdc",
+      "position": "HJ",
+      "villain": "BB",
+      "pot_type": "srp",
+      "board": [
+        "Th",
+        "9d",
+        "8c"
+      ],
+      "texture": "connected_middle",
+      "texture_zh": "中連接牌面",
+      "strategies": {
+        "JTs": {
+          "bet_33": 35,
+          "bet_50": 5,
+          "check": 60,
+          "note": "連接牌"
+        },
+        "JTo": {
+          "bet_75": 85,
+          "check": 25,
+          "note": "堅果順子"
+        },
+        "T6s": {
+          "bet_75": 80,
+          "check": 30,
+          "note": "順子"
+        },
+        "65s": {
+          "bet_75": 80,
+          "check": 30,
+          "note": "順子"
+        },
+        "AA": {
+          "bet_33": 75,
+          "bet_50": 15,
+          "check": 10,
+          "note": "堅果牌，高頻率下注"
+        },
+        "KK": {
+          "bet_33": 70,
+          "bet_50": 15,
+          "check": 15,
+          "note": "強牌，高頻率下注"
+        },
+        "QQ": {
+          "bet_33": 60,
+          "bet_50": 15,
+          "check": 25,
+          "note": "強牌"
+        },
+        "JJ": {
+          "bet_33": 50,
+          "bet_50": 10,
+          "check": 40,
+          "note": "中等強度"
+        },
+        "TT": {
+          "bet_33": 45,
+          "bet_50": 5,
+          "check": 50,
+          "note": "中等強度"
+        },
+        "99": {
+          "bet_33": 40,
+          "bet_50": 5,
+          "check": 55,
+          "note": "中對"
+        },
+        "88": {
+          "bet_33": 35,
+          "bet_50": 5,
+          "check": 60,
+          "note": "中對"
+        },
+        "77": {
+          "bet_33": 30,
+          "bet_50": 5,
+          "check": 65,
+          "note": "小對"
+        },
+        "QJs": {
+          "bet_33": 40,
+          "bet_50": 5,
+          "check": 55,
+          "note": "連接牌"
+        },
+        "JT": {
+          "bet_66": 90,
+          "check": 20,
+          "note": "堅果！"
+        },
+        "T9s": {
+          "bet_33": 30,
+          "bet_50": 5,
+          "check": 65,
+          "note": "連接牌"
+        },
+        "98s": {
+          "bet_33": 25,
+          "bet_50": 5,
+          "check": 70,
+          "note": "連接牌"
+        },
+        "ATs": {
+          "bet_33": 45,
+          "bet_50": 10,
+          "check": 45,
+          "note": "中等強牌"
+        }
+      }
+    },
+    {
+      "scenario_id": "hj_vs_bb_srp_876_hdc",
+      "position": "HJ",
+      "villain": "BB",
+      "pot_type": "srp",
+      "board": [
+        "8h",
+        "7d",
+        "6c"
+      ],
+      "texture": "connected_middle",
+      "texture_zh": "中連接牌面",
+      "strategies": {
+        "JTs": {
+          "bet_33": 35,
+          "bet_50": 5,
+          "check": 60,
+          "note": "連接牌"
+        },
+        "JTo": {
+          "bet_75": 85,
+          "check": 25,
+          "note": "堅果順子"
+        },
+        "T6s": {
+          "bet_75": 80,
+          "check": 30,
+          "note": "順子"
+        },
+        "65s": {
+          "bet_75": 80,
+          "check": 30,
+          "note": "順子"
+        },
+        "AA": {
+          "bet_33": 75,
+          "bet_50": 15,
+          "check": 10,
+          "note": "堅果牌，高頻率下注"
+        },
+        "KK": {
+          "bet_33": 70,
+          "bet_50": 15,
+          "check": 15,
+          "note": "強牌，高頻率下注"
+        },
+        "QQ": {
+          "bet_33": 60,
+          "bet_50": 15,
+          "check": 25,
+          "note": "強牌"
+        },
+        "JJ": {
+          "bet_33": 50,
+          "bet_50": 10,
+          "check": 40,
+          "note": "中等強度"
+        },
+        "TT": {
+          "bet_33": 45,
+          "bet_50": 5,
+          "check": 50,
+          "note": "中等強度"
+        },
+        "99": {
+          "bet_33": 40,
+          "bet_50": 5,
+          "check": 55,
+          "note": "中對"
+        },
+        "88": {
+          "bet_33": 35,
+          "bet_50": 5,
+          "check": 60,
+          "note": "中對"
+        },
+        "77": {
+          "bet_33": 30,
+          "bet_50": 5,
+          "check": 65,
+          "note": "小對"
+        },
+        "QJs": {
+          "bet_33": 40,
+          "bet_50": 5,
+          "check": 55,
+          "note": "連接牌"
+        },
+        "JT": {
+          "bet_66": 90,
+          "check": 20,
+          "note": "堅果！"
+        },
+        "T9s": {
+          "bet_33": 30,
+          "bet_50": 5,
+          "check": 65,
+          "note": "連接牌"
+        },
+        "98s": {
+          "bet_33": 25,
+          "bet_50": 5,
+          "check": 70,
+          "note": "連接牌"
+        },
+        "ATs": {
+          "bet_33": 45,
+          "bet_50": 10,
+          "check": 45,
+          "note": "中等強牌"
+        }
+      }
+    },
+    {
+      "scenario_id": "hj_vs_bb_srp_987_hsd",
+      "position": "HJ",
+      "villain": "BB",
+      "pot_type": "srp",
+      "board": [
+        "9h",
+        "8s",
+        "7d"
+      ],
+      "texture": "connected_middle",
+      "texture_zh": "中連接牌面",
+      "strategies": {
+        "JTs": {
+          "bet_33": 35,
+          "bet_50": 5,
+          "check": 60,
+          "note": "連接牌"
+        },
+        "JTo": {
+          "bet_75": 85,
+          "check": 25,
+          "note": "堅果順子"
+        },
+        "T6s": {
+          "bet_75": 80,
+          "check": 30,
+          "note": "順子"
+        },
+        "65s": {
+          "bet_75": 80,
+          "check": 30,
+          "note": "順子"
+        },
+        "AA": {
+          "bet_33": 75,
+          "bet_50": 15,
+          "check": 10,
+          "note": "堅果牌，高頻率下注"
+        },
+        "KK": {
+          "bet_33": 70,
+          "bet_50": 15,
+          "check": 15,
+          "note": "強牌，高頻率下注"
+        },
+        "QQ": {
+          "bet_33": 60,
+          "bet_50": 15,
+          "check": 25,
+          "note": "強牌"
+        },
+        "JJ": {
+          "bet_33": 50,
+          "bet_50": 10,
+          "check": 40,
+          "note": "中等強度"
+        },
+        "TT": {
+          "bet_33": 45,
+          "bet_50": 5,
+          "check": 50,
+          "note": "中等強度"
+        },
+        "99": {
+          "bet_33": 40,
+          "bet_50": 5,
+          "check": 55,
+          "note": "中對"
+        },
+        "88": {
+          "bet_33": 35,
+          "bet_50": 5,
+          "check": 60,
+          "note": "中對"
+        },
+        "77": {
+          "bet_33": 30,
+          "bet_50": 5,
+          "check": 65,
+          "note": "小對"
+        },
+        "QJs": {
+          "bet_33": 40,
+          "bet_50": 5,
+          "check": 55,
+          "note": "連接牌"
+        },
+        "JT": {
+          "bet_66": 90,
+          "check": 20,
+          "note": "堅果！"
+        },
+        "T9s": {
+          "bet_33": 30,
+          "bet_50": 5,
+          "check": 65,
+          "note": "連接牌"
+        },
+        "98s": {
+          "bet_33": 25,
+          "bet_50": 5,
+          "check": 70,
+          "note": "連接牌"
+        },
+        "ATs": {
+          "bet_33": 45,
+          "bet_50": 10,
+          "check": 45,
+          "note": "中等強牌"
+        }
+      }
+    },
+    {
+      "scenario_id": "hj_vs_bb_srp_T98_hsd",
+      "position": "HJ",
+      "villain": "BB",
+      "pot_type": "srp",
+      "board": [
+        "Th",
+        "9s",
+        "8d"
+      ],
+      "texture": "connected_middle",
+      "texture_zh": "中連接牌面",
+      "strategies": {
+        "JTs": {
+          "bet_33": 35,
+          "bet_50": 5,
+          "check": 60,
+          "note": "連接牌"
+        },
+        "JTo": {
+          "bet_75": 85,
+          "check": 25,
+          "note": "堅果順子"
+        },
+        "T6s": {
+          "bet_75": 80,
+          "check": 30,
+          "note": "順子"
+        },
+        "65s": {
+          "bet_75": 80,
+          "check": 30,
+          "note": "順子"
+        },
+        "AA": {
+          "bet_33": 75,
+          "bet_50": 15,
+          "check": 10,
+          "note": "堅果牌，高頻率下注"
+        },
+        "KK": {
+          "bet_33": 70,
+          "bet_50": 15,
+          "check": 15,
+          "note": "強牌，高頻率下注"
+        },
+        "QQ": {
+          "bet_33": 60,
+          "bet_50": 15,
+          "check": 25,
+          "note": "強牌"
+        },
+        "JJ": {
+          "bet_33": 50,
+          "bet_50": 10,
+          "check": 40,
+          "note": "中等強度"
+        },
+        "TT": {
+          "bet_33": 45,
+          "bet_50": 5,
+          "check": 50,
+          "note": "中等強度"
+        },
+        "99": {
+          "bet_33": 40,
+          "bet_50": 5,
+          "check": 55,
+          "note": "中對"
+        },
+        "88": {
+          "bet_33": 35,
+          "bet_50": 5,
+          "check": 60,
+          "note": "中對"
+        },
+        "77": {
+          "bet_33": 30,
+          "bet_50": 5,
+          "check": 65,
+          "note": "小對"
+        },
+        "QJs": {
+          "bet_33": 40,
+          "bet_50": 5,
+          "check": 55,
+          "note": "連接牌"
+        },
+        "JT": {
+          "bet_66": 90,
+          "check": 20,
+          "note": "堅果！"
+        },
+        "T9s": {
+          "bet_33": 30,
+          "bet_50": 5,
+          "check": 65,
+          "note": "連接牌"
+        },
+        "98s": {
+          "bet_33": 25,
+          "bet_50": 5,
+          "check": 70,
+          "note": "連接牌"
+        },
+        "ATs": {
+          "bet_33": 45,
+          "bet_50": 10,
+          "check": 45,
+          "note": "中等強牌"
+        }
+      }
+    },
+    {
+      "scenario_id": "hj_vs_bb_srp_654_hdc",
+      "position": "HJ",
+      "villain": "BB",
+      "pot_type": "srp",
+      "board": [
+        "6h",
+        "5d",
+        "4c"
+      ],
+      "texture": "connected_low",
+      "texture_zh": "低連接牌面",
+      "strategies": {
+        "87s": {
+          "bet_33": 25,
+          "bet_50": 5,
+          "check": 70,
+          "note": "連接牌"
+        },
+        "87o": {
+          "bet_75": 85,
+          "check": 25,
+          "note": "堅果順子"
+        },
+        "78s": {
+          "bet_75": 85,
+          "check": 25,
+          "note": "順子"
+        },
+        "73s": {
+          "bet_75": 75,
+          "check": 35,
+          "note": "順子"
+        },
+        "32s": {
+          "bet_75": 75,
+          "check": 35,
+          "note": "順子"
+        },
+        "AA": {
+          "bet_33": 75,
+          "bet_50": 15,
+          "check": 10,
+          "note": "堅果牌，高頻率下注"
+        },
+        "KK": {
+          "bet_33": 70,
+          "bet_50": 15,
+          "check": 15,
+          "note": "強牌，高頻率下注"
+        },
+        "QQ": {
+          "bet_33": 60,
+          "bet_50": 15,
+          "check": 25,
+          "note": "強牌"
+        },
+        "JJ": {
+          "bet_33": 50,
+          "bet_50": 10,
+          "check": 40,
+          "note": "中等強度"
+        },
+        "TT": {
+          "bet_33": 45,
+          "bet_50": 5,
+          "check": 50,
+          "note": "中等強度"
+        },
+        "99": {
+          "bet_33": 40,
+          "bet_50": 5,
+          "check": 55,
+          "note": "中對"
+        },
+        "88": {
+          "bet_33": 35,
+          "bet_50": 5,
+          "check": 60,
+          "note": "中對"
+        },
+        "77": {
+          "bet_33": 30,
+          "bet_50": 5,
+          "check": 65,
+          "note": "小對"
+        },
+        "66": {
+          "bet_33": 25,
+          "bet_50": 5,
+          "check": 70,
+          "note": "小對"
+        },
+        "55": {
+          "bet_66": 80,
+          "check": 30,
+          "note": "中 set"
+        },
+        "44": {
+          "bet_66": 75,
+          "check": 35,
+          "note": "底 set"
+        },
+        "A7s": {
+          "bet_66": 50,
+          "check": 60,
+          "note": "開放式順子聽牌"
+        },
+        "98s": {
+          "bet_33": 25,
+          "bet_50": 5,
+          "check": 70,
+          "note": "連接牌"
+        }
+      }
+    },
+    {
+      "scenario_id": "hj_vs_bb_srp_765_hdc",
+      "position": "HJ",
+      "villain": "BB",
+      "pot_type": "srp",
+      "board": [
+        "7h",
+        "6d",
+        "5c"
+      ],
+      "texture": "connected_low",
+      "texture_zh": "低連接牌面",
+      "strategies": {
+        "87s": {
+          "bet_33": 25,
+          "bet_50": 5,
+          "check": 70,
+          "note": "連接牌"
+        },
+        "87o": {
+          "bet_75": 85,
+          "check": 25,
+          "note": "堅果順子"
+        },
+        "78s": {
+          "bet_75": 85,
+          "check": 25,
+          "note": "順子"
+        },
+        "73s": {
+          "bet_75": 75,
+          "check": 35,
+          "note": "順子"
+        },
+        "32s": {
+          "bet_75": 75,
+          "check": 35,
+          "note": "順子"
+        },
+        "AA": {
+          "bet_33": 75,
+          "bet_50": 15,
+          "check": 10,
+          "note": "堅果牌，高頻率下注"
+        },
+        "KK": {
+          "bet_33": 70,
+          "bet_50": 15,
+          "check": 15,
+          "note": "強牌，高頻率下注"
+        },
+        "QQ": {
+          "bet_33": 60,
+          "bet_50": 15,
+          "check": 25,
+          "note": "強牌"
+        },
+        "JJ": {
+          "bet_33": 50,
+          "bet_50": 10,
+          "check": 40,
+          "note": "中等強度"
+        },
+        "TT": {
+          "bet_33": 45,
+          "bet_50": 5,
+          "check": 50,
+          "note": "中等強度"
+        },
+        "99": {
+          "bet_33": 40,
+          "bet_50": 5,
+          "check": 55,
+          "note": "中對"
+        },
+        "88": {
+          "bet_33": 35,
+          "bet_50": 5,
+          "check": 60,
+          "note": "中對"
+        },
+        "77": {
+          "bet_33": 30,
+          "bet_50": 5,
+          "check": 65,
+          "note": "小對"
+        },
+        "66": {
+          "bet_33": 25,
+          "bet_50": 5,
+          "check": 70,
+          "note": "小對"
+        },
+        "55": {
+          "bet_66": 80,
+          "check": 30,
+          "note": "中 set"
+        },
+        "44": {
+          "bet_66": 75,
+          "check": 35,
+          "note": "底 set"
+        },
+        "A7s": {
+          "bet_66": 50,
+          "check": 60,
+          "note": "開放式順子聽牌"
+        },
+        "98s": {
+          "bet_33": 25,
+          "bet_50": 5,
+          "check": 70,
+          "note": "連接牌"
+        }
+      }
+    },
+    {
+      "scenario_id": "hj_vs_bb_srp_543_hdc",
+      "position": "HJ",
+      "villain": "BB",
+      "pot_type": "srp",
+      "board": [
+        "5h",
+        "4d",
+        "3c"
+      ],
+      "texture": "connected_low",
+      "texture_zh": "低連接牌面",
+      "strategies": {
+        "87s": {
+          "bet_33": 25,
+          "bet_50": 5,
+          "check": 70,
+          "note": "連接牌"
+        },
+        "87o": {
+          "bet_75": 85,
+          "check": 25,
+          "note": "堅果順子"
+        },
+        "78s": {
+          "bet_75": 85,
+          "check": 25,
+          "note": "順子"
+        },
+        "73s": {
+          "bet_75": 75,
+          "check": 35,
+          "note": "順子"
+        },
+        "32s": {
+          "bet_75": 75,
+          "check": 35,
+          "note": "順子"
+        },
+        "AA": {
+          "bet_33": 75,
+          "bet_50": 15,
+          "check": 10,
+          "note": "堅果牌，高頻率下注"
+        },
+        "KK": {
+          "bet_33": 70,
+          "bet_50": 15,
+          "check": 15,
+          "note": "強牌，高頻率下注"
+        },
+        "QQ": {
+          "bet_33": 60,
+          "bet_50": 15,
+          "check": 25,
+          "note": "強牌"
+        },
+        "JJ": {
+          "bet_33": 50,
+          "bet_50": 10,
+          "check": 40,
+          "note": "中等強度"
+        },
+        "TT": {
+          "bet_33": 45,
+          "bet_50": 5,
+          "check": 50,
+          "note": "中等強度"
+        },
+        "99": {
+          "bet_33": 40,
+          "bet_50": 5,
+          "check": 55,
+          "note": "中對"
+        },
+        "88": {
+          "bet_33": 35,
+          "bet_50": 5,
+          "check": 60,
+          "note": "中對"
+        },
+        "77": {
+          "bet_33": 30,
+          "bet_50": 5,
+          "check": 65,
+          "note": "小對"
+        },
+        "66": {
+          "bet_33": 25,
+          "bet_50": 5,
+          "check": 70,
+          "note": "小對"
+        },
+        "55": {
+          "bet_66": 80,
+          "check": 30,
+          "note": "中 set"
+        },
+        "44": {
+          "bet_66": 75,
+          "check": 35,
+          "note": "底 set"
+        },
+        "A7s": {
+          "bet_66": 50,
+          "check": 60,
+          "note": "開放式順子聽牌"
+        },
+        "98s": {
+          "bet_33": 25,
+          "bet_50": 5,
+          "check": 70,
+          "note": "連接牌"
+        }
+      }
+    },
+    {
+      "scenario_id": "hj_vs_bb_srp_654_hsd",
+      "position": "HJ",
+      "villain": "BB",
+      "pot_type": "srp",
+      "board": [
+        "6h",
+        "5s",
+        "4d"
+      ],
+      "texture": "connected_low",
+      "texture_zh": "低連接牌面",
+      "strategies": {
+        "87s": {
+          "bet_33": 25,
+          "bet_50": 5,
+          "check": 70,
+          "note": "連接牌"
+        },
+        "87o": {
+          "bet_75": 85,
+          "check": 25,
+          "note": "堅果順子"
+        },
+        "78s": {
+          "bet_75": 85,
+          "check": 25,
+          "note": "順子"
+        },
+        "73s": {
+          "bet_75": 75,
+          "check": 35,
+          "note": "順子"
+        },
+        "32s": {
+          "bet_75": 75,
+          "check": 35,
+          "note": "順子"
+        },
+        "AA": {
+          "bet_33": 75,
+          "bet_50": 15,
+          "check": 10,
+          "note": "堅果牌，高頻率下注"
+        },
+        "KK": {
+          "bet_33": 70,
+          "bet_50": 15,
+          "check": 15,
+          "note": "強牌，高頻率下注"
+        },
+        "QQ": {
+          "bet_33": 60,
+          "bet_50": 15,
+          "check": 25,
+          "note": "強牌"
+        },
+        "JJ": {
+          "bet_33": 50,
+          "bet_50": 10,
+          "check": 40,
+          "note": "中等強度"
+        },
+        "TT": {
+          "bet_33": 45,
+          "bet_50": 5,
+          "check": 50,
+          "note": "中等強度"
+        },
+        "99": {
+          "bet_33": 40,
+          "bet_50": 5,
+          "check": 55,
+          "note": "中對"
+        },
+        "88": {
+          "bet_33": 35,
+          "bet_50": 5,
+          "check": 60,
+          "note": "中對"
+        },
+        "77": {
+          "bet_33": 30,
+          "bet_50": 5,
+          "check": 65,
+          "note": "小對"
+        },
+        "66": {
+          "bet_33": 25,
+          "bet_50": 5,
+          "check": 70,
+          "note": "小對"
+        },
+        "55": {
+          "bet_66": 80,
+          "check": 30,
+          "note": "中 set"
+        },
+        "44": {
+          "bet_66": 75,
+          "check": 35,
+          "note": "底 set"
+        },
+        "A7s": {
+          "bet_66": 50,
+          "check": 60,
+          "note": "開放式順子聽牌"
+        },
+        "98s": {
+          "bet_33": 25,
+          "bet_50": 5,
+          "check": 70,
+          "note": "連接牌"
+        }
+      }
+    },
+    {
+      "scenario_id": "hj_vs_bb_srp_765_hsd",
+      "position": "HJ",
+      "villain": "BB",
+      "pot_type": "srp",
+      "board": [
+        "7h",
+        "6s",
+        "5d"
+      ],
+      "texture": "connected_low",
+      "texture_zh": "低連接牌面",
+      "strategies": {
+        "87s": {
+          "bet_33": 25,
+          "bet_50": 5,
+          "check": 70,
+          "note": "連接牌"
+        },
+        "87o": {
+          "bet_75": 85,
+          "check": 25,
+          "note": "堅果順子"
+        },
+        "78s": {
+          "bet_75": 85,
+          "check": 25,
+          "note": "順子"
+        },
+        "73s": {
+          "bet_75": 75,
+          "check": 35,
+          "note": "順子"
+        },
+        "32s": {
+          "bet_75": 75,
+          "check": 35,
+          "note": "順子"
+        },
+        "AA": {
+          "bet_33": 75,
+          "bet_50": 15,
+          "check": 10,
+          "note": "堅果牌，高頻率下注"
+        },
+        "KK": {
+          "bet_33": 70,
+          "bet_50": 15,
+          "check": 15,
+          "note": "強牌，高頻率下注"
+        },
+        "QQ": {
+          "bet_33": 60,
+          "bet_50": 15,
+          "check": 25,
+          "note": "強牌"
+        },
+        "JJ": {
+          "bet_33": 50,
+          "bet_50": 10,
+          "check": 40,
+          "note": "中等強度"
+        },
+        "TT": {
+          "bet_33": 45,
+          "bet_50": 5,
+          "check": 50,
+          "note": "中等強度"
+        },
+        "99": {
+          "bet_33": 40,
+          "bet_50": 5,
+          "check": 55,
+          "note": "中對"
+        },
+        "88": {
+          "bet_33": 35,
+          "bet_50": 5,
+          "check": 60,
+          "note": "中對"
+        },
+        "77": {
+          "bet_33": 30,
+          "bet_50": 5,
+          "check": 65,
+          "note": "小對"
+        },
+        "66": {
+          "bet_33": 25,
+          "bet_50": 5,
+          "check": 70,
+          "note": "小對"
+        },
+        "55": {
+          "bet_66": 80,
+          "check": 30,
+          "note": "中 set"
+        },
+        "44": {
+          "bet_66": 75,
+          "check": 35,
+          "note": "底 set"
+        },
+        "A7s": {
+          "bet_66": 50,
+          "check": 60,
+          "note": "開放式順子聽牌"
+        },
+        "98s": {
+          "bet_33": 25,
+          "bet_50": 5,
+          "check": 70,
+          "note": "連接牌"
+        }
+      }
+    }
+  ]
+}
