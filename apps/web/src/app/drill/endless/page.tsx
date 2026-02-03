@@ -18,9 +18,15 @@ import {
   Flame,
   Target,
   Zap,
+  AlertTriangle,
 } from "lucide-react";
+import { useAuthStore } from "@/stores/authStore";
+import { updateLeaderboardStats } from "@/lib/supabase/leaderboard";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://api.grindgto.com";
+
+// Local storage key for endless drill stats
+const ENDLESS_STATS_KEY = "endless-drill-stats";
 
 // Pot types with Chinese names
 const POT_TYPES = {
@@ -66,6 +72,44 @@ interface Stats {
   correct: number;
   streak: number;
   maxStreak: number;
+  byPotType: Record<string, { total: number; correct: number }>;
+  byTexture: Record<string, { total: number; correct: number }>;
+}
+
+// Get weakpoints (accuracy < 60%)
+function getWeakpoints(stats: Stats): { potTypes: string[]; textures: string[] } {
+  const weakPotTypes = Object.entries(stats.byPotType)
+    .filter(([, s]) => s.total >= 3 && (s.correct / s.total) < 0.6)
+    .map(([key]) => key);
+
+  const weakTextures = Object.entries(stats.byTexture)
+    .filter(([, s]) => s.total >= 3 && (s.correct / s.total) < 0.6)
+    .map(([key]) => key);
+
+  return { potTypes: weakPotTypes, textures: weakTextures };
+}
+
+// Load stats from localStorage
+function loadStats(): Stats {
+  if (typeof window === "undefined") {
+    return { total: 0, correct: 0, streak: 0, maxStreak: 0, byPotType: {}, byTexture: {} };
+  }
+  try {
+    const saved = localStorage.getItem(ENDLESS_STATS_KEY);
+    if (saved) {
+      return JSON.parse(saved);
+    }
+  } catch {
+    // Ignore
+  }
+  return { total: 0, correct: 0, streak: 0, maxStreak: 0, byPotType: {}, byTexture: {} };
+}
+
+// Save stats to localStorage
+function saveStats(stats: Stats) {
+  if (typeof window !== "undefined") {
+    localStorage.setItem(ENDLESS_STATS_KEY, JSON.stringify(stats));
+  }
 }
 
 function BoardCard({ card }: { card: string }) {
@@ -128,18 +172,20 @@ const ACTION_LABELS: Record<string, string> = {
 };
 
 export default function EndlessDrillPage() {
+  const { user } = useAuthStore();
   const [selectedPotType, setSelectedPotType] = useState<string>("all");
   const [scenario, setScenario] = useState<Scenario | null>(null);
   const [selectedAction, setSelectedAction] = useState<string | null>(null);
   const [showResult, setShowResult] = useState(false);
   const [isCorrect, setIsCorrect] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [stats, setStats] = useState<Stats>({
-    total: 0,
-    correct: 0,
-    streak: 0,
-    maxStreak: 0,
-  });
+  const [stats, setStats] = useState<Stats>(() => loadStats());
+  const [weakpoints, setWeakpoints] = useState<{ potTypes: string[]; textures: string[] }>({ potTypes: [], textures: [] });
+
+  // Update weakpoints when stats change
+  useEffect(() => {
+    setWeakpoints(getWeakpoints(stats));
+  }, [stats]);
 
   const fetchScenario = useCallback(async () => {
     setLoading(true);
@@ -195,26 +241,58 @@ export default function EndlessDrillPage() {
     fetchScenario();
   }, [fetchScenario]);
 
-  const handleActionSelect = (action: string) => {
-    if (showResult) return;
+  const handleActionSelect = async (action: string) => {
+    if (showResult || !scenario) return;
 
     setSelectedAction(action);
     setShowResult(true);
 
     // Check if correct (action has >= 30% frequency)
-    const strategy = scenario?.correct_strategy || {};
+    const strategy = scenario.correct_strategy || {};
     const actionFreq = strategy[action] || 0;
     const correct = actionFreq >= 30;
 
     setIsCorrect(correct);
-    setStats((prev) => ({
-      total: prev.total + 1,
-      correct: prev.correct + (correct ? 1 : 0),
-      streak: correct ? prev.streak + 1 : 0,
+
+    // Update stats with pot type and texture tracking
+    const newStats: Stats = {
+      total: stats.total + 1,
+      correct: stats.correct + (correct ? 1 : 0),
+      streak: correct ? stats.streak + 1 : 0,
       maxStreak: correct
-        ? Math.max(prev.maxStreak, prev.streak + 1)
-        : prev.maxStreak,
-    }));
+        ? Math.max(stats.maxStreak, stats.streak + 1)
+        : stats.maxStreak,
+      byPotType: { ...stats.byPotType },
+      byTexture: { ...stats.byTexture },
+    };
+
+    // Update pot type stats
+    const potType = scenario.pot_type;
+    const potStats = newStats.byPotType[potType] || { total: 0, correct: 0 };
+    newStats.byPotType[potType] = {
+      total: potStats.total + 1,
+      correct: potStats.correct + (correct ? 1 : 0),
+    };
+
+    // Update texture stats
+    const texture = scenario.texture;
+    const texStats = newStats.byTexture[texture] || { total: 0, correct: 0 };
+    newStats.byTexture[texture] = {
+      total: texStats.total + 1,
+      correct: texStats.correct + (correct ? 1 : 0),
+    };
+
+    setStats(newStats);
+    saveStats(newStats);
+
+    // Update leaderboard if user is logged in
+    if (user?.id) {
+      try {
+        await updateLeaderboardStats(user.id, correct);
+      } catch (error) {
+        console.error("Failed to update leaderboard:", error);
+      }
+    }
   };
 
   const handleNext = () => {
@@ -423,6 +501,59 @@ export default function EndlessDrillPage() {
           )}
         </CardContent>
       </Card>
+
+      {/* Weakpoints */}
+      {(weakpoints.potTypes.length > 0 || weakpoints.textures.length > 0) && (
+        <Card className="border-orange-500/30 bg-orange-500/5">
+          <CardHeader>
+            <CardTitle className="text-sm flex items-center gap-2">
+              <AlertTriangle className="h-4 w-4 text-orange-500" />
+              弱點分析
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="text-sm space-y-3">
+            {weakpoints.potTypes.length > 0 && (
+              <div>
+                <span className="text-muted-foreground">需加強的底池類型：</span>
+                <div className="flex flex-wrap gap-2 mt-1">
+                  {weakpoints.potTypes.map((pt) => (
+                    <Badge
+                      key={pt}
+                      variant="outline"
+                      className="cursor-pointer hover:bg-orange-500/20"
+                      onClick={() => setSelectedPotType(pt)}
+                    >
+                      {POT_TYPES[pt as keyof typeof POT_TYPES]?.label || pt}
+                      {stats.byPotType[pt] && (
+                        <span className="ml-1 text-orange-500">
+                          {Math.round((stats.byPotType[pt].correct / stats.byPotType[pt].total) * 100)}%
+                        </span>
+                      )}
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+            )}
+            {weakpoints.textures.length > 0 && (
+              <div>
+                <span className="text-muted-foreground">需加強的牌面質地：</span>
+                <div className="flex flex-wrap gap-2 mt-1">
+                  {weakpoints.textures.slice(0, 5).map((tex) => (
+                    <Badge key={tex} variant="outline">
+                      {tex}
+                      {stats.byTexture[tex] && (
+                        <span className="ml-1 text-orange-500">
+                          {Math.round((stats.byTexture[tex].correct / stats.byTexture[tex].total) * 100)}%
+                        </span>
+                      )}
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      )}
 
       {/* Tips */}
       <Card>
