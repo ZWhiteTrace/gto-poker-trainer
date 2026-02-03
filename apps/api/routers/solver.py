@@ -164,7 +164,12 @@ def find_matching_scenario(
             return scenario
 
     # Fall back to Level 1 texture data
-    if position in ["BTN", "CO", "UTG", "HJ", "SB"] and villain == "BB" and pot_type in ["srp", "3bet"]:
+    # Support: IP vs BB (SRP/3bet) and OOP 3bet scenarios (SB/BB as 3bettor vs BTN)
+    valid_combo = (
+        (position in ["BTN", "CO", "UTG", "HJ", "SB"] and villain == "BB" and pot_type in ["srp", "3bet"]) or
+        (position in ["SB", "BB"] and villain == "BTN" and pot_type == "3bet")
+    )
+    if valid_combo:
         level1_data = get_level1_data()
         textures = level1_data.get("textures", [])
 
