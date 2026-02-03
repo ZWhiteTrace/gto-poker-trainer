@@ -39,6 +39,7 @@ import Link from "next/link";
 import { HandHistoryPanel } from "@/components/poker/HandHistoryPanel";
 import { GTOHintPanel, HintModeSelector } from "@/components/poker/GTOHintPanel";
 import { AIExploitAnalysis } from "@/components/poker/AIExploitAnalysis";
+import { LearningPathPanel } from "@/components/poker/LearningPathPanel";
 import { generateGTOHint, generateGTOHintWithSolver } from "@/lib/poker/gtoHintEngine";
 
 export default function TableTrainerClient() {
@@ -1145,6 +1146,9 @@ export default function TableTrainerClient() {
 
                   {/* AI Opponent Exploit Analysis */}
                   <AIExploitAnalysis stats={aiOpponentStats} minHandsRequired={20} />
+
+                  {/* Learning Path Recommendations */}
+                  <LearningPathPanel stats={heroStats} />
                 </>
               )}
             </CardContent>
