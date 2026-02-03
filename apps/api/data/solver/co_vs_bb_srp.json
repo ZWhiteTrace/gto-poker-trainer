@@ -1,11 +1,12 @@
 {
   "meta": {
     "description": "Level 2 - CO vs BB SRP Flop Strategies (60 boards)",
-    "source": "Derived from BTN vs BB with CO adjustments",
+    "source": "Derived from BTN vs BB SRP with CO adjustments",
     "version": "1.0.0",
     "position": "CO",
     "villain": "BB",
-    "pot_type": "srp"
+    "pot_type": "srp",
+    "note": "CO range tighter than BTN (~28% vs ~40%), c-bet frequency slightly lower"
   },
   "scenarios": [
     {
@@ -22,88 +23,88 @@
       "texture_zh": "乾燥 A 高牌面",
       "strategies": {
         "AA": {
-          "bet_33": 80,
-          "check": 20,
+          "bet_33": 78,
+          "check": 22,
           "note": "頂 set，高頻小注取值"
         },
         "KK": {
-          "bet_33": 70,
-          "check": 30,
+          "bet_33": 68,
+          "check": 32,
           "note": "第二大對，注意 Ax 反超"
         },
         "QQ": {
-          "bet_33": 65,
-          "check": 35,
+          "bet_33": 63,
+          "check": 37,
           "note": "過牌保護 + bet 混合"
         },
         "AKs": {
-          "bet_33": 85,
-          "check": 15,
+          "bet_33": 83,
+          "check": 17,
           "note": "頂對頂踢腳，幾乎必 bet"
         },
         "AKo": {
-          "bet_33": 80,
-          "check": 20,
+          "bet_33": 78,
+          "check": 22,
           "note": "同上，稍低頻率"
         },
         "AQs": {
-          "bet_33": 80,
-          "check": 20,
+          "bet_33": 78,
+          "check": 22,
           "note": "強頂對"
         },
         "AQo": {
-          "bet_33": 75,
-          "check": 25,
+          "bet_33": 73,
+          "check": 27,
           "note": "強頂對"
         },
         "AJs": {
-          "bet_33": 75,
-          "check": 25,
+          "bet_33": 73,
+          "check": 27,
           "note": "頂對好踢腳"
         },
         "ATs": {
-          "bet_33": 70,
-          "check": 30,
+          "bet_33": 68,
+          "check": 32,
           "note": "頂對中等踢腳"
         },
         "A7s": {
-          "bet_33": 85,
-          "check": 15,
+          "bet_33": 83,
+          "check": 17,
           "note": "兩對！強力取值"
         },
         "A2s": {
-          "bet_33": 80,
-          "check": 20,
+          "bet_33": 78,
+          "check": 22,
           "note": "兩對！"
         },
         "KQs": {
-          "bet_33": 60,
-          "check": 40,
+          "bet_33": 58,
+          "check": 42,
           "note": "空氣但有後門，可 bluff"
         },
         "KQo": {
-          "bet_33": 55,
-          "check": 45,
+          "bet_33": 53,
+          "check": 47,
           "note": "純空氣 bluff"
         },
         "JTs": {
-          "bet_33": 45,
-          "check": 55,
+          "bet_33": 43,
+          "check": 57,
           "note": "後門順子聽牌，混合"
         },
         "98s": {
-          "bet_33": 35,
-          "check": 65,
+          "bet_33": 33,
+          "check": 67,
           "note": "弱後門，傾向 check"
         },
         "76s": {
-          "bet_33": 30,
-          "check": 70,
+          "bet_33": 28,
+          "check": 72,
           "note": "純空氣，低頻 bluff"
         },
         "22": {
-          "bet_33": 70,
-          "check": 30,
+          "bet_33": 68,
+          "check": 32,
           "note": "底 set，取值"
         }
       }
@@ -122,88 +123,88 @@
       "texture_zh": "乾燥 A 高牌面",
       "strategies": {
         "AA": {
-          "bet_33": 80,
-          "check": 20,
+          "bet_33": 78,
+          "check": 22,
           "note": "頂 set，高頻小注取值"
         },
         "KK": {
-          "bet_33": 70,
-          "check": 30,
+          "bet_33": 68,
+          "check": 32,
           "note": "第二大對，注意 Ax 反超"
         },
         "QQ": {
-          "bet_33": 65,
-          "check": 35,
+          "bet_33": 63,
+          "check": 37,
           "note": "過牌保護 + bet 混合"
         },
         "AKs": {
-          "bet_33": 85,
-          "check": 15,
+          "bet_33": 83,
+          "check": 17,
           "note": "頂對頂踢腳，幾乎必 bet"
         },
         "AKo": {
-          "bet_33": 80,
-          "check": 20,
+          "bet_33": 78,
+          "check": 22,
           "note": "同上，稍低頻率"
         },
         "AQs": {
-          "bet_33": 80,
-          "check": 20,
+          "bet_33": 78,
+          "check": 22,
           "note": "強頂對"
         },
         "AQo": {
-          "bet_33": 75,
-          "check": 25,
+          "bet_33": 73,
+          "check": 27,
           "note": "強頂對"
         },
         "AJs": {
-          "bet_33": 75,
-          "check": 25,
+          "bet_33": 73,
+          "check": 27,
           "note": "頂對好踢腳"
         },
         "ATs": {
-          "bet_33": 70,
-          "check": 30,
+          "bet_33": 68,
+          "check": 32,
           "note": "頂對中等踢腳"
         },
         "A7s": {
-          "bet_33": 85,
-          "check": 15,
+          "bet_33": 83,
+          "check": 17,
           "note": "兩對！強力取值"
         },
         "A2s": {
-          "bet_33": 80,
-          "check": 20,
+          "bet_33": 78,
+          "check": 22,
           "note": "兩對！"
         },
         "KQs": {
-          "bet_33": 60,
-          "check": 40,
+          "bet_33": 58,
+          "check": 42,
           "note": "空氣但有後門，可 bluff"
         },
         "KQo": {
-          "bet_33": 55,
-          "check": 45,
+          "bet_33": 53,
+          "check": 47,
           "note": "純空氣 bluff"
         },
         "JTs": {
-          "bet_33": 45,
-          "check": 55,
+          "bet_33": 43,
+          "check": 57,
           "note": "後門順子聽牌，混合"
         },
         "98s": {
-          "bet_33": 35,
-          "check": 65,
+          "bet_33": 33,
+          "check": 67,
           "note": "弱後門，傾向 check"
         },
         "76s": {
-          "bet_33": 30,
-          "check": 70,
+          "bet_33": 28,
+          "check": 72,
           "note": "純空氣，低頻 bluff"
         },
         "22": {
-          "bet_33": 70,
-          "check": 30,
+          "bet_33": 68,
+          "check": 32,
           "note": "底 set，取值"
         }
       }
@@ -222,88 +223,88 @@
       "texture_zh": "乾燥 A 高牌面",
       "strategies": {
         "AA": {
-          "bet_33": 80,
-          "check": 20,
+          "bet_33": 78,
+          "check": 22,
           "note": "頂 set，高頻小注取值"
         },
         "KK": {
-          "bet_33": 70,
-          "check": 30,
+          "bet_33": 68,
+          "check": 32,
           "note": "第二大對，注意 Ax 反超"
         },
         "QQ": {
-          "bet_33": 65,
-          "check": 35,
+          "bet_33": 63,
+          "check": 37,
           "note": "過牌保護 + bet 混合"
         },
         "AKs": {
-          "bet_33": 85,
-          "check": 15,
+          "bet_33": 83,
+          "check": 17,
           "note": "頂對頂踢腳，幾乎必 bet"
         },
         "AKo": {
-          "bet_33": 80,
-          "check": 20,
+          "bet_33": 78,
+          "check": 22,
           "note": "同上，稍低頻率"
         },
         "AQs": {
-          "bet_33": 80,
-          "check": 20,
+          "bet_33": 78,
+          "check": 22,
           "note": "強頂對"
         },
         "AQo": {
-          "bet_33": 75,
-          "check": 25,
+          "bet_33": 73,
+          "check": 27,
           "note": "強頂對"
         },
         "AJs": {
-          "bet_33": 75,
-          "check": 25,
+          "bet_33": 73,
+          "check": 27,
           "note": "頂對好踢腳"
         },
         "ATs": {
-          "bet_33": 70,
-          "check": 30,
+          "bet_33": 68,
+          "check": 32,
           "note": "頂對中等踢腳"
         },
         "A7s": {
-          "bet_33": 85,
-          "check": 15,
+          "bet_33": 83,
+          "check": 17,
           "note": "兩對！強力取值"
         },
         "A2s": {
-          "bet_33": 80,
-          "check": 20,
+          "bet_33": 78,
+          "check": 22,
           "note": "兩對！"
         },
         "KQs": {
-          "bet_33": 60,
-          "check": 40,
+          "bet_33": 58,
+          "check": 42,
           "note": "空氣但有後門，可 bluff"
         },
         "KQo": {
-          "bet_33": 55,
-          "check": 45,
+          "bet_33": 53,
+          "check": 47,
           "note": "純空氣 bluff"
         },
         "JTs": {
-          "bet_33": 45,
-          "check": 55,
+          "bet_33": 43,
+          "check": 57,
           "note": "後門順子聽牌，混合"
         },
         "98s": {
-          "bet_33": 35,
-          "check": 65,
+          "bet_33": 33,
+          "check": 67,
           "note": "弱後門，傾向 check"
         },
         "76s": {
-          "bet_33": 30,
-          "check": 70,
+          "bet_33": 28,
+          "check": 72,
           "note": "純空氣，低頻 bluff"
         },
         "22": {
-          "bet_33": 70,
-          "check": 30,
+          "bet_33": 68,
+          "check": 32,
           "note": "底 set，取值"
         }
       }
@@ -322,88 +323,88 @@
       "texture_zh": "乾燥 A 高牌面",
       "strategies": {
         "AA": {
-          "bet_33": 80,
-          "check": 20,
+          "bet_33": 78,
+          "check": 22,
           "note": "頂 set，高頻小注取值"
         },
         "KK": {
-          "bet_33": 70,
-          "check": 30,
+          "bet_33": 68,
+          "check": 32,
           "note": "第二大對，注意 Ax 反超"
         },
         "QQ": {
-          "bet_33": 65,
-          "check": 35,
+          "bet_33": 63,
+          "check": 37,
           "note": "過牌保護 + bet 混合"
         },
         "AKs": {
-          "bet_33": 85,
-          "check": 15,
+          "bet_33": 83,
+          "check": 17,
           "note": "頂對頂踢腳，幾乎必 bet"
         },
         "AKo": {
-          "bet_33": 80,
-          "check": 20,
+          "bet_33": 78,
+          "check": 22,
           "note": "同上，稍低頻率"
         },
         "AQs": {
-          "bet_33": 80,
-          "check": 20,
+          "bet_33": 78,
+          "check": 22,
           "note": "強頂對"
         },
         "AQo": {
-          "bet_33": 75,
-          "check": 25,
+          "bet_33": 73,
+          "check": 27,
           "note": "強頂對"
         },
         "AJs": {
-          "bet_33": 75,
-          "check": 25,
+          "bet_33": 73,
+          "check": 27,
           "note": "頂對好踢腳"
         },
         "ATs": {
-          "bet_33": 70,
-          "check": 30,
+          "bet_33": 68,
+          "check": 32,
           "note": "頂對中等踢腳"
         },
         "A7s": {
-          "bet_33": 85,
-          "check": 15,
+          "bet_33": 83,
+          "check": 17,
           "note": "兩對！強力取值"
         },
         "A2s": {
-          "bet_33": 80,
-          "check": 20,
+          "bet_33": 78,
+          "check": 22,
           "note": "兩對！"
         },
         "KQs": {
-          "bet_33": 60,
-          "check": 40,
+          "bet_33": 58,
+          "check": 42,
           "note": "空氣但有後門，可 bluff"
         },
         "KQo": {
-          "bet_33": 55,
-          "check": 45,
+          "bet_33": 53,
+          "check": 47,
           "note": "純空氣 bluff"
         },
         "JTs": {
-          "bet_33": 45,
-          "check": 55,
+          "bet_33": 43,
+          "check": 57,
           "note": "後門順子聽牌，混合"
         },
         "98s": {
-          "bet_33": 35,
-          "check": 65,
+          "bet_33": 33,
+          "check": 67,
           "note": "弱後門，傾向 check"
         },
         "76s": {
-          "bet_33": 30,
-          "check": 70,
+          "bet_33": 28,
+          "check": 72,
           "note": "純空氣，低頻 bluff"
         },
         "22": {
-          "bet_33": 70,
-          "check": 30,
+          "bet_33": 68,
+          "check": 32,
           "note": "底 set，取值"
         }
       }
@@ -422,88 +423,88 @@
       "texture_zh": "乾燥 A 高牌面",
       "strategies": {
         "AA": {
-          "bet_33": 80,
-          "check": 20,
+          "bet_33": 78,
+          "check": 22,
           "note": "頂 set，高頻小注取值"
         },
         "KK": {
-          "bet_33": 70,
-          "check": 30,
+          "bet_33": 68,
+          "check": 32,
           "note": "第二大對，注意 Ax 反超"
         },
         "QQ": {
-          "bet_33": 65,
-          "check": 35,
+          "bet_33": 63,
+          "check": 37,
           "note": "過牌保護 + bet 混合"
         },
         "AKs": {
-          "bet_33": 85,
-          "check": 15,
+          "bet_33": 83,
+          "check": 17,
           "note": "頂對頂踢腳，幾乎必 bet"
         },
         "AKo": {
-          "bet_33": 80,
-          "check": 20,
+          "bet_33": 78,
+          "check": 22,
           "note": "同上，稍低頻率"
         },
         "AQs": {
-          "bet_33": 80,
-          "check": 20,
+          "bet_33": 78,
+          "check": 22,
           "note": "強頂對"
         },
         "AQo": {
-          "bet_33": 75,
-          "check": 25,
+          "bet_33": 73,
+          "check": 27,
           "note": "強頂對"
         },
         "AJs": {
-          "bet_33": 75,
-          "check": 25,
+          "bet_33": 73,
+          "check": 27,
           "note": "頂對好踢腳"
         },
         "ATs": {
-          "bet_33": 70,
-          "check": 30,
+          "bet_33": 68,
+          "check": 32,
           "note": "頂對中等踢腳"
         },
         "A7s": {
-          "bet_33": 85,
-          "check": 15,
+          "bet_33": 83,
+          "check": 17,
           "note": "兩對！強力取值"
         },
         "A2s": {
-          "bet_33": 80,
-          "check": 20,
+          "bet_33": 78,
+          "check": 22,
           "note": "兩對！"
         },
         "KQs": {
-          "bet_33": 60,
-          "check": 40,
+          "bet_33": 58,
+          "check": 42,
           "note": "空氣但有後門，可 bluff"
         },
         "KQo": {
-          "bet_33": 55,
-          "check": 45,
+          "bet_33": 53,
+          "check": 47,
           "note": "純空氣 bluff"
         },
         "JTs": {
-          "bet_33": 45,
-          "check": 55,
+          "bet_33": 43,
+          "check": 57,
           "note": "後門順子聽牌，混合"
         },
         "98s": {
-          "bet_33": 35,
-          "check": 65,
+          "bet_33": 33,
+          "check": 67,
           "note": "弱後門，傾向 check"
         },
         "76s": {
-          "bet_33": 30,
-          "check": 70,
+          "bet_33": 28,
+          "check": 72,
           "note": "純空氣，低頻 bluff"
         },
         "22": {
-          "bet_33": 70,
-          "check": 30,
+          "bet_33": 68,
+          "check": 32,
           "note": "底 set，取值"
         }
       }
@@ -522,83 +523,83 @@
       "texture_zh": "乾燥 K 高牌面",
       "strategies": {
         "AA": {
-          "bet_50": 80,
-          "check": 20,
+          "bet_50": 78,
+          "check": 22,
           "note": "overpair，強力取值"
         },
         "KK": {
-          "bet_50": 85,
-          "check": 15,
+          "bet_50": 83,
+          "check": 17,
           "note": "頂 set，必須取值"
         },
         "QQ": {
-          "bet_50": 65,
-          "check": 35,
+          "bet_50": 63,
+          "check": 37,
           "note": "overpair 但要小心 Kx"
         },
         "JJ": {
-          "bet_50": 55,
-          "check": 45,
+          "bet_50": 53,
+          "check": 47,
           "note": "underpair，謹慎"
         },
         "AKs": {
-          "bet_50": 85,
-          "check": 15,
+          "bet_50": 83,
+          "check": 17,
           "note": "頂對頂踢腳"
         },
         "AKo": {
-          "bet_50": 80,
-          "check": 20,
+          "bet_50": 78,
+          "check": 22,
           "note": "頂對頂踢腳"
         },
         "KQs": {
-          "bet_50": 80,
-          "check": 20,
+          "bet_50": 78,
+          "check": 22,
           "note": "頂對好踢腳"
         },
         "KQo": {
-          "bet_50": 75,
-          "check": 25,
+          "bet_50": 73,
+          "check": 27,
           "note": "頂對好踢腳"
         },
         "KJs": {
-          "bet_50": 70,
-          "check": 30,
+          "bet_50": 68,
+          "check": 32,
           "note": "頂對"
         },
         "KTs": {
-          "bet_50": 65,
-          "check": 35,
+          "bet_50": 63,
+          "check": 37,
           "note": "頂對中等踢腳"
         },
         "K7s": {
-          "bet_50": 85,
-          "check": 15,
+          "bet_50": 83,
+          "check": 17,
           "note": "兩對！"
         },
         "AQs": {
-          "bet_50": 50,
-          "check": 50,
+          "bet_50": 48,
+          "check": 52,
           "note": "A 高，可當 bluff"
         },
         "AQo": {
-          "bet_50": 45,
-          "check": 55,
+          "bet_50": 43,
+          "check": 57,
           "note": "A 高 bluff"
         },
         "QJs": {
-          "bet_50": 40,
-          "check": 60,
+          "bet_50": 38,
+          "check": 62,
           "note": "兩張高牌，後門"
         },
         "JTs": {
-          "bet_50": 35,
-          "check": 65,
+          "bet_50": 33,
+          "check": 67,
           "note": "後門聽牌"
         },
         "22": {
-          "bet_50": 65,
-          "check": 35,
+          "bet_50": 63,
+          "check": 37,
           "note": "底 set"
         }
       }
@@ -617,83 +618,83 @@
       "texture_zh": "乾燥 K 高牌面",
       "strategies": {
         "AA": {
-          "bet_50": 80,
-          "check": 20,
+          "bet_50": 78,
+          "check": 22,
           "note": "overpair，強力取值"
         },
         "KK": {
-          "bet_50": 85,
-          "check": 15,
+          "bet_50": 83,
+          "check": 17,
           "note": "頂 set，必須取值"
         },
         "QQ": {
-          "bet_50": 65,
-          "check": 35,
+          "bet_50": 63,
+          "check": 37,
           "note": "overpair 但要小心 Kx"
         },
         "JJ": {
-          "bet_50": 55,
-          "check": 45,
+          "bet_50": 53,
+          "check": 47,
           "note": "underpair，謹慎"
         },
         "AKs": {
-          "bet_50": 85,
-          "check": 15,
+          "bet_50": 83,
+          "check": 17,
           "note": "頂對頂踢腳"
         },
         "AKo": {
-          "bet_50": 80,
-          "check": 20,
+          "bet_50": 78,
+          "check": 22,
           "note": "頂對頂踢腳"
         },
         "KQs": {
-          "bet_50": 80,
-          "check": 20,
+          "bet_50": 78,
+          "check": 22,
           "note": "頂對好踢腳"
         },
         "KQo": {
-          "bet_50": 75,
-          "check": 25,
+          "bet_50": 73,
+          "check": 27,
           "note": "頂對好踢腳"
         },
         "KJs": {
-          "bet_50": 70,
-          "check": 30,
+          "bet_50": 68,
+          "check": 32,
           "note": "頂對"
         },
         "KTs": {
-          "bet_50": 65,
-          "check": 35,
+          "bet_50": 63,
+          "check": 37,
           "note": "頂對中等踢腳"
         },
         "K7s": {
-          "bet_50": 85,
-          "check": 15,
+          "bet_50": 83,
+          "check": 17,
           "note": "兩對！"
         },
         "AQs": {
-          "bet_50": 50,
-          "check": 50,
+          "bet_50": 48,
+          "check": 52,
           "note": "A 高，可當 bluff"
         },
         "AQo": {
-          "bet_50": 45,
-          "check": 55,
+          "bet_50": 43,
+          "check": 57,
           "note": "A 高 bluff"
         },
         "QJs": {
-          "bet_50": 40,
-          "check": 60,
+          "bet_50": 38,
+          "check": 62,
           "note": "兩張高牌，後門"
         },
         "JTs": {
-          "bet_50": 35,
-          "check": 65,
+          "bet_50": 33,
+          "check": 67,
           "note": "後門聽牌"
         },
         "22": {
-          "bet_50": 65,
-          "check": 35,
+          "bet_50": 63,
+          "check": 37,
           "note": "底 set"
         }
       }
@@ -712,83 +713,83 @@
       "texture_zh": "乾燥 K 高牌面",
       "strategies": {
         "AA": {
-          "bet_50": 80,
-          "check": 20,
+          "bet_50": 78,
+          "check": 22,
           "note": "overpair，強力取值"
         },
         "KK": {
-          "bet_50": 85,
-          "check": 15,
+          "bet_50": 83,
+          "check": 17,
           "note": "頂 set，必須取值"
         },
         "QQ": {
-          "bet_50": 65,
-          "check": 35,
+          "bet_50": 63,
+          "check": 37,
           "note": "overpair 但要小心 Kx"
         },
         "JJ": {
-          "bet_50": 55,
-          "check": 45,
+          "bet_50": 53,
+          "check": 47,
           "note": "underpair，謹慎"
         },
         "AKs": {
-          "bet_50": 85,
-          "check": 15,
+          "bet_50": 83,
+          "check": 17,
           "note": "頂對頂踢腳"
         },
         "AKo": {
-          "bet_50": 80,
-          "check": 20,
+          "bet_50": 78,
+          "check": 22,
           "note": "頂對頂踢腳"
         },
         "KQs": {
-          "bet_50": 80,
-          "check": 20,
+          "bet_50": 78,
+          "check": 22,
           "note": "頂對好踢腳"
         },
         "KQo": {
-          "bet_50": 75,
-          "check": 25,
+          "bet_50": 73,
+          "check": 27,
           "note": "頂對好踢腳"
         },
         "KJs": {
-          "bet_50": 70,
-          "check": 30,
+          "bet_50": 68,
+          "check": 32,
           "note": "頂對"
         },
         "KTs": {
-          "bet_50": 65,
-          "check": 35,
+          "bet_50": 63,
+          "check": 37,
           "note": "頂對中等踢腳"
         },
         "K7s": {
-          "bet_50": 85,
-          "check": 15,
+          "bet_50": 83,
+          "check": 17,
           "note": "兩對！"
         },
         "AQs": {
-          "bet_50": 50,
-          "check": 50,
+          "bet_50": 48,
+          "check": 52,
           "note": "A 高，可當 bluff"
         },
         "AQo": {
-          "bet_50": 45,
-          "check": 55,
+          "bet_50": 43,
+          "check": 57,
           "note": "A 高 bluff"
         },
         "QJs": {
-          "bet_50": 40,
-          "check": 60,
+          "bet_50": 38,
+          "check": 62,
           "note": "兩張高牌，後門"
         },
         "JTs": {
-          "bet_50": 35,
-          "check": 65,
+          "bet_50": 33,
+          "check": 67,
           "note": "後門聽牌"
         },
         "22": {
-          "bet_50": 65,
-          "check": 35,
+          "bet_50": 63,
+          "check": 37,
           "note": "底 set"
         }
       }
@@ -807,83 +808,83 @@
       "texture_zh": "乾燥 K 高牌面",
       "strategies": {
         "AA": {
-          "bet_50": 80,
-          "check": 20,
+          "bet_50": 78,
+          "check": 22,
           "note": "overpair，強力取值"
         },
         "KK": {
-          "bet_50": 85,
-          "check": 15,
+          "bet_50": 83,
+          "check": 17,
           "note": "頂 set，必須取值"
         },
         "QQ": {
-          "bet_50": 65,
-          "check": 35,
+          "bet_50": 63,
+          "check": 37,
           "note": "overpair 但要小心 Kx"
         },
         "JJ": {
-          "bet_50": 55,
-          "check": 45,
+          "bet_50": 53,
+          "check": 47,
           "note": "underpair，謹慎"
         },
         "AKs": {
-          "bet_50": 85,
-          "check": 15,
+          "bet_50": 83,
+          "check": 17,
           "note": "頂對頂踢腳"
         },
         "AKo": {
-          "bet_50": 80,
-          "check": 20,
+          "bet_50": 78,
+          "check": 22,
           "note": "頂對頂踢腳"
         },
         "KQs": {
-          "bet_50": 80,
-          "check": 20,
+          "bet_50": 78,
+          "check": 22,
           "note": "頂對好踢腳"
         },
         "KQo": {
-          "bet_50": 75,
-          "check": 25,
+          "bet_50": 73,
+          "check": 27,
           "note": "頂對好踢腳"
         },
         "KJs": {
-          "bet_50": 70,
-          "check": 30,
+          "bet_50": 68,
+          "check": 32,
           "note": "頂對"
         },
         "KTs": {
-          "bet_50": 65,
-          "check": 35,
+          "bet_50": 63,
+          "check": 37,
           "note": "頂對中等踢腳"
         },
         "K7s": {
-          "bet_50": 85,
-          "check": 15,
+          "bet_50": 83,
+          "check": 17,
           "note": "兩對！"
         },
         "AQs": {
-          "bet_50": 50,
-          "check": 50,
+          "bet_50": 48,
+          "check": 52,
           "note": "A 高，可當 bluff"
         },
         "AQo": {
-          "bet_50": 45,
-          "check": 55,
+          "bet_50": 43,
+          "check": 57,
           "note": "A 高 bluff"
         },
         "QJs": {
-          "bet_50": 40,
-          "check": 60,
+          "bet_50": 38,
+          "check": 62,
           "note": "兩張高牌，後門"
         },
         "JTs": {
-          "bet_50": 35,
-          "check": 65,
+          "bet_50": 33,
+          "check": 67,
           "note": "後門聽牌"
         },
         "22": {
-          "bet_50": 65,
-          "check": 35,
+          "bet_50": 63,
+          "check": 37,
           "note": "底 set"
         }
       }
@@ -902,83 +903,83 @@
       "texture_zh": "乾燥 K 高牌面",
       "strategies": {
         "AA": {
-          "bet_50": 80,
-          "check": 20,
+          "bet_50": 78,
+          "check": 22,
           "note": "overpair，強力取值"
         },
         "KK": {
-          "bet_50": 85,
-          "check": 15,
+          "bet_50": 83,
+          "check": 17,
           "note": "頂 set，必須取值"
         },
         "QQ": {
-          "bet_50": 65,
-          "check": 35,
+          "bet_50": 63,
+          "check": 37,
           "note": "overpair 但要小心 Kx"
         },
         "JJ": {
-          "bet_50": 55,
-          "check": 45,
+          "bet_50": 53,
+          "check": 47,
           "note": "underpair，謹慎"
         },
         "AKs": {
-          "bet_50": 85,
-          "check": 15,
+          "bet_50": 83,
+          "check": 17,
           "note": "頂對頂踢腳"
         },
         "AKo": {
-          "bet_50": 80,
-          "check": 20,
+          "bet_50": 78,
+          "check": 22,
           "note": "頂對頂踢腳"
         },
         "KQs": {
-          "bet_50": 80,
-          "check": 20,
+          "bet_50": 78,
+          "check": 22,
           "note": "頂對好踢腳"
         },
         "KQo": {
-          "bet_50": 75,
-          "check": 25,
+          "bet_50": 73,
+          "check": 27,
           "note": "頂對好踢腳"
         },
         "KJs": {
-          "bet_50": 70,
-          "check": 30,
+          "bet_50": 68,
+          "check": 32,
           "note": "頂對"
         },
         "KTs": {
-          "bet_50": 65,
-          "check": 35,
+          "bet_50": 63,
+          "check": 37,
           "note": "頂對中等踢腳"
         },
         "K7s": {
-          "bet_50": 85,
-          "check": 15,
+          "bet_50": 83,
+          "check": 17,
           "note": "兩對！"
         },
         "AQs": {
-          "bet_50": 50,
-          "check": 50,
+          "bet_50": 48,
+          "check": 52,
           "note": "A 高，可當 bluff"
         },
         "AQo": {
-          "bet_50": 45,
-          "check": 55,
+          "bet_50": 43,
+          "check": 57,
           "note": "A 高 bluff"
         },
         "QJs": {
-          "bet_50": 40,
-          "check": 60,
+          "bet_50": 38,
+          "check": 62,
           "note": "兩張高牌，後門"
         },
         "JTs": {
-          "bet_50": 35,
-          "check": 65,
+          "bet_50": 33,
+          "check": 67,
           "note": "後門聽牌"
         },
         "22": {
-          "bet_50": 65,
-          "check": 35,
+          "bet_50": 63,
+          "check": 37,
           "note": "底 set"
         }
       }
@@ -997,88 +998,88 @@
       "texture_zh": "乾燥 Q 高牌面",
       "strategies": {
         "AA": {
-          "bet_50": 75,
-          "check": 25,
+          "bet_50": 73,
+          "check": 27,
           "note": "overpair，穩定取值"
         },
         "KK": {
-          "bet_50": 70,
-          "check": 30,
+          "bet_50": 68,
+          "check": 32,
           "note": "overpair"
         },
         "QQ": {
-          "bet_50": 85,
-          "check": 15,
+          "bet_50": 83,
+          "check": 17,
           "note": "頂 set"
         },
         "JJ": {
-          "bet_50": 50,
-          "check": 50,
+          "bet_50": 48,
+          "check": 52,
           "note": "underpair，小心"
         },
         "AQs": {
-          "bet_50": 80,
-          "check": 20,
+          "bet_50": 78,
+          "check": 22,
           "note": "頂對頂踢腳"
         },
         "AQo": {
-          "bet_50": 75,
-          "check": 25,
+          "bet_50": 73,
+          "check": 27,
           "note": "頂對頂踢腳"
         },
         "KQs": {
-          "bet_50": 75,
-          "check": 25,
+          "bet_50": 73,
+          "check": 27,
           "note": "頂對好踢腳"
         },
         "KQo": {
-          "bet_50": 70,
-          "check": 30,
+          "bet_50": 68,
+          "check": 32,
           "note": "頂對"
         },
         "QJs": {
-          "bet_50": 70,
-          "check": 30,
+          "bet_50": 68,
+          "check": 32,
           "note": "頂對"
         },
         "QTs": {
-          "bet_50": 65,
-          "check": 35,
+          "bet_50": 63,
+          "check": 37,
           "note": "頂對中等踢腳"
         },
         "AKs": {
-          "bet_50": 30,
-          "check": 70,
+          "bet_50": 28,
+          "check": 72,
           "note": "A高，低頻 bluff"
         },
         "AKo": {
-          "bet_50": 25,
-          "check": 75,
+          "bet_50": 23,
+          "check": 77,
           "note": "A高，傾向 check"
         },
         "AJs": {
-          "bet_50": 35,
-          "check": 65,
+          "bet_50": 33,
+          "check": 67,
           "note": "A高 + 後門"
         },
         "KJs": {
-          "bet_50": 40,
-          "check": 60,
+          "bet_50": 38,
+          "check": 62,
           "note": "K高 + 後門"
         },
         "JTs": {
-          "bet_50": 45,
-          "check": 55,
+          "bet_50": 43,
+          "check": 57,
           "note": "開放式後門"
         },
         "77": {
-          "bet_50": 80,
-          "check": 20,
+          "bet_50": 78,
+          "check": 22,
           "note": "中 set"
         },
         "33": {
-          "bet_50": 75,
-          "check": 25,
+          "bet_50": 73,
+          "check": 27,
           "note": "底 set"
         }
       }
@@ -1097,88 +1098,88 @@
       "texture_zh": "乾燥 Q 高牌面",
       "strategies": {
         "AA": {
-          "bet_50": 75,
-          "check": 25,
+          "bet_50": 73,
+          "check": 27,
           "note": "overpair，穩定取值"
         },
         "KK": {
-          "bet_50": 70,
-          "check": 30,
+          "bet_50": 68,
+          "check": 32,
           "note": "overpair"
         },
         "QQ": {
-          "bet_50": 85,
-          "check": 15,
+          "bet_50": 83,
+          "check": 17,
           "note": "頂 set"
         },
         "JJ": {
-          "bet_50": 50,
-          "check": 50,
+          "bet_50": 48,
+          "check": 52,
           "note": "underpair，小心"
         },
         "AQs": {
-          "bet_50": 80,
-          "check": 20,
+          "bet_50": 78,
+          "check": 22,
           "note": "頂對頂踢腳"
         },
         "AQo": {
-          "bet_50": 75,
-          "check": 25,
+          "bet_50": 73,
+          "check": 27,
           "note": "頂對頂踢腳"
         },
         "KQs": {
-          "bet_50": 75,
-          "check": 25,
+          "bet_50": 73,
+          "check": 27,
           "note": "頂對好踢腳"
         },
         "KQo": {
-          "bet_50": 70,
-          "check": 30,
+          "bet_50": 68,
+          "check": 32,
           "note": "頂對"
         },
         "QJs": {
-          "bet_50": 70,
-          "check": 30,
+          "bet_50": 68,
+          "check": 32,
           "note": "頂對"
         },
         "QTs": {
-          "bet_50": 65,
-          "check": 35,
+          "bet_50": 63,
+          "check": 37,
           "note": "頂對中等踢腳"
         },
         "AKs": {
-          "bet_50": 30,
-          "check": 70,
+          "bet_50": 28,
+          "check": 72,
           "note": "A高，低頻 bluff"
         },
         "AKo": {
-          "bet_50": 25,
-          "check": 75,
+          "bet_50": 23,
+          "check": 77,
           "note": "A高，傾向 check"
         },
         "AJs": {
-          "bet_50": 35,
-          "check": 65,
+          "bet_50": 33,
+          "check": 67,
           "note": "A高 + 後門"
         },
         "KJs": {
-          "bet_50": 40,
-          "check": 60,
+          "bet_50": 38,
+          "check": 62,
           "note": "K高 + 後門"
         },
         "JTs": {
-          "bet_50": 45,
-          "check": 55,
+          "bet_50": 43,
+          "check": 57,
           "note": "開放式後門"
         },
         "77": {
-          "bet_50": 80,
-          "check": 20,
+          "bet_50": 78,
+          "check": 22,
           "note": "中 set"
         },
         "33": {
-          "bet_50": 75,
-          "check": 25,
+          "bet_50": 73,
+          "check": 27,
           "note": "底 set"
         }
       }
@@ -1197,88 +1198,88 @@
       "texture_zh": "乾燥 Q 高牌面",
       "strategies": {
         "AA": {
-          "bet_50": 75,
-          "check": 25,
+          "bet_50": 73,
+          "check": 27,
           "note": "overpair，穩定取值"
         },
         "KK": {
-          "bet_50": 70,
-          "check": 30,
+          "bet_50": 68,
+          "check": 32,
           "note": "overpair"
         },
         "QQ": {
-          "bet_50": 85,
-          "check": 15,
+          "bet_50": 83,
+          "check": 17,
           "note": "頂 set"
         },
         "JJ": {
-          "bet_50": 50,
-          "check": 50,
+          "bet_50": 48,
+          "check": 52,
           "note": "underpair，小心"
         },
         "AQs": {
-          "bet_50": 80,
-          "check": 20,
+          "bet_50": 78,
+          "check": 22,
           "note": "頂對頂踢腳"
         },
         "AQo": {
-          "bet_50": 75,
-          "check": 25,
+          "bet_50": 73,
+          "check": 27,
           "note": "頂對頂踢腳"
         },
         "KQs": {
-          "bet_50": 75,
-          "check": 25,
+          "bet_50": 73,
+          "check": 27,
           "note": "頂對好踢腳"
         },
         "KQo": {
-          "bet_50": 70,
-          "check": 30,
+          "bet_50": 68,
+          "check": 32,
           "note": "頂對"
         },
         "QJs": {
-          "bet_50": 70,
-          "check": 30,
+          "bet_50": 68,
+          "check": 32,
           "note": "頂對"
         },
         "QTs": {
-          "bet_50": 65,
-          "check": 35,
+          "bet_50": 63,
+          "check": 37,
           "note": "頂對中等踢腳"
         },
         "AKs": {
-          "bet_50": 30,
-          "check": 70,
+          "bet_50": 28,
+          "check": 72,
           "note": "A高，低頻 bluff"
         },
         "AKo": {
-          "bet_50": 25,
-          "check": 75,
+          "bet_50": 23,
+          "check": 77,
           "note": "A高，傾向 check"
         },
         "AJs": {
-          "bet_50": 35,
-          "check": 65,
+          "bet_50": 33,
+          "check": 67,
           "note": "A高 + 後門"
         },
         "KJs": {
-          "bet_50": 40,
-          "check": 60,
+          "bet_50": 38,
+          "check": 62,
           "note": "K高 + 後門"
         },
         "JTs": {
-          "bet_50": 45,
-          "check": 55,
+          "bet_50": 43,
+          "check": 57,
           "note": "開放式後門"
         },
         "77": {
-          "bet_50": 80,
-          "check": 20,
+          "bet_50": 78,
+          "check": 22,
           "note": "中 set"
         },
         "33": {
-          "bet_50": 75,
-          "check": 25,
+          "bet_50": 73,
+          "check": 27,
           "note": "底 set"
         }
       }
@@ -1297,88 +1298,88 @@
       "texture_zh": "乾燥 Q 高牌面",
       "strategies": {
         "AA": {
-          "bet_50": 75,
-          "check": 25,
+          "bet_50": 73,
+          "check": 27,
           "note": "overpair，穩定取值"
         },
         "KK": {
-          "bet_50": 70,
-          "check": 30,
+          "bet_50": 68,
+          "check": 32,
           "note": "overpair"
         },
         "QQ": {
-          "bet_50": 85,
-          "check": 15,
+          "bet_50": 83,
+          "check": 17,
           "note": "頂 set"
         },
         "JJ": {
-          "bet_50": 50,
-          "check": 50,
+          "bet_50": 48,
+          "check": 52,
           "note": "underpair，小心"
         },
         "AQs": {
-          "bet_50": 80,
-          "check": 20,
+          "bet_50": 78,
+          "check": 22,
           "note": "頂對頂踢腳"
         },
         "AQo": {
-          "bet_50": 75,
-          "check": 25,
+          "bet_50": 73,
+          "check": 27,
           "note": "頂對頂踢腳"
         },
         "KQs": {
-          "bet_50": 75,
-          "check": 25,
+          "bet_50": 73,
+          "check": 27,
           "note": "頂對好踢腳"
         },
         "KQo": {
-          "bet_50": 70,
-          "check": 30,
+          "bet_50": 68,
+          "check": 32,
           "note": "頂對"
         },
         "QJs": {
-          "bet_50": 70,
-          "check": 30,
+          "bet_50": 68,
+          "check": 32,
           "note": "頂對"
         },
         "QTs": {
-          "bet_50": 65,
-          "check": 35,
+          "bet_50": 63,
+          "check": 37,
           "note": "頂對中等踢腳"
         },
         "AKs": {
-          "bet_50": 30,
-          "check": 70,
+          "bet_50": 28,
+          "check": 72,
           "note": "A高，低頻 bluff"
         },
         "AKo": {
-          "bet_50": 25,
-          "check": 75,
+          "bet_50": 23,
+          "check": 77,
           "note": "A高，傾向 check"
         },
         "AJs": {
-          "bet_50": 35,
-          "check": 65,
+          "bet_50": 33,
+          "check": 67,
           "note": "A高 + 後門"
         },
         "KJs": {
-          "bet_50": 40,
-          "check": 60,
+          "bet_50": 38,
+          "check": 62,
           "note": "K高 + 後門"
         },
         "JTs": {
-          "bet_50": 45,
-          "check": 55,
+          "bet_50": 43,
+          "check": 57,
           "note": "開放式後門"
         },
         "77": {
-          "bet_50": 80,
-          "check": 20,
+          "bet_50": 78,
+          "check": 22,
           "note": "中 set"
         },
         "33": {
-          "bet_50": 75,
-          "check": 25,
+          "bet_50": 73,
+          "check": 27,
           "note": "底 set"
         }
       }
@@ -1397,88 +1398,88 @@
       "texture_zh": "乾燥 Q 高牌面",
       "strategies": {
         "AA": {
-          "bet_50": 75,
-          "check": 25,
+          "bet_50": 73,
+          "check": 27,
           "note": "overpair，穩定取值"
         },
         "KK": {
-          "bet_50": 70,
-          "check": 30,
+          "bet_50": 68,
+          "check": 32,
           "note": "overpair"
         },
         "QQ": {
-          "bet_50": 85,
-          "check": 15,
+          "bet_50": 83,
+          "check": 17,
           "note": "頂 set"
         },
         "JJ": {
-          "bet_50": 50,
-          "check": 50,
+          "bet_50": 48,
+          "check": 52,
           "note": "underpair，小心"
         },
         "AQs": {
-          "bet_50": 80,
-          "check": 20,
+          "bet_50": 78,
+          "check": 22,
           "note": "頂對頂踢腳"
         },
         "AQo": {
-          "bet_50": 75,
-          "check": 25,
+          "bet_50": 73,
+          "check": 27,
           "note": "頂對頂踢腳"
         },
         "KQs": {
-          "bet_50": 75,
-          "check": 25,
+          "bet_50": 73,
+          "check": 27,
           "note": "頂對好踢腳"
         },
         "KQo": {
-          "bet_50": 70,
-          "check": 30,
+          "bet_50": 68,
+          "check": 32,
           "note": "頂對"
         },
         "QJs": {
-          "bet_50": 70,
-          "check": 30,
+          "bet_50": 68,
+          "check": 32,
           "note": "頂對"
         },
         "QTs": {
-          "bet_50": 65,
-          "check": 35,
+          "bet_50": 63,
+          "check": 37,
           "note": "頂對中等踢腳"
         },
         "AKs": {
-          "bet_50": 30,
-          "check": 70,
+          "bet_50": 28,
+          "check": 72,
           "note": "A高，低頻 bluff"
         },
         "AKo": {
-          "bet_50": 25,
-          "check": 75,
+          "bet_50": 23,
+          "check": 77,
           "note": "A高，傾向 check"
         },
         "AJs": {
-          "bet_50": 35,
-          "check": 65,
+          "bet_50": 33,
+          "check": 67,
           "note": "A高 + 後門"
         },
         "KJs": {
-          "bet_50": 40,
-          "check": 60,
+          "bet_50": 38,
+          "check": 62,
           "note": "K高 + 後門"
         },
         "JTs": {
-          "bet_50": 45,
-          "check": 55,
+          "bet_50": 43,
+          "check": 57,
           "note": "開放式後門"
         },
         "77": {
-          "bet_50": 80,
-          "check": 20,
+          "bet_50": 78,
+          "check": 22,
           "note": "中 set"
         },
         "33": {
-          "bet_50": 75,
-          "check": 25,
+          "bet_50": 73,
+          "check": 27,
           "note": "底 set"
         }
       }
@@ -1497,88 +1498,88 @@
       "texture_zh": "乾燥低牌面",
       "strategies": {
         "AA": {
-          "bet_50": 65,
-          "check": 35,
+          "bet_50": 63,
+          "check": 37,
           "note": "overpair 但要保護"
         },
         "KK": {
-          "bet_50": 60,
-          "check": 40,
+          "bet_50": 58,
+          "check": 42,
           "note": "overpair"
         },
         "QQ": {
-          "bet_50": 55,
-          "check": 45,
+          "bet_50": 53,
+          "check": 47,
           "note": "overpair"
         },
         "JJ": {
-          "bet_50": 50,
-          "check": 50,
+          "bet_50": 48,
+          "check": 52,
           "note": "overpair"
         },
         "TT": {
-          "bet_50": 50,
-          "check": 50,
+          "bet_50": 48,
+          "check": 52,
           "note": "overpair"
         },
         "99": {
-          "bet_50": 45,
-          "check": 55,
+          "bet_50": 43,
+          "check": 57,
           "note": "overpair 邊緣"
         },
         "88": {
-          "bet_50": 80,
-          "check": 20,
+          "bet_50": 78,
+          "check": 22,
           "note": "頂 set！"
         },
         "55": {
-          "bet_50": 75,
-          "check": 25,
+          "bet_50": 73,
+          "check": 27,
           "note": "中 set"
         },
         "22": {
-          "bet_50": 70,
-          "check": 30,
+          "bet_50": 68,
+          "check": 32,
           "note": "底 set"
         },
         "A8s": {
-          "bet_50": 70,
-          "check": 30,
+          "bet_50": 68,
+          "check": 32,
           "note": "頂對 + A踢腳"
         },
         "A5s": {
-          "bet_50": 65,
-          "check": 35,
+          "bet_50": 63,
+          "check": 37,
           "note": "中對"
         },
         "AKs": {
-          "check": 75,
-          "bet_50": 25,
+          "check": 77,
+          "bet_50": 23,
           "note": "空氣，低頻 bluff"
         },
         "AKo": {
-          "check": 80,
-          "bet_50": 20,
+          "check": 82,
+          "bet_50": 18,
           "note": "空氣，很少 bluff"
         },
         "KQs": {
-          "check": 70,
-          "bet_50": 30,
+          "check": 72,
+          "bet_50": 28,
           "note": "兩高張空氣"
         },
         "87s": {
-          "bet_50": 75,
-          "check": 25,
+          "bet_50": 73,
+          "check": 27,
           "note": "頂對！"
         },
         "76s": {
-          "bet_50": 70,
-          "check": 30,
+          "bet_50": 68,
+          "check": 32,
           "note": "開放式順子聽牌"
         },
         "65s": {
-          "bet_50": 65,
-          "check": 35,
+          "bet_50": 63,
+          "check": 37,
           "note": "中對 + 順子聽牌"
         }
       }
@@ -1597,88 +1598,88 @@
       "texture_zh": "乾燥低牌面",
       "strategies": {
         "AA": {
-          "bet_50": 65,
-          "check": 35,
+          "bet_50": 63,
+          "check": 37,
           "note": "overpair 但要保護"
         },
         "KK": {
-          "bet_50": 60,
-          "check": 40,
+          "bet_50": 58,
+          "check": 42,
           "note": "overpair"
         },
         "QQ": {
-          "bet_50": 55,
-          "check": 45,
+          "bet_50": 53,
+          "check": 47,
           "note": "overpair"
         },
         "JJ": {
-          "bet_50": 50,
-          "check": 50,
+          "bet_50": 48,
+          "check": 52,
           "note": "overpair"
         },
         "TT": {
-          "bet_50": 50,
-          "check": 50,
+          "bet_50": 48,
+          "check": 52,
           "note": "overpair"
         },
         "99": {
-          "bet_50": 45,
-          "check": 55,
+          "bet_50": 43,
+          "check": 57,
           "note": "overpair 邊緣"
         },
         "88": {
-          "bet_50": 80,
-          "check": 20,
+          "bet_50": 78,
+          "check": 22,
           "note": "頂 set！"
         },
         "55": {
-          "bet_50": 75,
-          "check": 25,
+          "bet_50": 73,
+          "check": 27,
           "note": "中 set"
         },
         "22": {
-          "bet_50": 70,
-          "check": 30,
+          "bet_50": 68,
+          "check": 32,
           "note": "底 set"
         },
         "A8s": {
-          "bet_50": 70,
-          "check": 30,
+          "bet_50": 68,
+          "check": 32,
           "note": "頂對 + A踢腳"
         },
         "A5s": {
-          "bet_50": 65,
-          "check": 35,
+          "bet_50": 63,
+          "check": 37,
           "note": "中對"
         },
         "AKs": {
-          "check": 75,
-          "bet_50": 25,
+          "check": 77,
+          "bet_50": 23,
           "note": "空氣，低頻 bluff"
         },
         "AKo": {
-          "check": 80,
-          "bet_50": 20,
+          "check": 82,
+          "bet_50": 18,
           "note": "空氣，很少 bluff"
         },
         "KQs": {
-          "check": 70,
-          "bet_50": 30,
+          "check": 72,
+          "bet_50": 28,
           "note": "兩高張空氣"
         },
         "87s": {
-          "bet_50": 75,
-          "check": 25,
+          "bet_50": 73,
+          "check": 27,
           "note": "頂對！"
         },
         "76s": {
-          "bet_50": 70,
-          "check": 30,
+          "bet_50": 68,
+          "check": 32,
           "note": "開放式順子聽牌"
         },
         "65s": {
-          "bet_50": 65,
-          "check": 35,
+          "bet_50": 63,
+          "check": 37,
           "note": "中對 + 順子聽牌"
         }
       }
@@ -1697,88 +1698,88 @@
       "texture_zh": "乾燥低牌面",
       "strategies": {
         "AA": {
-          "bet_50": 65,
-          "check": 35,
+          "bet_50": 63,
+          "check": 37,
           "note": "overpair 但要保護"
         },
         "KK": {
-          "bet_50": 60,
-          "check": 40,
+          "bet_50": 58,
+          "check": 42,
           "note": "overpair"
         },
         "QQ": {
-          "bet_50": 55,
-          "check": 45,
+          "bet_50": 53,
+          "check": 47,
           "note": "overpair"
         },
         "JJ": {
-          "bet_50": 50,
-          "check": 50,
+          "bet_50": 48,
+          "check": 52,
           "note": "overpair"
         },
         "TT": {
-          "bet_50": 50,
-          "check": 50,
+          "bet_50": 48,
+          "check": 52,
           "note": "overpair"
         },
         "99": {
-          "bet_50": 45,
-          "check": 55,
+          "bet_50": 43,
+          "check": 57,
           "note": "overpair 邊緣"
         },
         "88": {
-          "bet_50": 80,
-          "check": 20,
+          "bet_50": 78,
+          "check": 22,
           "note": "頂 set！"
         },
         "55": {
-          "bet_50": 75,
-          "check": 25,
+          "bet_50": 73,
+          "check": 27,
           "note": "中 set"
         },
         "22": {
-          "bet_50": 70,
-          "check": 30,
+          "bet_50": 68,
+          "check": 32,
           "note": "底 set"
         },
         "A8s": {
-          "bet_50": 70,
-          "check": 30,
+          "bet_50": 68,
+          "check": 32,
           "note": "頂對 + A踢腳"
         },
         "A5s": {
-          "bet_50": 65,
-          "check": 35,
+          "bet_50": 63,
+          "check": 37,
           "note": "中對"
         },
         "AKs": {
-          "check": 75,
-          "bet_50": 25,
+          "check": 77,
+          "bet_50": 23,
           "note": "空氣，低頻 bluff"
         },
         "AKo": {
-          "check": 80,
-          "bet_50": 20,
+          "check": 82,
+          "bet_50": 18,
           "note": "空氣，很少 bluff"
         },
         "KQs": {
-          "check": 70,
-          "bet_50": 30,
+          "check": 72,
+          "bet_50": 28,
           "note": "兩高張空氣"
         },
         "87s": {
-          "bet_50": 75,
-          "check": 25,
+          "bet_50": 73,
+          "check": 27,
           "note": "頂對！"
         },
         "76s": {
-          "bet_50": 70,
-          "check": 30,
+          "bet_50": 68,
+          "check": 32,
           "note": "開放式順子聽牌"
         },
         "65s": {
-          "bet_50": 65,
-          "check": 35,
+          "bet_50": 63,
+          "check": 37,
           "note": "中對 + 順子聽牌"
         }
       }
@@ -1797,88 +1798,88 @@
       "texture_zh": "乾燥低牌面",
       "strategies": {
         "AA": {
-          "bet_50": 65,
-          "check": 35,
+          "bet_50": 63,
+          "check": 37,
           "note": "overpair 但要保護"
         },
         "KK": {
-          "bet_50": 60,
-          "check": 40,
+          "bet_50": 58,
+          "check": 42,
           "note": "overpair"
         },
         "QQ": {
-          "bet_50": 55,
-          "check": 45,
+          "bet_50": 53,
+          "check": 47,
           "note": "overpair"
         },
         "JJ": {
-          "bet_50": 50,
-          "check": 50,
+          "bet_50": 48,
+          "check": 52,
           "note": "overpair"
         },
         "TT": {
-          "bet_50": 50,
-          "check": 50,
+          "bet_50": 48,
+          "check": 52,
           "note": "overpair"
         },
         "99": {
-          "bet_50": 45,
-          "check": 55,
+          "bet_50": 43,
+          "check": 57,
           "note": "overpair 邊緣"
         },
         "88": {
-          "bet_50": 80,
-          "check": 20,
+          "bet_50": 78,
+          "check": 22,
           "note": "頂 set！"
         },
         "55": {
-          "bet_50": 75,
-          "check": 25,
+          "bet_50": 73,
+          "check": 27,
           "note": "中 set"
         },
         "22": {
-          "bet_50": 70,
-          "check": 30,
+          "bet_50": 68,
+          "check": 32,
           "note": "底 set"
         },
         "A8s": {
-          "bet_50": 70,
-          "check": 30,
+          "bet_50": 68,
+          "check": 32,
           "note": "頂對 + A踢腳"
         },
         "A5s": {
-          "bet_50": 65,
-          "check": 35,
+          "bet_50": 63,
+          "check": 37,
           "note": "中對"
         },
         "AKs": {
-          "check": 75,
-          "bet_50": 25,
+          "check": 77,
+          "bet_50": 23,
           "note": "空氣，低頻 bluff"
         },
         "AKo": {
-          "check": 80,
-          "bet_50": 20,
+          "check": 82,
+          "bet_50": 18,
           "note": "空氣，很少 bluff"
         },
         "KQs": {
-          "check": 70,
-          "bet_50": 30,
+          "check": 72,
+          "bet_50": 28,
           "note": "兩高張空氣"
         },
         "87s": {
-          "bet_50": 75,
-          "check": 25,
+          "bet_50": 73,
+          "check": 27,
           "note": "頂對！"
         },
         "76s": {
-          "bet_50": 70,
-          "check": 30,
+          "bet_50": 68,
+          "check": 32,
           "note": "開放式順子聽牌"
         },
         "65s": {
-          "bet_50": 65,
-          "check": 35,
+          "bet_50": 63,
+          "check": 37,
           "note": "中對 + 順子聽牌"
         }
       }
@@ -1897,88 +1898,88 @@
       "texture_zh": "乾燥低牌面",
       "strategies": {
         "AA": {
-          "bet_50": 65,
-          "check": 35,
+          "bet_50": 63,
+          "check": 37,
           "note": "overpair 但要保護"
         },
         "KK": {
-          "bet_50": 60,
-          "check": 40,
+          "bet_50": 58,
+          "check": 42,
           "note": "overpair"
         },
         "QQ": {
-          "bet_50": 55,
-          "check": 45,
+          "bet_50": 53,
+          "check": 47,
           "note": "overpair"
         },
         "JJ": {
-          "bet_50": 50,
-          "check": 50,
+          "bet_50": 48,
+          "check": 52,
           "note": "overpair"
         },
         "TT": {
-          "bet_50": 50,
-          "check": 50,
+          "bet_50": 48,
+          "check": 52,
           "note": "overpair"
         },
         "99": {
-          "bet_50": 45,
-          "check": 55,
+          "bet_50": 43,
+          "check": 57,
           "note": "overpair 邊緣"
         },
         "88": {
-          "bet_50": 80,
-          "check": 20,
+          "bet_50": 78,
+          "check": 22,
           "note": "頂 set！"
         },
         "55": {
-          "bet_50": 75,
-          "check": 25,
+          "bet_50": 73,
+          "check": 27,
           "note": "中 set"
         },
         "22": {
-          "bet_50": 70,
-          "check": 30,
+          "bet_50": 68,
+          "check": 32,
           "note": "底 set"
         },
         "A8s": {
-          "bet_50": 70,
-          "check": 30,
+          "bet_50": 68,
+          "check": 32,
           "note": "頂對 + A踢腳"
         },
         "A5s": {
-          "bet_50": 65,
-          "check": 35,
+          "bet_50": 63,
+          "check": 37,
           "note": "中對"
         },
         "AKs": {
-          "check": 75,
-          "bet_50": 25,
+          "check": 77,
+          "bet_50": 23,
           "note": "空氣，低頻 bluff"
         },
         "AKo": {
-          "check": 80,
-          "bet_50": 20,
+          "check": 82,
+          "bet_50": 18,
           "note": "空氣，很少 bluff"
         },
         "KQs": {
-          "check": 70,
-          "bet_50": 30,
+          "check": 72,
+          "bet_50": 28,
           "note": "兩高張空氣"
         },
         "87s": {
-          "bet_50": 75,
-          "check": 25,
+          "bet_50": 73,
+          "check": 27,
           "note": "頂對！"
         },
         "76s": {
-          "bet_50": 70,
-          "check": 30,
+          "bet_50": 68,
+          "check": 32,
           "note": "開放式順子聽牌"
         },
         "65s": {
-          "bet_50": 65,
-          "check": 35,
+          "bet_50": 63,
+          "check": 37,
           "note": "中對 + 順子聽牌"
         }
       }
@@ -1997,83 +1998,83 @@
       "texture_zh": "高對子牌面",
       "strategies": {
         "KK": {
-          "bet_75": 90,
-          "check": 10,
+          "bet_75": 88,
+          "check": 12,
           "note": "四條！慢打或取值"
         },
         "AA": {
-          "bet_75": 65,
-          "check": 35,
+          "bet_75": 63,
+          "check": 37,
           "note": "overpair，注意 Kx"
         },
         "QQ": {
-          "bet_75": 50,
-          "check": 50,
+          "bet_75": 48,
+          "check": 52,
           "note": "第三大對"
         },
         "JJ": {
-          "bet_75": 40,
-          "check": 60,
+          "bet_75": 38,
+          "check": 62,
           "note": "underpair"
         },
         "AKs": {
-          "bet_75": 85,
-          "check": 15,
+          "bet_75": 83,
+          "check": 17,
           "note": "trips 頂踢腳"
         },
         "AKo": {
-          "bet_75": 80,
-          "check": 20,
+          "bet_75": 78,
+          "check": 22,
           "note": "trips"
         },
         "KQs": {
-          "bet_75": 80,
-          "check": 20,
+          "bet_75": 78,
+          "check": 22,
           "note": "trips 好踢腳"
         },
         "KJs": {
-          "bet_75": 75,
-          "check": 25,
+          "bet_75": 73,
+          "check": 27,
           "note": "trips"
         },
         "KTs": {
-          "bet_75": 70,
-          "check": 30,
+          "bet_75": 68,
+          "check": 32,
           "note": "trips"
         },
         "K9s": {
-          "bet_75": 65,
-          "check": 35,
+          "bet_75": 63,
+          "check": 37,
           "note": "trips"
         },
         "AQs": {
-          "bet_75": 55,
-          "check": 45,
+          "bet_75": 53,
+          "check": 47,
           "note": "A高 bluff"
         },
         "AQo": {
-          "bet_75": 50,
-          "check": 50,
+          "bet_75": 48,
+          "check": 52,
           "note": "A高 bluff"
         },
         "AJs": {
-          "bet_75": 45,
-          "check": 55,
+          "bet_75": 43,
+          "check": 57,
           "note": "A高 + 後門"
         },
         "QJs": {
-          "bet_75": 40,
-          "check": 60,
+          "bet_75": 38,
+          "check": 62,
           "note": "兩高張"
         },
         "77": {
-          "bet_75": 80,
-          "check": 20,
+          "bet_75": 78,
+          "check": 22,
           "note": "葫蘆！"
         },
         "22": {
-          "check": 65,
-          "bet_75": 35,
+          "check": 67,
+          "bet_75": 33,
           "note": "底對，謹慎"
         }
       }
@@ -2092,83 +2093,83 @@
       "texture_zh": "高對子牌面",
       "strategies": {
         "KK": {
-          "bet_75": 90,
-          "check": 10,
+          "bet_75": 88,
+          "check": 12,
           "note": "四條！慢打或取值"
         },
         "AA": {
-          "bet_75": 65,
-          "check": 35,
+          "bet_75": 63,
+          "check": 37,
           "note": "overpair，注意 Kx"
         },
         "QQ": {
-          "bet_75": 50,
-          "check": 50,
+          "bet_75": 48,
+          "check": 52,
           "note": "第三大對"
         },
         "JJ": {
-          "bet_75": 40,
-          "check": 60,
+          "bet_75": 38,
+          "check": 62,
           "note": "underpair"
         },
         "AKs": {
-          "bet_75": 85,
-          "check": 15,
+          "bet_75": 83,
+          "check": 17,
           "note": "trips 頂踢腳"
         },
         "AKo": {
-          "bet_75": 80,
-          "check": 20,
+          "bet_75": 78,
+          "check": 22,
           "note": "trips"
         },
         "KQs": {
-          "bet_75": 80,
-          "check": 20,
+          "bet_75": 78,
+          "check": 22,
           "note": "trips 好踢腳"
         },
         "KJs": {
-          "bet_75": 75,
-          "check": 25,
+          "bet_75": 73,
+          "check": 27,
           "note": "trips"
         },
         "KTs": {
-          "bet_75": 70,
-          "check": 30,
+          "bet_75": 68,
+          "check": 32,
           "note": "trips"
         },
         "K9s": {
-          "bet_75": 65,
-          "check": 35,
+          "bet_75": 63,
+          "check": 37,
           "note": "trips"
         },
         "AQs": {
-          "bet_75": 55,
-          "check": 45,
+          "bet_75": 53,
+          "check": 47,
           "note": "A高 bluff"
         },
         "AQo": {
-          "bet_75": 50,
-          "check": 50,
+          "bet_75": 48,
+          "check": 52,
           "note": "A高 bluff"
         },
         "AJs": {
-          "bet_75": 45,
-          "check": 55,
+          "bet_75": 43,
+          "check": 57,
           "note": "A高 + 後門"
         },
         "QJs": {
-          "bet_75": 40,
-          "check": 60,
+          "bet_75": 38,
+          "check": 62,
           "note": "兩高張"
         },
         "77": {
-          "bet_75": 80,
-          "check": 20,
+          "bet_75": 78,
+          "check": 22,
           "note": "葫蘆！"
         },
         "22": {
-          "check": 65,
-          "bet_75": 35,
+          "check": 67,
+          "bet_75": 33,
           "note": "底對，謹慎"
         }
       }
@@ -2187,83 +2188,83 @@
       "texture_zh": "高對子牌面",
       "strategies": {
         "KK": {
-          "bet_75": 90,
-          "check": 10,
+          "bet_75": 88,
+          "check": 12,
           "note": "四條！慢打或取值"
         },
         "AA": {
-          "bet_75": 65,
-          "check": 35,
+          "bet_75": 63,
+          "check": 37,
           "note": "overpair，注意 Kx"
         },
         "QQ": {
-          "bet_75": 50,
-          "check": 50,
+          "bet_75": 48,
+          "check": 52,
           "note": "第三大對"
         },
         "JJ": {
-          "bet_75": 40,
-          "check": 60,
+          "bet_75": 38,
+          "check": 62,
           "note": "underpair"
         },
         "AKs": {
-          "bet_75": 85,
-          "check": 15,
+          "bet_75": 83,
+          "check": 17,
           "note": "trips 頂踢腳"
         },
         "AKo": {
-          "bet_75": 80,
-          "check": 20,
+          "bet_75": 78,
+          "check": 22,
           "note": "trips"
         },
         "KQs": {
-          "bet_75": 80,
-          "check": 20,
+          "bet_75": 78,
+          "check": 22,
           "note": "trips 好踢腳"
         },
         "KJs": {
-          "bet_75": 75,
-          "check": 25,
+          "bet_75": 73,
+          "check": 27,
           "note": "trips"
         },
         "KTs": {
-          "bet_75": 70,
-          "check": 30,
+          "bet_75": 68,
+          "check": 32,
           "note": "trips"
         },
         "K9s": {
-          "bet_75": 65,
-          "check": 35,
+          "bet_75": 63,
+          "check": 37,
           "note": "trips"
         },
         "AQs": {
-          "bet_75": 55,
-          "check": 45,
+          "bet_75": 53,
+          "check": 47,
           "note": "A高 bluff"
         },
         "AQo": {
-          "bet_75": 50,
-          "check": 50,
+          "bet_75": 48,
+          "check": 52,
           "note": "A高 bluff"
         },
         "AJs": {
-          "bet_75": 45,
-          "check": 55,
+          "bet_75": 43,
+          "check": 57,
           "note": "A高 + 後門"
         },
         "QJs": {
-          "bet_75": 40,
-          "check": 60,
+          "bet_75": 38,
+          "check": 62,
           "note": "兩高張"
         },
         "77": {
-          "bet_75": 80,
-          "check": 20,
+          "bet_75": 78,
+          "check": 22,
           "note": "葫蘆！"
         },
         "22": {
-          "check": 65,
-          "bet_75": 35,
+          "check": 67,
+          "bet_75": 33,
           "note": "底對，謹慎"
         }
       }
@@ -2282,83 +2283,83 @@
       "texture_zh": "高對子牌面",
       "strategies": {
         "KK": {
-          "bet_75": 90,
-          "check": 10,
+          "bet_75": 88,
+          "check": 12,
           "note": "四條！慢打或取值"
         },
         "AA": {
-          "bet_75": 65,
-          "check": 35,
+          "bet_75": 63,
+          "check": 37,
           "note": "overpair，注意 Kx"
         },
         "QQ": {
-          "bet_75": 50,
-          "check": 50,
+          "bet_75": 48,
+          "check": 52,
           "note": "第三大對"
         },
         "JJ": {
-          "bet_75": 40,
-          "check": 60,
+          "bet_75": 38,
+          "check": 62,
           "note": "underpair"
         },
         "AKs": {
-          "bet_75": 85,
-          "check": 15,
+          "bet_75": 83,
+          "check": 17,
           "note": "trips 頂踢腳"
         },
         "AKo": {
-          "bet_75": 80,
-          "check": 20,
+          "bet_75": 78,
+          "check": 22,
           "note": "trips"
         },
         "KQs": {
-          "bet_75": 80,
-          "check": 20,
+          "bet_75": 78,
+          "check": 22,
           "note": "trips 好踢腳"
         },
         "KJs": {
-          "bet_75": 75,
-          "check": 25,
+          "bet_75": 73,
+          "check": 27,
           "note": "trips"
         },
         "KTs": {
-          "bet_75": 70,
-          "check": 30,
+          "bet_75": 68,
+          "check": 32,
           "note": "trips"
         },
         "K9s": {
-          "bet_75": 65,
-          "check": 35,
+          "bet_75": 63,
+          "check": 37,
           "note": "trips"
         },
         "AQs": {
-          "bet_75": 55,
-          "check": 45,
+          "bet_75": 53,
+          "check": 47,
           "note": "A高 bluff"
         },
         "AQo": {
-          "bet_75": 50,
-          "check": 50,
+          "bet_75": 48,
+          "check": 52,
           "note": "A高 bluff"
         },
         "AJs": {
-          "bet_75": 45,
-          "check": 55,
+          "bet_75": 43,
+          "check": 57,
           "note": "A高 + 後門"
         },
         "QJs": {
-          "bet_75": 40,
-          "check": 60,
+          "bet_75": 38,
+          "check": 62,
           "note": "兩高張"
         },
         "77": {
-          "bet_75": 80,
-          "check": 20,
+          "bet_75": 78,
+          "check": 22,
           "note": "葫蘆！"
         },
         "22": {
-          "check": 65,
-          "bet_75": 35,
+          "check": 67,
+          "bet_75": 33,
           "note": "底對，謹慎"
         }
       }
@@ -2377,83 +2378,83 @@
       "texture_zh": "高對子牌面",
       "strategies": {
         "KK": {
-          "bet_75": 90,
-          "check": 10,
+          "bet_75": 88,
+          "check": 12,
           "note": "四條！慢打或取值"
         },
         "AA": {
-          "bet_75": 65,
-          "check": 35,
+          "bet_75": 63,
+          "check": 37,
           "note": "overpair，注意 Kx"
         },
         "QQ": {
-          "bet_75": 50,
-          "check": 50,
+          "bet_75": 48,
+          "check": 52,
           "note": "第三大對"
         },
         "JJ": {
-          "bet_75": 40,
-          "check": 60,
+          "bet_75": 38,
+          "check": 62,
           "note": "underpair"
         },
         "AKs": {
-          "bet_75": 85,
-          "check": 15,
+          "bet_75": 83,
+          "check": 17,
           "note": "trips 頂踢腳"
         },
         "AKo": {
-          "bet_75": 80,
-          "check": 20,
+          "bet_75": 78,
+          "check": 22,
           "note": "trips"
         },
         "KQs": {
-          "bet_75": 80,
-          "check": 20,
+          "bet_75": 78,
+          "check": 22,
           "note": "trips 好踢腳"
         },
         "KJs": {
-          "bet_75": 75,
-          "check": 25,
+          "bet_75": 73,
+          "check": 27,
           "note": "trips"
         },
         "KTs": {
-          "bet_75": 70,
-          "check": 30,
+          "bet_75": 68,
+          "check": 32,
           "note": "trips"
         },
         "K9s": {
-          "bet_75": 65,
-          "check": 35,
+          "bet_75": 63,
+          "check": 37,
           "note": "trips"
         },
         "AQs": {
-          "bet_75": 55,
-          "check": 45,
+          "bet_75": 53,
+          "check": 47,
           "note": "A高 bluff"
         },
         "AQo": {
-          "bet_75": 50,
-          "check": 50,
+          "bet_75": 48,
+          "check": 52,
           "note": "A高 bluff"
         },
         "AJs": {
-          "bet_75": 45,
-          "check": 55,
+          "bet_75": 43,
+          "check": 57,
           "note": "A高 + 後門"
         },
         "QJs": {
-          "bet_75": 40,
-          "check": 60,
+          "bet_75": 38,
+          "check": 62,
           "note": "兩高張"
         },
         "77": {
-          "bet_75": 80,
-          "check": 20,
+          "bet_75": 78,
+          "check": 22,
           "note": "葫蘆！"
         },
         "22": {
-          "check": 65,
-          "bet_75": 35,
+          "check": 67,
+          "bet_75": 33,
           "note": "底對，謹慎"
         }
       }
@@ -2472,48 +2473,48 @@
       "texture_zh": "低對子牌面",
       "strategies": {
         "AA": {
-          "bet_33": 85,
-          "check": 15,
+          "bet_33": 83,
+          "check": 17,
           "note": "overpair，幾乎必 bet"
         },
         "KK": {
-          "bet_33": 80,
-          "check": 20,
+          "bet_33": 78,
+          "check": 22,
           "note": "overpair"
         },
         "QQ": {
-          "bet_33": 75,
-          "check": 25,
+          "bet_33": 73,
+          "check": 27,
           "note": "overpair"
         },
         "JJ": {
-          "bet_33": 70,
-          "check": 30,
+          "bet_33": 68,
+          "check": 32,
           "note": "overpair"
         },
         "TT": {
-          "bet_33": 65,
-          "check": 35,
+          "bet_33": 63,
+          "check": 37,
           "note": "overpair"
         },
         "99": {
-          "bet_33": 60,
-          "check": 40,
+          "bet_33": 58,
+          "check": 42,
           "note": "overpair"
         },
         "88": {
-          "bet_33": 55,
-          "check": 45,
+          "bet_33": 53,
+          "check": 47,
           "note": "overpair"
         },
         "77": {
-          "bet_33": 50,
-          "check": 50,
+          "bet_33": 48,
+          "check": 52,
           "note": "overpair"
         },
         "66": {
-          "bet_33": 45,
-          "check": 55,
+          "bet_33": 43,
+          "check": 57,
           "note": "overpair 邊緣"
         },
         "55": {
@@ -2521,38 +2522,38 @@
           "note": "四條，慢打"
         },
         "A5s": {
-          "bet_33": 80,
-          "check": 20,
+          "bet_33": 78,
+          "check": 22,
           "note": "trips 頂踢腳"
         },
         "K5s": {
-          "bet_33": 75,
-          "check": 25,
+          "bet_33": 73,
+          "check": 27,
           "note": "trips"
         },
         "AKs": {
-          "bet_33": 70,
-          "check": 30,
+          "bet_33": 68,
+          "check": 32,
           "note": "A高 bluff"
         },
         "AKo": {
-          "bet_33": 65,
-          "check": 35,
+          "bet_33": 63,
+          "check": 37,
           "note": "A高 bluff"
         },
         "AQs": {
-          "bet_33": 60,
-          "check": 40,
+          "bet_33": 58,
+          "check": 42,
           "note": "A高"
         },
         "KQs": {
-          "bet_33": 50,
-          "check": 50,
+          "bet_33": 48,
+          "check": 52,
           "note": "兩高張"
         },
         "22": {
-          "bet_33": 85,
-          "check": 15,
+          "bet_33": 83,
+          "check": 17,
           "note": "葫蘆！取值"
         }
       }
@@ -2571,48 +2572,48 @@
       "texture_zh": "低對子牌面",
       "strategies": {
         "AA": {
-          "bet_33": 85,
-          "check": 15,
+          "bet_33": 83,
+          "check": 17,
           "note": "overpair，幾乎必 bet"
         },
         "KK": {
-          "bet_33": 80,
-          "check": 20,
+          "bet_33": 78,
+          "check": 22,
           "note": "overpair"
         },
         "QQ": {
-          "bet_33": 75,
-          "check": 25,
+          "bet_33": 73,
+          "check": 27,
           "note": "overpair"
         },
         "JJ": {
-          "bet_33": 70,
-          "check": 30,
+          "bet_33": 68,
+          "check": 32,
           "note": "overpair"
         },
         "TT": {
-          "bet_33": 65,
-          "check": 35,
+          "bet_33": 63,
+          "check": 37,
           "note": "overpair"
         },
         "99": {
-          "bet_33": 60,
-          "check": 40,
+          "bet_33": 58,
+          "check": 42,
           "note": "overpair"
         },
         "88": {
-          "bet_33": 55,
-          "check": 45,
+          "bet_33": 53,
+          "check": 47,
           "note": "overpair"
         },
         "77": {
-          "bet_33": 50,
-          "check": 50,
+          "bet_33": 48,
+          "check": 52,
           "note": "overpair"
         },
         "66": {
-          "bet_33": 45,
-          "check": 55,
+          "bet_33": 43,
+          "check": 57,
           "note": "overpair 邊緣"
         },
         "55": {
@@ -2620,38 +2621,38 @@
           "note": "四條，慢打"
         },
         "A5s": {
-          "bet_33": 80,
-          "check": 20,
+          "bet_33": 78,
+          "check": 22,
           "note": "trips 頂踢腳"
         },
         "K5s": {
-          "bet_33": 75,
-          "check": 25,
+          "bet_33": 73,
+          "check": 27,
           "note": "trips"
         },
         "AKs": {
-          "bet_33": 70,
-          "check": 30,
+          "bet_33": 68,
+          "check": 32,
           "note": "A高 bluff"
         },
         "AKo": {
-          "bet_33": 65,
-          "check": 35,
+          "bet_33": 63,
+          "check": 37,
           "note": "A高 bluff"
         },
         "AQs": {
-          "bet_33": 60,
-          "check": 40,
+          "bet_33": 58,
+          "check": 42,
           "note": "A高"
         },
         "KQs": {
-          "bet_33": 50,
-          "check": 50,
+          "bet_33": 48,
+          "check": 52,
           "note": "兩高張"
         },
         "22": {
-          "bet_33": 85,
-          "check": 15,
+          "bet_33": 83,
+          "check": 17,
           "note": "葫蘆！取值"
         }
       }
@@ -2670,48 +2671,48 @@
       "texture_zh": "低對子牌面",
       "strategies": {
         "AA": {
-          "bet_33": 85,
-          "check": 15,
+          "bet_33": 83,
+          "check": 17,
           "note": "overpair，幾乎必 bet"
         },
         "KK": {
-          "bet_33": 80,
-          "check": 20,
+          "bet_33": 78,
+          "check": 22,
           "note": "overpair"
         },
         "QQ": {
-          "bet_33": 75,
-          "check": 25,
+          "bet_33": 73,
+          "check": 27,
           "note": "overpair"
         },
         "JJ": {
-          "bet_33": 70,
-          "check": 30,
+          "bet_33": 68,
+          "check": 32,
           "note": "overpair"
         },
         "TT": {
-          "bet_33": 65,
-          "check": 35,
+          "bet_33": 63,
+          "check": 37,
           "note": "overpair"
         },
         "99": {
-          "bet_33": 60,
-          "check": 40,
+          "bet_33": 58,
+          "check": 42,
           "note": "overpair"
         },
         "88": {
-          "bet_33": 55,
-          "check": 45,
+          "bet_33": 53,
+          "check": 47,
           "note": "overpair"
         },
         "77": {
-          "bet_33": 50,
-          "check": 50,
+          "bet_33": 48,
+          "check": 52,
           "note": "overpair"
         },
         "66": {
-          "bet_33": 45,
-          "check": 55,
+          "bet_33": 43,
+          "check": 57,
           "note": "overpair 邊緣"
         },
         "55": {
@@ -2719,38 +2720,38 @@
           "note": "四條，慢打"
         },
         "A5s": {
-          "bet_33": 80,
-          "check": 20,
+          "bet_33": 78,
+          "check": 22,
           "note": "trips 頂踢腳"
         },
         "K5s": {
-          "bet_33": 75,
-          "check": 25,
+          "bet_33": 73,
+          "check": 27,
           "note": "trips"
         },
         "AKs": {
-          "bet_33": 70,
-          "check": 30,
+          "bet_33": 68,
+          "check": 32,
           "note": "A高 bluff"
         },
         "AKo": {
-          "bet_33": 65,
-          "check": 35,
+          "bet_33": 63,
+          "check": 37,
           "note": "A高 bluff"
         },
         "AQs": {
-          "bet_33": 60,
-          "check": 40,
+          "bet_33": 58,
+          "check": 42,
           "note": "A高"
         },
         "KQs": {
-          "bet_33": 50,
-          "check": 50,
+          "bet_33": 48,
+          "check": 52,
           "note": "兩高張"
         },
         "22": {
-          "bet_33": 85,
-          "check": 15,
+          "bet_33": 83,
+          "check": 17,
           "note": "葫蘆！取值"
         }
       }
@@ -2769,48 +2770,48 @@
       "texture_zh": "低對子牌面",
       "strategies": {
         "AA": {
-          "bet_33": 85,
-          "check": 15,
+          "bet_33": 83,
+          "check": 17,
           "note": "overpair，幾乎必 bet"
         },
         "KK": {
-          "bet_33": 80,
-          "check": 20,
+          "bet_33": 78,
+          "check": 22,
           "note": "overpair"
         },
         "QQ": {
-          "bet_33": 75,
-          "check": 25,
+          "bet_33": 73,
+          "check": 27,
           "note": "overpair"
         },
         "JJ": {
-          "bet_33": 70,
-          "check": 30,
+          "bet_33": 68,
+          "check": 32,
           "note": "overpair"
         },
         "TT": {
-          "bet_33": 65,
-          "check": 35,
+          "bet_33": 63,
+          "check": 37,
           "note": "overpair"
         },
         "99": {
-          "bet_33": 60,
-          "check": 40,
+          "bet_33": 58,
+          "check": 42,
           "note": "overpair"
         },
         "88": {
-          "bet_33": 55,
-          "check": 45,
+          "bet_33": 53,
+          "check": 47,
           "note": "overpair"
         },
         "77": {
-          "bet_33": 50,
-          "check": 50,
+          "bet_33": 48,
+          "check": 52,
           "note": "overpair"
         },
         "66": {
-          "bet_33": 45,
-          "check": 55,
+          "bet_33": 43,
+          "check": 57,
           "note": "overpair 邊緣"
         },
         "55": {
@@ -2818,38 +2819,38 @@
           "note": "四條，慢打"
         },
         "A5s": {
-          "bet_33": 80,
-          "check": 20,
+          "bet_33": 78,
+          "check": 22,
           "note": "trips 頂踢腳"
         },
         "K5s": {
-          "bet_33": 75,
-          "check": 25,
+          "bet_33": 73,
+          "check": 27,
           "note": "trips"
         },
         "AKs": {
-          "bet_33": 70,
-          "check": 30,
+          "bet_33": 68,
+          "check": 32,
           "note": "A高 bluff"
         },
         "AKo": {
-          "bet_33": 65,
-          "check": 35,
+          "bet_33": 63,
+          "check": 37,
           "note": "A高 bluff"
         },
         "AQs": {
-          "bet_33": 60,
-          "check": 40,
+          "bet_33": 58,
+          "check": 42,
           "note": "A高"
         },
         "KQs": {
-          "bet_33": 50,
-          "check": 50,
+          "bet_33": 48,
+          "check": 52,
           "note": "兩高張"
         },
         "22": {
-          "bet_33": 85,
-          "check": 15,
+          "bet_33": 83,
+          "check": 17,
           "note": "葫蘆！取值"
         }
       }
@@ -2868,48 +2869,48 @@
       "texture_zh": "低對子牌面",
       "strategies": {
         "AA": {
-          "bet_33": 85,
-          "check": 15,
+          "bet_33": 83,
+          "check": 17,
           "note": "overpair，幾乎必 bet"
         },
         "KK": {
-          "bet_33": 80,
-          "check": 20,
+          "bet_33": 78,
+          "check": 22,
           "note": "overpair"
         },
         "QQ": {
-          "bet_33": 75,
-          "check": 25,
+          "bet_33": 73,
+          "check": 27,
           "note": "overpair"
         },
         "JJ": {
-          "bet_33": 70,
-          "check": 30,
+          "bet_33": 68,
+          "check": 32,
           "note": "overpair"
         },
         "TT": {
-          "bet_33": 65,
-          "check": 35,
+          "bet_33": 63,
+          "check": 37,
           "note": "overpair"
         },
         "99": {
-          "bet_33": 60,
-          "check": 40,
+          "bet_33": 58,
+          "check": 42,
           "note": "overpair"
         },
         "88": {
-          "bet_33": 55,
-          "check": 45,
+          "bet_33": 53,
+          "check": 47,
           "note": "overpair"
         },
         "77": {
-          "bet_33": 50,
-          "check": 50,
+          "bet_33": 48,
+          "check": 52,
           "note": "overpair"
         },
         "66": {
-          "bet_33": 45,
-          "check": 55,
+          "bet_33": 43,
+          "check": 57,
           "note": "overpair 邊緣"
         },
         "55": {
@@ -2917,38 +2918,38 @@
           "note": "四條，慢打"
         },
         "A5s": {
-          "bet_33": 80,
-          "check": 20,
+          "bet_33": 78,
+          "check": 22,
           "note": "trips 頂踢腳"
         },
         "K5s": {
-          "bet_33": 75,
-          "check": 25,
+          "bet_33": 73,
+          "check": 27,
           "note": "trips"
         },
         "AKs": {
-          "bet_33": 70,
-          "check": 30,
+          "bet_33": 68,
+          "check": 32,
           "note": "A高 bluff"
         },
         "AKo": {
-          "bet_33": 65,
-          "check": 35,
+          "bet_33": 63,
+          "check": 37,
           "note": "A高 bluff"
         },
         "AQs": {
-          "bet_33": 60,
-          "check": 40,
+          "bet_33": 58,
+          "check": 42,
           "note": "A高"
         },
         "KQs": {
-          "bet_33": 50,
-          "check": 50,
+          "bet_33": 48,
+          "check": 52,
           "note": "兩高張"
         },
         "22": {
-          "bet_33": 85,
-          "check": 15,
+          "bet_33": 83,
+          "check": 17,
           "note": "葫蘆！取值"
         }
       }
@@ -2967,78 +2968,78 @@
       "texture_zh": "同花牌面",
       "strategies": {
         "AhKh": {
-          "bet_75": 90,
-          "check": 10,
+          "bet_75": 88,
+          "check": 12,
           "note": "堅果同花！"
         },
         "AhQh": {
-          "bet_75": 85,
-          "check": 15,
+          "bet_75": 83,
+          "check": 17,
           "note": "第二堅果同花"
         },
         "Ah2h": {
-          "bet_75": 80,
-          "check": 20,
+          "bet_75": 78,
+          "check": 22,
           "note": "同花"
         },
         "KhQh": {
-          "bet_75": 80,
-          "check": 20,
+          "bet_75": 78,
+          "check": 22,
           "note": "同花"
         },
         "9h8h": {
-          "bet_75": 75,
-          "check": 25,
+          "bet_75": 73,
+          "check": 27,
           "note": "同花"
         },
         "AA": {
-          "bet_75": 35,
-          "check": 65,
+          "bet_75": 33,
+          "check": 67,
           "note": "overpair 但危險"
         },
         "KK": {
-          "bet_75": 30,
-          "check": 70,
+          "bet_75": 28,
+          "check": 72,
           "note": "overpair 更危險"
         },
         "JJ": {
-          "bet_75": 50,
-          "check": 50,
+          "bet_75": 48,
+          "check": 52,
           "note": "頂 set，但要小心同花"
         },
         "77": {
-          "bet_75": 45,
-          "check": 55,
+          "bet_75": 43,
+          "check": 57,
           "note": "中 set"
         },
         "AhKs": {
-          "bet_75": 65,
-          "check": 35,
+          "bet_75": 63,
+          "check": 37,
           "note": "堅果同花聽牌！"
         },
         "AhQs": {
-          "bet_75": 60,
-          "check": 40,
+          "bet_75": 58,
+          "check": 42,
           "note": "同花聽牌 + A高"
         },
         "KhJs": {
-          "bet_75": 55,
-          "check": 45,
+          "bet_75": 53,
+          "check": 47,
           "note": "同花聽牌 + 對子"
         },
         "AKo": {
-          "check": 85,
-          "bet_75": 15,
+          "check": 87,
+          "bet_75": 13,
           "note": "沒有紅心，傾向 check"
         },
         "QQ": {
-          "check": 75,
-          "bet_75": 25,
+          "check": 77,
+          "bet_75": 23,
           "note": "overpair 但沒有紅心"
         },
         "KQo": {
-          "check": 90,
-          "bet_75": 10,
+          "check": 92,
+          "bet_75": 8,
           "note": "空氣，沒有後門"
         }
       }
@@ -3057,78 +3058,78 @@
       "texture_zh": "同花牌面",
       "strategies": {
         "AhKh": {
-          "bet_75": 90,
-          "check": 10,
+          "bet_75": 88,
+          "check": 12,
           "note": "堅果同花！"
         },
         "AhQh": {
-          "bet_75": 85,
-          "check": 15,
+          "bet_75": 83,
+          "check": 17,
           "note": "第二堅果同花"
         },
         "Ah2h": {
-          "bet_75": 80,
-          "check": 20,
+          "bet_75": 78,
+          "check": 22,
           "note": "同花"
         },
         "KhQh": {
-          "bet_75": 80,
-          "check": 20,
+          "bet_75": 78,
+          "check": 22,
           "note": "同花"
         },
         "9h8h": {
-          "bet_75": 75,
-          "check": 25,
+          "bet_75": 73,
+          "check": 27,
           "note": "同花"
         },
         "AA": {
-          "bet_75": 35,
-          "check": 65,
+          "bet_75": 33,
+          "check": 67,
           "note": "overpair 但危險"
         },
         "KK": {
-          "bet_75": 30,
-          "check": 70,
+          "bet_75": 28,
+          "check": 72,
           "note": "overpair 更危險"
         },
         "JJ": {
-          "bet_75": 50,
-          "check": 50,
+          "bet_75": 48,
+          "check": 52,
           "note": "頂 set，但要小心同花"
         },
         "77": {
-          "bet_75": 45,
-          "check": 55,
+          "bet_75": 43,
+          "check": 57,
           "note": "中 set"
         },
         "AhKs": {
-          "bet_75": 65,
-          "check": 35,
+          "bet_75": 63,
+          "check": 37,
           "note": "堅果同花聽牌！"
         },
         "AhQs": {
-          "bet_75": 60,
-          "check": 40,
+          "bet_75": 58,
+          "check": 42,
           "note": "同花聽牌 + A高"
         },
         "KhJs": {
-          "bet_75": 55,
-          "check": 45,
+          "bet_75": 53,
+          "check": 47,
           "note": "同花聽牌 + 對子"
         },
         "AKo": {
-          "check": 85,
-          "bet_75": 15,
+          "check": 87,
+          "bet_75": 13,
           "note": "沒有紅心，傾向 check"
         },
         "QQ": {
-          "check": 75,
-          "bet_75": 25,
+          "check": 77,
+          "bet_75": 23,
           "note": "overpair 但沒有紅心"
         },
         "KQo": {
-          "check": 90,
-          "bet_75": 10,
+          "check": 92,
+          "bet_75": 8,
           "note": "空氣，沒有後門"
         }
       }
@@ -3147,78 +3148,78 @@
       "texture_zh": "同花牌面",
       "strategies": {
         "AhKh": {
-          "bet_75": 90,
-          "check": 10,
+          "bet_75": 88,
+          "check": 12,
           "note": "堅果同花！"
         },
         "AhQh": {
-          "bet_75": 85,
-          "check": 15,
+          "bet_75": 83,
+          "check": 17,
           "note": "第二堅果同花"
         },
         "Ah2h": {
-          "bet_75": 80,
-          "check": 20,
+          "bet_75": 78,
+          "check": 22,
           "note": "同花"
         },
         "KhQh": {
-          "bet_75": 80,
-          "check": 20,
+          "bet_75": 78,
+          "check": 22,
           "note": "同花"
         },
         "9h8h": {
-          "bet_75": 75,
-          "check": 25,
+          "bet_75": 73,
+          "check": 27,
           "note": "同花"
         },
         "AA": {
-          "bet_75": 35,
-          "check": 65,
+          "bet_75": 33,
+          "check": 67,
           "note": "overpair 但危險"
         },
         "KK": {
-          "bet_75": 30,
-          "check": 70,
+          "bet_75": 28,
+          "check": 72,
           "note": "overpair 更危險"
         },
         "JJ": {
-          "bet_75": 50,
-          "check": 50,
+          "bet_75": 48,
+          "check": 52,
           "note": "頂 set，但要小心同花"
         },
         "77": {
-          "bet_75": 45,
-          "check": 55,
+          "bet_75": 43,
+          "check": 57,
           "note": "中 set"
         },
         "AhKs": {
-          "bet_75": 65,
-          "check": 35,
+          "bet_75": 63,
+          "check": 37,
           "note": "堅果同花聽牌！"
         },
         "AhQs": {
-          "bet_75": 60,
-          "check": 40,
+          "bet_75": 58,
+          "check": 42,
           "note": "同花聽牌 + A高"
         },
         "KhJs": {
-          "bet_75": 55,
-          "check": 45,
+          "bet_75": 53,
+          "check": 47,
           "note": "同花聽牌 + 對子"
         },
         "AKo": {
-          "check": 85,
-          "bet_75": 15,
+          "check": 87,
+          "bet_75": 13,
           "note": "沒有紅心，傾向 check"
         },
         "QQ": {
-          "check": 75,
-          "bet_75": 25,
+          "check": 77,
+          "bet_75": 23,
           "note": "overpair 但沒有紅心"
         },
         "KQo": {
-          "check": 90,
-          "bet_75": 10,
+          "check": 92,
+          "bet_75": 8,
           "note": "空氣，沒有後門"
         }
       }
@@ -3237,78 +3238,78 @@
       "texture_zh": "同花牌面",
       "strategies": {
         "AhKh": {
-          "bet_75": 90,
-          "check": 10,
+          "bet_75": 88,
+          "check": 12,
           "note": "堅果同花！"
         },
         "AhQh": {
-          "bet_75": 85,
-          "check": 15,
+          "bet_75": 83,
+          "check": 17,
           "note": "第二堅果同花"
         },
         "Ah2h": {
-          "bet_75": 80,
-          "check": 20,
+          "bet_75": 78,
+          "check": 22,
           "note": "同花"
         },
         "KhQh": {
-          "bet_75": 80,
-          "check": 20,
+          "bet_75": 78,
+          "check": 22,
           "note": "同花"
         },
         "9h8h": {
-          "bet_75": 75,
-          "check": 25,
+          "bet_75": 73,
+          "check": 27,
           "note": "同花"
         },
         "AA": {
-          "bet_75": 35,
-          "check": 65,
+          "bet_75": 33,
+          "check": 67,
           "note": "overpair 但危險"
         },
         "KK": {
-          "bet_75": 30,
-          "check": 70,
+          "bet_75": 28,
+          "check": 72,
           "note": "overpair 更危險"
         },
         "JJ": {
-          "bet_75": 50,
-          "check": 50,
+          "bet_75": 48,
+          "check": 52,
           "note": "頂 set，但要小心同花"
         },
         "77": {
-          "bet_75": 45,
-          "check": 55,
+          "bet_75": 43,
+          "check": 57,
           "note": "中 set"
         },
         "AhKs": {
-          "bet_75": 65,
-          "check": 35,
+          "bet_75": 63,
+          "check": 37,
           "note": "堅果同花聽牌！"
         },
         "AhQs": {
-          "bet_75": 60,
-          "check": 40,
+          "bet_75": 58,
+          "check": 42,
           "note": "同花聽牌 + A高"
         },
         "KhJs": {
-          "bet_75": 55,
-          "check": 45,
+          "bet_75": 53,
+          "check": 47,
           "note": "同花聽牌 + 對子"
         },
         "AKo": {
-          "check": 85,
-          "bet_75": 15,
+          "check": 87,
+          "bet_75": 13,
           "note": "沒有紅心，傾向 check"
         },
         "QQ": {
-          "check": 75,
-          "bet_75": 25,
+          "check": 77,
+          "bet_75": 23,
           "note": "overpair 但沒有紅心"
         },
         "KQo": {
-          "check": 90,
-          "bet_75": 10,
+          "check": 92,
+          "bet_75": 8,
           "note": "空氣，沒有後門"
         }
       }
@@ -3327,78 +3328,78 @@
       "texture_zh": "同花牌面",
       "strategies": {
         "AhKh": {
-          "bet_75": 90,
-          "check": 10,
+          "bet_75": 88,
+          "check": 12,
           "note": "堅果同花！"
         },
         "AhQh": {
-          "bet_75": 85,
-          "check": 15,
+          "bet_75": 83,
+          "check": 17,
           "note": "第二堅果同花"
         },
         "Ah2h": {
-          "bet_75": 80,
-          "check": 20,
+          "bet_75": 78,
+          "check": 22,
           "note": "同花"
         },
         "KhQh": {
-          "bet_75": 80,
-          "check": 20,
+          "bet_75": 78,
+          "check": 22,
           "note": "同花"
         },
         "9h8h": {
-          "bet_75": 75,
-          "check": 25,
+          "bet_75": 73,
+          "check": 27,
           "note": "同花"
         },
         "AA": {
-          "bet_75": 35,
-          "check": 65,
+          "bet_75": 33,
+          "check": 67,
           "note": "overpair 但危險"
         },
         "KK": {
-          "bet_75": 30,
-          "check": 70,
+          "bet_75": 28,
+          "check": 72,
           "note": "overpair 更危險"
         },
         "JJ": {
-          "bet_75": 50,
-          "check": 50,
+          "bet_75": 48,
+          "check": 52,
           "note": "頂 set，但要小心同花"
         },
         "77": {
-          "bet_75": 45,
-          "check": 55,
+          "bet_75": 43,
+          "check": 57,
           "note": "中 set"
         },
         "AhKs": {
-          "bet_75": 65,
-          "check": 35,
+          "bet_75": 63,
+          "check": 37,
           "note": "堅果同花聽牌！"
         },
         "AhQs": {
-          "bet_75": 60,
-          "check": 40,
+          "bet_75": 58,
+          "check": 42,
           "note": "同花聽牌 + A高"
         },
         "KhJs": {
-          "bet_75": 55,
-          "check": 45,
+          "bet_75": 53,
+          "check": 47,
           "note": "同花聽牌 + 對子"
         },
         "AKo": {
-          "check": 85,
-          "bet_75": 15,
+          "check": 87,
+          "bet_75": 13,
           "note": "沒有紅心，傾向 check"
         },
         "QQ": {
-          "check": 75,
-          "bet_75": 25,
+          "check": 77,
+          "bet_75": 23,
           "note": "overpair 但沒有紅心"
         },
         "KQo": {
-          "check": 90,
-          "bet_75": 10,
+          "check": 92,
+          "bet_75": 8,
           "note": "空氣，沒有後門"
         }
       }
@@ -3417,78 +3418,78 @@
       "texture_zh": "雙色高牌面",
       "strategies": {
         "AA": {
-          "bet_50": 80,
-          "check": 20,
+          "bet_50": 78,
+          "check": 22,
           "note": "頂 set"
         },
         "KK": {
-          "bet_50": 75,
-          "check": 25,
+          "bet_50": 73,
+          "check": 27,
           "note": "中 set"
         },
         "AKs": {
-          "bet_50": 85,
-          "check": 15,
+          "bet_50": 83,
+          "check": 17,
           "note": "兩對！"
         },
         "AKo": {
-          "bet_50": 80,
-          "check": 20,
+          "bet_50": 78,
+          "check": 22,
           "note": "兩對！"
         },
         "AQs": {
-          "bet_50": 75,
-          "check": 25,
+          "bet_50": 73,
+          "check": 27,
           "note": "頂對好踢腳"
         },
         "AQo": {
-          "bet_50": 70,
-          "check": 30,
+          "bet_50": 68,
+          "check": 32,
           "note": "頂對"
         },
         "AJs": {
-          "bet_50": 70,
-          "check": 30,
+          "bet_50": 68,
+          "check": 32,
           "note": "頂對"
         },
         "KQs": {
-          "bet_50": 65,
-          "check": 35,
+          "bet_50": 63,
+          "check": 37,
           "note": "第二對好踢腳"
         },
         "KQo": {
-          "bet_50": 60,
-          "check": 40,
+          "bet_50": 58,
+          "check": 42,
           "note": "第二對"
         },
         "QhJh": {
-          "bet_50": 70,
-          "check": 30,
+          "bet_50": 68,
+          "check": 32,
           "note": "同花聽牌 + 兩高張"
         },
         "ThJh": {
-          "bet_50": 65,
-          "check": 35,
+          "bet_50": 63,
+          "check": 37,
           "note": "同花聽牌"
         },
         "QQ": {
-          "bet_50": 50,
-          "check": 50,
+          "bet_50": 48,
+          "check": 52,
           "note": "underpair"
         },
         "JJ": {
-          "bet_50": 40,
-          "check": 60,
+          "bet_50": 38,
+          "check": 62,
           "note": "underpair"
         },
         "77": {
-          "bet_50": 75,
-          "check": 25,
+          "bet_50": 73,
+          "check": 27,
           "note": "底 set"
         },
         "JTs": {
-          "bet_50": 45,
-          "check": 55,
+          "bet_50": 43,
+          "check": 57,
           "note": "卡順聽牌"
         }
       }
@@ -3507,78 +3508,78 @@
       "texture_zh": "雙色高牌面",
       "strategies": {
         "AA": {
-          "bet_50": 80,
-          "check": 20,
+          "bet_50": 78,
+          "check": 22,
           "note": "頂 set"
         },
         "KK": {
-          "bet_50": 75,
-          "check": 25,
+          "bet_50": 73,
+          "check": 27,
           "note": "中 set"
         },
         "AKs": {
-          "bet_50": 85,
-          "check": 15,
+          "bet_50": 83,
+          "check": 17,
           "note": "兩對！"
         },
         "AKo": {
-          "bet_50": 80,
-          "check": 20,
+          "bet_50": 78,
+          "check": 22,
           "note": "兩對！"
         },
         "AQs": {
-          "bet_50": 75,
-          "check": 25,
+          "bet_50": 73,
+          "check": 27,
           "note": "頂對好踢腳"
         },
         "AQo": {
-          "bet_50": 70,
-          "check": 30,
+          "bet_50": 68,
+          "check": 32,
           "note": "頂對"
         },
         "AJs": {
-          "bet_50": 70,
-          "check": 30,
+          "bet_50": 68,
+          "check": 32,
           "note": "頂對"
         },
         "KQs": {
-          "bet_50": 65,
-          "check": 35,
+          "bet_50": 63,
+          "check": 37,
           "note": "第二對好踢腳"
         },
         "KQo": {
-          "bet_50": 60,
-          "check": 40,
+          "bet_50": 58,
+          "check": 42,
           "note": "第二對"
         },
         "QhJh": {
-          "bet_50": 70,
-          "check": 30,
+          "bet_50": 68,
+          "check": 32,
           "note": "同花聽牌 + 兩高張"
         },
         "ThJh": {
-          "bet_50": 65,
-          "check": 35,
+          "bet_50": 63,
+          "check": 37,
           "note": "同花聽牌"
         },
         "QQ": {
-          "bet_50": 50,
-          "check": 50,
+          "bet_50": 48,
+          "check": 52,
           "note": "underpair"
         },
         "JJ": {
-          "bet_50": 40,
-          "check": 60,
+          "bet_50": 38,
+          "check": 62,
           "note": "underpair"
         },
         "77": {
-          "bet_50": 75,
-          "check": 25,
+          "bet_50": 73,
+          "check": 27,
           "note": "底 set"
         },
         "JTs": {
-          "bet_50": 45,
-          "check": 55,
+          "bet_50": 43,
+          "check": 57,
           "note": "卡順聽牌"
         }
       }
@@ -3597,78 +3598,78 @@
       "texture_zh": "雙色高牌面",
       "strategies": {
         "AA": {
-          "bet_50": 80,
-          "check": 20,
+          "bet_50": 78,
+          "check": 22,
           "note": "頂 set"
         },
         "KK": {
-          "bet_50": 75,
-          "check": 25,
+          "bet_50": 73,
+          "check": 27,
           "note": "中 set"
         },
         "AKs": {
-          "bet_50": 85,
-          "check": 15,
+          "bet_50": 83,
+          "check": 17,
           "note": "兩對！"
         },
         "AKo": {
-          "bet_50": 80,
-          "check": 20,
+          "bet_50": 78,
+          "check": 22,
           "note": "兩對！"
         },
         "AQs": {
-          "bet_50": 75,
-          "check": 25,
+          "bet_50": 73,
+          "check": 27,
           "note": "頂對好踢腳"
         },
         "AQo": {
-          "bet_50": 70,
-          "check": 30,
+          "bet_50": 68,
+          "check": 32,
           "note": "頂對"
         },
         "AJs": {
-          "bet_50": 70,
-          "check": 30,
+          "bet_50": 68,
+          "check": 32,
           "note": "頂對"
         },
         "KQs": {
-          "bet_50": 65,
-          "check": 35,
+          "bet_50": 63,
+          "check": 37,
           "note": "第二對好踢腳"
         },
         "KQo": {
-          "bet_50": 60,
-          "check": 40,
+          "bet_50": 58,
+          "check": 42,
           "note": "第二對"
         },
         "QhJh": {
-          "bet_50": 70,
-          "check": 30,
+          "bet_50": 68,
+          "check": 32,
           "note": "同花聽牌 + 兩高張"
         },
         "ThJh": {
-          "bet_50": 65,
-          "check": 35,
+          "bet_50": 63,
+          "check": 37,
           "note": "同花聽牌"
         },
         "QQ": {
-          "bet_50": 50,
-          "check": 50,
+          "bet_50": 48,
+          "check": 52,
           "note": "underpair"
         },
         "JJ": {
-          "bet_50": 40,
-          "check": 60,
+          "bet_50": 38,
+          "check": 62,
           "note": "underpair"
         },
         "77": {
-          "bet_50": 75,
-          "check": 25,
+          "bet_50": 73,
+          "check": 27,
           "note": "底 set"
         },
         "JTs": {
-          "bet_50": 45,
-          "check": 55,
+          "bet_50": 43,
+          "check": 57,
           "note": "卡順聽牌"
         }
       }
@@ -3687,78 +3688,78 @@
       "texture_zh": "雙色高牌面",
       "strategies": {
         "AA": {
-          "bet_50": 80,
-          "check": 20,
+          "bet_50": 78,
+          "check": 22,
           "note": "頂 set"
         },
         "KK": {
-          "bet_50": 75,
-          "check": 25,
+          "bet_50": 73,
+          "check": 27,
           "note": "中 set"
         },
         "AKs": {
-          "bet_50": 85,
-          "check": 15,
+          "bet_50": 83,
+          "check": 17,
           "note": "兩對！"
         },
         "AKo": {
-          "bet_50": 80,
-          "check": 20,
+          "bet_50": 78,
+          "check": 22,
           "note": "兩對！"
         },
         "AQs": {
-          "bet_50": 75,
-          "check": 25,
+          "bet_50": 73,
+          "check": 27,
           "note": "頂對好踢腳"
         },
         "AQo": {
-          "bet_50": 70,
-          "check": 30,
+          "bet_50": 68,
+          "check": 32,
           "note": "頂對"
         },
         "AJs": {
-          "bet_50": 70,
-          "check": 30,
+          "bet_50": 68,
+          "check": 32,
           "note": "頂對"
         },
         "KQs": {
-          "bet_50": 65,
-          "check": 35,
+          "bet_50": 63,
+          "check": 37,
           "note": "第二對好踢腳"
         },
         "KQo": {
-          "bet_50": 60,
-          "check": 40,
+          "bet_50": 58,
+          "check": 42,
           "note": "第二對"
         },
         "QhJh": {
-          "bet_50": 70,
-          "check": 30,
+          "bet_50": 68,
+          "check": 32,
           "note": "同花聽牌 + 兩高張"
         },
         "ThJh": {
-          "bet_50": 65,
-          "check": 35,
+          "bet_50": 63,
+          "check": 37,
           "note": "同花聽牌"
         },
         "QQ": {
-          "bet_50": 50,
-          "check": 50,
+          "bet_50": 48,
+          "check": 52,
           "note": "underpair"
         },
         "JJ": {
-          "bet_50": 40,
-          "check": 60,
+          "bet_50": 38,
+          "check": 62,
           "note": "underpair"
         },
         "77": {
-          "bet_50": 75,
-          "check": 25,
+          "bet_50": 73,
+          "check": 27,
           "note": "底 set"
         },
         "JTs": {
-          "bet_50": 45,
-          "check": 55,
+          "bet_50": 43,
+          "check": 57,
           "note": "卡順聽牌"
         }
       }
@@ -3777,78 +3778,78 @@
       "texture_zh": "雙色高牌面",
       "strategies": {
         "AA": {
-          "bet_50": 80,
-          "check": 20,
+          "bet_50": 78,
+          "check": 22,
           "note": "頂 set"
         },
         "KK": {
-          "bet_50": 75,
-          "check": 25,
+          "bet_50": 73,
+          "check": 27,
           "note": "中 set"
         },
         "AKs": {
-          "bet_50": 85,
-          "check": 15,
+          "bet_50": 83,
+          "check": 17,
           "note": "兩對！"
         },
         "AKo": {
-          "bet_50": 80,
-          "check": 20,
+          "bet_50": 78,
+          "check": 22,
           "note": "兩對！"
         },
         "AQs": {
-          "bet_50": 75,
-          "check": 25,
+          "bet_50": 73,
+          "check": 27,
           "note": "頂對好踢腳"
         },
         "AQo": {
-          "bet_50": 70,
-          "check": 30,
+          "bet_50": 68,
+          "check": 32,
           "note": "頂對"
         },
         "AJs": {
-          "bet_50": 70,
-          "check": 30,
+          "bet_50": 68,
+          "check": 32,
           "note": "頂對"
         },
         "KQs": {
-          "bet_50": 65,
-          "check": 35,
+          "bet_50": 63,
+          "check": 37,
           "note": "第二對好踢腳"
         },
         "KQo": {
-          "bet_50": 60,
-          "check": 40,
+          "bet_50": 58,
+          "check": 42,
           "note": "第二對"
         },
         "QhJh": {
-          "bet_50": 70,
-          "check": 30,
+          "bet_50": 68,
+          "check": 32,
           "note": "同花聽牌 + 兩高張"
         },
         "ThJh": {
-          "bet_50": 65,
-          "check": 35,
+          "bet_50": 63,
+          "check": 37,
           "note": "同花聽牌"
         },
         "QQ": {
-          "bet_50": 50,
-          "check": 50,
+          "bet_50": 48,
+          "check": 52,
           "note": "underpair"
         },
         "JJ": {
-          "bet_50": 40,
-          "check": 60,
+          "bet_50": 38,
+          "check": 62,
           "note": "underpair"
         },
         "77": {
-          "bet_50": 75,
-          "check": 25,
+          "bet_50": 73,
+          "check": 27,
           "note": "底 set"
         },
         "JTs": {
-          "bet_50": 45,
-          "check": 55,
+          "bet_50": 43,
+          "check": 57,
           "note": "卡順聽牌"
         }
       }
@@ -3867,83 +3868,83 @@
       "texture_zh": "雙色低牌面",
       "strategies": {
         "AA": {
-          "bet_50": 50,
-          "check": 50,
+          "bet_50": 48,
+          "check": 52,
           "note": "overpair 但危險牌面"
         },
         "KK": {
-          "bet_50": 45,
-          "check": 55,
+          "bet_50": 43,
+          "check": 57,
           "note": "overpair，混合"
         },
         "QQ": {
-          "bet_50": 40,
-          "check": 60,
+          "bet_50": 38,
+          "check": 62,
           "note": "overpair，傾向 check"
         },
         "JJ": {
-          "bet_50": 35,
-          "check": 65,
+          "bet_50": 33,
+          "check": 67,
           "note": "overpair，更多 check"
         },
         "TT": {
-          "bet_50": 35,
-          "check": 65,
+          "bet_50": 33,
+          "check": 67,
           "note": "overpair"
         },
         "99": {
-          "bet_50": 30,
-          "check": 70,
+          "bet_50": 28,
+          "check": 72,
           "note": "overpair 邊緣"
         },
         "88": {
-          "bet_50": 80,
-          "check": 20,
+          "bet_50": 78,
+          "check": 22,
           "note": "頂 set！"
         },
         "66": {
-          "bet_50": 75,
-          "check": 25,
+          "bet_50": 73,
+          "check": 27,
           "note": "中 set"
         },
         "22": {
-          "bet_50": 70,
-          "check": 30,
+          "bet_50": 68,
+          "check": 32,
           "note": "底 set"
         },
         "A8s": {
-          "bet_50": 65,
-          "check": 35,
+          "bet_50": 63,
+          "check": 37,
           "note": "頂對"
         },
         "87s": {
-          "bet_50": 70,
-          "check": 30,
+          "bet_50": 68,
+          "check": 32,
           "note": "兩對"
         },
         "AhKh": {
-          "bet_50": 60,
-          "check": 40,
+          "bet_50": 58,
+          "check": 42,
           "note": "堅果同花聽牌！好 bluff"
         },
         "AhQh": {
-          "bet_50": 55,
-          "check": 45,
+          "bet_50": 53,
+          "check": 47,
           "note": "同花聽牌 + overcards"
         },
         "AKo": {
-          "check": 80,
-          "bet_50": 20,
+          "check": 82,
+          "bet_50": 18,
           "note": "空氣，很少 bet"
         },
         "KQo": {
-          "check": 85,
-          "bet_50": 15,
+          "check": 87,
+          "bet_50": 13,
           "note": "空氣"
         },
         "76s": {
-          "bet_50": 75,
-          "check": 25,
+          "bet_50": 73,
+          "check": 27,
           "note": "順子聽牌 + 對子"
         }
       }
@@ -3962,83 +3963,83 @@
       "texture_zh": "雙色低牌面",
       "strategies": {
         "AA": {
-          "bet_50": 50,
-          "check": 50,
+          "bet_50": 48,
+          "check": 52,
           "note": "overpair 但危險牌面"
         },
         "KK": {
-          "bet_50": 45,
-          "check": 55,
+          "bet_50": 43,
+          "check": 57,
           "note": "overpair，混合"
         },
         "QQ": {
-          "bet_50": 40,
-          "check": 60,
+          "bet_50": 38,
+          "check": 62,
           "note": "overpair，傾向 check"
         },
         "JJ": {
-          "bet_50": 35,
-          "check": 65,
+          "bet_50": 33,
+          "check": 67,
           "note": "overpair，更多 check"
         },
         "TT": {
-          "bet_50": 35,
-          "check": 65,
+          "bet_50": 33,
+          "check": 67,
           "note": "overpair"
         },
         "99": {
-          "bet_50": 30,
-          "check": 70,
+          "bet_50": 28,
+          "check": 72,
           "note": "overpair 邊緣"
         },
         "88": {
-          "bet_50": 80,
-          "check": 20,
+          "bet_50": 78,
+          "check": 22,
           "note": "頂 set！"
         },
         "66": {
-          "bet_50": 75,
-          "check": 25,
+          "bet_50": 73,
+          "check": 27,
           "note": "中 set"
         },
         "22": {
-          "bet_50": 70,
-          "check": 30,
+          "bet_50": 68,
+          "check": 32,
           "note": "底 set"
         },
         "A8s": {
-          "bet_50": 65,
-          "check": 35,
+          "bet_50": 63,
+          "check": 37,
           "note": "頂對"
         },
         "87s": {
-          "bet_50": 70,
-          "check": 30,
+          "bet_50": 68,
+          "check": 32,
           "note": "兩對"
         },
         "AhKh": {
-          "bet_50": 60,
-          "check": 40,
+          "bet_50": 58,
+          "check": 42,
           "note": "堅果同花聽牌！好 bluff"
         },
         "AhQh": {
-          "bet_50": 55,
-          "check": 45,
+          "bet_50": 53,
+          "check": 47,
           "note": "同花聽牌 + overcards"
         },
         "AKo": {
-          "check": 80,
-          "bet_50": 20,
+          "check": 82,
+          "bet_50": 18,
           "note": "空氣，很少 bet"
         },
         "KQo": {
-          "check": 85,
-          "bet_50": 15,
+          "check": 87,
+          "bet_50": 13,
           "note": "空氣"
         },
         "76s": {
-          "bet_50": 75,
-          "check": 25,
+          "bet_50": 73,
+          "check": 27,
           "note": "順子聽牌 + 對子"
         }
       }
@@ -4057,83 +4058,83 @@
       "texture_zh": "雙色低牌面",
       "strategies": {
         "AA": {
-          "bet_50": 50,
-          "check": 50,
+          "bet_50": 48,
+          "check": 52,
           "note": "overpair 但危險牌面"
         },
         "KK": {
-          "bet_50": 45,
-          "check": 55,
+          "bet_50": 43,
+          "check": 57,
           "note": "overpair，混合"
         },
         "QQ": {
-          "bet_50": 40,
-          "check": 60,
+          "bet_50": 38,
+          "check": 62,
           "note": "overpair，傾向 check"
         },
         "JJ": {
-          "bet_50": 35,
-          "check": 65,
+          "bet_50": 33,
+          "check": 67,
           "note": "overpair，更多 check"
         },
         "TT": {
-          "bet_50": 35,
-          "check": 65,
+          "bet_50": 33,
+          "check": 67,
           "note": "overpair"
         },
         "99": {
-          "bet_50": 30,
-          "check": 70,
+          "bet_50": 28,
+          "check": 72,
           "note": "overpair 邊緣"
         },
         "88": {
-          "bet_50": 80,
-          "check": 20,
+          "bet_50": 78,
+          "check": 22,
           "note": "頂 set！"
         },
         "66": {
-          "bet_50": 75,
-          "check": 25,
+          "bet_50": 73,
+          "check": 27,
           "note": "中 set"
         },
         "22": {
-          "bet_50": 70,
-          "check": 30,
+          "bet_50": 68,
+          "check": 32,
           "note": "底 set"
         },
         "A8s": {
-          "bet_50": 65,
-          "check": 35,
+          "bet_50": 63,
+          "check": 37,
           "note": "頂對"
         },
         "87s": {
-          "bet_50": 70,
-          "check": 30,
+          "bet_50": 68,
+          "check": 32,
           "note": "兩對"
         },
         "AhKh": {
-          "bet_50": 60,
-          "check": 40,
+          "bet_50": 58,
+          "check": 42,
           "note": "堅果同花聽牌！好 bluff"
         },
         "AhQh": {
-          "bet_50": 55,
-          "check": 45,
+          "bet_50": 53,
+          "check": 47,
           "note": "同花聽牌 + overcards"
         },
         "AKo": {
-          "check": 80,
-          "bet_50": 20,
+          "check": 82,
+          "bet_50": 18,
           "note": "空氣，很少 bet"
         },
         "KQo": {
-          "check": 85,
-          "bet_50": 15,
+          "check": 87,
+          "bet_50": 13,
           "note": "空氣"
         },
         "76s": {
-          "bet_50": 75,
-          "check": 25,
+          "bet_50": 73,
+          "check": 27,
           "note": "順子聽牌 + 對子"
         }
       }
@@ -4152,83 +4153,83 @@
       "texture_zh": "雙色低牌面",
       "strategies": {
         "AA": {
-          "bet_50": 50,
-          "check": 50,
+          "bet_50": 48,
+          "check": 52,
           "note": "overpair 但危險牌面"
         },
         "KK": {
-          "bet_50": 45,
-          "check": 55,
+          "bet_50": 43,
+          "check": 57,
           "note": "overpair，混合"
         },
         "QQ": {
-          "bet_50": 40,
-          "check": 60,
+          "bet_50": 38,
+          "check": 62,
           "note": "overpair，傾向 check"
         },
         "JJ": {
-          "bet_50": 35,
-          "check": 65,
+          "bet_50": 33,
+          "check": 67,
           "note": "overpair，更多 check"
         },
         "TT": {
-          "bet_50": 35,
-          "check": 65,
+          "bet_50": 33,
+          "check": 67,
           "note": "overpair"
         },
         "99": {
-          "bet_50": 30,
-          "check": 70,
+          "bet_50": 28,
+          "check": 72,
           "note": "overpair 邊緣"
         },
         "88": {
-          "bet_50": 80,
-          "check": 20,
+          "bet_50": 78,
+          "check": 22,
           "note": "頂 set！"
         },
         "66": {
-          "bet_50": 75,
-          "check": 25,
+          "bet_50": 73,
+          "check": 27,
           "note": "中 set"
         },
         "22": {
-          "bet_50": 70,
-          "check": 30,
+          "bet_50": 68,
+          "check": 32,
           "note": "底 set"
         },
         "A8s": {
-          "bet_50": 65,
-          "check": 35,
+          "bet_50": 63,
+          "check": 37,
           "note": "頂對"
         },
         "87s": {
-          "bet_50": 70,
-          "check": 30,
+          "bet_50": 68,
+          "check": 32,
           "note": "兩對"
         },
         "AhKh": {
-          "bet_50": 60,
-          "check": 40,
+          "bet_50": 58,
+          "check": 42,
           "note": "堅果同花聽牌！好 bluff"
         },
         "AhQh": {
-          "bet_50": 55,
-          "check": 45,
+          "bet_50": 53,
+          "check": 47,
           "note": "同花聽牌 + overcards"
         },
         "AKo": {
-          "check": 80,
-          "bet_50": 20,
+          "check": 82,
+          "bet_50": 18,
           "note": "空氣，很少 bet"
         },
         "KQo": {
-          "check": 85,
-          "bet_50": 15,
+          "check": 87,
+          "bet_50": 13,
           "note": "空氣"
         },
         "76s": {
-          "bet_50": 75,
-          "check": 25,
+          "bet_50": 73,
+          "check": 27,
           "note": "順子聽牌 + 對子"
         }
       }
@@ -4247,83 +4248,83 @@
       "texture_zh": "雙色低牌面",
       "strategies": {
         "AA": {
-          "bet_50": 50,
-          "check": 50,
+          "bet_50": 48,
+          "check": 52,
           "note": "overpair 但危險牌面"
         },
         "KK": {
-          "bet_50": 45,
-          "check": 55,
+          "bet_50": 43,
+          "check": 57,
           "note": "overpair，混合"
         },
         "QQ": {
-          "bet_50": 40,
-          "check": 60,
+          "bet_50": 38,
+          "check": 62,
           "note": "overpair，傾向 check"
         },
         "JJ": {
-          "bet_50": 35,
-          "check": 65,
+          "bet_50": 33,
+          "check": 67,
           "note": "overpair，更多 check"
         },
         "TT": {
-          "bet_50": 35,
-          "check": 65,
+          "bet_50": 33,
+          "check": 67,
           "note": "overpair"
         },
         "99": {
-          "bet_50": 30,
-          "check": 70,
+          "bet_50": 28,
+          "check": 72,
           "note": "overpair 邊緣"
         },
         "88": {
-          "bet_50": 80,
-          "check": 20,
+          "bet_50": 78,
+          "check": 22,
           "note": "頂 set！"
         },
         "66": {
-          "bet_50": 75,
-          "check": 25,
+          "bet_50": 73,
+          "check": 27,
           "note": "中 set"
         },
         "22": {
-          "bet_50": 70,
-          "check": 30,
+          "bet_50": 68,
+          "check": 32,
           "note": "底 set"
         },
         "A8s": {
-          "bet_50": 65,
-          "check": 35,
+          "bet_50": 63,
+          "check": 37,
           "note": "頂對"
         },
         "87s": {
-          "bet_50": 70,
-          "check": 30,
+          "bet_50": 68,
+          "check": 32,
           "note": "兩對"
         },
         "AhKh": {
-          "bet_50": 60,
-          "check": 40,
+          "bet_50": 58,
+          "check": 42,
           "note": "堅果同花聽牌！好 bluff"
         },
         "AhQh": {
-          "bet_50": 55,
-          "check": 45,
+          "bet_50": 53,
+          "check": 47,
           "note": "同花聽牌 + overcards"
         },
         "AKo": {
-          "check": 80,
-          "bet_50": 20,
+          "check": 82,
+          "bet_50": 18,
           "note": "空氣，很少 bet"
         },
         "KQo": {
-          "check": 85,
-          "bet_50": 15,
+          "check": 87,
+          "bet_50": 13,
           "note": "空氣"
         },
         "76s": {
-          "bet_50": 75,
-          "check": 25,
+          "bet_50": 73,
+          "check": 27,
           "note": "順子聽牌 + 對子"
         }
       }
@@ -4342,83 +4343,83 @@
       "texture_zh": "高連接牌面",
       "strategies": {
         "AKs": {
-          "bet_75": 85,
-          "check": 15,
+          "bet_75": 83,
+          "check": 17,
           "note": "堅果順子！"
         },
         "AKo": {
-          "bet_75": 80,
-          "check": 20,
+          "bet_75": 78,
+          "check": 22,
           "note": "堅果順子"
         },
         "K9s": {
-          "bet_75": 80,
-          "check": 20,
+          "bet_75": 78,
+          "check": 22,
           "note": "第二堅果順子"
         },
         "98s": {
-          "bet_75": 75,
-          "check": 25,
+          "bet_75": 73,
+          "check": 27,
           "note": "順子"
         },
         "AA": {
-          "bet_75": 60,
-          "check": 40,
+          "bet_75": 58,
+          "check": 42,
           "note": "overpair 但很多順子在場"
         },
         "KK": {
-          "bet_75": 55,
-          "check": 45,
+          "bet_75": 53,
+          "check": 47,
           "note": "overpair + 卡順聽牌"
         },
         "QQ": {
-          "bet_75": 70,
-          "check": 30,
+          "bet_75": 68,
+          "check": 32,
           "note": "頂 set"
         },
         "JJ": {
-          "bet_75": 65,
-          "check": 30,
+          "bet_75": 63,
+          "check": 32,
           "note": "中 set"
         },
         "TT": {
-          "bet_75": 65,
-          "check": 35,
+          "bet_75": 63,
+          "check": 37,
           "note": "底 set"
         },
         "AQs": {
-          "bet_75": 75,
-          "check": 25,
+          "bet_75": 73,
+          "check": 27,
           "note": "頂對 + 堅果聽牌"
         },
         "AQo": {
-          "bet_75": 70,
-          "check": 30,
+          "bet_75": 68,
+          "check": 32,
           "note": "頂對 + 堅果聽牌"
         },
         "KQs": {
-          "bet_75": 70,
-          "check": 30,
+          "bet_75": 68,
+          "check": 32,
           "note": "頂對 + 順子聽牌"
         },
         "QTs": {
-          "bet_75": 65,
-          "check": 35,
+          "bet_75": 63,
+          "check": 37,
           "note": "兩對"
         },
         "JTs": {
-          "bet_75": 65,
-          "check": 35,
+          "bet_75": 63,
+          "check": 37,
           "note": "兩對"
         },
         "A9s": {
-          "bet_75": 60,
-          "check": 40,
+          "bet_75": 58,
+          "check": 42,
           "note": "開放式順子聽牌"
         },
         "87s": {
-          "bet_75": 45,
-          "check": 55,
+          "bet_75": 43,
+          "check": 57,
           "note": "開放式順子聽牌"
         }
       }
@@ -4437,83 +4438,83 @@
       "texture_zh": "高連接牌面",
       "strategies": {
         "AKs": {
-          "bet_75": 85,
-          "check": 15,
+          "bet_75": 83,
+          "check": 17,
           "note": "堅果順子！"
         },
         "AKo": {
-          "bet_75": 80,
-          "check": 20,
+          "bet_75": 78,
+          "check": 22,
           "note": "堅果順子"
         },
         "K9s": {
-          "bet_75": 80,
-          "check": 20,
+          "bet_75": 78,
+          "check": 22,
           "note": "第二堅果順子"
         },
         "98s": {
-          "bet_75": 75,
-          "check": 25,
+          "bet_75": 73,
+          "check": 27,
           "note": "順子"
         },
         "AA": {
-          "bet_75": 60,
-          "check": 40,
+          "bet_75": 58,
+          "check": 42,
           "note": "overpair 但很多順子在場"
         },
         "KK": {
-          "bet_75": 55,
-          "check": 45,
+          "bet_75": 53,
+          "check": 47,
           "note": "overpair + 卡順聽牌"
         },
         "QQ": {
-          "bet_75": 70,
-          "check": 30,
+          "bet_75": 68,
+          "check": 32,
           "note": "頂 set"
         },
         "JJ": {
-          "bet_75": 65,
-          "check": 30,
+          "bet_75": 63,
+          "check": 32,
           "note": "中 set"
         },
         "TT": {
-          "bet_75": 65,
-          "check": 35,
+          "bet_75": 63,
+          "check": 37,
           "note": "底 set"
         },
         "AQs": {
-          "bet_75": 75,
-          "check": 25,
+          "bet_75": 73,
+          "check": 27,
           "note": "頂對 + 堅果聽牌"
         },
         "AQo": {
-          "bet_75": 70,
-          "check": 30,
+          "bet_75": 68,
+          "check": 32,
           "note": "頂對 + 堅果聽牌"
         },
         "KQs": {
-          "bet_75": 70,
-          "check": 30,
+          "bet_75": 68,
+          "check": 32,
           "note": "頂對 + 順子聽牌"
         },
         "QTs": {
-          "bet_75": 65,
-          "check": 35,
+          "bet_75": 63,
+          "check": 37,
           "note": "兩對"
         },
         "JTs": {
-          "bet_75": 65,
-          "check": 35,
+          "bet_75": 63,
+          "check": 37,
           "note": "兩對"
         },
         "A9s": {
-          "bet_75": 60,
-          "check": 40,
+          "bet_75": 58,
+          "check": 42,
           "note": "開放式順子聽牌"
         },
         "87s": {
-          "bet_75": 45,
-          "check": 55,
+          "bet_75": 43,
+          "check": 57,
           "note": "開放式順子聽牌"
         }
       }
@@ -4532,83 +4533,83 @@
       "texture_zh": "高連接牌面",
       "strategies": {
         "AKs": {
-          "bet_75": 85,
-          "check": 15,
+          "bet_75": 83,
+          "check": 17,
           "note": "堅果順子！"
         },
         "AKo": {
-          "bet_75": 80,
-          "check": 20,
+          "bet_75": 78,
+          "check": 22,
           "note": "堅果順子"
         },
         "K9s": {
-          "bet_75": 80,
-          "check": 20,
+          "bet_75": 78,
+          "check": 22,
           "note": "第二堅果順子"
         },
         "98s": {
-          "bet_75": 75,
-          "check": 25,
+          "bet_75": 73,
+          "check": 27,
           "note": "順子"
         },
         "AA": {
-          "bet_75": 60,
-          "check": 40,
+          "bet_75": 58,
+          "check": 42,
           "note": "overpair 但很多順子在場"
         },
         "KK": {
-          "bet_75": 55,
-          "check": 45,
+          "bet_75": 53,
+          "check": 47,
           "note": "overpair + 卡順聽牌"
         },
         "QQ": {
-          "bet_75": 70,
-          "check": 30,
+          "bet_75": 68,
+          "check": 32,
           "note": "頂 set"
         },
         "JJ": {
-          "bet_75": 65,
-          "check": 30,
+          "bet_75": 63,
+          "check": 32,
           "note": "中 set"
         },
         "TT": {
-          "bet_75": 65,
-          "check": 35,
+          "bet_75": 63,
+          "check": 37,
           "note": "底 set"
         },
         "AQs": {
-          "bet_75": 75,
-          "check": 25,
+          "bet_75": 73,
+          "check": 27,
           "note": "頂對 + 堅果聽牌"
         },
         "AQo": {
-          "bet_75": 70,
-          "check": 30,
+          "bet_75": 68,
+          "check": 32,
           "note": "頂對 + 堅果聽牌"
         },
         "KQs": {
-          "bet_75": 70,
-          "check": 30,
+          "bet_75": 68,
+          "check": 32,
           "note": "頂對 + 順子聽牌"
         },
         "QTs": {
-          "bet_75": 65,
-          "check": 35,
+          "bet_75": 63,
+          "check": 37,
           "note": "兩對"
         },
         "JTs": {
-          "bet_75": 65,
-          "check": 35,
+          "bet_75": 63,
+          "check": 37,
           "note": "兩對"
         },
         "A9s": {
-          "bet_75": 60,
-          "check": 40,
+          "bet_75": 58,
+          "check": 42,
           "note": "開放式順子聽牌"
         },
         "87s": {
-          "bet_75": 45,
-          "check": 55,
+          "bet_75": 43,
+          "check": 57,
           "note": "開放式順子聽牌"
         }
       }
@@ -4627,83 +4628,83 @@
       "texture_zh": "高連接牌面",
       "strategies": {
         "AKs": {
-          "bet_75": 85,
-          "check": 15,
+          "bet_75": 83,
+          "check": 17,
           "note": "堅果順子！"
         },
         "AKo": {
-          "bet_75": 80,
-          "check": 20,
+          "bet_75": 78,
+          "check": 22,
           "note": "堅果順子"
         },
         "K9s": {
-          "bet_75": 80,
-          "check": 20,
+          "bet_75": 78,
+          "check": 22,
           "note": "第二堅果順子"
         },
         "98s": {
-          "bet_75": 75,
-          "check": 25,
+          "bet_75": 73,
+          "check": 27,
           "note": "順子"
         },
         "AA": {
-          "bet_75": 60,
-          "check": 40,
+          "bet_75": 58,
+          "check": 42,
           "note": "overpair 但很多順子在場"
         },
         "KK": {
-          "bet_75": 55,
-          "check": 45,
+          "bet_75": 53,
+          "check": 47,
           "note": "overpair + 卡順聽牌"
         },
         "QQ": {
-          "bet_75": 70,
-          "check": 30,
+          "bet_75": 68,
+          "check": 32,
           "note": "頂 set"
         },
         "JJ": {
-          "bet_75": 65,
-          "check": 30,
+          "bet_75": 63,
+          "check": 32,
           "note": "中 set"
         },
         "TT": {
-          "bet_75": 65,
-          "check": 35,
+          "bet_75": 63,
+          "check": 37,
           "note": "底 set"
         },
         "AQs": {
-          "bet_75": 75,
-          "check": 25,
+          "bet_75": 73,
+          "check": 27,
           "note": "頂對 + 堅果聽牌"
         },
         "AQo": {
-          "bet_75": 70,
-          "check": 30,
+          "bet_75": 68,
+          "check": 32,
           "note": "頂對 + 堅果聽牌"
         },
         "KQs": {
-          "bet_75": 70,
-          "check": 30,
+          "bet_75": 68,
+          "check": 32,
           "note": "頂對 + 順子聽牌"
         },
         "QTs": {
-          "bet_75": 65,
-          "check": 35,
+          "bet_75": 63,
+          "check": 37,
           "note": "兩對"
         },
         "JTs": {
-          "bet_75": 65,
-          "check": 35,
+          "bet_75": 63,
+          "check": 37,
           "note": "兩對"
         },
         "A9s": {
-          "bet_75": 60,
-          "check": 40,
+          "bet_75": 58,
+          "check": 42,
           "note": "開放式順子聽牌"
         },
         "87s": {
-          "bet_75": 45,
-          "check": 55,
+          "bet_75": 43,
+          "check": 57,
           "note": "開放式順子聽牌"
         }
       }
@@ -4722,83 +4723,83 @@
       "texture_zh": "高連接牌面",
       "strategies": {
         "AKs": {
-          "bet_75": 85,
-          "check": 15,
+          "bet_75": 83,
+          "check": 17,
           "note": "堅果順子！"
         },
         "AKo": {
-          "bet_75": 80,
-          "check": 20,
+          "bet_75": 78,
+          "check": 22,
           "note": "堅果順子"
         },
         "K9s": {
-          "bet_75": 80,
-          "check": 20,
+          "bet_75": 78,
+          "check": 22,
           "note": "第二堅果順子"
         },
         "98s": {
-          "bet_75": 75,
-          "check": 25,
+          "bet_75": 73,
+          "check": 27,
           "note": "順子"
         },
         "AA": {
-          "bet_75": 60,
-          "check": 40,
+          "bet_75": 58,
+          "check": 42,
           "note": "overpair 但很多順子在場"
         },
         "KK": {
-          "bet_75": 55,
-          "check": 45,
+          "bet_75": 53,
+          "check": 47,
           "note": "overpair + 卡順聽牌"
         },
         "QQ": {
-          "bet_75": 70,
-          "check": 30,
+          "bet_75": 68,
+          "check": 32,
           "note": "頂 set"
         },
         "JJ": {
-          "bet_75": 65,
-          "check": 30,
+          "bet_75": 63,
+          "check": 32,
           "note": "中 set"
         },
         "TT": {
-          "bet_75": 65,
-          "check": 35,
+          "bet_75": 63,
+          "check": 37,
           "note": "底 set"
         },
         "AQs": {
-          "bet_75": 75,
-          "check": 25,
+          "bet_75": 73,
+          "check": 27,
           "note": "頂對 + 堅果聽牌"
         },
         "AQo": {
-          "bet_75": 70,
-          "check": 30,
+          "bet_75": 68,
+          "check": 32,
           "note": "頂對 + 堅果聽牌"
         },
         "KQs": {
-          "bet_75": 70,
-          "check": 30,
+          "bet_75": 68,
+          "check": 32,
           "note": "頂對 + 順子聽牌"
         },
         "QTs": {
-          "bet_75": 65,
-          "check": 35,
+          "bet_75": 63,
+          "check": 37,
           "note": "兩對"
         },
         "JTs": {
-          "bet_75": 65,
-          "check": 35,
+          "bet_75": 63,
+          "check": 37,
           "note": "兩對"
         },
         "A9s": {
-          "bet_75": 60,
-          "check": 40,
+          "bet_75": 58,
+          "check": 42,
           "note": "開放式順子聽牌"
         },
         "87s": {
-          "bet_75": 45,
-          "check": 55,
+          "bet_75": 43,
+          "check": 57,
           "note": "開放式順子聽牌"
         }
       }
@@ -4817,88 +4818,88 @@
       "texture_zh": "中連接牌面",
       "strategies": {
         "JTs": {
-          "bet_75": 85,
-          "check": 15,
+          "bet_75": 83,
+          "check": 17,
           "note": "堅果順子！"
         },
         "JTo": {
-          "bet_75": 80,
-          "check": 20,
+          "bet_75": 78,
+          "check": 22,
           "note": "堅果順子"
         },
         "T6s": {
-          "bet_75": 75,
-          "check": 25,
+          "bet_75": 73,
+          "check": 27,
           "note": "順子"
         },
         "65s": {
-          "bet_75": 75,
-          "check": 25,
+          "bet_75": 73,
+          "check": 27,
           "note": "順子"
         },
         "AA": {
-          "bet_66": 45,
-          "check": 55,
+          "bet_66": 43,
+          "check": 57,
           "note": "overpair 但危險"
         },
         "KK": {
-          "bet_66": 40,
-          "check": 60,
+          "bet_66": 38,
+          "check": 62,
           "note": "overpair 更危險"
         },
         "QQ": {
-          "bet_66": 35,
-          "check": 65,
+          "bet_66": 33,
+          "check": 67,
           "note": "overpair，傾向 check"
         },
         "JJ": {
-          "bet_66": 50,
-          "check": 50,
+          "bet_66": 48,
+          "check": 52,
           "note": "overpair 邊緣"
         },
         "TT": {
-          "bet_66": 50,
-          "check": 50,
+          "bet_66": 48,
+          "check": 52,
           "note": "overpair 最低"
         },
         "99": {
-          "bet_66": 80,
-          "check": 20,
+          "bet_66": 78,
+          "check": 22,
           "note": "頂 set"
         },
         "88": {
-          "bet_66": 75,
-          "check": 25,
+          "bet_66": 73,
+          "check": 27,
           "note": "中 set"
         },
         "77": {
-          "bet_66": 70,
-          "check": 30,
+          "bet_66": 68,
+          "check": 32,
           "note": "底 set"
         },
         "QJs": {
-          "bet_66": 60,
-          "check": 40,
+          "bet_66": 58,
+          "check": 42,
           "note": "開放式順子聽牌"
         },
         "JT": {
-          "bet_66": 85,
-          "check": 15,
+          "bet_66": 83,
+          "check": 17,
           "note": "堅果！"
         },
         "T9s": {
-          "bet_66": 70,
-          "check": 30,
+          "bet_66": 68,
+          "check": 32,
           "note": "兩對"
         },
         "98s": {
-          "bet_66": 70,
-          "check": 30,
+          "bet_66": 68,
+          "check": 32,
           "note": "兩對"
         },
         "ATs": {
-          "bet_66": 50,
-          "check": 50,
+          "bet_66": 48,
+          "check": 52,
           "note": "卡順聽牌 + A高"
         }
       }
@@ -4917,88 +4918,88 @@
       "texture_zh": "中連接牌面",
       "strategies": {
         "JTs": {
-          "bet_75": 85,
-          "check": 15,
+          "bet_75": 83,
+          "check": 17,
           "note": "堅果順子！"
         },
         "JTo": {
-          "bet_75": 80,
-          "check": 20,
+          "bet_75": 78,
+          "check": 22,
           "note": "堅果順子"
         },
         "T6s": {
-          "bet_75": 75,
-          "check": 25,
+          "bet_75": 73,
+          "check": 27,
           "note": "順子"
         },
         "65s": {
-          "bet_75": 75,
-          "check": 25,
+          "bet_75": 73,
+          "check": 27,
           "note": "順子"
         },
         "AA": {
-          "bet_66": 45,
-          "check": 55,
+          "bet_66": 43,
+          "check": 57,
           "note": "overpair 但危險"
         },
         "KK": {
-          "bet_66": 40,
-          "check": 60,
+          "bet_66": 38,
+          "check": 62,
           "note": "overpair 更危險"
         },
         "QQ": {
-          "bet_66": 35,
-          "check": 65,
+          "bet_66": 33,
+          "check": 67,
           "note": "overpair，傾向 check"
         },
         "JJ": {
-          "bet_66": 50,
-          "check": 50,
+          "bet_66": 48,
+          "check": 52,
           "note": "overpair 邊緣"
         },
         "TT": {
-          "bet_66": 50,
-          "check": 50,
+          "bet_66": 48,
+          "check": 52,
           "note": "overpair 最低"
         },
         "99": {
-          "bet_66": 80,
-          "check": 20,
+          "bet_66": 78,
+          "check": 22,
           "note": "頂 set"
         },
         "88": {
-          "bet_66": 75,
-          "check": 25,
+          "bet_66": 73,
+          "check": 27,
           "note": "中 set"
         },
         "77": {
-          "bet_66": 70,
-          "check": 30,
+          "bet_66": 68,
+          "check": 32,
           "note": "底 set"
         },
         "QJs": {
-          "bet_66": 60,
-          "check": 40,
+          "bet_66": 58,
+          "check": 42,
           "note": "開放式順子聽牌"
         },
         "JT": {
-          "bet_66": 85,
-          "check": 15,
+          "bet_66": 83,
+          "check": 17,
           "note": "堅果！"
         },
         "T9s": {
-          "bet_66": 70,
-          "check": 30,
+          "bet_66": 68,
+          "check": 32,
           "note": "兩對"
         },
         "98s": {
-          "bet_66": 70,
-          "check": 30,
+          "bet_66": 68,
+          "check": 32,
           "note": "兩對"
         },
         "ATs": {
-          "bet_66": 50,
-          "check": 50,
+          "bet_66": 48,
+          "check": 52,
           "note": "卡順聽牌 + A高"
         }
       }
@@ -5017,88 +5018,88 @@
       "texture_zh": "中連接牌面",
       "strategies": {
         "JTs": {
-          "bet_75": 85,
-          "check": 15,
+          "bet_75": 83,
+          "check": 17,
           "note": "堅果順子！"
         },
         "JTo": {
-          "bet_75": 80,
-          "check": 20,
+          "bet_75": 78,
+          "check": 22,
           "note": "堅果順子"
         },
         "T6s": {
-          "bet_75": 75,
-          "check": 25,
+          "bet_75": 73,
+          "check": 27,
           "note": "順子"
         },
         "65s": {
-          "bet_75": 75,
-          "check": 25,
+          "bet_75": 73,
+          "check": 27,
           "note": "順子"
         },
         "AA": {
-          "bet_66": 45,
-          "check": 55,
+          "bet_66": 43,
+          "check": 57,
           "note": "overpair 但危險"
         },
         "KK": {
-          "bet_66": 40,
-          "check": 60,
+          "bet_66": 38,
+          "check": 62,
           "note": "overpair 更危險"
         },
         "QQ": {
-          "bet_66": 35,
-          "check": 65,
+          "bet_66": 33,
+          "check": 67,
           "note": "overpair，傾向 check"
         },
         "JJ": {
-          "bet_66": 50,
-          "check": 50,
+          "bet_66": 48,
+          "check": 52,
           "note": "overpair 邊緣"
         },
         "TT": {
-          "bet_66": 50,
-          "check": 50,
+          "bet_66": 48,
+          "check": 52,
           "note": "overpair 最低"
         },
         "99": {
-          "bet_66": 80,
-          "check": 20,
+          "bet_66": 78,
+          "check": 22,
           "note": "頂 set"
         },
         "88": {
-          "bet_66": 75,
-          "check": 25,
+          "bet_66": 73,
+          "check": 27,
           "note": "中 set"
         },
         "77": {
-          "bet_66": 70,
-          "check": 30,
+          "bet_66": 68,
+          "check": 32,
           "note": "底 set"
         },
         "QJs": {
-          "bet_66": 60,
-          "check": 40,
+          "bet_66": 58,
+          "check": 42,
           "note": "開放式順子聽牌"
         },
         "JT": {
-          "bet_66": 85,
-          "check": 15,
+          "bet_66": 83,
+          "check": 17,
           "note": "堅果！"
         },
         "T9s": {
-          "bet_66": 70,
-          "check": 30,
+          "bet_66": 68,
+          "check": 32,
           "note": "兩對"
         },
         "98s": {
-          "bet_66": 70,
-          "check": 30,
+          "bet_66": 68,
+          "check": 32,
           "note": "兩對"
         },
         "ATs": {
-          "bet_66": 50,
-          "check": 50,
+          "bet_66": 48,
+          "check": 52,
           "note": "卡順聽牌 + A高"
         }
       }
@@ -5117,88 +5118,88 @@
       "texture_zh": "中連接牌面",
       "strategies": {
         "JTs": {
-          "bet_75": 85,
-          "check": 15,
+          "bet_75": 83,
+          "check": 17,
           "note": "堅果順子！"
         },
         "JTo": {
-          "bet_75": 80,
-          "check": 20,
+          "bet_75": 78,
+          "check": 22,
           "note": "堅果順子"
         },
         "T6s": {
-          "bet_75": 75,
-          "check": 25,
+          "bet_75": 73,
+          "check": 27,
           "note": "順子"
         },
         "65s": {
-          "bet_75": 75,
-          "check": 25,
+          "bet_75": 73,
+          "check": 27,
           "note": "順子"
         },
         "AA": {
-          "bet_66": 45,
-          "check": 55,
+          "bet_66": 43,
+          "check": 57,
           "note": "overpair 但危險"
         },
         "KK": {
-          "bet_66": 40,
-          "check": 60,
+          "bet_66": 38,
+          "check": 62,
           "note": "overpair 更危險"
         },
         "QQ": {
-          "bet_66": 35,
-          "check": 65,
+          "bet_66": 33,
+          "check": 67,
           "note": "overpair，傾向 check"
         },
         "JJ": {
-          "bet_66": 50,
-          "check": 50,
+          "bet_66": 48,
+          "check": 52,
           "note": "overpair 邊緣"
         },
         "TT": {
-          "bet_66": 50,
-          "check": 50,
+          "bet_66": 48,
+          "check": 52,
           "note": "overpair 最低"
         },
         "99": {
-          "bet_66": 80,
-          "check": 20,
+          "bet_66": 78,
+          "check": 22,
           "note": "頂 set"
         },
         "88": {
-          "bet_66": 75,
-          "check": 25,
+          "bet_66": 73,
+          "check": 27,
           "note": "中 set"
         },
         "77": {
-          "bet_66": 70,
-          "check": 30,
+          "bet_66": 68,
+          "check": 32,
           "note": "底 set"
         },
         "QJs": {
-          "bet_66": 60,
-          "check": 40,
+          "bet_66": 58,
+          "check": 42,
           "note": "開放式順子聽牌"
         },
         "JT": {
-          "bet_66": 85,
-          "check": 15,
+          "bet_66": 83,
+          "check": 17,
           "note": "堅果！"
         },
         "T9s": {
-          "bet_66": 70,
-          "check": 30,
+          "bet_66": 68,
+          "check": 32,
           "note": "兩對"
         },
         "98s": {
-          "bet_66": 70,
-          "check": 30,
+          "bet_66": 68,
+          "check": 32,
           "note": "兩對"
         },
         "ATs": {
-          "bet_66": 50,
-          "check": 50,
+          "bet_66": 48,
+          "check": 52,
           "note": "卡順聽牌 + A高"
         }
       }
@@ -5217,88 +5218,88 @@
       "texture_zh": "中連接牌面",
       "strategies": {
         "JTs": {
-          "bet_75": 85,
-          "check": 15,
+          "bet_75": 83,
+          "check": 17,
           "note": "堅果順子！"
         },
         "JTo": {
-          "bet_75": 80,
-          "check": 20,
+          "bet_75": 78,
+          "check": 22,
           "note": "堅果順子"
         },
         "T6s": {
-          "bet_75": 75,
-          "check": 25,
+          "bet_75": 73,
+          "check": 27,
           "note": "順子"
         },
         "65s": {
-          "bet_75": 75,
-          "check": 25,
+          "bet_75": 73,
+          "check": 27,
           "note": "順子"
         },
         "AA": {
-          "bet_66": 45,
-          "check": 55,
+          "bet_66": 43,
+          "check": 57,
           "note": "overpair 但危險"
         },
         "KK": {
-          "bet_66": 40,
-          "check": 60,
+          "bet_66": 38,
+          "check": 62,
           "note": "overpair 更危險"
         },
         "QQ": {
-          "bet_66": 35,
-          "check": 65,
+          "bet_66": 33,
+          "check": 67,
           "note": "overpair，傾向 check"
         },
         "JJ": {
-          "bet_66": 50,
-          "check": 50,
+          "bet_66": 48,
+          "check": 52,
           "note": "overpair 邊緣"
         },
         "TT": {
-          "bet_66": 50,
-          "check": 50,
+          "bet_66": 48,
+          "check": 52,
           "note": "overpair 最低"
         },
         "99": {
-          "bet_66": 80,
-          "check": 20,
+          "bet_66": 78,
+          "check": 22,
           "note": "頂 set"
         },
         "88": {
-          "bet_66": 75,
-          "check": 25,
+          "bet_66": 73,
+          "check": 27,
           "note": "中 set"
         },
         "77": {
-          "bet_66": 70,
-          "check": 30,
+          "bet_66": 68,
+          "check": 32,
           "note": "底 set"
         },
         "QJs": {
-          "bet_66": 60,
-          "check": 40,
+          "bet_66": 58,
+          "check": 42,
           "note": "開放式順子聽牌"
         },
         "JT": {
-          "bet_66": 85,
-          "check": 15,
+          "bet_66": 83,
+          "check": 17,
           "note": "堅果！"
         },
         "T9s": {
-          "bet_66": 70,
-          "check": 30,
+          "bet_66": 68,
+          "check": 32,
           "note": "兩對"
         },
         "98s": {
-          "bet_66": 70,
-          "check": 30,
+          "bet_66": 68,
+          "check": 32,
           "note": "兩對"
         },
         "ATs": {
-          "bet_66": 50,
-          "check": 50,
+          "bet_66": 48,
+          "check": 52,
           "note": "卡順聽牌 + A高"
         }
       }
@@ -5317,93 +5318,93 @@
       "texture_zh": "低連接牌面",
       "strategies": {
         "87s": {
-          "bet_75": 85,
-          "check": 15,
+          "bet_75": 83,
+          "check": 17,
           "note": "堅果順子！"
         },
         "87o": {
-          "bet_75": 80,
-          "check": 20,
+          "bet_75": 78,
+          "check": 22,
           "note": "堅果順子"
         },
         "78s": {
-          "bet_75": 80,
-          "check": 20,
+          "bet_75": 78,
+          "check": 22,
           "note": "順子"
         },
         "73s": {
-          "bet_75": 70,
-          "check": 30,
+          "bet_75": 68,
+          "check": 32,
           "note": "順子"
         },
         "32s": {
-          "bet_75": 70,
-          "check": 30,
+          "bet_75": 68,
+          "check": 32,
           "note": "順子"
         },
         "AA": {
-          "check": 65,
-          "bet_66": 35,
+          "check": 67,
+          "bet_66": 33,
           "note": "overpair 但超危險"
         },
         "KK": {
-          "check": 70,
-          "bet_66": 30,
+          "check": 72,
+          "bet_66": 28,
           "note": "overpair，傾向 check"
         },
         "QQ": {
-          "check": 75,
-          "bet_66": 25,
+          "check": 77,
+          "bet_66": 23,
           "note": "更多 check"
         },
         "JJ": {
-          "check": 75,
-          "bet_66": 25,
+          "check": 77,
+          "bet_66": 23,
           "note": "更多 check"
         },
         "TT": {
-          "check": 75,
-          "bet_66": 25,
+          "check": 77,
+          "bet_66": 23,
           "note": "更多 check"
         },
         "99": {
-          "check": 70,
-          "bet_66": 30,
+          "check": 72,
+          "bet_66": 28,
           "note": "overpair"
         },
         "88": {
-          "check": 65,
-          "bet_66": 35,
+          "check": 67,
+          "bet_66": 33,
           "note": "overpair 邊緣"
         },
         "77": {
-          "bet_66": 50,
-          "check": 50,
+          "bet_66": 48,
+          "check": 52,
           "note": "overpair 最低"
         },
         "66": {
-          "bet_66": 80,
-          "check": 20,
+          "bet_66": 78,
+          "check": 22,
           "note": "頂 set"
         },
         "55": {
-          "bet_66": 75,
-          "check": 25,
+          "bet_66": 73,
+          "check": 27,
           "note": "中 set"
         },
         "44": {
-          "bet_66": 70,
-          "check": 30,
+          "bet_66": 68,
+          "check": 32,
           "note": "底 set"
         },
         "A7s": {
-          "bet_66": 45,
-          "check": 55,
+          "bet_66": 43,
+          "check": 57,
           "note": "開放式順子聽牌"
         },
         "98s": {
-          "bet_66": 55,
-          "check": 45,
+          "bet_66": 53,
+          "check": 47,
           "note": "開放式順子聽牌"
         }
       }
@@ -5422,93 +5423,93 @@
       "texture_zh": "低連接牌面",
       "strategies": {
         "87s": {
-          "bet_75": 85,
-          "check": 15,
+          "bet_75": 83,
+          "check": 17,
           "note": "堅果順子！"
         },
         "87o": {
-          "bet_75": 80,
-          "check": 20,
+          "bet_75": 78,
+          "check": 22,
           "note": "堅果順子"
         },
         "78s": {
-          "bet_75": 80,
-          "check": 20,
+          "bet_75": 78,
+          "check": 22,
           "note": "順子"
         },
         "73s": {
-          "bet_75": 70,
-          "check": 30,
+          "bet_75": 68,
+          "check": 32,
           "note": "順子"
         },
         "32s": {
-          "bet_75": 70,
-          "check": 30,
+          "bet_75": 68,
+          "check": 32,
           "note": "順子"
         },
         "AA": {
-          "check": 65,
-          "bet_66": 35,
+          "check": 67,
+          "bet_66": 33,
           "note": "overpair 但超危險"
         },
         "KK": {
-          "check": 70,
-          "bet_66": 30,
+          "check": 72,
+          "bet_66": 28,
           "note": "overpair，傾向 check"
         },
         "QQ": {
-          "check": 75,
-          "bet_66": 25,
+          "check": 77,
+          "bet_66": 23,
           "note": "更多 check"
         },
         "JJ": {
-          "check": 75,
-          "bet_66": 25,
+          "check": 77,
+          "bet_66": 23,
           "note": "更多 check"
         },
         "TT": {
-          "check": 75,
-          "bet_66": 25,
+          "check": 77,
+          "bet_66": 23,
           "note": "更多 check"
         },
         "99": {
-          "check": 70,
-          "bet_66": 30,
+          "check": 72,
+          "bet_66": 28,
           "note": "overpair"
         },
         "88": {
-          "check": 65,
-          "bet_66": 35,
+          "check": 67,
+          "bet_66": 33,
           "note": "overpair 邊緣"
         },
         "77": {
-          "bet_66": 50,
-          "check": 50,
+          "bet_66": 48,
+          "check": 52,
           "note": "overpair 最低"
         },
         "66": {
-          "bet_66": 80,
-          "check": 20,
+          "bet_66": 78,
+          "check": 22,
           "note": "頂 set"
         },
         "55": {
-          "bet_66": 75,
-          "check": 25,
+          "bet_66": 73,
+          "check": 27,
           "note": "中 set"
         },
         "44": {
-          "bet_66": 70,
-          "check": 30,
+          "bet_66": 68,
+          "check": 32,
           "note": "底 set"
         },
         "A7s": {
-          "bet_66": 45,
-          "check": 55,
+          "bet_66": 43,
+          "check": 57,
           "note": "開放式順子聽牌"
         },
         "98s": {
-          "bet_66": 55,
-          "check": 45,
+          "bet_66": 53,
+          "check": 47,
           "note": "開放式順子聽牌"
         }
       }
@@ -5527,93 +5528,93 @@
       "texture_zh": "低連接牌面",
       "strategies": {
         "87s": {
-          "bet_75": 85,
-          "check": 15,
+          "bet_75": 83,
+          "check": 17,
           "note": "堅果順子！"
         },
         "87o": {
-          "bet_75": 80,
-          "check": 20,
+          "bet_75": 78,
+          "check": 22,
           "note": "堅果順子"
         },
         "78s": {
-          "bet_75": 80,
-          "check": 20,
+          "bet_75": 78,
+          "check": 22,
           "note": "順子"
         },
         "73s": {
-          "bet_75": 70,
-          "check": 30,
+          "bet_75": 68,
+          "check": 32,
           "note": "順子"
         },
         "32s": {
-          "bet_75": 70,
-          "check": 30,
+          "bet_75": 68,
+          "check": 32,
           "note": "順子"
         },
         "AA": {
-          "check": 65,
-          "bet_66": 35,
+          "check": 67,
+          "bet_66": 33,
           "note": "overpair 但超危險"
         },
         "KK": {
-          "check": 70,
-          "bet_66": 30,
+          "check": 72,
+          "bet_66": 28,
           "note": "overpair，傾向 check"
         },
         "QQ": {
-          "check": 75,
-          "bet_66": 25,
+          "check": 77,
+          "bet_66": 23,
           "note": "更多 check"
         },
         "JJ": {
-          "check": 75,
-          "bet_66": 25,
+          "check": 77,
+          "bet_66": 23,
           "note": "更多 check"
         },
         "TT": {
-          "check": 75,
-          "bet_66": 25,
+          "check": 77,
+          "bet_66": 23,
           "note": "更多 check"
         },
         "99": {
-          "check": 70,
-          "bet_66": 30,
+          "check": 72,
+          "bet_66": 28,
           "note": "overpair"
         },
         "88": {
-          "check": 65,
-          "bet_66": 35,
+          "check": 67,
+          "bet_66": 33,
           "note": "overpair 邊緣"
         },
         "77": {
-          "bet_66": 50,
-          "check": 50,
+          "bet_66": 48,
+          "check": 52,
           "note": "overpair 最低"
         },
         "66": {
-          "bet_66": 80,
-          "check": 20,
+          "bet_66": 78,
+          "check": 22,
           "note": "頂 set"
         },
         "55": {
-          "bet_66": 75,
-          "check": 25,
+          "bet_66": 73,
+          "check": 27,
           "note": "中 set"
         },
         "44": {
-          "bet_66": 70,
-          "check": 30,
+          "bet_66": 68,
+          "check": 32,
           "note": "底 set"
         },
         "A7s": {
-          "bet_66": 45,
-          "check": 55,
+          "bet_66": 43,
+          "check": 57,
           "note": "開放式順子聽牌"
         },
         "98s": {
-          "bet_66": 55,
-          "check": 45,
+          "bet_66": 53,
+          "check": 47,
           "note": "開放式順子聽牌"
         }
       }
@@ -5632,93 +5633,93 @@
       "texture_zh": "低連接牌面",
       "strategies": {
         "87s": {
-          "bet_75": 85,
-          "check": 15,
+          "bet_75": 83,
+          "check": 17,
           "note": "堅果順子！"
         },
         "87o": {
-          "bet_75": 80,
-          "check": 20,
+          "bet_75": 78,
+          "check": 22,
           "note": "堅果順子"
         },
         "78s": {
-          "bet_75": 80,
-          "check": 20,
+          "bet_75": 78,
+          "check": 22,
           "note": "順子"
         },
         "73s": {
-          "bet_75": 70,
-          "check": 30,
+          "bet_75": 68,
+          "check": 32,
           "note": "順子"
         },
         "32s": {
-          "bet_75": 70,
-          "check": 30,
+          "bet_75": 68,
+          "check": 32,
           "note": "順子"
         },
         "AA": {
-          "check": 65,
-          "bet_66": 35,
+          "check": 67,
+          "bet_66": 33,
           "note": "overpair 但超危險"
         },
         "KK": {
-          "check": 70,
-          "bet_66": 30,
+          "check": 72,
+          "bet_66": 28,
           "note": "overpair，傾向 check"
         },
         "QQ": {
-          "check": 75,
-          "bet_66": 25,
+          "check": 77,
+          "bet_66": 23,
           "note": "更多 check"
         },
         "JJ": {
-          "check": 75,
-          "bet_66": 25,
+          "check": 77,
+          "bet_66": 23,
           "note": "更多 check"
         },
         "TT": {
-          "check": 75,
-          "bet_66": 25,
+          "check": 77,
+          "bet_66": 23,
           "note": "更多 check"
         },
         "99": {
-          "check": 70,
-          "bet_66": 30,
+          "check": 72,
+          "bet_66": 28,
           "note": "overpair"
         },
         "88": {
-          "check": 65,
-          "bet_66": 35,
+          "check": 67,
+          "bet_66": 33,
           "note": "overpair 邊緣"
         },
         "77": {
-          "bet_66": 50,
-          "check": 50,
+          "bet_66": 48,
+          "check": 52,
           "note": "overpair 最低"
         },
         "66": {
-          "bet_66": 80,
-          "check": 20,
+          "bet_66": 78,
+          "check": 22,
           "note": "頂 set"
         },
         "55": {
-          "bet_66": 75,
-          "check": 25,
+          "bet_66": 73,
+          "check": 27,
           "note": "中 set"
         },
         "44": {
-          "bet_66": 70,
-          "check": 30,
+          "bet_66": 68,
+          "check": 32,
           "note": "底 set"
         },
         "A7s": {
-          "bet_66": 45,
-          "check": 55,
+          "bet_66": 43,
+          "check": 57,
           "note": "開放式順子聽牌"
         },
         "98s": {
-          "bet_66": 55,
-          "check": 45,
+          "bet_66": 53,
+          "check": 47,
           "note": "開放式順子聽牌"
         }
       }
@@ -5737,93 +5738,93 @@
       "texture_zh": "低連接牌面",
       "strategies": {
         "87s": {
-          "bet_75": 85,
-          "check": 15,
+          "bet_75": 83,
+          "check": 17,
           "note": "堅果順子！"
         },
         "87o": {
-          "bet_75": 80,
-          "check": 20,
+          "bet_75": 78,
+          "check": 22,
           "note": "堅果順子"
         },
         "78s": {
-          "bet_75": 80,
-          "check": 20,
+          "bet_75": 78,
+          "check": 22,
           "note": "順子"
         },
         "73s": {
-          "bet_75": 70,
-          "check": 30,
+          "bet_75": 68,
+          "check": 32,
           "note": "順子"
         },
         "32s": {
-          "bet_75": 70,
-          "check": 30,
+          "bet_75": 68,
+          "check": 32,
           "note": "順子"
         },
         "AA": {
-          "check": 65,
-          "bet_66": 35,
+          "check": 67,
+          "bet_66": 33,
           "note": "overpair 但超危險"
         },
         "KK": {
-          "check": 70,
-          "bet_66": 30,
+          "check": 72,
+          "bet_66": 28,
           "note": "overpair，傾向 check"
         },
         "QQ": {
-          "check": 75,
-          "bet_66": 25,
+          "check": 77,
+          "bet_66": 23,
           "note": "更多 check"
         },
         "JJ": {
-          "check": 75,
-          "bet_66": 25,
+          "check": 77,
+          "bet_66": 23,
           "note": "更多 check"
         },
         "TT": {
-          "check": 75,
-          "bet_66": 25,
+          "check": 77,
+          "bet_66": 23,
           "note": "更多 check"
         },
         "99": {
-          "check": 70,
-          "bet_66": 30,
+          "check": 72,
+          "bet_66": 28,
           "note": "overpair"
         },
         "88": {
-          "check": 65,
-          "bet_66": 35,
+          "check": 67,
+          "bet_66": 33,
           "note": "overpair 邊緣"
         },
         "77": {
-          "bet_66": 50,
-          "check": 50,
+          "bet_66": 48,
+          "check": 52,
           "note": "overpair 最低"
         },
         "66": {
-          "bet_66": 80,
-          "check": 20,
+          "bet_66": 78,
+          "check": 22,
           "note": "頂 set"
         },
         "55": {
-          "bet_66": 75,
-          "check": 25,
+          "bet_66": 73,
+          "check": 27,
           "note": "中 set"
         },
         "44": {
-          "bet_66": 70,
-          "check": 30,
+          "bet_66": 68,
+          "check": 32,
           "note": "底 set"
         },
         "A7s": {
-          "bet_66": 45,
-          "check": 55,
+          "bet_66": 43,
+          "check": 57,
           "note": "開放式順子聽牌"
         },
         "98s": {
-          "bet_66": 55,
-          "check": 45,
+          "bet_66": 53,
+          "check": 47,
           "note": "開放式順子聽牌"
         }
       }
