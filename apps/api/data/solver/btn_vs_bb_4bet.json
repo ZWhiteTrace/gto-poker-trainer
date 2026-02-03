@@ -1,0 +1,4514 @@
+{
+  "meta": {
+    "description": "BTN vs BB 4bet Pot Flop Strategies",
+    "position": "BTN",
+    "villain": "BB",
+    "pot_type": "4bet",
+    "pot_size": 45,
+    "effective_stack": 55,
+    "scenario_prefix": "btn_4bet_bb",
+    "note": "4bet pot, SPR ~1.2. IP postflop. Polarized ranges."
+  },
+  "scenarios": [
+    {
+      "scenario_id": "btn_4bet_bb_AK5_hsd",
+      "position": "BTN",
+      "villain": "BB",
+      "pot_type": "4bet",
+      "board": [
+        "Ah",
+        "Ks",
+        "5d"
+      ],
+      "texture": "dry_ace_high",
+      "texture_zh": "乾燥 A 高牌面",
+      "strategies": {
+        "AA": {
+          "bet_33": 30,
+          "all_in": 55,
+          "check": 15,
+          "note": "堅果，經常全下"
+        },
+        "KK": {
+          "bet_33": 35,
+          "all_in": 45,
+          "check": 20,
+          "note": "第二堅果"
+        },
+        "QQ": {
+          "bet_33": 40,
+          "all_in": 30,
+          "check": 30,
+          "note": "強 overpair"
+        },
+        "JJ": {
+          "bet_33": 35,
+          "all_in": 20,
+          "check": 45,
+          "note": "中等 overpair"
+        },
+        "AKs": {
+          "bet_33": 45,
+          "all_in": 35,
+          "check": 20,
+          "note": "頂對強踢腳"
+        },
+        "AKo": {
+          "bet_33": 40,
+          "all_in": 30,
+          "check": 30,
+          "note": "頂對"
+        },
+        "AQs": {
+          "bet_33": 40,
+          "all_in": 20,
+          "check": 40,
+          "note": "A blocker"
+        },
+        "AJs": {
+          "bet_33": 35,
+          "all_in": 15,
+          "check": 50,
+          "note": "A blocker"
+        },
+        "A5s": {
+          "bet_33": 30,
+          "all_in": 20,
+          "check": 50,
+          "note": "wheel + blocker"
+        },
+        "A4s": {
+          "bet_33": 25,
+          "all_in": 15,
+          "check": 60,
+          "note": "wheel + blocker"
+        }
+      }
+    },
+    {
+      "scenario_id": "btn_4bet_bb_AQ7_hsd",
+      "position": "BTN",
+      "villain": "BB",
+      "pot_type": "4bet",
+      "board": [
+        "Ah",
+        "Qs",
+        "7d"
+      ],
+      "texture": "dry_ace_high",
+      "texture_zh": "乾燥 A 高牌面",
+      "strategies": {
+        "AA": {
+          "bet_33": 30,
+          "all_in": 55,
+          "check": 15,
+          "note": "堅果，經常全下"
+        },
+        "KK": {
+          "bet_33": 35,
+          "all_in": 45,
+          "check": 20,
+          "note": "第二堅果"
+        },
+        "QQ": {
+          "bet_33": 40,
+          "all_in": 30,
+          "check": 30,
+          "note": "強 overpair"
+        },
+        "JJ": {
+          "bet_33": 35,
+          "all_in": 20,
+          "check": 45,
+          "note": "中等 overpair"
+        },
+        "AKs": {
+          "bet_33": 45,
+          "all_in": 35,
+          "check": 20,
+          "note": "頂對強踢腳"
+        },
+        "AKo": {
+          "bet_33": 40,
+          "all_in": 30,
+          "check": 30,
+          "note": "頂對"
+        },
+        "AQs": {
+          "bet_33": 40,
+          "all_in": 20,
+          "check": 40,
+          "note": "A blocker"
+        },
+        "AJs": {
+          "bet_33": 35,
+          "all_in": 15,
+          "check": 50,
+          "note": "A blocker"
+        },
+        "A5s": {
+          "bet_33": 30,
+          "all_in": 20,
+          "check": 50,
+          "note": "wheel + blocker"
+        },
+        "A4s": {
+          "bet_33": 25,
+          "all_in": 15,
+          "check": 60,
+          "note": "wheel + blocker"
+        }
+      }
+    },
+    {
+      "scenario_id": "btn_4bet_bb_AJ3_hsd",
+      "position": "BTN",
+      "villain": "BB",
+      "pot_type": "4bet",
+      "board": [
+        "Ah",
+        "Js",
+        "3d"
+      ],
+      "texture": "dry_ace_high",
+      "texture_zh": "乾燥 A 高牌面",
+      "strategies": {
+        "AA": {
+          "bet_33": 30,
+          "all_in": 55,
+          "check": 15,
+          "note": "堅果，經常全下"
+        },
+        "KK": {
+          "bet_33": 35,
+          "all_in": 45,
+          "check": 20,
+          "note": "第二堅果"
+        },
+        "QQ": {
+          "bet_33": 40,
+          "all_in": 30,
+          "check": 30,
+          "note": "強 overpair"
+        },
+        "JJ": {
+          "bet_33": 35,
+          "all_in": 20,
+          "check": 45,
+          "note": "中等 overpair"
+        },
+        "AKs": {
+          "bet_33": 45,
+          "all_in": 35,
+          "check": 20,
+          "note": "頂對強踢腳"
+        },
+        "AKo": {
+          "bet_33": 40,
+          "all_in": 30,
+          "check": 30,
+          "note": "頂對"
+        },
+        "AQs": {
+          "bet_33": 40,
+          "all_in": 20,
+          "check": 40,
+          "note": "A blocker"
+        },
+        "AJs": {
+          "bet_33": 35,
+          "all_in": 15,
+          "check": 50,
+          "note": "A blocker"
+        },
+        "A5s": {
+          "bet_33": 30,
+          "all_in": 20,
+          "check": 50,
+          "note": "wheel + blocker"
+        },
+        "A4s": {
+          "bet_33": 25,
+          "all_in": 15,
+          "check": 60,
+          "note": "wheel + blocker"
+        }
+      }
+    },
+    {
+      "scenario_id": "btn_4bet_bb_A94_hsd",
+      "position": "BTN",
+      "villain": "BB",
+      "pot_type": "4bet",
+      "board": [
+        "Ah",
+        "9s",
+        "4d"
+      ],
+      "texture": "dry_ace_high",
+      "texture_zh": "乾燥 A 高牌面",
+      "strategies": {
+        "AA": {
+          "bet_33": 30,
+          "all_in": 55,
+          "check": 15,
+          "note": "堅果，經常全下"
+        },
+        "KK": {
+          "bet_33": 35,
+          "all_in": 45,
+          "check": 20,
+          "note": "第二堅果"
+        },
+        "QQ": {
+          "bet_33": 40,
+          "all_in": 30,
+          "check": 30,
+          "note": "強 overpair"
+        },
+        "JJ": {
+          "bet_33": 35,
+          "all_in": 20,
+          "check": 45,
+          "note": "中等 overpair"
+        },
+        "AKs": {
+          "bet_33": 45,
+          "all_in": 35,
+          "check": 20,
+          "note": "頂對強踢腳"
+        },
+        "AKo": {
+          "bet_33": 40,
+          "all_in": 30,
+          "check": 30,
+          "note": "頂對"
+        },
+        "AQs": {
+          "bet_33": 40,
+          "all_in": 20,
+          "check": 40,
+          "note": "A blocker"
+        },
+        "AJs": {
+          "bet_33": 35,
+          "all_in": 15,
+          "check": 50,
+          "note": "A blocker"
+        },
+        "A5s": {
+          "bet_33": 30,
+          "all_in": 20,
+          "check": 50,
+          "note": "wheel + blocker"
+        },
+        "A4s": {
+          "bet_33": 25,
+          "all_in": 15,
+          "check": 60,
+          "note": "wheel + blocker"
+        }
+      }
+    },
+    {
+      "scenario_id": "btn_4bet_bb_A72_hsd",
+      "position": "BTN",
+      "villain": "BB",
+      "pot_type": "4bet",
+      "board": [
+        "Ah",
+        "7s",
+        "2d"
+      ],
+      "texture": "dry_ace_high",
+      "texture_zh": "乾燥 A 高牌面",
+      "strategies": {
+        "AA": {
+          "bet_33": 30,
+          "all_in": 55,
+          "check": 15,
+          "note": "堅果，經常全下"
+        },
+        "KK": {
+          "bet_33": 35,
+          "all_in": 45,
+          "check": 20,
+          "note": "第二堅果"
+        },
+        "QQ": {
+          "bet_33": 40,
+          "all_in": 30,
+          "check": 30,
+          "note": "強 overpair"
+        },
+        "JJ": {
+          "bet_33": 35,
+          "all_in": 20,
+          "check": 45,
+          "note": "中等 overpair"
+        },
+        "AKs": {
+          "bet_33": 45,
+          "all_in": 35,
+          "check": 20,
+          "note": "頂對強踢腳"
+        },
+        "AKo": {
+          "bet_33": 40,
+          "all_in": 30,
+          "check": 30,
+          "note": "頂對"
+        },
+        "AQs": {
+          "bet_33": 40,
+          "all_in": 20,
+          "check": 40,
+          "note": "A blocker"
+        },
+        "AJs": {
+          "bet_33": 35,
+          "all_in": 15,
+          "check": 50,
+          "note": "A blocker"
+        },
+        "A5s": {
+          "bet_33": 30,
+          "all_in": 20,
+          "check": 50,
+          "note": "wheel + blocker"
+        },
+        "A4s": {
+          "bet_33": 25,
+          "all_in": 15,
+          "check": 60,
+          "note": "wheel + blocker"
+        }
+      }
+    },
+    {
+      "scenario_id": "btn_4bet_bb_KQ7_hsd",
+      "position": "BTN",
+      "villain": "BB",
+      "pot_type": "4bet",
+      "board": [
+        "Kh",
+        "Qs",
+        "7d"
+      ],
+      "texture": "dry_king_high",
+      "texture_zh": "乾燥 K 高牌面",
+      "strategies": {
+        "AA": {
+          "bet_33": 30,
+          "all_in": 55,
+          "check": 15,
+          "note": "堅果，經常全下"
+        },
+        "KK": {
+          "bet_33": 35,
+          "all_in": 45,
+          "check": 20,
+          "note": "第二堅果"
+        },
+        "QQ": {
+          "bet_33": 40,
+          "all_in": 30,
+          "check": 30,
+          "note": "強 overpair"
+        },
+        "JJ": {
+          "bet_33": 35,
+          "all_in": 20,
+          "check": 45,
+          "note": "中等 overpair"
+        },
+        "AKs": {
+          "bet_33": 45,
+          "all_in": 35,
+          "check": 20,
+          "note": "頂對強踢腳"
+        },
+        "AKo": {
+          "bet_33": 40,
+          "all_in": 30,
+          "check": 30,
+          "note": "頂對"
+        },
+        "AQs": {
+          "bet_33": 40,
+          "all_in": 20,
+          "check": 40,
+          "note": "A blocker"
+        },
+        "AJs": {
+          "bet_33": 35,
+          "all_in": 15,
+          "check": 50,
+          "note": "A blocker"
+        },
+        "A5s": {
+          "bet_33": 30,
+          "all_in": 20,
+          "check": 50,
+          "note": "wheel + blocker"
+        },
+        "A4s": {
+          "bet_33": 25,
+          "all_in": 15,
+          "check": 60,
+          "note": "wheel + blocker"
+        }
+      }
+    },
+    {
+      "scenario_id": "btn_4bet_bb_KJ5_hsd",
+      "position": "BTN",
+      "villain": "BB",
+      "pot_type": "4bet",
+      "board": [
+        "Kh",
+        "Js",
+        "5d"
+      ],
+      "texture": "dry_king_high",
+      "texture_zh": "乾燥 K 高牌面",
+      "strategies": {
+        "AA": {
+          "bet_33": 30,
+          "all_in": 55,
+          "check": 15,
+          "note": "堅果，經常全下"
+        },
+        "KK": {
+          "bet_33": 35,
+          "all_in": 45,
+          "check": 20,
+          "note": "第二堅果"
+        },
+        "QQ": {
+          "bet_33": 40,
+          "all_in": 30,
+          "check": 30,
+          "note": "強 overpair"
+        },
+        "JJ": {
+          "bet_33": 35,
+          "all_in": 20,
+          "check": 45,
+          "note": "中等 overpair"
+        },
+        "AKs": {
+          "bet_33": 45,
+          "all_in": 35,
+          "check": 20,
+          "note": "頂對強踢腳"
+        },
+        "AKo": {
+          "bet_33": 40,
+          "all_in": 30,
+          "check": 30,
+          "note": "頂對"
+        },
+        "AQs": {
+          "bet_33": 40,
+          "all_in": 20,
+          "check": 40,
+          "note": "A blocker"
+        },
+        "AJs": {
+          "bet_33": 35,
+          "all_in": 15,
+          "check": 50,
+          "note": "A blocker"
+        },
+        "A5s": {
+          "bet_33": 30,
+          "all_in": 20,
+          "check": 50,
+          "note": "wheel + blocker"
+        },
+        "A4s": {
+          "bet_33": 25,
+          "all_in": 15,
+          "check": 60,
+          "note": "wheel + blocker"
+        }
+      }
+    },
+    {
+      "scenario_id": "btn_4bet_bb_KT4_hsd",
+      "position": "BTN",
+      "villain": "BB",
+      "pot_type": "4bet",
+      "board": [
+        "Kh",
+        "Ts",
+        "4d"
+      ],
+      "texture": "dry_king_high",
+      "texture_zh": "乾燥 K 高牌面",
+      "strategies": {
+        "AA": {
+          "bet_33": 30,
+          "all_in": 55,
+          "check": 15,
+          "note": "堅果，經常全下"
+        },
+        "KK": {
+          "bet_33": 35,
+          "all_in": 45,
+          "check": 20,
+          "note": "第二堅果"
+        },
+        "QQ": {
+          "bet_33": 40,
+          "all_in": 30,
+          "check": 30,
+          "note": "強 overpair"
+        },
+        "JJ": {
+          "bet_33": 35,
+          "all_in": 20,
+          "check": 45,
+          "note": "中等 overpair"
+        },
+        "AKs": {
+          "bet_33": 45,
+          "all_in": 35,
+          "check": 20,
+          "note": "頂對強踢腳"
+        },
+        "AKo": {
+          "bet_33": 40,
+          "all_in": 30,
+          "check": 30,
+          "note": "頂對"
+        },
+        "AQs": {
+          "bet_33": 40,
+          "all_in": 20,
+          "check": 40,
+          "note": "A blocker"
+        },
+        "AJs": {
+          "bet_33": 35,
+          "all_in": 15,
+          "check": 50,
+          "note": "A blocker"
+        },
+        "A5s": {
+          "bet_33": 30,
+          "all_in": 20,
+          "check": 50,
+          "note": "wheel + blocker"
+        },
+        "A4s": {
+          "bet_33": 25,
+          "all_in": 15,
+          "check": 60,
+          "note": "wheel + blocker"
+        }
+      }
+    },
+    {
+      "scenario_id": "btn_4bet_bb_K93_hsd",
+      "position": "BTN",
+      "villain": "BB",
+      "pot_type": "4bet",
+      "board": [
+        "Kh",
+        "9s",
+        "3d"
+      ],
+      "texture": "dry_king_high",
+      "texture_zh": "乾燥 K 高牌面",
+      "strategies": {
+        "AA": {
+          "bet_33": 30,
+          "all_in": 55,
+          "check": 15,
+          "note": "堅果，經常全下"
+        },
+        "KK": {
+          "bet_33": 35,
+          "all_in": 45,
+          "check": 20,
+          "note": "第二堅果"
+        },
+        "QQ": {
+          "bet_33": 40,
+          "all_in": 30,
+          "check": 30,
+          "note": "強 overpair"
+        },
+        "JJ": {
+          "bet_33": 35,
+          "all_in": 20,
+          "check": 45,
+          "note": "中等 overpair"
+        },
+        "AKs": {
+          "bet_33": 45,
+          "all_in": 35,
+          "check": 20,
+          "note": "頂對強踢腳"
+        },
+        "AKo": {
+          "bet_33": 40,
+          "all_in": 30,
+          "check": 30,
+          "note": "頂對"
+        },
+        "AQs": {
+          "bet_33": 40,
+          "all_in": 20,
+          "check": 40,
+          "note": "A blocker"
+        },
+        "AJs": {
+          "bet_33": 35,
+          "all_in": 15,
+          "check": 50,
+          "note": "A blocker"
+        },
+        "A5s": {
+          "bet_33": 30,
+          "all_in": 20,
+          "check": 50,
+          "note": "wheel + blocker"
+        },
+        "A4s": {
+          "bet_33": 25,
+          "all_in": 15,
+          "check": 60,
+          "note": "wheel + blocker"
+        }
+      }
+    },
+    {
+      "scenario_id": "btn_4bet_bb_K72_hsd",
+      "position": "BTN",
+      "villain": "BB",
+      "pot_type": "4bet",
+      "board": [
+        "Kh",
+        "7s",
+        "2d"
+      ],
+      "texture": "dry_king_high",
+      "texture_zh": "乾燥 K 高牌面",
+      "strategies": {
+        "AA": {
+          "bet_33": 30,
+          "all_in": 55,
+          "check": 15,
+          "note": "堅果，經常全下"
+        },
+        "KK": {
+          "bet_33": 35,
+          "all_in": 45,
+          "check": 20,
+          "note": "第二堅果"
+        },
+        "QQ": {
+          "bet_33": 40,
+          "all_in": 30,
+          "check": 30,
+          "note": "強 overpair"
+        },
+        "JJ": {
+          "bet_33": 35,
+          "all_in": 20,
+          "check": 45,
+          "note": "中等 overpair"
+        },
+        "AKs": {
+          "bet_33": 45,
+          "all_in": 35,
+          "check": 20,
+          "note": "頂對強踢腳"
+        },
+        "AKo": {
+          "bet_33": 40,
+          "all_in": 30,
+          "check": 30,
+          "note": "頂對"
+        },
+        "AQs": {
+          "bet_33": 40,
+          "all_in": 20,
+          "check": 40,
+          "note": "A blocker"
+        },
+        "AJs": {
+          "bet_33": 35,
+          "all_in": 15,
+          "check": 50,
+          "note": "A blocker"
+        },
+        "A5s": {
+          "bet_33": 30,
+          "all_in": 20,
+          "check": 50,
+          "note": "wheel + blocker"
+        },
+        "A4s": {
+          "bet_33": 25,
+          "all_in": 15,
+          "check": 60,
+          "note": "wheel + blocker"
+        }
+      }
+    },
+    {
+      "scenario_id": "btn_4bet_bb_Q94_hsd",
+      "position": "BTN",
+      "villain": "BB",
+      "pot_type": "4bet",
+      "board": [
+        "Qh",
+        "9s",
+        "4d"
+      ],
+      "texture": "dry_queen_high",
+      "texture_zh": "乾燥 Q 高牌面",
+      "strategies": {
+        "AA": {
+          "bet_33": 30,
+          "all_in": 55,
+          "check": 15,
+          "note": "堅果，經常全下"
+        },
+        "KK": {
+          "bet_33": 35,
+          "all_in": 45,
+          "check": 20,
+          "note": "第二堅果"
+        },
+        "QQ": {
+          "bet_33": 40,
+          "all_in": 30,
+          "check": 30,
+          "note": "強 overpair"
+        },
+        "JJ": {
+          "bet_33": 35,
+          "all_in": 20,
+          "check": 45,
+          "note": "中等 overpair"
+        },
+        "AKs": {
+          "bet_33": 45,
+          "all_in": 35,
+          "check": 20,
+          "note": "頂對強踢腳"
+        },
+        "AKo": {
+          "bet_33": 40,
+          "all_in": 30,
+          "check": 30,
+          "note": "頂對"
+        },
+        "AQs": {
+          "bet_33": 40,
+          "all_in": 20,
+          "check": 40,
+          "note": "A blocker"
+        },
+        "AJs": {
+          "bet_33": 35,
+          "all_in": 15,
+          "check": 50,
+          "note": "A blocker"
+        },
+        "A5s": {
+          "bet_33": 30,
+          "all_in": 20,
+          "check": 50,
+          "note": "wheel + blocker"
+        },
+        "A4s": {
+          "bet_33": 25,
+          "all_in": 15,
+          "check": 60,
+          "note": "wheel + blocker"
+        }
+      }
+    },
+    {
+      "scenario_id": "btn_4bet_bb_Q83_hsd",
+      "position": "BTN",
+      "villain": "BB",
+      "pot_type": "4bet",
+      "board": [
+        "Qh",
+        "8s",
+        "3d"
+      ],
+      "texture": "dry_queen_high",
+      "texture_zh": "乾燥 Q 高牌面",
+      "strategies": {
+        "AA": {
+          "bet_33": 30,
+          "all_in": 55,
+          "check": 15,
+          "note": "堅果，經常全下"
+        },
+        "KK": {
+          "bet_33": 35,
+          "all_in": 45,
+          "check": 20,
+          "note": "第二堅果"
+        },
+        "QQ": {
+          "bet_33": 40,
+          "all_in": 30,
+          "check": 30,
+          "note": "強 overpair"
+        },
+        "JJ": {
+          "bet_33": 35,
+          "all_in": 20,
+          "check": 45,
+          "note": "中等 overpair"
+        },
+        "AKs": {
+          "bet_33": 45,
+          "all_in": 35,
+          "check": 20,
+          "note": "頂對強踢腳"
+        },
+        "AKo": {
+          "bet_33": 40,
+          "all_in": 30,
+          "check": 30,
+          "note": "頂對"
+        },
+        "AQs": {
+          "bet_33": 40,
+          "all_in": 20,
+          "check": 40,
+          "note": "A blocker"
+        },
+        "AJs": {
+          "bet_33": 35,
+          "all_in": 15,
+          "check": 50,
+          "note": "A blocker"
+        },
+        "A5s": {
+          "bet_33": 30,
+          "all_in": 20,
+          "check": 50,
+          "note": "wheel + blocker"
+        },
+        "A4s": {
+          "bet_33": 25,
+          "all_in": 15,
+          "check": 60,
+          "note": "wheel + blocker"
+        }
+      }
+    },
+    {
+      "scenario_id": "btn_4bet_bb_Q72_hsd",
+      "position": "BTN",
+      "villain": "BB",
+      "pot_type": "4bet",
+      "board": [
+        "Qh",
+        "7s",
+        "2d"
+      ],
+      "texture": "dry_queen_high",
+      "texture_zh": "乾燥 Q 高牌面",
+      "strategies": {
+        "AA": {
+          "bet_33": 30,
+          "all_in": 55,
+          "check": 15,
+          "note": "堅果，經常全下"
+        },
+        "KK": {
+          "bet_33": 35,
+          "all_in": 45,
+          "check": 20,
+          "note": "第二堅果"
+        },
+        "QQ": {
+          "bet_33": 40,
+          "all_in": 30,
+          "check": 30,
+          "note": "強 overpair"
+        },
+        "JJ": {
+          "bet_33": 35,
+          "all_in": 20,
+          "check": 45,
+          "note": "中等 overpair"
+        },
+        "AKs": {
+          "bet_33": 45,
+          "all_in": 35,
+          "check": 20,
+          "note": "頂對強踢腳"
+        },
+        "AKo": {
+          "bet_33": 40,
+          "all_in": 30,
+          "check": 30,
+          "note": "頂對"
+        },
+        "AQs": {
+          "bet_33": 40,
+          "all_in": 20,
+          "check": 40,
+          "note": "A blocker"
+        },
+        "AJs": {
+          "bet_33": 35,
+          "all_in": 15,
+          "check": 50,
+          "note": "A blocker"
+        },
+        "A5s": {
+          "bet_33": 30,
+          "all_in": 20,
+          "check": 50,
+          "note": "wheel + blocker"
+        },
+        "A4s": {
+          "bet_33": 25,
+          "all_in": 15,
+          "check": 60,
+          "note": "wheel + blocker"
+        }
+      }
+    },
+    {
+      "scenario_id": "btn_4bet_bb_QJ5_hsd",
+      "position": "BTN",
+      "villain": "BB",
+      "pot_type": "4bet",
+      "board": [
+        "Qh",
+        "Js",
+        "5d"
+      ],
+      "texture": "dry_queen_high",
+      "texture_zh": "乾燥 Q 高牌面",
+      "strategies": {
+        "AA": {
+          "bet_33": 30,
+          "all_in": 55,
+          "check": 15,
+          "note": "堅果，經常全下"
+        },
+        "KK": {
+          "bet_33": 35,
+          "all_in": 45,
+          "check": 20,
+          "note": "第二堅果"
+        },
+        "QQ": {
+          "bet_33": 40,
+          "all_in": 30,
+          "check": 30,
+          "note": "強 overpair"
+        },
+        "JJ": {
+          "bet_33": 35,
+          "all_in": 20,
+          "check": 45,
+          "note": "中等 overpair"
+        },
+        "AKs": {
+          "bet_33": 45,
+          "all_in": 35,
+          "check": 20,
+          "note": "頂對強踢腳"
+        },
+        "AKo": {
+          "bet_33": 40,
+          "all_in": 30,
+          "check": 30,
+          "note": "頂對"
+        },
+        "AQs": {
+          "bet_33": 40,
+          "all_in": 20,
+          "check": 40,
+          "note": "A blocker"
+        },
+        "AJs": {
+          "bet_33": 35,
+          "all_in": 15,
+          "check": 50,
+          "note": "A blocker"
+        },
+        "A5s": {
+          "bet_33": 30,
+          "all_in": 20,
+          "check": 50,
+          "note": "wheel + blocker"
+        },
+        "A4s": {
+          "bet_33": 25,
+          "all_in": 15,
+          "check": 60,
+          "note": "wheel + blocker"
+        }
+      }
+    },
+    {
+      "scenario_id": "btn_4bet_bb_Q73_hsd",
+      "position": "BTN",
+      "villain": "BB",
+      "pot_type": "4bet",
+      "board": [
+        "Qh",
+        "7s",
+        "3d"
+      ],
+      "texture": "dry_queen_high",
+      "texture_zh": "乾燥 Q 高牌面",
+      "strategies": {
+        "AA": {
+          "bet_33": 30,
+          "all_in": 55,
+          "check": 15,
+          "note": "堅果，經常全下"
+        },
+        "KK": {
+          "bet_33": 35,
+          "all_in": 45,
+          "check": 20,
+          "note": "第二堅果"
+        },
+        "QQ": {
+          "bet_33": 40,
+          "all_in": 30,
+          "check": 30,
+          "note": "強 overpair"
+        },
+        "JJ": {
+          "bet_33": 35,
+          "all_in": 20,
+          "check": 45,
+          "note": "中等 overpair"
+        },
+        "AKs": {
+          "bet_33": 45,
+          "all_in": 35,
+          "check": 20,
+          "note": "頂對強踢腳"
+        },
+        "AKo": {
+          "bet_33": 40,
+          "all_in": 30,
+          "check": 30,
+          "note": "頂對"
+        },
+        "AQs": {
+          "bet_33": 40,
+          "all_in": 20,
+          "check": 40,
+          "note": "A blocker"
+        },
+        "AJs": {
+          "bet_33": 35,
+          "all_in": 15,
+          "check": 50,
+          "note": "A blocker"
+        },
+        "A5s": {
+          "bet_33": 30,
+          "all_in": 20,
+          "check": 50,
+          "note": "wheel + blocker"
+        },
+        "A4s": {
+          "bet_33": 25,
+          "all_in": 15,
+          "check": 60,
+          "note": "wheel + blocker"
+        }
+      }
+    },
+    {
+      "scenario_id": "btn_4bet_bb_T72_hsd",
+      "position": "BTN",
+      "villain": "BB",
+      "pot_type": "4bet",
+      "board": [
+        "Th",
+        "7s",
+        "2d"
+      ],
+      "texture": "dry_low",
+      "texture_zh": "乾燥低牌面",
+      "strategies": {
+        "AA": {
+          "bet_33": 30,
+          "all_in": 55,
+          "check": 15,
+          "note": "堅果，經常全下"
+        },
+        "KK": {
+          "bet_33": 35,
+          "all_in": 45,
+          "check": 20,
+          "note": "第二堅果"
+        },
+        "QQ": {
+          "bet_33": 40,
+          "all_in": 30,
+          "check": 30,
+          "note": "強 overpair"
+        },
+        "JJ": {
+          "bet_33": 35,
+          "all_in": 20,
+          "check": 45,
+          "note": "中等 overpair"
+        },
+        "AKs": {
+          "bet_33": 45,
+          "all_in": 35,
+          "check": 20,
+          "note": "頂對強踢腳"
+        },
+        "AKo": {
+          "bet_33": 40,
+          "all_in": 30,
+          "check": 30,
+          "note": "頂對"
+        },
+        "AQs": {
+          "bet_33": 40,
+          "all_in": 20,
+          "check": 40,
+          "note": "A blocker"
+        },
+        "AJs": {
+          "bet_33": 35,
+          "all_in": 15,
+          "check": 50,
+          "note": "A blocker"
+        },
+        "A5s": {
+          "bet_33": 30,
+          "all_in": 20,
+          "check": 50,
+          "note": "wheel + blocker"
+        },
+        "A4s": {
+          "bet_33": 25,
+          "all_in": 15,
+          "check": 60,
+          "note": "wheel + blocker"
+        }
+      }
+    },
+    {
+      "scenario_id": "btn_4bet_bb_962_hsd",
+      "position": "BTN",
+      "villain": "BB",
+      "pot_type": "4bet",
+      "board": [
+        "9h",
+        "6s",
+        "2d"
+      ],
+      "texture": "dry_low",
+      "texture_zh": "乾燥低牌面",
+      "strategies": {
+        "AA": {
+          "bet_33": 30,
+          "all_in": 55,
+          "check": 15,
+          "note": "堅果，經常全下"
+        },
+        "KK": {
+          "bet_33": 35,
+          "all_in": 45,
+          "check": 20,
+          "note": "第二堅果"
+        },
+        "QQ": {
+          "bet_33": 40,
+          "all_in": 30,
+          "check": 30,
+          "note": "強 overpair"
+        },
+        "JJ": {
+          "bet_33": 35,
+          "all_in": 20,
+          "check": 45,
+          "note": "中等 overpair"
+        },
+        "AKs": {
+          "bet_33": 45,
+          "all_in": 35,
+          "check": 20,
+          "note": "頂對強踢腳"
+        },
+        "AKo": {
+          "bet_33": 40,
+          "all_in": 30,
+          "check": 30,
+          "note": "頂對"
+        },
+        "AQs": {
+          "bet_33": 40,
+          "all_in": 20,
+          "check": 40,
+          "note": "A blocker"
+        },
+        "AJs": {
+          "bet_33": 35,
+          "all_in": 15,
+          "check": 50,
+          "note": "A blocker"
+        },
+        "A5s": {
+          "bet_33": 30,
+          "all_in": 20,
+          "check": 50,
+          "note": "wheel + blocker"
+        },
+        "A4s": {
+          "bet_33": 25,
+          "all_in": 15,
+          "check": 60,
+          "note": "wheel + blocker"
+        }
+      }
+    },
+    {
+      "scenario_id": "btn_4bet_bb_852_hsd",
+      "position": "BTN",
+      "villain": "BB",
+      "pot_type": "4bet",
+      "board": [
+        "8h",
+        "5s",
+        "2d"
+      ],
+      "texture": "dry_low",
+      "texture_zh": "乾燥低牌面",
+      "strategies": {
+        "AA": {
+          "bet_33": 30,
+          "all_in": 55,
+          "check": 15,
+          "note": "堅果，經常全下"
+        },
+        "KK": {
+          "bet_33": 35,
+          "all_in": 45,
+          "check": 20,
+          "note": "第二堅果"
+        },
+        "QQ": {
+          "bet_33": 40,
+          "all_in": 30,
+          "check": 30,
+          "note": "強 overpair"
+        },
+        "JJ": {
+          "bet_33": 35,
+          "all_in": 20,
+          "check": 45,
+          "note": "中等 overpair"
+        },
+        "AKs": {
+          "bet_33": 45,
+          "all_in": 35,
+          "check": 20,
+          "note": "頂對強踢腳"
+        },
+        "AKo": {
+          "bet_33": 40,
+          "all_in": 30,
+          "check": 30,
+          "note": "頂對"
+        },
+        "AQs": {
+          "bet_33": 40,
+          "all_in": 20,
+          "check": 40,
+          "note": "A blocker"
+        },
+        "AJs": {
+          "bet_33": 35,
+          "all_in": 15,
+          "check": 50,
+          "note": "A blocker"
+        },
+        "A5s": {
+          "bet_33": 30,
+          "all_in": 20,
+          "check": 50,
+          "note": "wheel + blocker"
+        },
+        "A4s": {
+          "bet_33": 25,
+          "all_in": 15,
+          "check": 60,
+          "note": "wheel + blocker"
+        }
+      }
+    },
+    {
+      "scenario_id": "btn_4bet_bb_742_hsd",
+      "position": "BTN",
+      "villain": "BB",
+      "pot_type": "4bet",
+      "board": [
+        "7h",
+        "4s",
+        "2d"
+      ],
+      "texture": "dry_low",
+      "texture_zh": "乾燥低牌面",
+      "strategies": {
+        "AA": {
+          "bet_33": 30,
+          "all_in": 55,
+          "check": 15,
+          "note": "堅果，經常全下"
+        },
+        "KK": {
+          "bet_33": 35,
+          "all_in": 45,
+          "check": 20,
+          "note": "第二堅果"
+        },
+        "QQ": {
+          "bet_33": 40,
+          "all_in": 30,
+          "check": 30,
+          "note": "強 overpair"
+        },
+        "JJ": {
+          "bet_33": 35,
+          "all_in": 20,
+          "check": 45,
+          "note": "中等 overpair"
+        },
+        "AKs": {
+          "bet_33": 45,
+          "all_in": 35,
+          "check": 20,
+          "note": "頂對強踢腳"
+        },
+        "AKo": {
+          "bet_33": 40,
+          "all_in": 30,
+          "check": 30,
+          "note": "頂對"
+        },
+        "AQs": {
+          "bet_33": 40,
+          "all_in": 20,
+          "check": 40,
+          "note": "A blocker"
+        },
+        "AJs": {
+          "bet_33": 35,
+          "all_in": 15,
+          "check": 50,
+          "note": "A blocker"
+        },
+        "A5s": {
+          "bet_33": 30,
+          "all_in": 20,
+          "check": 50,
+          "note": "wheel + blocker"
+        },
+        "A4s": {
+          "bet_33": 25,
+          "all_in": 15,
+          "check": 60,
+          "note": "wheel + blocker"
+        }
+      }
+    },
+    {
+      "scenario_id": "btn_4bet_bb_J63_hsd",
+      "position": "BTN",
+      "villain": "BB",
+      "pot_type": "4bet",
+      "board": [
+        "Jh",
+        "6s",
+        "3d"
+      ],
+      "texture": "dry_low",
+      "texture_zh": "乾燥低牌面",
+      "strategies": {
+        "AA": {
+          "bet_33": 30,
+          "all_in": 55,
+          "check": 15,
+          "note": "堅果，經常全下"
+        },
+        "KK": {
+          "bet_33": 35,
+          "all_in": 45,
+          "check": 20,
+          "note": "第二堅果"
+        },
+        "QQ": {
+          "bet_33": 40,
+          "all_in": 30,
+          "check": 30,
+          "note": "強 overpair"
+        },
+        "JJ": {
+          "bet_33": 35,
+          "all_in": 20,
+          "check": 45,
+          "note": "中等 overpair"
+        },
+        "AKs": {
+          "bet_33": 45,
+          "all_in": 35,
+          "check": 20,
+          "note": "頂對強踢腳"
+        },
+        "AKo": {
+          "bet_33": 40,
+          "all_in": 30,
+          "check": 30,
+          "note": "頂對"
+        },
+        "AQs": {
+          "bet_33": 40,
+          "all_in": 20,
+          "check": 40,
+          "note": "A blocker"
+        },
+        "AJs": {
+          "bet_33": 35,
+          "all_in": 15,
+          "check": 50,
+          "note": "A blocker"
+        },
+        "A5s": {
+          "bet_33": 30,
+          "all_in": 20,
+          "check": 50,
+          "note": "wheel + blocker"
+        },
+        "A4s": {
+          "bet_33": 25,
+          "all_in": 15,
+          "check": 60,
+          "note": "wheel + blocker"
+        }
+      }
+    },
+    {
+      "scenario_id": "btn_4bet_bb_AA7_hsd",
+      "position": "BTN",
+      "villain": "BB",
+      "pot_type": "4bet",
+      "board": [
+        "Ah",
+        "As",
+        "7d"
+      ],
+      "texture": "paired_high",
+      "texture_zh": "高對子牌面",
+      "strategies": {
+        "AA": {
+          "bet_33": 30,
+          "all_in": 55,
+          "check": 15,
+          "note": "堅果，經常全下"
+        },
+        "KK": {
+          "bet_33": 35,
+          "all_in": 45,
+          "check": 20,
+          "note": "第二堅果"
+        },
+        "QQ": {
+          "bet_33": 40,
+          "all_in": 30,
+          "check": 30,
+          "note": "強 overpair"
+        },
+        "JJ": {
+          "bet_33": 35,
+          "all_in": 20,
+          "check": 45,
+          "note": "中等 overpair"
+        },
+        "AKs": {
+          "bet_33": 45,
+          "all_in": 35,
+          "check": 20,
+          "note": "頂對強踢腳"
+        },
+        "AKo": {
+          "bet_33": 40,
+          "all_in": 30,
+          "check": 30,
+          "note": "頂對"
+        },
+        "AQs": {
+          "bet_33": 40,
+          "all_in": 20,
+          "check": 40,
+          "note": "A blocker"
+        },
+        "AJs": {
+          "bet_33": 35,
+          "all_in": 15,
+          "check": 50,
+          "note": "A blocker"
+        },
+        "A5s": {
+          "bet_33": 30,
+          "all_in": 20,
+          "check": 50,
+          "note": "wheel + blocker"
+        },
+        "A4s": {
+          "bet_33": 25,
+          "all_in": 15,
+          "check": 60,
+          "note": "wheel + blocker"
+        }
+      }
+    },
+    {
+      "scenario_id": "btn_4bet_bb_KK5_hsd",
+      "position": "BTN",
+      "villain": "BB",
+      "pot_type": "4bet",
+      "board": [
+        "Kh",
+        "Ks",
+        "5d"
+      ],
+      "texture": "paired_high",
+      "texture_zh": "高對子牌面",
+      "strategies": {
+        "AA": {
+          "bet_33": 30,
+          "all_in": 55,
+          "check": 15,
+          "note": "堅果，經常全下"
+        },
+        "KK": {
+          "bet_33": 35,
+          "all_in": 45,
+          "check": 20,
+          "note": "第二堅果"
+        },
+        "QQ": {
+          "bet_33": 40,
+          "all_in": 30,
+          "check": 30,
+          "note": "強 overpair"
+        },
+        "JJ": {
+          "bet_33": 35,
+          "all_in": 20,
+          "check": 45,
+          "note": "中等 overpair"
+        },
+        "AKs": {
+          "bet_33": 45,
+          "all_in": 35,
+          "check": 20,
+          "note": "頂對強踢腳"
+        },
+        "AKo": {
+          "bet_33": 40,
+          "all_in": 30,
+          "check": 30,
+          "note": "頂對"
+        },
+        "AQs": {
+          "bet_33": 40,
+          "all_in": 20,
+          "check": 40,
+          "note": "A blocker"
+        },
+        "AJs": {
+          "bet_33": 35,
+          "all_in": 15,
+          "check": 50,
+          "note": "A blocker"
+        },
+        "A5s": {
+          "bet_33": 30,
+          "all_in": 20,
+          "check": 50,
+          "note": "wheel + blocker"
+        },
+        "A4s": {
+          "bet_33": 25,
+          "all_in": 15,
+          "check": 60,
+          "note": "wheel + blocker"
+        }
+      }
+    },
+    {
+      "scenario_id": "btn_4bet_bb_QQ4_hsd",
+      "position": "BTN",
+      "villain": "BB",
+      "pot_type": "4bet",
+      "board": [
+        "Qh",
+        "Qs",
+        "4d"
+      ],
+      "texture": "paired_high",
+      "texture_zh": "高對子牌面",
+      "strategies": {
+        "AA": {
+          "bet_33": 30,
+          "all_in": 55,
+          "check": 15,
+          "note": "堅果，經常全下"
+        },
+        "KK": {
+          "bet_33": 35,
+          "all_in": 45,
+          "check": 20,
+          "note": "第二堅果"
+        },
+        "QQ": {
+          "bet_33": 40,
+          "all_in": 30,
+          "check": 30,
+          "note": "強 overpair"
+        },
+        "JJ": {
+          "bet_33": 35,
+          "all_in": 20,
+          "check": 45,
+          "note": "中等 overpair"
+        },
+        "AKs": {
+          "bet_33": 45,
+          "all_in": 35,
+          "check": 20,
+          "note": "頂對強踢腳"
+        },
+        "AKo": {
+          "bet_33": 40,
+          "all_in": 30,
+          "check": 30,
+          "note": "頂對"
+        },
+        "AQs": {
+          "bet_33": 40,
+          "all_in": 20,
+          "check": 40,
+          "note": "A blocker"
+        },
+        "AJs": {
+          "bet_33": 35,
+          "all_in": 15,
+          "check": 50,
+          "note": "A blocker"
+        },
+        "A5s": {
+          "bet_33": 30,
+          "all_in": 20,
+          "check": 50,
+          "note": "wheel + blocker"
+        },
+        "A4s": {
+          "bet_33": 25,
+          "all_in": 15,
+          "check": 60,
+          "note": "wheel + blocker"
+        }
+      }
+    },
+    {
+      "scenario_id": "btn_4bet_bb_JJ3_hsd",
+      "position": "BTN",
+      "villain": "BB",
+      "pot_type": "4bet",
+      "board": [
+        "Jh",
+        "Js",
+        "3d"
+      ],
+      "texture": "paired_high",
+      "texture_zh": "高對子牌面",
+      "strategies": {
+        "AA": {
+          "bet_33": 30,
+          "all_in": 55,
+          "check": 15,
+          "note": "堅果，經常全下"
+        },
+        "KK": {
+          "bet_33": 35,
+          "all_in": 45,
+          "check": 20,
+          "note": "第二堅果"
+        },
+        "QQ": {
+          "bet_33": 40,
+          "all_in": 30,
+          "check": 30,
+          "note": "強 overpair"
+        },
+        "JJ": {
+          "bet_33": 35,
+          "all_in": 20,
+          "check": 45,
+          "note": "中等 overpair"
+        },
+        "AKs": {
+          "bet_33": 45,
+          "all_in": 35,
+          "check": 20,
+          "note": "頂對強踢腳"
+        },
+        "AKo": {
+          "bet_33": 40,
+          "all_in": 30,
+          "check": 30,
+          "note": "頂對"
+        },
+        "AQs": {
+          "bet_33": 40,
+          "all_in": 20,
+          "check": 40,
+          "note": "A blocker"
+        },
+        "AJs": {
+          "bet_33": 35,
+          "all_in": 15,
+          "check": 50,
+          "note": "A blocker"
+        },
+        "A5s": {
+          "bet_33": 30,
+          "all_in": 20,
+          "check": 50,
+          "note": "wheel + blocker"
+        },
+        "A4s": {
+          "bet_33": 25,
+          "all_in": 15,
+          "check": 60,
+          "note": "wheel + blocker"
+        }
+      }
+    },
+    {
+      "scenario_id": "btn_4bet_bb_KK7_hsd",
+      "position": "BTN",
+      "villain": "BB",
+      "pot_type": "4bet",
+      "board": [
+        "Kh",
+        "Ks",
+        "7d"
+      ],
+      "texture": "paired_high",
+      "texture_zh": "高對子牌面",
+      "strategies": {
+        "AA": {
+          "bet_33": 30,
+          "all_in": 55,
+          "check": 15,
+          "note": "堅果，經常全下"
+        },
+        "KK": {
+          "bet_33": 35,
+          "all_in": 45,
+          "check": 20,
+          "note": "第二堅果"
+        },
+        "QQ": {
+          "bet_33": 40,
+          "all_in": 30,
+          "check": 30,
+          "note": "強 overpair"
+        },
+        "JJ": {
+          "bet_33": 35,
+          "all_in": 20,
+          "check": 45,
+          "note": "中等 overpair"
+        },
+        "AKs": {
+          "bet_33": 45,
+          "all_in": 35,
+          "check": 20,
+          "note": "頂對強踢腳"
+        },
+        "AKo": {
+          "bet_33": 40,
+          "all_in": 30,
+          "check": 30,
+          "note": "頂對"
+        },
+        "AQs": {
+          "bet_33": 40,
+          "all_in": 20,
+          "check": 40,
+          "note": "A blocker"
+        },
+        "AJs": {
+          "bet_33": 35,
+          "all_in": 15,
+          "check": 50,
+          "note": "A blocker"
+        },
+        "A5s": {
+          "bet_33": 30,
+          "all_in": 20,
+          "check": 50,
+          "note": "wheel + blocker"
+        },
+        "A4s": {
+          "bet_33": 25,
+          "all_in": 15,
+          "check": 60,
+          "note": "wheel + blocker"
+        }
+      }
+    },
+    {
+      "scenario_id": "btn_4bet_bb_882_hsd",
+      "position": "BTN",
+      "villain": "BB",
+      "pot_type": "4bet",
+      "board": [
+        "8h",
+        "8s",
+        "2d"
+      ],
+      "texture": "paired_low",
+      "texture_zh": "低對子牌面",
+      "strategies": {
+        "AA": {
+          "bet_33": 30,
+          "all_in": 55,
+          "check": 15,
+          "note": "堅果，經常全下"
+        },
+        "KK": {
+          "bet_33": 35,
+          "all_in": 45,
+          "check": 20,
+          "note": "第二堅果"
+        },
+        "QQ": {
+          "bet_33": 40,
+          "all_in": 30,
+          "check": 30,
+          "note": "強 overpair"
+        },
+        "JJ": {
+          "bet_33": 35,
+          "all_in": 20,
+          "check": 45,
+          "note": "中等 overpair"
+        },
+        "AKs": {
+          "bet_33": 45,
+          "all_in": 35,
+          "check": 20,
+          "note": "頂對強踢腳"
+        },
+        "AKo": {
+          "bet_33": 40,
+          "all_in": 30,
+          "check": 30,
+          "note": "頂對"
+        },
+        "AQs": {
+          "bet_33": 40,
+          "all_in": 20,
+          "check": 40,
+          "note": "A blocker"
+        },
+        "AJs": {
+          "bet_33": 35,
+          "all_in": 15,
+          "check": 50,
+          "note": "A blocker"
+        },
+        "A5s": {
+          "bet_33": 30,
+          "all_in": 20,
+          "check": 50,
+          "note": "wheel + blocker"
+        },
+        "A4s": {
+          "bet_33": 25,
+          "all_in": 15,
+          "check": 60,
+          "note": "wheel + blocker"
+        }
+      }
+    },
+    {
+      "scenario_id": "btn_4bet_bb_773_hsd",
+      "position": "BTN",
+      "villain": "BB",
+      "pot_type": "4bet",
+      "board": [
+        "7h",
+        "7s",
+        "3d"
+      ],
+      "texture": "paired_low",
+      "texture_zh": "低對子牌面",
+      "strategies": {
+        "AA": {
+          "bet_33": 30,
+          "all_in": 55,
+          "check": 15,
+          "note": "堅果，經常全下"
+        },
+        "KK": {
+          "bet_33": 35,
+          "all_in": 45,
+          "check": 20,
+          "note": "第二堅果"
+        },
+        "QQ": {
+          "bet_33": 40,
+          "all_in": 30,
+          "check": 30,
+          "note": "強 overpair"
+        },
+        "JJ": {
+          "bet_33": 35,
+          "all_in": 20,
+          "check": 45,
+          "note": "中等 overpair"
+        },
+        "AKs": {
+          "bet_33": 45,
+          "all_in": 35,
+          "check": 20,
+          "note": "頂對強踢腳"
+        },
+        "AKo": {
+          "bet_33": 40,
+          "all_in": 30,
+          "check": 30,
+          "note": "頂對"
+        },
+        "AQs": {
+          "bet_33": 40,
+          "all_in": 20,
+          "check": 40,
+          "note": "A blocker"
+        },
+        "AJs": {
+          "bet_33": 35,
+          "all_in": 15,
+          "check": 50,
+          "note": "A blocker"
+        },
+        "A5s": {
+          "bet_33": 30,
+          "all_in": 20,
+          "check": 50,
+          "note": "wheel + blocker"
+        },
+        "A4s": {
+          "bet_33": 25,
+          "all_in": 15,
+          "check": 60,
+          "note": "wheel + blocker"
+        }
+      }
+    },
+    {
+      "scenario_id": "btn_4bet_bb_662_hsd",
+      "position": "BTN",
+      "villain": "BB",
+      "pot_type": "4bet",
+      "board": [
+        "6h",
+        "6s",
+        "2d"
+      ],
+      "texture": "paired_low",
+      "texture_zh": "低對子牌面",
+      "strategies": {
+        "AA": {
+          "bet_33": 30,
+          "all_in": 55,
+          "check": 15,
+          "note": "堅果，經常全下"
+        },
+        "KK": {
+          "bet_33": 35,
+          "all_in": 45,
+          "check": 20,
+          "note": "第二堅果"
+        },
+        "QQ": {
+          "bet_33": 40,
+          "all_in": 30,
+          "check": 30,
+          "note": "強 overpair"
+        },
+        "JJ": {
+          "bet_33": 35,
+          "all_in": 20,
+          "check": 45,
+          "note": "中等 overpair"
+        },
+        "AKs": {
+          "bet_33": 45,
+          "all_in": 35,
+          "check": 20,
+          "note": "頂對強踢腳"
+        },
+        "AKo": {
+          "bet_33": 40,
+          "all_in": 30,
+          "check": 30,
+          "note": "頂對"
+        },
+        "AQs": {
+          "bet_33": 40,
+          "all_in": 20,
+          "check": 40,
+          "note": "A blocker"
+        },
+        "AJs": {
+          "bet_33": 35,
+          "all_in": 15,
+          "check": 50,
+          "note": "A blocker"
+        },
+        "A5s": {
+          "bet_33": 30,
+          "all_in": 20,
+          "check": 50,
+          "note": "wheel + blocker"
+        },
+        "A4s": {
+          "bet_33": 25,
+          "all_in": 15,
+          "check": 60,
+          "note": "wheel + blocker"
+        }
+      }
+    },
+    {
+      "scenario_id": "btn_4bet_bb_552_hsd",
+      "position": "BTN",
+      "villain": "BB",
+      "pot_type": "4bet",
+      "board": [
+        "5h",
+        "5s",
+        "2d"
+      ],
+      "texture": "paired_low",
+      "texture_zh": "低對子牌面",
+      "strategies": {
+        "AA": {
+          "bet_33": 30,
+          "all_in": 55,
+          "check": 15,
+          "note": "堅果，經常全下"
+        },
+        "KK": {
+          "bet_33": 35,
+          "all_in": 45,
+          "check": 20,
+          "note": "第二堅果"
+        },
+        "QQ": {
+          "bet_33": 40,
+          "all_in": 30,
+          "check": 30,
+          "note": "強 overpair"
+        },
+        "JJ": {
+          "bet_33": 35,
+          "all_in": 20,
+          "check": 45,
+          "note": "中等 overpair"
+        },
+        "AKs": {
+          "bet_33": 45,
+          "all_in": 35,
+          "check": 20,
+          "note": "頂對強踢腳"
+        },
+        "AKo": {
+          "bet_33": 40,
+          "all_in": 30,
+          "check": 30,
+          "note": "頂對"
+        },
+        "AQs": {
+          "bet_33": 40,
+          "all_in": 20,
+          "check": 40,
+          "note": "A blocker"
+        },
+        "AJs": {
+          "bet_33": 35,
+          "all_in": 15,
+          "check": 50,
+          "note": "A blocker"
+        },
+        "A5s": {
+          "bet_33": 30,
+          "all_in": 20,
+          "check": 50,
+          "note": "wheel + blocker"
+        },
+        "A4s": {
+          "bet_33": 25,
+          "all_in": 15,
+          "check": 60,
+          "note": "wheel + blocker"
+        }
+      }
+    },
+    {
+      "scenario_id": "btn_4bet_bb_442_hsd",
+      "position": "BTN",
+      "villain": "BB",
+      "pot_type": "4bet",
+      "board": [
+        "4h",
+        "4s",
+        "2d"
+      ],
+      "texture": "paired_low",
+      "texture_zh": "低對子牌面",
+      "strategies": {
+        "AA": {
+          "bet_33": 30,
+          "all_in": 55,
+          "check": 15,
+          "note": "堅果，經常全下"
+        },
+        "KK": {
+          "bet_33": 35,
+          "all_in": 45,
+          "check": 20,
+          "note": "第二堅果"
+        },
+        "QQ": {
+          "bet_33": 40,
+          "all_in": 30,
+          "check": 30,
+          "note": "強 overpair"
+        },
+        "JJ": {
+          "bet_33": 35,
+          "all_in": 20,
+          "check": 45,
+          "note": "中等 overpair"
+        },
+        "AKs": {
+          "bet_33": 45,
+          "all_in": 35,
+          "check": 20,
+          "note": "頂對強踢腳"
+        },
+        "AKo": {
+          "bet_33": 40,
+          "all_in": 30,
+          "check": 30,
+          "note": "頂對"
+        },
+        "AQs": {
+          "bet_33": 40,
+          "all_in": 20,
+          "check": 40,
+          "note": "A blocker"
+        },
+        "AJs": {
+          "bet_33": 35,
+          "all_in": 15,
+          "check": 50,
+          "note": "A blocker"
+        },
+        "A5s": {
+          "bet_33": 30,
+          "all_in": 20,
+          "check": 50,
+          "note": "wheel + blocker"
+        },
+        "A4s": {
+          "bet_33": 25,
+          "all_in": 15,
+          "check": 60,
+          "note": "wheel + blocker"
+        }
+      }
+    },
+    {
+      "scenario_id": "btn_4bet_bb_A94_hhh",
+      "position": "BTN",
+      "villain": "BB",
+      "pot_type": "4bet",
+      "board": [
+        "Ah",
+        "9h",
+        "4h"
+      ],
+      "texture": "monotone",
+      "texture_zh": "同花牌面",
+      "strategies": {
+        "AA": {
+          "bet_33": 30,
+          "all_in": 55,
+          "check": 15,
+          "note": "堅果，經常全下"
+        },
+        "KK": {
+          "bet_33": 35,
+          "all_in": 45,
+          "check": 20,
+          "note": "第二堅果"
+        },
+        "QQ": {
+          "bet_33": 40,
+          "all_in": 30,
+          "check": 30,
+          "note": "強 overpair"
+        },
+        "JJ": {
+          "bet_33": 35,
+          "all_in": 20,
+          "check": 45,
+          "note": "中等 overpair"
+        },
+        "AKs": {
+          "bet_33": 45,
+          "all_in": 35,
+          "check": 20,
+          "note": "頂對強踢腳"
+        },
+        "AKo": {
+          "bet_33": 40,
+          "all_in": 30,
+          "check": 30,
+          "note": "頂對"
+        },
+        "AQs": {
+          "bet_33": 40,
+          "all_in": 20,
+          "check": 40,
+          "note": "A blocker"
+        },
+        "AJs": {
+          "bet_33": 35,
+          "all_in": 15,
+          "check": 50,
+          "note": "A blocker"
+        },
+        "A5s": {
+          "bet_33": 30,
+          "all_in": 20,
+          "check": 50,
+          "note": "wheel + blocker"
+        },
+        "A4s": {
+          "bet_33": 25,
+          "all_in": 15,
+          "check": 60,
+          "note": "wheel + blocker"
+        }
+      }
+    },
+    {
+      "scenario_id": "btn_4bet_bb_K83_hhh",
+      "position": "BTN",
+      "villain": "BB",
+      "pot_type": "4bet",
+      "board": [
+        "Kh",
+        "8h",
+        "3h"
+      ],
+      "texture": "monotone",
+      "texture_zh": "同花牌面",
+      "strategies": {
+        "AA": {
+          "bet_33": 30,
+          "all_in": 55,
+          "check": 15,
+          "note": "堅果，經常全下"
+        },
+        "KK": {
+          "bet_33": 35,
+          "all_in": 45,
+          "check": 20,
+          "note": "第二堅果"
+        },
+        "QQ": {
+          "bet_33": 40,
+          "all_in": 30,
+          "check": 30,
+          "note": "強 overpair"
+        },
+        "JJ": {
+          "bet_33": 35,
+          "all_in": 20,
+          "check": 45,
+          "note": "中等 overpair"
+        },
+        "AKs": {
+          "bet_33": 45,
+          "all_in": 35,
+          "check": 20,
+          "note": "頂對強踢腳"
+        },
+        "AKo": {
+          "bet_33": 40,
+          "all_in": 30,
+          "check": 30,
+          "note": "頂對"
+        },
+        "AQs": {
+          "bet_33": 40,
+          "all_in": 20,
+          "check": 40,
+          "note": "A blocker"
+        },
+        "AJs": {
+          "bet_33": 35,
+          "all_in": 15,
+          "check": 50,
+          "note": "A blocker"
+        },
+        "A5s": {
+          "bet_33": 30,
+          "all_in": 20,
+          "check": 50,
+          "note": "wheel + blocker"
+        },
+        "A4s": {
+          "bet_33": 25,
+          "all_in": 15,
+          "check": 60,
+          "note": "wheel + blocker"
+        }
+      }
+    },
+    {
+      "scenario_id": "btn_4bet_bb_Q72_hhh",
+      "position": "BTN",
+      "villain": "BB",
+      "pot_type": "4bet",
+      "board": [
+        "Qh",
+        "7h",
+        "2h"
+      ],
+      "texture": "monotone",
+      "texture_zh": "同花牌面",
+      "strategies": {
+        "AA": {
+          "bet_33": 30,
+          "all_in": 55,
+          "check": 15,
+          "note": "堅果，經常全下"
+        },
+        "KK": {
+          "bet_33": 35,
+          "all_in": 45,
+          "check": 20,
+          "note": "第二堅果"
+        },
+        "QQ": {
+          "bet_33": 40,
+          "all_in": 30,
+          "check": 30,
+          "note": "強 overpair"
+        },
+        "JJ": {
+          "bet_33": 35,
+          "all_in": 20,
+          "check": 45,
+          "note": "中等 overpair"
+        },
+        "AKs": {
+          "bet_33": 45,
+          "all_in": 35,
+          "check": 20,
+          "note": "頂對強踢腳"
+        },
+        "AKo": {
+          "bet_33": 40,
+          "all_in": 30,
+          "check": 30,
+          "note": "頂對"
+        },
+        "AQs": {
+          "bet_33": 40,
+          "all_in": 20,
+          "check": 40,
+          "note": "A blocker"
+        },
+        "AJs": {
+          "bet_33": 35,
+          "all_in": 15,
+          "check": 50,
+          "note": "A blocker"
+        },
+        "A5s": {
+          "bet_33": 30,
+          "all_in": 20,
+          "check": 50,
+          "note": "wheel + blocker"
+        },
+        "A4s": {
+          "bet_33": 25,
+          "all_in": 15,
+          "check": 60,
+          "note": "wheel + blocker"
+        }
+      }
+    },
+    {
+      "scenario_id": "btn_4bet_bb_J73_hhh",
+      "position": "BTN",
+      "villain": "BB",
+      "pot_type": "4bet",
+      "board": [
+        "Jh",
+        "7h",
+        "3h"
+      ],
+      "texture": "monotone",
+      "texture_zh": "同花牌面",
+      "strategies": {
+        "AA": {
+          "bet_33": 30,
+          "all_in": 55,
+          "check": 15,
+          "note": "堅果，經常全下"
+        },
+        "KK": {
+          "bet_33": 35,
+          "all_in": 45,
+          "check": 20,
+          "note": "第二堅果"
+        },
+        "QQ": {
+          "bet_33": 40,
+          "all_in": 30,
+          "check": 30,
+          "note": "強 overpair"
+        },
+        "JJ": {
+          "bet_33": 35,
+          "all_in": 20,
+          "check": 45,
+          "note": "中等 overpair"
+        },
+        "AKs": {
+          "bet_33": 45,
+          "all_in": 35,
+          "check": 20,
+          "note": "頂對強踢腳"
+        },
+        "AKo": {
+          "bet_33": 40,
+          "all_in": 30,
+          "check": 30,
+          "note": "頂對"
+        },
+        "AQs": {
+          "bet_33": 40,
+          "all_in": 20,
+          "check": 40,
+          "note": "A blocker"
+        },
+        "AJs": {
+          "bet_33": 35,
+          "all_in": 15,
+          "check": 50,
+          "note": "A blocker"
+        },
+        "A5s": {
+          "bet_33": 30,
+          "all_in": 20,
+          "check": 50,
+          "note": "wheel + blocker"
+        },
+        "A4s": {
+          "bet_33": 25,
+          "all_in": 15,
+          "check": 60,
+          "note": "wheel + blocker"
+        }
+      }
+    },
+    {
+      "scenario_id": "btn_4bet_bb_T52_hhh",
+      "position": "BTN",
+      "villain": "BB",
+      "pot_type": "4bet",
+      "board": [
+        "Th",
+        "5h",
+        "2h"
+      ],
+      "texture": "monotone",
+      "texture_zh": "同花牌面",
+      "strategies": {
+        "AA": {
+          "bet_33": 30,
+          "all_in": 55,
+          "check": 15,
+          "note": "堅果，經常全下"
+        },
+        "KK": {
+          "bet_33": 35,
+          "all_in": 45,
+          "check": 20,
+          "note": "第二堅果"
+        },
+        "QQ": {
+          "bet_33": 40,
+          "all_in": 30,
+          "check": 30,
+          "note": "強 overpair"
+        },
+        "JJ": {
+          "bet_33": 35,
+          "all_in": 20,
+          "check": 45,
+          "note": "中等 overpair"
+        },
+        "AKs": {
+          "bet_33": 45,
+          "all_in": 35,
+          "check": 20,
+          "note": "頂對強踢腳"
+        },
+        "AKo": {
+          "bet_33": 40,
+          "all_in": 30,
+          "check": 30,
+          "note": "頂對"
+        },
+        "AQs": {
+          "bet_33": 40,
+          "all_in": 20,
+          "check": 40,
+          "note": "A blocker"
+        },
+        "AJs": {
+          "bet_33": 35,
+          "all_in": 15,
+          "check": 50,
+          "note": "A blocker"
+        },
+        "A5s": {
+          "bet_33": 30,
+          "all_in": 20,
+          "check": 50,
+          "note": "wheel + blocker"
+        },
+        "A4s": {
+          "bet_33": 25,
+          "all_in": 15,
+          "check": 60,
+          "note": "wheel + blocker"
+        }
+      }
+    },
+    {
+      "scenario_id": "btn_4bet_bb_AK5_hhd",
+      "position": "BTN",
+      "villain": "BB",
+      "pot_type": "4bet",
+      "board": [
+        "Ah",
+        "Kh",
+        "5d"
+      ],
+      "texture": "two_tone_high",
+      "texture_zh": "雙色高牌面",
+      "strategies": {
+        "AA": {
+          "bet_33": 30,
+          "all_in": 55,
+          "check": 15,
+          "note": "堅果，經常全下"
+        },
+        "KK": {
+          "bet_33": 35,
+          "all_in": 45,
+          "check": 20,
+          "note": "第二堅果"
+        },
+        "QQ": {
+          "bet_33": 40,
+          "all_in": 30,
+          "check": 30,
+          "note": "強 overpair"
+        },
+        "JJ": {
+          "bet_33": 35,
+          "all_in": 20,
+          "check": 45,
+          "note": "中等 overpair"
+        },
+        "AKs": {
+          "bet_33": 45,
+          "all_in": 35,
+          "check": 20,
+          "note": "頂對強踢腳"
+        },
+        "AKo": {
+          "bet_33": 40,
+          "all_in": 30,
+          "check": 30,
+          "note": "頂對"
+        },
+        "AQs": {
+          "bet_33": 40,
+          "all_in": 20,
+          "check": 40,
+          "note": "A blocker"
+        },
+        "AJs": {
+          "bet_33": 35,
+          "all_in": 15,
+          "check": 50,
+          "note": "A blocker"
+        },
+        "A5s": {
+          "bet_33": 30,
+          "all_in": 20,
+          "check": 50,
+          "note": "wheel + blocker"
+        },
+        "A4s": {
+          "bet_33": 25,
+          "all_in": 15,
+          "check": 60,
+          "note": "wheel + blocker"
+        }
+      }
+    },
+    {
+      "scenario_id": "btn_4bet_bb_KQ4_hhd",
+      "position": "BTN",
+      "villain": "BB",
+      "pot_type": "4bet",
+      "board": [
+        "Kh",
+        "Qh",
+        "4d"
+      ],
+      "texture": "two_tone_high",
+      "texture_zh": "雙色高牌面",
+      "strategies": {
+        "AA": {
+          "bet_33": 30,
+          "all_in": 55,
+          "check": 15,
+          "note": "堅果，經常全下"
+        },
+        "KK": {
+          "bet_33": 35,
+          "all_in": 45,
+          "check": 20,
+          "note": "第二堅果"
+        },
+        "QQ": {
+          "bet_33": 40,
+          "all_in": 30,
+          "check": 30,
+          "note": "強 overpair"
+        },
+        "JJ": {
+          "bet_33": 35,
+          "all_in": 20,
+          "check": 45,
+          "note": "中等 overpair"
+        },
+        "AKs": {
+          "bet_33": 45,
+          "all_in": 35,
+          "check": 20,
+          "note": "頂對強踢腳"
+        },
+        "AKo": {
+          "bet_33": 40,
+          "all_in": 30,
+          "check": 30,
+          "note": "頂對"
+        },
+        "AQs": {
+          "bet_33": 40,
+          "all_in": 20,
+          "check": 40,
+          "note": "A blocker"
+        },
+        "AJs": {
+          "bet_33": 35,
+          "all_in": 15,
+          "check": 50,
+          "note": "A blocker"
+        },
+        "A5s": {
+          "bet_33": 30,
+          "all_in": 20,
+          "check": 50,
+          "note": "wheel + blocker"
+        },
+        "A4s": {
+          "bet_33": 25,
+          "all_in": 15,
+          "check": 60,
+          "note": "wheel + blocker"
+        }
+      }
+    },
+    {
+      "scenario_id": "btn_4bet_bb_AJ3_hhd",
+      "position": "BTN",
+      "villain": "BB",
+      "pot_type": "4bet",
+      "board": [
+        "Ah",
+        "Jh",
+        "3d"
+      ],
+      "texture": "two_tone_high",
+      "texture_zh": "雙色高牌面",
+      "strategies": {
+        "AA": {
+          "bet_33": 30,
+          "all_in": 55,
+          "check": 15,
+          "note": "堅果，經常全下"
+        },
+        "KK": {
+          "bet_33": 35,
+          "all_in": 45,
+          "check": 20,
+          "note": "第二堅果"
+        },
+        "QQ": {
+          "bet_33": 40,
+          "all_in": 30,
+          "check": 30,
+          "note": "強 overpair"
+        },
+        "JJ": {
+          "bet_33": 35,
+          "all_in": 20,
+          "check": 45,
+          "note": "中等 overpair"
+        },
+        "AKs": {
+          "bet_33": 45,
+          "all_in": 35,
+          "check": 20,
+          "note": "頂對強踢腳"
+        },
+        "AKo": {
+          "bet_33": 40,
+          "all_in": 30,
+          "check": 30,
+          "note": "頂對"
+        },
+        "AQs": {
+          "bet_33": 40,
+          "all_in": 20,
+          "check": 40,
+          "note": "A blocker"
+        },
+        "AJs": {
+          "bet_33": 35,
+          "all_in": 15,
+          "check": 50,
+          "note": "A blocker"
+        },
+        "A5s": {
+          "bet_33": 30,
+          "all_in": 20,
+          "check": 50,
+          "note": "wheel + blocker"
+        },
+        "A4s": {
+          "bet_33": 25,
+          "all_in": 15,
+          "check": 60,
+          "note": "wheel + blocker"
+        }
+      }
+    },
+    {
+      "scenario_id": "btn_4bet_bb_AK7_hhd",
+      "position": "BTN",
+      "villain": "BB",
+      "pot_type": "4bet",
+      "board": [
+        "Ah",
+        "Kh",
+        "7d"
+      ],
+      "texture": "two_tone_high",
+      "texture_zh": "雙色高牌面",
+      "strategies": {
+        "AA": {
+          "bet_33": 30,
+          "all_in": 55,
+          "check": 15,
+          "note": "堅果，經常全下"
+        },
+        "KK": {
+          "bet_33": 35,
+          "all_in": 45,
+          "check": 20,
+          "note": "第二堅果"
+        },
+        "QQ": {
+          "bet_33": 40,
+          "all_in": 30,
+          "check": 30,
+          "note": "強 overpair"
+        },
+        "JJ": {
+          "bet_33": 35,
+          "all_in": 20,
+          "check": 45,
+          "note": "中等 overpair"
+        },
+        "AKs": {
+          "bet_33": 45,
+          "all_in": 35,
+          "check": 20,
+          "note": "頂對強踢腳"
+        },
+        "AKo": {
+          "bet_33": 40,
+          "all_in": 30,
+          "check": 30,
+          "note": "頂對"
+        },
+        "AQs": {
+          "bet_33": 40,
+          "all_in": 20,
+          "check": 40,
+          "note": "A blocker"
+        },
+        "AJs": {
+          "bet_33": 35,
+          "all_in": 15,
+          "check": 50,
+          "note": "A blocker"
+        },
+        "A5s": {
+          "bet_33": 30,
+          "all_in": 20,
+          "check": 50,
+          "note": "wheel + blocker"
+        },
+        "A4s": {
+          "bet_33": 25,
+          "all_in": 15,
+          "check": 60,
+          "note": "wheel + blocker"
+        }
+      }
+    },
+    {
+      "scenario_id": "btn_4bet_bb_KJ4_hhd",
+      "position": "BTN",
+      "villain": "BB",
+      "pot_type": "4bet",
+      "board": [
+        "Kh",
+        "Jh",
+        "4d"
+      ],
+      "texture": "two_tone_high",
+      "texture_zh": "雙色高牌面",
+      "strategies": {
+        "AA": {
+          "bet_33": 30,
+          "all_in": 55,
+          "check": 15,
+          "note": "堅果，經常全下"
+        },
+        "KK": {
+          "bet_33": 35,
+          "all_in": 45,
+          "check": 20,
+          "note": "第二堅果"
+        },
+        "QQ": {
+          "bet_33": 40,
+          "all_in": 30,
+          "check": 30,
+          "note": "強 overpair"
+        },
+        "JJ": {
+          "bet_33": 35,
+          "all_in": 20,
+          "check": 45,
+          "note": "中等 overpair"
+        },
+        "AKs": {
+          "bet_33": 45,
+          "all_in": 35,
+          "check": 20,
+          "note": "頂對強踢腳"
+        },
+        "AKo": {
+          "bet_33": 40,
+          "all_in": 30,
+          "check": 30,
+          "note": "頂對"
+        },
+        "AQs": {
+          "bet_33": 40,
+          "all_in": 20,
+          "check": 40,
+          "note": "A blocker"
+        },
+        "AJs": {
+          "bet_33": 35,
+          "all_in": 15,
+          "check": 50,
+          "note": "A blocker"
+        },
+        "A5s": {
+          "bet_33": 30,
+          "all_in": 20,
+          "check": 50,
+          "note": "wheel + blocker"
+        },
+        "A4s": {
+          "bet_33": 25,
+          "all_in": 15,
+          "check": 60,
+          "note": "wheel + blocker"
+        }
+      }
+    },
+    {
+      "scenario_id": "btn_4bet_bb_862_hhd",
+      "position": "BTN",
+      "villain": "BB",
+      "pot_type": "4bet",
+      "board": [
+        "8h",
+        "6h",
+        "2d"
+      ],
+      "texture": "two_tone_low",
+      "texture_zh": "雙色低牌面",
+      "strategies": {
+        "AA": {
+          "bet_33": 30,
+          "all_in": 55,
+          "check": 15,
+          "note": "堅果，經常全下"
+        },
+        "KK": {
+          "bet_33": 35,
+          "all_in": 45,
+          "check": 20,
+          "note": "第二堅果"
+        },
+        "QQ": {
+          "bet_33": 40,
+          "all_in": 30,
+          "check": 30,
+          "note": "強 overpair"
+        },
+        "JJ": {
+          "bet_33": 35,
+          "all_in": 20,
+          "check": 45,
+          "note": "中等 overpair"
+        },
+        "AKs": {
+          "bet_33": 45,
+          "all_in": 35,
+          "check": 20,
+          "note": "頂對強踢腳"
+        },
+        "AKo": {
+          "bet_33": 40,
+          "all_in": 30,
+          "check": 30,
+          "note": "頂對"
+        },
+        "AQs": {
+          "bet_33": 40,
+          "all_in": 20,
+          "check": 40,
+          "note": "A blocker"
+        },
+        "AJs": {
+          "bet_33": 35,
+          "all_in": 15,
+          "check": 50,
+          "note": "A blocker"
+        },
+        "A5s": {
+          "bet_33": 30,
+          "all_in": 20,
+          "check": 50,
+          "note": "wheel + blocker"
+        },
+        "A4s": {
+          "bet_33": 25,
+          "all_in": 15,
+          "check": 60,
+          "note": "wheel + blocker"
+        }
+      }
+    },
+    {
+      "scenario_id": "btn_4bet_bb_973_hhd",
+      "position": "BTN",
+      "villain": "BB",
+      "pot_type": "4bet",
+      "board": [
+        "9h",
+        "7h",
+        "3d"
+      ],
+      "texture": "two_tone_low",
+      "texture_zh": "雙色低牌面",
+      "strategies": {
+        "AA": {
+          "bet_33": 30,
+          "all_in": 55,
+          "check": 15,
+          "note": "堅果，經常全下"
+        },
+        "KK": {
+          "bet_33": 35,
+          "all_in": 45,
+          "check": 20,
+          "note": "第二堅果"
+        },
+        "QQ": {
+          "bet_33": 40,
+          "all_in": 30,
+          "check": 30,
+          "note": "強 overpair"
+        },
+        "JJ": {
+          "bet_33": 35,
+          "all_in": 20,
+          "check": 45,
+          "note": "中等 overpair"
+        },
+        "AKs": {
+          "bet_33": 45,
+          "all_in": 35,
+          "check": 20,
+          "note": "頂對強踢腳"
+        },
+        "AKo": {
+          "bet_33": 40,
+          "all_in": 30,
+          "check": 30,
+          "note": "頂對"
+        },
+        "AQs": {
+          "bet_33": 40,
+          "all_in": 20,
+          "check": 40,
+          "note": "A blocker"
+        },
+        "AJs": {
+          "bet_33": 35,
+          "all_in": 15,
+          "check": 50,
+          "note": "A blocker"
+        },
+        "A5s": {
+          "bet_33": 30,
+          "all_in": 20,
+          "check": 50,
+          "note": "wheel + blocker"
+        },
+        "A4s": {
+          "bet_33": 25,
+          "all_in": 15,
+          "check": 60,
+          "note": "wheel + blocker"
+        }
+      }
+    },
+    {
+      "scenario_id": "btn_4bet_bb_752_hhd",
+      "position": "BTN",
+      "villain": "BB",
+      "pot_type": "4bet",
+      "board": [
+        "7h",
+        "5h",
+        "2d"
+      ],
+      "texture": "two_tone_low",
+      "texture_zh": "雙色低牌面",
+      "strategies": {
+        "AA": {
+          "bet_33": 30,
+          "all_in": 55,
+          "check": 15,
+          "note": "堅果，經常全下"
+        },
+        "KK": {
+          "bet_33": 35,
+          "all_in": 45,
+          "check": 20,
+          "note": "第二堅果"
+        },
+        "QQ": {
+          "bet_33": 40,
+          "all_in": 30,
+          "check": 30,
+          "note": "強 overpair"
+        },
+        "JJ": {
+          "bet_33": 35,
+          "all_in": 20,
+          "check": 45,
+          "note": "中等 overpair"
+        },
+        "AKs": {
+          "bet_33": 45,
+          "all_in": 35,
+          "check": 20,
+          "note": "頂對強踢腳"
+        },
+        "AKo": {
+          "bet_33": 40,
+          "all_in": 30,
+          "check": 30,
+          "note": "頂對"
+        },
+        "AQs": {
+          "bet_33": 40,
+          "all_in": 20,
+          "check": 40,
+          "note": "A blocker"
+        },
+        "AJs": {
+          "bet_33": 35,
+          "all_in": 15,
+          "check": 50,
+          "note": "A blocker"
+        },
+        "A5s": {
+          "bet_33": 30,
+          "all_in": 20,
+          "check": 50,
+          "note": "wheel + blocker"
+        },
+        "A4s": {
+          "bet_33": 25,
+          "all_in": 15,
+          "check": 60,
+          "note": "wheel + blocker"
+        }
+      }
+    },
+    {
+      "scenario_id": "btn_4bet_bb_T84_hhd",
+      "position": "BTN",
+      "villain": "BB",
+      "pot_type": "4bet",
+      "board": [
+        "Th",
+        "8h",
+        "4d"
+      ],
+      "texture": "two_tone_low",
+      "texture_zh": "雙色低牌面",
+      "strategies": {
+        "AA": {
+          "bet_33": 30,
+          "all_in": 55,
+          "check": 15,
+          "note": "堅果，經常全下"
+        },
+        "KK": {
+          "bet_33": 35,
+          "all_in": 45,
+          "check": 20,
+          "note": "第二堅果"
+        },
+        "QQ": {
+          "bet_33": 40,
+          "all_in": 30,
+          "check": 30,
+          "note": "強 overpair"
+        },
+        "JJ": {
+          "bet_33": 35,
+          "all_in": 20,
+          "check": 45,
+          "note": "中等 overpair"
+        },
+        "AKs": {
+          "bet_33": 45,
+          "all_in": 35,
+          "check": 20,
+          "note": "頂對強踢腳"
+        },
+        "AKo": {
+          "bet_33": 40,
+          "all_in": 30,
+          "check": 30,
+          "note": "頂對"
+        },
+        "AQs": {
+          "bet_33": 40,
+          "all_in": 20,
+          "check": 40,
+          "note": "A blocker"
+        },
+        "AJs": {
+          "bet_33": 35,
+          "all_in": 15,
+          "check": 50,
+          "note": "A blocker"
+        },
+        "A5s": {
+          "bet_33": 30,
+          "all_in": 20,
+          "check": 50,
+          "note": "wheel + blocker"
+        },
+        "A4s": {
+          "bet_33": 25,
+          "all_in": 15,
+          "check": 60,
+          "note": "wheel + blocker"
+        }
+      }
+    },
+    {
+      "scenario_id": "btn_4bet_bb_642_hhd",
+      "position": "BTN",
+      "villain": "BB",
+      "pot_type": "4bet",
+      "board": [
+        "6h",
+        "4h",
+        "2d"
+      ],
+      "texture": "two_tone_low",
+      "texture_zh": "雙色低牌面",
+      "strategies": {
+        "AA": {
+          "bet_33": 30,
+          "all_in": 55,
+          "check": 15,
+          "note": "堅果，經常全下"
+        },
+        "KK": {
+          "bet_33": 35,
+          "all_in": 45,
+          "check": 20,
+          "note": "第二堅果"
+        },
+        "QQ": {
+          "bet_33": 40,
+          "all_in": 30,
+          "check": 30,
+          "note": "強 overpair"
+        },
+        "JJ": {
+          "bet_33": 35,
+          "all_in": 20,
+          "check": 45,
+          "note": "中等 overpair"
+        },
+        "AKs": {
+          "bet_33": 45,
+          "all_in": 35,
+          "check": 20,
+          "note": "頂對強踢腳"
+        },
+        "AKo": {
+          "bet_33": 40,
+          "all_in": 30,
+          "check": 30,
+          "note": "頂對"
+        },
+        "AQs": {
+          "bet_33": 40,
+          "all_in": 20,
+          "check": 40,
+          "note": "A blocker"
+        },
+        "AJs": {
+          "bet_33": 35,
+          "all_in": 15,
+          "check": 50,
+          "note": "A blocker"
+        },
+        "A5s": {
+          "bet_33": 30,
+          "all_in": 20,
+          "check": 50,
+          "note": "wheel + blocker"
+        },
+        "A4s": {
+          "bet_33": 25,
+          "all_in": 15,
+          "check": 60,
+          "note": "wheel + blocker"
+        }
+      }
+    },
+    {
+      "scenario_id": "btn_4bet_bb_QJT_hdc",
+      "position": "BTN",
+      "villain": "BB",
+      "pot_type": "4bet",
+      "board": [
+        "Qh",
+        "Jd",
+        "Tc"
+      ],
+      "texture": "connected_high",
+      "texture_zh": "高連接牌面",
+      "strategies": {
+        "AA": {
+          "bet_33": 30,
+          "all_in": 55,
+          "check": 15,
+          "note": "堅果，經常全下"
+        },
+        "KK": {
+          "bet_33": 35,
+          "all_in": 45,
+          "check": 20,
+          "note": "第二堅果"
+        },
+        "QQ": {
+          "bet_33": 40,
+          "all_in": 30,
+          "check": 30,
+          "note": "強 overpair"
+        },
+        "JJ": {
+          "bet_33": 35,
+          "all_in": 20,
+          "check": 45,
+          "note": "中等 overpair"
+        },
+        "AKs": {
+          "bet_33": 45,
+          "all_in": 35,
+          "check": 20,
+          "note": "頂對強踢腳"
+        },
+        "AKo": {
+          "bet_33": 40,
+          "all_in": 30,
+          "check": 30,
+          "note": "頂對"
+        },
+        "AQs": {
+          "bet_33": 40,
+          "all_in": 20,
+          "check": 40,
+          "note": "A blocker"
+        },
+        "AJs": {
+          "bet_33": 35,
+          "all_in": 15,
+          "check": 50,
+          "note": "A blocker"
+        },
+        "A5s": {
+          "bet_33": 30,
+          "all_in": 20,
+          "check": 50,
+          "note": "wheel + blocker"
+        },
+        "A4s": {
+          "bet_33": 25,
+          "all_in": 15,
+          "check": 60,
+          "note": "wheel + blocker"
+        }
+      }
+    },
+    {
+      "scenario_id": "btn_4bet_bb_KQJ_hds",
+      "position": "BTN",
+      "villain": "BB",
+      "pot_type": "4bet",
+      "board": [
+        "Kh",
+        "Qd",
+        "Js"
+      ],
+      "texture": "connected_high",
+      "texture_zh": "高連接牌面",
+      "strategies": {
+        "AA": {
+          "bet_33": 30,
+          "all_in": 55,
+          "check": 15,
+          "note": "堅果，經常全下"
+        },
+        "KK": {
+          "bet_33": 35,
+          "all_in": 45,
+          "check": 20,
+          "note": "第二堅果"
+        },
+        "QQ": {
+          "bet_33": 40,
+          "all_in": 30,
+          "check": 30,
+          "note": "強 overpair"
+        },
+        "JJ": {
+          "bet_33": 35,
+          "all_in": 20,
+          "check": 45,
+          "note": "中等 overpair"
+        },
+        "AKs": {
+          "bet_33": 45,
+          "all_in": 35,
+          "check": 20,
+          "note": "頂對強踢腳"
+        },
+        "AKo": {
+          "bet_33": 40,
+          "all_in": 30,
+          "check": 30,
+          "note": "頂對"
+        },
+        "AQs": {
+          "bet_33": 40,
+          "all_in": 20,
+          "check": 40,
+          "note": "A blocker"
+        },
+        "AJs": {
+          "bet_33": 35,
+          "all_in": 15,
+          "check": 50,
+          "note": "A blocker"
+        },
+        "A5s": {
+          "bet_33": 30,
+          "all_in": 20,
+          "check": 50,
+          "note": "wheel + blocker"
+        },
+        "A4s": {
+          "bet_33": 25,
+          "all_in": 15,
+          "check": 60,
+          "note": "wheel + blocker"
+        }
+      }
+    },
+    {
+      "scenario_id": "btn_4bet_bb_JT9_hdc",
+      "position": "BTN",
+      "villain": "BB",
+      "pot_type": "4bet",
+      "board": [
+        "Jh",
+        "Td",
+        "9c"
+      ],
+      "texture": "connected_high",
+      "texture_zh": "高連接牌面",
+      "strategies": {
+        "AA": {
+          "bet_33": 30,
+          "all_in": 55,
+          "check": 15,
+          "note": "堅果，經常全下"
+        },
+        "KK": {
+          "bet_33": 35,
+          "all_in": 45,
+          "check": 20,
+          "note": "第二堅果"
+        },
+        "QQ": {
+          "bet_33": 40,
+          "all_in": 30,
+          "check": 30,
+          "note": "強 overpair"
+        },
+        "JJ": {
+          "bet_33": 35,
+          "all_in": 20,
+          "check": 45,
+          "note": "中等 overpair"
+        },
+        "AKs": {
+          "bet_33": 45,
+          "all_in": 35,
+          "check": 20,
+          "note": "頂對強踢腳"
+        },
+        "AKo": {
+          "bet_33": 40,
+          "all_in": 30,
+          "check": 30,
+          "note": "頂對"
+        },
+        "AQs": {
+          "bet_33": 40,
+          "all_in": 20,
+          "check": 40,
+          "note": "A blocker"
+        },
+        "AJs": {
+          "bet_33": 35,
+          "all_in": 15,
+          "check": 50,
+          "note": "A blocker"
+        },
+        "A5s": {
+          "bet_33": 30,
+          "all_in": 20,
+          "check": 50,
+          "note": "wheel + blocker"
+        },
+        "A4s": {
+          "bet_33": 25,
+          "all_in": 15,
+          "check": 60,
+          "note": "wheel + blocker"
+        }
+      }
+    },
+    {
+      "scenario_id": "btn_4bet_bb_AKQ_hds",
+      "position": "BTN",
+      "villain": "BB",
+      "pot_type": "4bet",
+      "board": [
+        "Ah",
+        "Kd",
+        "Qs"
+      ],
+      "texture": "connected_high",
+      "texture_zh": "高連接牌面",
+      "strategies": {
+        "AA": {
+          "bet_33": 30,
+          "all_in": 55,
+          "check": 15,
+          "note": "堅果，經常全下"
+        },
+        "KK": {
+          "bet_33": 35,
+          "all_in": 45,
+          "check": 20,
+          "note": "第二堅果"
+        },
+        "QQ": {
+          "bet_33": 40,
+          "all_in": 30,
+          "check": 30,
+          "note": "強 overpair"
+        },
+        "JJ": {
+          "bet_33": 35,
+          "all_in": 20,
+          "check": 45,
+          "note": "中等 overpair"
+        },
+        "AKs": {
+          "bet_33": 45,
+          "all_in": 35,
+          "check": 20,
+          "note": "頂對強踢腳"
+        },
+        "AKo": {
+          "bet_33": 40,
+          "all_in": 30,
+          "check": 30,
+          "note": "頂對"
+        },
+        "AQs": {
+          "bet_33": 40,
+          "all_in": 20,
+          "check": 40,
+          "note": "A blocker"
+        },
+        "AJs": {
+          "bet_33": 35,
+          "all_in": 15,
+          "check": 50,
+          "note": "A blocker"
+        },
+        "A5s": {
+          "bet_33": 30,
+          "all_in": 20,
+          "check": 50,
+          "note": "wheel + blocker"
+        },
+        "A4s": {
+          "bet_33": 25,
+          "all_in": 15,
+          "check": 60,
+          "note": "wheel + blocker"
+        }
+      }
+    },
+    {
+      "scenario_id": "btn_4bet_bb_QJT_hsd",
+      "position": "BTN",
+      "villain": "BB",
+      "pot_type": "4bet",
+      "board": [
+        "Qh",
+        "Js",
+        "Td"
+      ],
+      "texture": "connected_high",
+      "texture_zh": "高連接牌面",
+      "strategies": {
+        "AA": {
+          "bet_33": 30,
+          "all_in": 55,
+          "check": 15,
+          "note": "堅果，經常全下"
+        },
+        "KK": {
+          "bet_33": 35,
+          "all_in": 45,
+          "check": 20,
+          "note": "第二堅果"
+        },
+        "QQ": {
+          "bet_33": 40,
+          "all_in": 30,
+          "check": 30,
+          "note": "強 overpair"
+        },
+        "JJ": {
+          "bet_33": 35,
+          "all_in": 20,
+          "check": 45,
+          "note": "中等 overpair"
+        },
+        "AKs": {
+          "bet_33": 45,
+          "all_in": 35,
+          "check": 20,
+          "note": "頂對強踢腳"
+        },
+        "AKo": {
+          "bet_33": 40,
+          "all_in": 30,
+          "check": 30,
+          "note": "頂對"
+        },
+        "AQs": {
+          "bet_33": 40,
+          "all_in": 20,
+          "check": 40,
+          "note": "A blocker"
+        },
+        "AJs": {
+          "bet_33": 35,
+          "all_in": 15,
+          "check": 50,
+          "note": "A blocker"
+        },
+        "A5s": {
+          "bet_33": 30,
+          "all_in": 20,
+          "check": 50,
+          "note": "wheel + blocker"
+        },
+        "A4s": {
+          "bet_33": 25,
+          "all_in": 15,
+          "check": 60,
+          "note": "wheel + blocker"
+        }
+      }
+    },
+    {
+      "scenario_id": "btn_4bet_bb_987_hdc",
+      "position": "BTN",
+      "villain": "BB",
+      "pot_type": "4bet",
+      "board": [
+        "9h",
+        "8d",
+        "7c"
+      ],
+      "texture": "connected_middle",
+      "texture_zh": "中連接牌面",
+      "strategies": {
+        "AA": {
+          "bet_33": 30,
+          "all_in": 55,
+          "check": 15,
+          "note": "堅果，經常全下"
+        },
+        "KK": {
+          "bet_33": 35,
+          "all_in": 45,
+          "check": 20,
+          "note": "第二堅果"
+        },
+        "QQ": {
+          "bet_33": 40,
+          "all_in": 30,
+          "check": 30,
+          "note": "強 overpair"
+        },
+        "JJ": {
+          "bet_33": 35,
+          "all_in": 20,
+          "check": 45,
+          "note": "中等 overpair"
+        },
+        "AKs": {
+          "bet_33": 45,
+          "all_in": 35,
+          "check": 20,
+          "note": "頂對強踢腳"
+        },
+        "AKo": {
+          "bet_33": 40,
+          "all_in": 30,
+          "check": 30,
+          "note": "頂對"
+        },
+        "AQs": {
+          "bet_33": 40,
+          "all_in": 20,
+          "check": 40,
+          "note": "A blocker"
+        },
+        "AJs": {
+          "bet_33": 35,
+          "all_in": 15,
+          "check": 50,
+          "note": "A blocker"
+        },
+        "A5s": {
+          "bet_33": 30,
+          "all_in": 20,
+          "check": 50,
+          "note": "wheel + blocker"
+        },
+        "A4s": {
+          "bet_33": 25,
+          "all_in": 15,
+          "check": 60,
+          "note": "wheel + blocker"
+        }
+      }
+    },
+    {
+      "scenario_id": "btn_4bet_bb_T98_hdc",
+      "position": "BTN",
+      "villain": "BB",
+      "pot_type": "4bet",
+      "board": [
+        "Th",
+        "9d",
+        "8c"
+      ],
+      "texture": "connected_middle",
+      "texture_zh": "中連接牌面",
+      "strategies": {
+        "AA": {
+          "bet_33": 30,
+          "all_in": 55,
+          "check": 15,
+          "note": "堅果，經常全下"
+        },
+        "KK": {
+          "bet_33": 35,
+          "all_in": 45,
+          "check": 20,
+          "note": "第二堅果"
+        },
+        "QQ": {
+          "bet_33": 40,
+          "all_in": 30,
+          "check": 30,
+          "note": "強 overpair"
+        },
+        "JJ": {
+          "bet_33": 35,
+          "all_in": 20,
+          "check": 45,
+          "note": "中等 overpair"
+        },
+        "AKs": {
+          "bet_33": 45,
+          "all_in": 35,
+          "check": 20,
+          "note": "頂對強踢腳"
+        },
+        "AKo": {
+          "bet_33": 40,
+          "all_in": 30,
+          "check": 30,
+          "note": "頂對"
+        },
+        "AQs": {
+          "bet_33": 40,
+          "all_in": 20,
+          "check": 40,
+          "note": "A blocker"
+        },
+        "AJs": {
+          "bet_33": 35,
+          "all_in": 15,
+          "check": 50,
+          "note": "A blocker"
+        },
+        "A5s": {
+          "bet_33": 30,
+          "all_in": 20,
+          "check": 50,
+          "note": "wheel + blocker"
+        },
+        "A4s": {
+          "bet_33": 25,
+          "all_in": 15,
+          "check": 60,
+          "note": "wheel + blocker"
+        }
+      }
+    },
+    {
+      "scenario_id": "btn_4bet_bb_876_hdc",
+      "position": "BTN",
+      "villain": "BB",
+      "pot_type": "4bet",
+      "board": [
+        "8h",
+        "7d",
+        "6c"
+      ],
+      "texture": "connected_middle",
+      "texture_zh": "中連接牌面",
+      "strategies": {
+        "AA": {
+          "bet_33": 30,
+          "all_in": 55,
+          "check": 15,
+          "note": "堅果，經常全下"
+        },
+        "KK": {
+          "bet_33": 35,
+          "all_in": 45,
+          "check": 20,
+          "note": "第二堅果"
+        },
+        "QQ": {
+          "bet_33": 40,
+          "all_in": 30,
+          "check": 30,
+          "note": "強 overpair"
+        },
+        "JJ": {
+          "bet_33": 35,
+          "all_in": 20,
+          "check": 45,
+          "note": "中等 overpair"
+        },
+        "AKs": {
+          "bet_33": 45,
+          "all_in": 35,
+          "check": 20,
+          "note": "頂對強踢腳"
+        },
+        "AKo": {
+          "bet_33": 40,
+          "all_in": 30,
+          "check": 30,
+          "note": "頂對"
+        },
+        "AQs": {
+          "bet_33": 40,
+          "all_in": 20,
+          "check": 40,
+          "note": "A blocker"
+        },
+        "AJs": {
+          "bet_33": 35,
+          "all_in": 15,
+          "check": 50,
+          "note": "A blocker"
+        },
+        "A5s": {
+          "bet_33": 30,
+          "all_in": 20,
+          "check": 50,
+          "note": "wheel + blocker"
+        },
+        "A4s": {
+          "bet_33": 25,
+          "all_in": 15,
+          "check": 60,
+          "note": "wheel + blocker"
+        }
+      }
+    },
+    {
+      "scenario_id": "btn_4bet_bb_987_hsd",
+      "position": "BTN",
+      "villain": "BB",
+      "pot_type": "4bet",
+      "board": [
+        "9h",
+        "8s",
+        "7d"
+      ],
+      "texture": "connected_middle",
+      "texture_zh": "中連接牌面",
+      "strategies": {
+        "AA": {
+          "bet_33": 30,
+          "all_in": 55,
+          "check": 15,
+          "note": "堅果，經常全下"
+        },
+        "KK": {
+          "bet_33": 35,
+          "all_in": 45,
+          "check": 20,
+          "note": "第二堅果"
+        },
+        "QQ": {
+          "bet_33": 40,
+          "all_in": 30,
+          "check": 30,
+          "note": "強 overpair"
+        },
+        "JJ": {
+          "bet_33": 35,
+          "all_in": 20,
+          "check": 45,
+          "note": "中等 overpair"
+        },
+        "AKs": {
+          "bet_33": 45,
+          "all_in": 35,
+          "check": 20,
+          "note": "頂對強踢腳"
+        },
+        "AKo": {
+          "bet_33": 40,
+          "all_in": 30,
+          "check": 30,
+          "note": "頂對"
+        },
+        "AQs": {
+          "bet_33": 40,
+          "all_in": 20,
+          "check": 40,
+          "note": "A blocker"
+        },
+        "AJs": {
+          "bet_33": 35,
+          "all_in": 15,
+          "check": 50,
+          "note": "A blocker"
+        },
+        "A5s": {
+          "bet_33": 30,
+          "all_in": 20,
+          "check": 50,
+          "note": "wheel + blocker"
+        },
+        "A4s": {
+          "bet_33": 25,
+          "all_in": 15,
+          "check": 60,
+          "note": "wheel + blocker"
+        }
+      }
+    },
+    {
+      "scenario_id": "btn_4bet_bb_T98_hsd",
+      "position": "BTN",
+      "villain": "BB",
+      "pot_type": "4bet",
+      "board": [
+        "Th",
+        "9s",
+        "8d"
+      ],
+      "texture": "connected_middle",
+      "texture_zh": "中連接牌面",
+      "strategies": {
+        "AA": {
+          "bet_33": 30,
+          "all_in": 55,
+          "check": 15,
+          "note": "堅果，經常全下"
+        },
+        "KK": {
+          "bet_33": 35,
+          "all_in": 45,
+          "check": 20,
+          "note": "第二堅果"
+        },
+        "QQ": {
+          "bet_33": 40,
+          "all_in": 30,
+          "check": 30,
+          "note": "強 overpair"
+        },
+        "JJ": {
+          "bet_33": 35,
+          "all_in": 20,
+          "check": 45,
+          "note": "中等 overpair"
+        },
+        "AKs": {
+          "bet_33": 45,
+          "all_in": 35,
+          "check": 20,
+          "note": "頂對強踢腳"
+        },
+        "AKo": {
+          "bet_33": 40,
+          "all_in": 30,
+          "check": 30,
+          "note": "頂對"
+        },
+        "AQs": {
+          "bet_33": 40,
+          "all_in": 20,
+          "check": 40,
+          "note": "A blocker"
+        },
+        "AJs": {
+          "bet_33": 35,
+          "all_in": 15,
+          "check": 50,
+          "note": "A blocker"
+        },
+        "A5s": {
+          "bet_33": 30,
+          "all_in": 20,
+          "check": 50,
+          "note": "wheel + blocker"
+        },
+        "A4s": {
+          "bet_33": 25,
+          "all_in": 15,
+          "check": 60,
+          "note": "wheel + blocker"
+        }
+      }
+    },
+    {
+      "scenario_id": "btn_4bet_bb_654_hdc",
+      "position": "BTN",
+      "villain": "BB",
+      "pot_type": "4bet",
+      "board": [
+        "6h",
+        "5d",
+        "4c"
+      ],
+      "texture": "connected_low",
+      "texture_zh": "低連接牌面",
+      "strategies": {
+        "AA": {
+          "bet_33": 30,
+          "all_in": 55,
+          "check": 15,
+          "note": "堅果，經常全下"
+        },
+        "KK": {
+          "bet_33": 35,
+          "all_in": 45,
+          "check": 20,
+          "note": "第二堅果"
+        },
+        "QQ": {
+          "bet_33": 40,
+          "all_in": 30,
+          "check": 30,
+          "note": "強 overpair"
+        },
+        "JJ": {
+          "bet_33": 35,
+          "all_in": 20,
+          "check": 45,
+          "note": "中等 overpair"
+        },
+        "AKs": {
+          "bet_33": 45,
+          "all_in": 35,
+          "check": 20,
+          "note": "頂對強踢腳"
+        },
+        "AKo": {
+          "bet_33": 40,
+          "all_in": 30,
+          "check": 30,
+          "note": "頂對"
+        },
+        "AQs": {
+          "bet_33": 40,
+          "all_in": 20,
+          "check": 40,
+          "note": "A blocker"
+        },
+        "AJs": {
+          "bet_33": 35,
+          "all_in": 15,
+          "check": 50,
+          "note": "A blocker"
+        },
+        "A5s": {
+          "bet_33": 30,
+          "all_in": 20,
+          "check": 50,
+          "note": "wheel + blocker"
+        },
+        "A4s": {
+          "bet_33": 25,
+          "all_in": 15,
+          "check": 60,
+          "note": "wheel + blocker"
+        }
+      }
+    },
+    {
+      "scenario_id": "btn_4bet_bb_765_hdc",
+      "position": "BTN",
+      "villain": "BB",
+      "pot_type": "4bet",
+      "board": [
+        "7h",
+        "6d",
+        "5c"
+      ],
+      "texture": "connected_low",
+      "texture_zh": "低連接牌面",
+      "strategies": {
+        "AA": {
+          "bet_33": 30,
+          "all_in": 55,
+          "check": 15,
+          "note": "堅果，經常全下"
+        },
+        "KK": {
+          "bet_33": 35,
+          "all_in": 45,
+          "check": 20,
+          "note": "第二堅果"
+        },
+        "QQ": {
+          "bet_33": 40,
+          "all_in": 30,
+          "check": 30,
+          "note": "強 overpair"
+        },
+        "JJ": {
+          "bet_33": 35,
+          "all_in": 20,
+          "check": 45,
+          "note": "中等 overpair"
+        },
+        "AKs": {
+          "bet_33": 45,
+          "all_in": 35,
+          "check": 20,
+          "note": "頂對強踢腳"
+        },
+        "AKo": {
+          "bet_33": 40,
+          "all_in": 30,
+          "check": 30,
+          "note": "頂對"
+        },
+        "AQs": {
+          "bet_33": 40,
+          "all_in": 20,
+          "check": 40,
+          "note": "A blocker"
+        },
+        "AJs": {
+          "bet_33": 35,
+          "all_in": 15,
+          "check": 50,
+          "note": "A blocker"
+        },
+        "A5s": {
+          "bet_33": 30,
+          "all_in": 20,
+          "check": 50,
+          "note": "wheel + blocker"
+        },
+        "A4s": {
+          "bet_33": 25,
+          "all_in": 15,
+          "check": 60,
+          "note": "wheel + blocker"
+        }
+      }
+    },
+    {
+      "scenario_id": "btn_4bet_bb_543_hdc",
+      "position": "BTN",
+      "villain": "BB",
+      "pot_type": "4bet",
+      "board": [
+        "5h",
+        "4d",
+        "3c"
+      ],
+      "texture": "connected_low",
+      "texture_zh": "低連接牌面",
+      "strategies": {
+        "AA": {
+          "bet_33": 30,
+          "all_in": 55,
+          "check": 15,
+          "note": "堅果，經常全下"
+        },
+        "KK": {
+          "bet_33": 35,
+          "all_in": 45,
+          "check": 20,
+          "note": "第二堅果"
+        },
+        "QQ": {
+          "bet_33": 40,
+          "all_in": 30,
+          "check": 30,
+          "note": "強 overpair"
+        },
+        "JJ": {
+          "bet_33": 35,
+          "all_in": 20,
+          "check": 45,
+          "note": "中等 overpair"
+        },
+        "AKs": {
+          "bet_33": 45,
+          "all_in": 35,
+          "check": 20,
+          "note": "頂對強踢腳"
+        },
+        "AKo": {
+          "bet_33": 40,
+          "all_in": 30,
+          "check": 30,
+          "note": "頂對"
+        },
+        "AQs": {
+          "bet_33": 40,
+          "all_in": 20,
+          "check": 40,
+          "note": "A blocker"
+        },
+        "AJs": {
+          "bet_33": 35,
+          "all_in": 15,
+          "check": 50,
+          "note": "A blocker"
+        },
+        "A5s": {
+          "bet_33": 30,
+          "all_in": 20,
+          "check": 50,
+          "note": "wheel + blocker"
+        },
+        "A4s": {
+          "bet_33": 25,
+          "all_in": 15,
+          "check": 60,
+          "note": "wheel + blocker"
+        }
+      }
+    },
+    {
+      "scenario_id": "btn_4bet_bb_654_hsd",
+      "position": "BTN",
+      "villain": "BB",
+      "pot_type": "4bet",
+      "board": [
+        "6h",
+        "5s",
+        "4d"
+      ],
+      "texture": "connected_low",
+      "texture_zh": "低連接牌面",
+      "strategies": {
+        "AA": {
+          "bet_33": 30,
+          "all_in": 55,
+          "check": 15,
+          "note": "堅果，經常全下"
+        },
+        "KK": {
+          "bet_33": 35,
+          "all_in": 45,
+          "check": 20,
+          "note": "第二堅果"
+        },
+        "QQ": {
+          "bet_33": 40,
+          "all_in": 30,
+          "check": 30,
+          "note": "強 overpair"
+        },
+        "JJ": {
+          "bet_33": 35,
+          "all_in": 20,
+          "check": 45,
+          "note": "中等 overpair"
+        },
+        "AKs": {
+          "bet_33": 45,
+          "all_in": 35,
+          "check": 20,
+          "note": "頂對強踢腳"
+        },
+        "AKo": {
+          "bet_33": 40,
+          "all_in": 30,
+          "check": 30,
+          "note": "頂對"
+        },
+        "AQs": {
+          "bet_33": 40,
+          "all_in": 20,
+          "check": 40,
+          "note": "A blocker"
+        },
+        "AJs": {
+          "bet_33": 35,
+          "all_in": 15,
+          "check": 50,
+          "note": "A blocker"
+        },
+        "A5s": {
+          "bet_33": 30,
+          "all_in": 20,
+          "check": 50,
+          "note": "wheel + blocker"
+        },
+        "A4s": {
+          "bet_33": 25,
+          "all_in": 15,
+          "check": 60,
+          "note": "wheel + blocker"
+        }
+      }
+    },
+    {
+      "scenario_id": "btn_4bet_bb_765_hsd",
+      "position": "BTN",
+      "villain": "BB",
+      "pot_type": "4bet",
+      "board": [
+        "7h",
+        "6s",
+        "5d"
+      ],
+      "texture": "connected_low",
+      "texture_zh": "低連接牌面",
+      "strategies": {
+        "AA": {
+          "bet_33": 30,
+          "all_in": 55,
+          "check": 15,
+          "note": "堅果，經常全下"
+        },
+        "KK": {
+          "bet_33": 35,
+          "all_in": 45,
+          "check": 20,
+          "note": "第二堅果"
+        },
+        "QQ": {
+          "bet_33": 40,
+          "all_in": 30,
+          "check": 30,
+          "note": "強 overpair"
+        },
+        "JJ": {
+          "bet_33": 35,
+          "all_in": 20,
+          "check": 45,
+          "note": "中等 overpair"
+        },
+        "AKs": {
+          "bet_33": 45,
+          "all_in": 35,
+          "check": 20,
+          "note": "頂對強踢腳"
+        },
+        "AKo": {
+          "bet_33": 40,
+          "all_in": 30,
+          "check": 30,
+          "note": "頂對"
+        },
+        "AQs": {
+          "bet_33": 40,
+          "all_in": 20,
+          "check": 40,
+          "note": "A blocker"
+        },
+        "AJs": {
+          "bet_33": 35,
+          "all_in": 15,
+          "check": 50,
+          "note": "A blocker"
+        },
+        "A5s": {
+          "bet_33": 30,
+          "all_in": 20,
+          "check": 50,
+          "note": "wheel + blocker"
+        },
+        "A4s": {
+          "bet_33": 25,
+          "all_in": 15,
+          "check": 60,
+          "note": "wheel + blocker"
+        }
+      }
+    }
+  ]
+}

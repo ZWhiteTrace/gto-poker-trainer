@@ -1,0 +1,5594 @@
+{
+  "meta": {
+    "description": "BB squeeze vs BTN+CO",
+    "position": "BB",
+    "villain": "BTN+CO",
+    "pot_type": "squeeze",
+    "pot_size": 20,
+    "effective_stack": 80,
+    "scenario_prefix": "squeeze_bb",
+    "note": "Squeeze pot (3bet vs open + caller). OOP postflop."
+  },
+  "scenarios": [
+    {
+      "scenario_id": "squeeze_bb_AK5_hsd",
+      "position": "BB",
+      "villain": "BTN+CO",
+      "pot_type": "squeeze",
+      "board": [
+        "Ah",
+        "Ks",
+        "5d"
+      ],
+      "texture": "dry_ace_high",
+      "texture_zh": "乾燥 A 高牌面",
+      "strategies": {
+        "AA": {
+          "bet_33": 50,
+          "bet_75": 30,
+          "check": 20,
+          "note": "堅果"
+        },
+        "KK": {
+          "bet_33": 45,
+          "bet_75": 25,
+          "check": 30,
+          "note": "強 overpair"
+        },
+        "QQ": {
+          "bet_33": 40,
+          "bet_75": 20,
+          "check": 40,
+          "note": "overpair OOP"
+        },
+        "JJ": {
+          "bet_33": 35,
+          "bet_75": 15,
+          "check": 50,
+          "note": "危險 overpair"
+        },
+        "AKs": {
+          "bet_33": 50,
+          "bet_75": 25,
+          "check": 25,
+          "note": "TPTK"
+        },
+        "AKo": {
+          "bet_33": 45,
+          "bet_75": 20,
+          "check": 35,
+          "note": "TPTK"
+        },
+        "AQs": {
+          "bet_33": 45,
+          "bet_75": 15,
+          "check": 40,
+          "note": "強頂對"
+        },
+        "AQo": {
+          "bet_33": 40,
+          "bet_75": 10,
+          "check": 50,
+          "note": "頂對"
+        },
+        "AJs": {
+          "bet_33": 40,
+          "bet_75": 10,
+          "check": 50,
+          "note": "中等 Ax"
+        },
+        "ATs": {
+          "bet_33": 35,
+          "bet_75": 10,
+          "check": 55,
+          "note": "弱 Ax"
+        },
+        "KQs": {
+          "bet_33": 35,
+          "bet_75": 10,
+          "check": 55,
+          "note": "broadway"
+        },
+        "TT": {
+          "bet_33": 30,
+          "bet_75": 10,
+          "check": 60,
+          "note": "中對"
+        },
+        "99": {
+          "bet_33": 25,
+          "bet_75": 10,
+          "check": 65,
+          "note": "小對"
+        }
+      }
+    },
+    {
+      "scenario_id": "squeeze_bb_AQ7_hsd",
+      "position": "BB",
+      "villain": "BTN+CO",
+      "pot_type": "squeeze",
+      "board": [
+        "Ah",
+        "Qs",
+        "7d"
+      ],
+      "texture": "dry_ace_high",
+      "texture_zh": "乾燥 A 高牌面",
+      "strategies": {
+        "AA": {
+          "bet_33": 50,
+          "bet_75": 30,
+          "check": 20,
+          "note": "堅果"
+        },
+        "KK": {
+          "bet_33": 45,
+          "bet_75": 25,
+          "check": 30,
+          "note": "強 overpair"
+        },
+        "QQ": {
+          "bet_33": 40,
+          "bet_75": 20,
+          "check": 40,
+          "note": "overpair OOP"
+        },
+        "JJ": {
+          "bet_33": 35,
+          "bet_75": 15,
+          "check": 50,
+          "note": "危險 overpair"
+        },
+        "AKs": {
+          "bet_33": 50,
+          "bet_75": 25,
+          "check": 25,
+          "note": "TPTK"
+        },
+        "AKo": {
+          "bet_33": 45,
+          "bet_75": 20,
+          "check": 35,
+          "note": "TPTK"
+        },
+        "AQs": {
+          "bet_33": 45,
+          "bet_75": 15,
+          "check": 40,
+          "note": "強頂對"
+        },
+        "AQo": {
+          "bet_33": 40,
+          "bet_75": 10,
+          "check": 50,
+          "note": "頂對"
+        },
+        "AJs": {
+          "bet_33": 40,
+          "bet_75": 10,
+          "check": 50,
+          "note": "中等 Ax"
+        },
+        "ATs": {
+          "bet_33": 35,
+          "bet_75": 10,
+          "check": 55,
+          "note": "弱 Ax"
+        },
+        "KQs": {
+          "bet_33": 35,
+          "bet_75": 10,
+          "check": 55,
+          "note": "broadway"
+        },
+        "TT": {
+          "bet_33": 30,
+          "bet_75": 10,
+          "check": 60,
+          "note": "中對"
+        },
+        "99": {
+          "bet_33": 25,
+          "bet_75": 10,
+          "check": 65,
+          "note": "小對"
+        }
+      }
+    },
+    {
+      "scenario_id": "squeeze_bb_AJ3_hsd",
+      "position": "BB",
+      "villain": "BTN+CO",
+      "pot_type": "squeeze",
+      "board": [
+        "Ah",
+        "Js",
+        "3d"
+      ],
+      "texture": "dry_ace_high",
+      "texture_zh": "乾燥 A 高牌面",
+      "strategies": {
+        "AA": {
+          "bet_33": 50,
+          "bet_75": 30,
+          "check": 20,
+          "note": "堅果"
+        },
+        "KK": {
+          "bet_33": 45,
+          "bet_75": 25,
+          "check": 30,
+          "note": "強 overpair"
+        },
+        "QQ": {
+          "bet_33": 40,
+          "bet_75": 20,
+          "check": 40,
+          "note": "overpair OOP"
+        },
+        "JJ": {
+          "bet_33": 35,
+          "bet_75": 15,
+          "check": 50,
+          "note": "危險 overpair"
+        },
+        "AKs": {
+          "bet_33": 50,
+          "bet_75": 25,
+          "check": 25,
+          "note": "TPTK"
+        },
+        "AKo": {
+          "bet_33": 45,
+          "bet_75": 20,
+          "check": 35,
+          "note": "TPTK"
+        },
+        "AQs": {
+          "bet_33": 45,
+          "bet_75": 15,
+          "check": 40,
+          "note": "強頂對"
+        },
+        "AQo": {
+          "bet_33": 40,
+          "bet_75": 10,
+          "check": 50,
+          "note": "頂對"
+        },
+        "AJs": {
+          "bet_33": 40,
+          "bet_75": 10,
+          "check": 50,
+          "note": "中等 Ax"
+        },
+        "ATs": {
+          "bet_33": 35,
+          "bet_75": 10,
+          "check": 55,
+          "note": "弱 Ax"
+        },
+        "KQs": {
+          "bet_33": 35,
+          "bet_75": 10,
+          "check": 55,
+          "note": "broadway"
+        },
+        "TT": {
+          "bet_33": 30,
+          "bet_75": 10,
+          "check": 60,
+          "note": "中對"
+        },
+        "99": {
+          "bet_33": 25,
+          "bet_75": 10,
+          "check": 65,
+          "note": "小對"
+        }
+      }
+    },
+    {
+      "scenario_id": "squeeze_bb_A94_hsd",
+      "position": "BB",
+      "villain": "BTN+CO",
+      "pot_type": "squeeze",
+      "board": [
+        "Ah",
+        "9s",
+        "4d"
+      ],
+      "texture": "dry_ace_high",
+      "texture_zh": "乾燥 A 高牌面",
+      "strategies": {
+        "AA": {
+          "bet_33": 50,
+          "bet_75": 30,
+          "check": 20,
+          "note": "堅果"
+        },
+        "KK": {
+          "bet_33": 45,
+          "bet_75": 25,
+          "check": 30,
+          "note": "強 overpair"
+        },
+        "QQ": {
+          "bet_33": 40,
+          "bet_75": 20,
+          "check": 40,
+          "note": "overpair OOP"
+        },
+        "JJ": {
+          "bet_33": 35,
+          "bet_75": 15,
+          "check": 50,
+          "note": "危險 overpair"
+        },
+        "AKs": {
+          "bet_33": 50,
+          "bet_75": 25,
+          "check": 25,
+          "note": "TPTK"
+        },
+        "AKo": {
+          "bet_33": 45,
+          "bet_75": 20,
+          "check": 35,
+          "note": "TPTK"
+        },
+        "AQs": {
+          "bet_33": 45,
+          "bet_75": 15,
+          "check": 40,
+          "note": "強頂對"
+        },
+        "AQo": {
+          "bet_33": 40,
+          "bet_75": 10,
+          "check": 50,
+          "note": "頂對"
+        },
+        "AJs": {
+          "bet_33": 40,
+          "bet_75": 10,
+          "check": 50,
+          "note": "中等 Ax"
+        },
+        "ATs": {
+          "bet_33": 35,
+          "bet_75": 10,
+          "check": 55,
+          "note": "弱 Ax"
+        },
+        "KQs": {
+          "bet_33": 35,
+          "bet_75": 10,
+          "check": 55,
+          "note": "broadway"
+        },
+        "TT": {
+          "bet_33": 30,
+          "bet_75": 10,
+          "check": 60,
+          "note": "中對"
+        },
+        "99": {
+          "bet_33": 25,
+          "bet_75": 10,
+          "check": 65,
+          "note": "小對"
+        }
+      }
+    },
+    {
+      "scenario_id": "squeeze_bb_A72_hsd",
+      "position": "BB",
+      "villain": "BTN+CO",
+      "pot_type": "squeeze",
+      "board": [
+        "Ah",
+        "7s",
+        "2d"
+      ],
+      "texture": "dry_ace_high",
+      "texture_zh": "乾燥 A 高牌面",
+      "strategies": {
+        "AA": {
+          "bet_33": 50,
+          "bet_75": 30,
+          "check": 20,
+          "note": "堅果"
+        },
+        "KK": {
+          "bet_33": 45,
+          "bet_75": 25,
+          "check": 30,
+          "note": "強 overpair"
+        },
+        "QQ": {
+          "bet_33": 40,
+          "bet_75": 20,
+          "check": 40,
+          "note": "overpair OOP"
+        },
+        "JJ": {
+          "bet_33": 35,
+          "bet_75": 15,
+          "check": 50,
+          "note": "危險 overpair"
+        },
+        "AKs": {
+          "bet_33": 50,
+          "bet_75": 25,
+          "check": 25,
+          "note": "TPTK"
+        },
+        "AKo": {
+          "bet_33": 45,
+          "bet_75": 20,
+          "check": 35,
+          "note": "TPTK"
+        },
+        "AQs": {
+          "bet_33": 45,
+          "bet_75": 15,
+          "check": 40,
+          "note": "強頂對"
+        },
+        "AQo": {
+          "bet_33": 40,
+          "bet_75": 10,
+          "check": 50,
+          "note": "頂對"
+        },
+        "AJs": {
+          "bet_33": 40,
+          "bet_75": 10,
+          "check": 50,
+          "note": "中等 Ax"
+        },
+        "ATs": {
+          "bet_33": 35,
+          "bet_75": 10,
+          "check": 55,
+          "note": "弱 Ax"
+        },
+        "KQs": {
+          "bet_33": 35,
+          "bet_75": 10,
+          "check": 55,
+          "note": "broadway"
+        },
+        "TT": {
+          "bet_33": 30,
+          "bet_75": 10,
+          "check": 60,
+          "note": "中對"
+        },
+        "99": {
+          "bet_33": 25,
+          "bet_75": 10,
+          "check": 65,
+          "note": "小對"
+        }
+      }
+    },
+    {
+      "scenario_id": "squeeze_bb_KQ7_hsd",
+      "position": "BB",
+      "villain": "BTN+CO",
+      "pot_type": "squeeze",
+      "board": [
+        "Kh",
+        "Qs",
+        "7d"
+      ],
+      "texture": "dry_king_high",
+      "texture_zh": "乾燥 K 高牌面",
+      "strategies": {
+        "AA": {
+          "bet_33": 50,
+          "bet_75": 30,
+          "check": 20,
+          "note": "堅果"
+        },
+        "KK": {
+          "bet_33": 45,
+          "bet_75": 25,
+          "check": 30,
+          "note": "強 overpair"
+        },
+        "QQ": {
+          "bet_33": 40,
+          "bet_75": 20,
+          "check": 40,
+          "note": "overpair OOP"
+        },
+        "JJ": {
+          "bet_33": 35,
+          "bet_75": 15,
+          "check": 50,
+          "note": "危險 overpair"
+        },
+        "AKs": {
+          "bet_33": 50,
+          "bet_75": 25,
+          "check": 25,
+          "note": "TPTK"
+        },
+        "AKo": {
+          "bet_33": 45,
+          "bet_75": 20,
+          "check": 35,
+          "note": "TPTK"
+        },
+        "AQs": {
+          "bet_33": 45,
+          "bet_75": 15,
+          "check": 40,
+          "note": "強頂對"
+        },
+        "AQo": {
+          "bet_33": 40,
+          "bet_75": 10,
+          "check": 50,
+          "note": "頂對"
+        },
+        "AJs": {
+          "bet_33": 40,
+          "bet_75": 10,
+          "check": 50,
+          "note": "中等 Ax"
+        },
+        "ATs": {
+          "bet_33": 35,
+          "bet_75": 10,
+          "check": 55,
+          "note": "弱 Ax"
+        },
+        "KQs": {
+          "bet_33": 35,
+          "bet_75": 10,
+          "check": 55,
+          "note": "broadway"
+        },
+        "TT": {
+          "bet_33": 30,
+          "bet_75": 10,
+          "check": 60,
+          "note": "中對"
+        },
+        "99": {
+          "bet_33": 25,
+          "bet_75": 10,
+          "check": 65,
+          "note": "小對"
+        }
+      }
+    },
+    {
+      "scenario_id": "squeeze_bb_KJ5_hsd",
+      "position": "BB",
+      "villain": "BTN+CO",
+      "pot_type": "squeeze",
+      "board": [
+        "Kh",
+        "Js",
+        "5d"
+      ],
+      "texture": "dry_king_high",
+      "texture_zh": "乾燥 K 高牌面",
+      "strategies": {
+        "AA": {
+          "bet_33": 50,
+          "bet_75": 30,
+          "check": 20,
+          "note": "堅果"
+        },
+        "KK": {
+          "bet_33": 45,
+          "bet_75": 25,
+          "check": 30,
+          "note": "強 overpair"
+        },
+        "QQ": {
+          "bet_33": 40,
+          "bet_75": 20,
+          "check": 40,
+          "note": "overpair OOP"
+        },
+        "JJ": {
+          "bet_33": 35,
+          "bet_75": 15,
+          "check": 50,
+          "note": "危險 overpair"
+        },
+        "AKs": {
+          "bet_33": 50,
+          "bet_75": 25,
+          "check": 25,
+          "note": "TPTK"
+        },
+        "AKo": {
+          "bet_33": 45,
+          "bet_75": 20,
+          "check": 35,
+          "note": "TPTK"
+        },
+        "AQs": {
+          "bet_33": 45,
+          "bet_75": 15,
+          "check": 40,
+          "note": "強頂對"
+        },
+        "AQo": {
+          "bet_33": 40,
+          "bet_75": 10,
+          "check": 50,
+          "note": "頂對"
+        },
+        "AJs": {
+          "bet_33": 40,
+          "bet_75": 10,
+          "check": 50,
+          "note": "中等 Ax"
+        },
+        "ATs": {
+          "bet_33": 35,
+          "bet_75": 10,
+          "check": 55,
+          "note": "弱 Ax"
+        },
+        "KQs": {
+          "bet_33": 35,
+          "bet_75": 10,
+          "check": 55,
+          "note": "broadway"
+        },
+        "TT": {
+          "bet_33": 30,
+          "bet_75": 10,
+          "check": 60,
+          "note": "中對"
+        },
+        "99": {
+          "bet_33": 25,
+          "bet_75": 10,
+          "check": 65,
+          "note": "小對"
+        }
+      }
+    },
+    {
+      "scenario_id": "squeeze_bb_KT4_hsd",
+      "position": "BB",
+      "villain": "BTN+CO",
+      "pot_type": "squeeze",
+      "board": [
+        "Kh",
+        "Ts",
+        "4d"
+      ],
+      "texture": "dry_king_high",
+      "texture_zh": "乾燥 K 高牌面",
+      "strategies": {
+        "AA": {
+          "bet_33": 50,
+          "bet_75": 30,
+          "check": 20,
+          "note": "堅果"
+        },
+        "KK": {
+          "bet_33": 45,
+          "bet_75": 25,
+          "check": 30,
+          "note": "強 overpair"
+        },
+        "QQ": {
+          "bet_33": 40,
+          "bet_75": 20,
+          "check": 40,
+          "note": "overpair OOP"
+        },
+        "JJ": {
+          "bet_33": 35,
+          "bet_75": 15,
+          "check": 50,
+          "note": "危險 overpair"
+        },
+        "AKs": {
+          "bet_33": 50,
+          "bet_75": 25,
+          "check": 25,
+          "note": "TPTK"
+        },
+        "AKo": {
+          "bet_33": 45,
+          "bet_75": 20,
+          "check": 35,
+          "note": "TPTK"
+        },
+        "AQs": {
+          "bet_33": 45,
+          "bet_75": 15,
+          "check": 40,
+          "note": "強頂對"
+        },
+        "AQo": {
+          "bet_33": 40,
+          "bet_75": 10,
+          "check": 50,
+          "note": "頂對"
+        },
+        "AJs": {
+          "bet_33": 40,
+          "bet_75": 10,
+          "check": 50,
+          "note": "中等 Ax"
+        },
+        "ATs": {
+          "bet_33": 35,
+          "bet_75": 10,
+          "check": 55,
+          "note": "弱 Ax"
+        },
+        "KQs": {
+          "bet_33": 35,
+          "bet_75": 10,
+          "check": 55,
+          "note": "broadway"
+        },
+        "TT": {
+          "bet_33": 30,
+          "bet_75": 10,
+          "check": 60,
+          "note": "中對"
+        },
+        "99": {
+          "bet_33": 25,
+          "bet_75": 10,
+          "check": 65,
+          "note": "小對"
+        }
+      }
+    },
+    {
+      "scenario_id": "squeeze_bb_K93_hsd",
+      "position": "BB",
+      "villain": "BTN+CO",
+      "pot_type": "squeeze",
+      "board": [
+        "Kh",
+        "9s",
+        "3d"
+      ],
+      "texture": "dry_king_high",
+      "texture_zh": "乾燥 K 高牌面",
+      "strategies": {
+        "AA": {
+          "bet_33": 50,
+          "bet_75": 30,
+          "check": 20,
+          "note": "堅果"
+        },
+        "KK": {
+          "bet_33": 45,
+          "bet_75": 25,
+          "check": 30,
+          "note": "強 overpair"
+        },
+        "QQ": {
+          "bet_33": 40,
+          "bet_75": 20,
+          "check": 40,
+          "note": "overpair OOP"
+        },
+        "JJ": {
+          "bet_33": 35,
+          "bet_75": 15,
+          "check": 50,
+          "note": "危險 overpair"
+        },
+        "AKs": {
+          "bet_33": 50,
+          "bet_75": 25,
+          "check": 25,
+          "note": "TPTK"
+        },
+        "AKo": {
+          "bet_33": 45,
+          "bet_75": 20,
+          "check": 35,
+          "note": "TPTK"
+        },
+        "AQs": {
+          "bet_33": 45,
+          "bet_75": 15,
+          "check": 40,
+          "note": "強頂對"
+        },
+        "AQo": {
+          "bet_33": 40,
+          "bet_75": 10,
+          "check": 50,
+          "note": "頂對"
+        },
+        "AJs": {
+          "bet_33": 40,
+          "bet_75": 10,
+          "check": 50,
+          "note": "中等 Ax"
+        },
+        "ATs": {
+          "bet_33": 35,
+          "bet_75": 10,
+          "check": 55,
+          "note": "弱 Ax"
+        },
+        "KQs": {
+          "bet_33": 35,
+          "bet_75": 10,
+          "check": 55,
+          "note": "broadway"
+        },
+        "TT": {
+          "bet_33": 30,
+          "bet_75": 10,
+          "check": 60,
+          "note": "中對"
+        },
+        "99": {
+          "bet_33": 25,
+          "bet_75": 10,
+          "check": 65,
+          "note": "小對"
+        }
+      }
+    },
+    {
+      "scenario_id": "squeeze_bb_K72_hsd",
+      "position": "BB",
+      "villain": "BTN+CO",
+      "pot_type": "squeeze",
+      "board": [
+        "Kh",
+        "7s",
+        "2d"
+      ],
+      "texture": "dry_king_high",
+      "texture_zh": "乾燥 K 高牌面",
+      "strategies": {
+        "AA": {
+          "bet_33": 50,
+          "bet_75": 30,
+          "check": 20,
+          "note": "堅果"
+        },
+        "KK": {
+          "bet_33": 45,
+          "bet_75": 25,
+          "check": 30,
+          "note": "強 overpair"
+        },
+        "QQ": {
+          "bet_33": 40,
+          "bet_75": 20,
+          "check": 40,
+          "note": "overpair OOP"
+        },
+        "JJ": {
+          "bet_33": 35,
+          "bet_75": 15,
+          "check": 50,
+          "note": "危險 overpair"
+        },
+        "AKs": {
+          "bet_33": 50,
+          "bet_75": 25,
+          "check": 25,
+          "note": "TPTK"
+        },
+        "AKo": {
+          "bet_33": 45,
+          "bet_75": 20,
+          "check": 35,
+          "note": "TPTK"
+        },
+        "AQs": {
+          "bet_33": 45,
+          "bet_75": 15,
+          "check": 40,
+          "note": "強頂對"
+        },
+        "AQo": {
+          "bet_33": 40,
+          "bet_75": 10,
+          "check": 50,
+          "note": "頂對"
+        },
+        "AJs": {
+          "bet_33": 40,
+          "bet_75": 10,
+          "check": 50,
+          "note": "中等 Ax"
+        },
+        "ATs": {
+          "bet_33": 35,
+          "bet_75": 10,
+          "check": 55,
+          "note": "弱 Ax"
+        },
+        "KQs": {
+          "bet_33": 35,
+          "bet_75": 10,
+          "check": 55,
+          "note": "broadway"
+        },
+        "TT": {
+          "bet_33": 30,
+          "bet_75": 10,
+          "check": 60,
+          "note": "中對"
+        },
+        "99": {
+          "bet_33": 25,
+          "bet_75": 10,
+          "check": 65,
+          "note": "小對"
+        }
+      }
+    },
+    {
+      "scenario_id": "squeeze_bb_Q94_hsd",
+      "position": "BB",
+      "villain": "BTN+CO",
+      "pot_type": "squeeze",
+      "board": [
+        "Qh",
+        "9s",
+        "4d"
+      ],
+      "texture": "dry_queen_high",
+      "texture_zh": "乾燥 Q 高牌面",
+      "strategies": {
+        "AA": {
+          "bet_33": 50,
+          "bet_75": 30,
+          "check": 20,
+          "note": "堅果"
+        },
+        "KK": {
+          "bet_33": 45,
+          "bet_75": 25,
+          "check": 30,
+          "note": "強 overpair"
+        },
+        "QQ": {
+          "bet_33": 40,
+          "bet_75": 20,
+          "check": 40,
+          "note": "overpair OOP"
+        },
+        "JJ": {
+          "bet_33": 35,
+          "bet_75": 15,
+          "check": 50,
+          "note": "危險 overpair"
+        },
+        "AKs": {
+          "bet_33": 50,
+          "bet_75": 25,
+          "check": 25,
+          "note": "TPTK"
+        },
+        "AKo": {
+          "bet_33": 45,
+          "bet_75": 20,
+          "check": 35,
+          "note": "TPTK"
+        },
+        "AQs": {
+          "bet_33": 45,
+          "bet_75": 15,
+          "check": 40,
+          "note": "強頂對"
+        },
+        "AQo": {
+          "bet_33": 40,
+          "bet_75": 10,
+          "check": 50,
+          "note": "頂對"
+        },
+        "AJs": {
+          "bet_33": 40,
+          "bet_75": 10,
+          "check": 50,
+          "note": "中等 Ax"
+        },
+        "ATs": {
+          "bet_33": 35,
+          "bet_75": 10,
+          "check": 55,
+          "note": "弱 Ax"
+        },
+        "KQs": {
+          "bet_33": 35,
+          "bet_75": 10,
+          "check": 55,
+          "note": "broadway"
+        },
+        "TT": {
+          "bet_33": 30,
+          "bet_75": 10,
+          "check": 60,
+          "note": "中對"
+        },
+        "99": {
+          "bet_33": 25,
+          "bet_75": 10,
+          "check": 65,
+          "note": "小對"
+        }
+      }
+    },
+    {
+      "scenario_id": "squeeze_bb_Q83_hsd",
+      "position": "BB",
+      "villain": "BTN+CO",
+      "pot_type": "squeeze",
+      "board": [
+        "Qh",
+        "8s",
+        "3d"
+      ],
+      "texture": "dry_queen_high",
+      "texture_zh": "乾燥 Q 高牌面",
+      "strategies": {
+        "AA": {
+          "bet_33": 50,
+          "bet_75": 30,
+          "check": 20,
+          "note": "堅果"
+        },
+        "KK": {
+          "bet_33": 45,
+          "bet_75": 25,
+          "check": 30,
+          "note": "強 overpair"
+        },
+        "QQ": {
+          "bet_33": 40,
+          "bet_75": 20,
+          "check": 40,
+          "note": "overpair OOP"
+        },
+        "JJ": {
+          "bet_33": 35,
+          "bet_75": 15,
+          "check": 50,
+          "note": "危險 overpair"
+        },
+        "AKs": {
+          "bet_33": 50,
+          "bet_75": 25,
+          "check": 25,
+          "note": "TPTK"
+        },
+        "AKo": {
+          "bet_33": 45,
+          "bet_75": 20,
+          "check": 35,
+          "note": "TPTK"
+        },
+        "AQs": {
+          "bet_33": 45,
+          "bet_75": 15,
+          "check": 40,
+          "note": "強頂對"
+        },
+        "AQo": {
+          "bet_33": 40,
+          "bet_75": 10,
+          "check": 50,
+          "note": "頂對"
+        },
+        "AJs": {
+          "bet_33": 40,
+          "bet_75": 10,
+          "check": 50,
+          "note": "中等 Ax"
+        },
+        "ATs": {
+          "bet_33": 35,
+          "bet_75": 10,
+          "check": 55,
+          "note": "弱 Ax"
+        },
+        "KQs": {
+          "bet_33": 35,
+          "bet_75": 10,
+          "check": 55,
+          "note": "broadway"
+        },
+        "TT": {
+          "bet_33": 30,
+          "bet_75": 10,
+          "check": 60,
+          "note": "中對"
+        },
+        "99": {
+          "bet_33": 25,
+          "bet_75": 10,
+          "check": 65,
+          "note": "小對"
+        }
+      }
+    },
+    {
+      "scenario_id": "squeeze_bb_Q72_hsd",
+      "position": "BB",
+      "villain": "BTN+CO",
+      "pot_type": "squeeze",
+      "board": [
+        "Qh",
+        "7s",
+        "2d"
+      ],
+      "texture": "dry_queen_high",
+      "texture_zh": "乾燥 Q 高牌面",
+      "strategies": {
+        "AA": {
+          "bet_33": 50,
+          "bet_75": 30,
+          "check": 20,
+          "note": "堅果"
+        },
+        "KK": {
+          "bet_33": 45,
+          "bet_75": 25,
+          "check": 30,
+          "note": "強 overpair"
+        },
+        "QQ": {
+          "bet_33": 40,
+          "bet_75": 20,
+          "check": 40,
+          "note": "overpair OOP"
+        },
+        "JJ": {
+          "bet_33": 35,
+          "bet_75": 15,
+          "check": 50,
+          "note": "危險 overpair"
+        },
+        "AKs": {
+          "bet_33": 50,
+          "bet_75": 25,
+          "check": 25,
+          "note": "TPTK"
+        },
+        "AKo": {
+          "bet_33": 45,
+          "bet_75": 20,
+          "check": 35,
+          "note": "TPTK"
+        },
+        "AQs": {
+          "bet_33": 45,
+          "bet_75": 15,
+          "check": 40,
+          "note": "強頂對"
+        },
+        "AQo": {
+          "bet_33": 40,
+          "bet_75": 10,
+          "check": 50,
+          "note": "頂對"
+        },
+        "AJs": {
+          "bet_33": 40,
+          "bet_75": 10,
+          "check": 50,
+          "note": "中等 Ax"
+        },
+        "ATs": {
+          "bet_33": 35,
+          "bet_75": 10,
+          "check": 55,
+          "note": "弱 Ax"
+        },
+        "KQs": {
+          "bet_33": 35,
+          "bet_75": 10,
+          "check": 55,
+          "note": "broadway"
+        },
+        "TT": {
+          "bet_33": 30,
+          "bet_75": 10,
+          "check": 60,
+          "note": "中對"
+        },
+        "99": {
+          "bet_33": 25,
+          "bet_75": 10,
+          "check": 65,
+          "note": "小對"
+        }
+      }
+    },
+    {
+      "scenario_id": "squeeze_bb_QJ5_hsd",
+      "position": "BB",
+      "villain": "BTN+CO",
+      "pot_type": "squeeze",
+      "board": [
+        "Qh",
+        "Js",
+        "5d"
+      ],
+      "texture": "dry_queen_high",
+      "texture_zh": "乾燥 Q 高牌面",
+      "strategies": {
+        "AA": {
+          "bet_33": 50,
+          "bet_75": 30,
+          "check": 20,
+          "note": "堅果"
+        },
+        "KK": {
+          "bet_33": 45,
+          "bet_75": 25,
+          "check": 30,
+          "note": "強 overpair"
+        },
+        "QQ": {
+          "bet_33": 40,
+          "bet_75": 20,
+          "check": 40,
+          "note": "overpair OOP"
+        },
+        "JJ": {
+          "bet_33": 35,
+          "bet_75": 15,
+          "check": 50,
+          "note": "危險 overpair"
+        },
+        "AKs": {
+          "bet_33": 50,
+          "bet_75": 25,
+          "check": 25,
+          "note": "TPTK"
+        },
+        "AKo": {
+          "bet_33": 45,
+          "bet_75": 20,
+          "check": 35,
+          "note": "TPTK"
+        },
+        "AQs": {
+          "bet_33": 45,
+          "bet_75": 15,
+          "check": 40,
+          "note": "強頂對"
+        },
+        "AQo": {
+          "bet_33": 40,
+          "bet_75": 10,
+          "check": 50,
+          "note": "頂對"
+        },
+        "AJs": {
+          "bet_33": 40,
+          "bet_75": 10,
+          "check": 50,
+          "note": "中等 Ax"
+        },
+        "ATs": {
+          "bet_33": 35,
+          "bet_75": 10,
+          "check": 55,
+          "note": "弱 Ax"
+        },
+        "KQs": {
+          "bet_33": 35,
+          "bet_75": 10,
+          "check": 55,
+          "note": "broadway"
+        },
+        "TT": {
+          "bet_33": 30,
+          "bet_75": 10,
+          "check": 60,
+          "note": "中對"
+        },
+        "99": {
+          "bet_33": 25,
+          "bet_75": 10,
+          "check": 65,
+          "note": "小對"
+        }
+      }
+    },
+    {
+      "scenario_id": "squeeze_bb_Q73_hsd",
+      "position": "BB",
+      "villain": "BTN+CO",
+      "pot_type": "squeeze",
+      "board": [
+        "Qh",
+        "7s",
+        "3d"
+      ],
+      "texture": "dry_queen_high",
+      "texture_zh": "乾燥 Q 高牌面",
+      "strategies": {
+        "AA": {
+          "bet_33": 50,
+          "bet_75": 30,
+          "check": 20,
+          "note": "堅果"
+        },
+        "KK": {
+          "bet_33": 45,
+          "bet_75": 25,
+          "check": 30,
+          "note": "強 overpair"
+        },
+        "QQ": {
+          "bet_33": 40,
+          "bet_75": 20,
+          "check": 40,
+          "note": "overpair OOP"
+        },
+        "JJ": {
+          "bet_33": 35,
+          "bet_75": 15,
+          "check": 50,
+          "note": "危險 overpair"
+        },
+        "AKs": {
+          "bet_33": 50,
+          "bet_75": 25,
+          "check": 25,
+          "note": "TPTK"
+        },
+        "AKo": {
+          "bet_33": 45,
+          "bet_75": 20,
+          "check": 35,
+          "note": "TPTK"
+        },
+        "AQs": {
+          "bet_33": 45,
+          "bet_75": 15,
+          "check": 40,
+          "note": "強頂對"
+        },
+        "AQo": {
+          "bet_33": 40,
+          "bet_75": 10,
+          "check": 50,
+          "note": "頂對"
+        },
+        "AJs": {
+          "bet_33": 40,
+          "bet_75": 10,
+          "check": 50,
+          "note": "中等 Ax"
+        },
+        "ATs": {
+          "bet_33": 35,
+          "bet_75": 10,
+          "check": 55,
+          "note": "弱 Ax"
+        },
+        "KQs": {
+          "bet_33": 35,
+          "bet_75": 10,
+          "check": 55,
+          "note": "broadway"
+        },
+        "TT": {
+          "bet_33": 30,
+          "bet_75": 10,
+          "check": 60,
+          "note": "中對"
+        },
+        "99": {
+          "bet_33": 25,
+          "bet_75": 10,
+          "check": 65,
+          "note": "小對"
+        }
+      }
+    },
+    {
+      "scenario_id": "squeeze_bb_T72_hsd",
+      "position": "BB",
+      "villain": "BTN+CO",
+      "pot_type": "squeeze",
+      "board": [
+        "Th",
+        "7s",
+        "2d"
+      ],
+      "texture": "dry_low",
+      "texture_zh": "乾燥低牌面",
+      "strategies": {
+        "AA": {
+          "bet_33": 50,
+          "bet_75": 30,
+          "check": 20,
+          "note": "堅果"
+        },
+        "KK": {
+          "bet_33": 45,
+          "bet_75": 25,
+          "check": 30,
+          "note": "強 overpair"
+        },
+        "QQ": {
+          "bet_33": 40,
+          "bet_75": 20,
+          "check": 40,
+          "note": "overpair OOP"
+        },
+        "JJ": {
+          "bet_33": 35,
+          "bet_75": 15,
+          "check": 50,
+          "note": "危險 overpair"
+        },
+        "AKs": {
+          "bet_33": 50,
+          "bet_75": 25,
+          "check": 25,
+          "note": "TPTK"
+        },
+        "AKo": {
+          "bet_33": 45,
+          "bet_75": 20,
+          "check": 35,
+          "note": "TPTK"
+        },
+        "AQs": {
+          "bet_33": 45,
+          "bet_75": 15,
+          "check": 40,
+          "note": "強頂對"
+        },
+        "AQo": {
+          "bet_33": 40,
+          "bet_75": 10,
+          "check": 50,
+          "note": "頂對"
+        },
+        "AJs": {
+          "bet_33": 40,
+          "bet_75": 10,
+          "check": 50,
+          "note": "中等 Ax"
+        },
+        "ATs": {
+          "bet_33": 35,
+          "bet_75": 10,
+          "check": 55,
+          "note": "弱 Ax"
+        },
+        "KQs": {
+          "bet_33": 35,
+          "bet_75": 10,
+          "check": 55,
+          "note": "broadway"
+        },
+        "TT": {
+          "bet_33": 30,
+          "bet_75": 10,
+          "check": 60,
+          "note": "中對"
+        },
+        "99": {
+          "bet_33": 25,
+          "bet_75": 10,
+          "check": 65,
+          "note": "小對"
+        }
+      }
+    },
+    {
+      "scenario_id": "squeeze_bb_962_hsd",
+      "position": "BB",
+      "villain": "BTN+CO",
+      "pot_type": "squeeze",
+      "board": [
+        "9h",
+        "6s",
+        "2d"
+      ],
+      "texture": "dry_low",
+      "texture_zh": "乾燥低牌面",
+      "strategies": {
+        "AA": {
+          "bet_33": 50,
+          "bet_75": 30,
+          "check": 20,
+          "note": "堅果"
+        },
+        "KK": {
+          "bet_33": 45,
+          "bet_75": 25,
+          "check": 30,
+          "note": "強 overpair"
+        },
+        "QQ": {
+          "bet_33": 40,
+          "bet_75": 20,
+          "check": 40,
+          "note": "overpair OOP"
+        },
+        "JJ": {
+          "bet_33": 35,
+          "bet_75": 15,
+          "check": 50,
+          "note": "危險 overpair"
+        },
+        "AKs": {
+          "bet_33": 50,
+          "bet_75": 25,
+          "check": 25,
+          "note": "TPTK"
+        },
+        "AKo": {
+          "bet_33": 45,
+          "bet_75": 20,
+          "check": 35,
+          "note": "TPTK"
+        },
+        "AQs": {
+          "bet_33": 45,
+          "bet_75": 15,
+          "check": 40,
+          "note": "強頂對"
+        },
+        "AQo": {
+          "bet_33": 40,
+          "bet_75": 10,
+          "check": 50,
+          "note": "頂對"
+        },
+        "AJs": {
+          "bet_33": 40,
+          "bet_75": 10,
+          "check": 50,
+          "note": "中等 Ax"
+        },
+        "ATs": {
+          "bet_33": 35,
+          "bet_75": 10,
+          "check": 55,
+          "note": "弱 Ax"
+        },
+        "KQs": {
+          "bet_33": 35,
+          "bet_75": 10,
+          "check": 55,
+          "note": "broadway"
+        },
+        "TT": {
+          "bet_33": 30,
+          "bet_75": 10,
+          "check": 60,
+          "note": "中對"
+        },
+        "99": {
+          "bet_33": 25,
+          "bet_75": 10,
+          "check": 65,
+          "note": "小對"
+        }
+      }
+    },
+    {
+      "scenario_id": "squeeze_bb_852_hsd",
+      "position": "BB",
+      "villain": "BTN+CO",
+      "pot_type": "squeeze",
+      "board": [
+        "8h",
+        "5s",
+        "2d"
+      ],
+      "texture": "dry_low",
+      "texture_zh": "乾燥低牌面",
+      "strategies": {
+        "AA": {
+          "bet_33": 50,
+          "bet_75": 30,
+          "check": 20,
+          "note": "堅果"
+        },
+        "KK": {
+          "bet_33": 45,
+          "bet_75": 25,
+          "check": 30,
+          "note": "強 overpair"
+        },
+        "QQ": {
+          "bet_33": 40,
+          "bet_75": 20,
+          "check": 40,
+          "note": "overpair OOP"
+        },
+        "JJ": {
+          "bet_33": 35,
+          "bet_75": 15,
+          "check": 50,
+          "note": "危險 overpair"
+        },
+        "AKs": {
+          "bet_33": 50,
+          "bet_75": 25,
+          "check": 25,
+          "note": "TPTK"
+        },
+        "AKo": {
+          "bet_33": 45,
+          "bet_75": 20,
+          "check": 35,
+          "note": "TPTK"
+        },
+        "AQs": {
+          "bet_33": 45,
+          "bet_75": 15,
+          "check": 40,
+          "note": "強頂對"
+        },
+        "AQo": {
+          "bet_33": 40,
+          "bet_75": 10,
+          "check": 50,
+          "note": "頂對"
+        },
+        "AJs": {
+          "bet_33": 40,
+          "bet_75": 10,
+          "check": 50,
+          "note": "中等 Ax"
+        },
+        "ATs": {
+          "bet_33": 35,
+          "bet_75": 10,
+          "check": 55,
+          "note": "弱 Ax"
+        },
+        "KQs": {
+          "bet_33": 35,
+          "bet_75": 10,
+          "check": 55,
+          "note": "broadway"
+        },
+        "TT": {
+          "bet_33": 30,
+          "bet_75": 10,
+          "check": 60,
+          "note": "中對"
+        },
+        "99": {
+          "bet_33": 25,
+          "bet_75": 10,
+          "check": 65,
+          "note": "小對"
+        }
+      }
+    },
+    {
+      "scenario_id": "squeeze_bb_742_hsd",
+      "position": "BB",
+      "villain": "BTN+CO",
+      "pot_type": "squeeze",
+      "board": [
+        "7h",
+        "4s",
+        "2d"
+      ],
+      "texture": "dry_low",
+      "texture_zh": "乾燥低牌面",
+      "strategies": {
+        "AA": {
+          "bet_33": 50,
+          "bet_75": 30,
+          "check": 20,
+          "note": "堅果"
+        },
+        "KK": {
+          "bet_33": 45,
+          "bet_75": 25,
+          "check": 30,
+          "note": "強 overpair"
+        },
+        "QQ": {
+          "bet_33": 40,
+          "bet_75": 20,
+          "check": 40,
+          "note": "overpair OOP"
+        },
+        "JJ": {
+          "bet_33": 35,
+          "bet_75": 15,
+          "check": 50,
+          "note": "危險 overpair"
+        },
+        "AKs": {
+          "bet_33": 50,
+          "bet_75": 25,
+          "check": 25,
+          "note": "TPTK"
+        },
+        "AKo": {
+          "bet_33": 45,
+          "bet_75": 20,
+          "check": 35,
+          "note": "TPTK"
+        },
+        "AQs": {
+          "bet_33": 45,
+          "bet_75": 15,
+          "check": 40,
+          "note": "強頂對"
+        },
+        "AQo": {
+          "bet_33": 40,
+          "bet_75": 10,
+          "check": 50,
+          "note": "頂對"
+        },
+        "AJs": {
+          "bet_33": 40,
+          "bet_75": 10,
+          "check": 50,
+          "note": "中等 Ax"
+        },
+        "ATs": {
+          "bet_33": 35,
+          "bet_75": 10,
+          "check": 55,
+          "note": "弱 Ax"
+        },
+        "KQs": {
+          "bet_33": 35,
+          "bet_75": 10,
+          "check": 55,
+          "note": "broadway"
+        },
+        "TT": {
+          "bet_33": 30,
+          "bet_75": 10,
+          "check": 60,
+          "note": "中對"
+        },
+        "99": {
+          "bet_33": 25,
+          "bet_75": 10,
+          "check": 65,
+          "note": "小對"
+        }
+      }
+    },
+    {
+      "scenario_id": "squeeze_bb_J63_hsd",
+      "position": "BB",
+      "villain": "BTN+CO",
+      "pot_type": "squeeze",
+      "board": [
+        "Jh",
+        "6s",
+        "3d"
+      ],
+      "texture": "dry_low",
+      "texture_zh": "乾燥低牌面",
+      "strategies": {
+        "AA": {
+          "bet_33": 50,
+          "bet_75": 30,
+          "check": 20,
+          "note": "堅果"
+        },
+        "KK": {
+          "bet_33": 45,
+          "bet_75": 25,
+          "check": 30,
+          "note": "強 overpair"
+        },
+        "QQ": {
+          "bet_33": 40,
+          "bet_75": 20,
+          "check": 40,
+          "note": "overpair OOP"
+        },
+        "JJ": {
+          "bet_33": 35,
+          "bet_75": 15,
+          "check": 50,
+          "note": "危險 overpair"
+        },
+        "AKs": {
+          "bet_33": 50,
+          "bet_75": 25,
+          "check": 25,
+          "note": "TPTK"
+        },
+        "AKo": {
+          "bet_33": 45,
+          "bet_75": 20,
+          "check": 35,
+          "note": "TPTK"
+        },
+        "AQs": {
+          "bet_33": 45,
+          "bet_75": 15,
+          "check": 40,
+          "note": "強頂對"
+        },
+        "AQo": {
+          "bet_33": 40,
+          "bet_75": 10,
+          "check": 50,
+          "note": "頂對"
+        },
+        "AJs": {
+          "bet_33": 40,
+          "bet_75": 10,
+          "check": 50,
+          "note": "中等 Ax"
+        },
+        "ATs": {
+          "bet_33": 35,
+          "bet_75": 10,
+          "check": 55,
+          "note": "弱 Ax"
+        },
+        "KQs": {
+          "bet_33": 35,
+          "bet_75": 10,
+          "check": 55,
+          "note": "broadway"
+        },
+        "TT": {
+          "bet_33": 30,
+          "bet_75": 10,
+          "check": 60,
+          "note": "中對"
+        },
+        "99": {
+          "bet_33": 25,
+          "bet_75": 10,
+          "check": 65,
+          "note": "小對"
+        }
+      }
+    },
+    {
+      "scenario_id": "squeeze_bb_AA7_hsd",
+      "position": "BB",
+      "villain": "BTN+CO",
+      "pot_type": "squeeze",
+      "board": [
+        "Ah",
+        "As",
+        "7d"
+      ],
+      "texture": "paired_high",
+      "texture_zh": "高對子牌面",
+      "strategies": {
+        "AA": {
+          "bet_33": 50,
+          "bet_75": 30,
+          "check": 20,
+          "note": "堅果"
+        },
+        "KK": {
+          "bet_33": 45,
+          "bet_75": 25,
+          "check": 30,
+          "note": "強 overpair"
+        },
+        "QQ": {
+          "bet_33": 40,
+          "bet_75": 20,
+          "check": 40,
+          "note": "overpair OOP"
+        },
+        "JJ": {
+          "bet_33": 35,
+          "bet_75": 15,
+          "check": 50,
+          "note": "危險 overpair"
+        },
+        "AKs": {
+          "bet_33": 50,
+          "bet_75": 25,
+          "check": 25,
+          "note": "TPTK"
+        },
+        "AKo": {
+          "bet_33": 45,
+          "bet_75": 20,
+          "check": 35,
+          "note": "TPTK"
+        },
+        "AQs": {
+          "bet_33": 45,
+          "bet_75": 15,
+          "check": 40,
+          "note": "強頂對"
+        },
+        "AQo": {
+          "bet_33": 40,
+          "bet_75": 10,
+          "check": 50,
+          "note": "頂對"
+        },
+        "AJs": {
+          "bet_33": 40,
+          "bet_75": 10,
+          "check": 50,
+          "note": "中等 Ax"
+        },
+        "ATs": {
+          "bet_33": 35,
+          "bet_75": 10,
+          "check": 55,
+          "note": "弱 Ax"
+        },
+        "KQs": {
+          "bet_33": 35,
+          "bet_75": 10,
+          "check": 55,
+          "note": "broadway"
+        },
+        "TT": {
+          "bet_33": 30,
+          "bet_75": 10,
+          "check": 60,
+          "note": "中對"
+        },
+        "99": {
+          "bet_33": 25,
+          "bet_75": 10,
+          "check": 65,
+          "note": "小對"
+        }
+      }
+    },
+    {
+      "scenario_id": "squeeze_bb_KK5_hsd",
+      "position": "BB",
+      "villain": "BTN+CO",
+      "pot_type": "squeeze",
+      "board": [
+        "Kh",
+        "Ks",
+        "5d"
+      ],
+      "texture": "paired_high",
+      "texture_zh": "高對子牌面",
+      "strategies": {
+        "AA": {
+          "bet_33": 50,
+          "bet_75": 30,
+          "check": 20,
+          "note": "堅果"
+        },
+        "KK": {
+          "bet_33": 45,
+          "bet_75": 25,
+          "check": 30,
+          "note": "強 overpair"
+        },
+        "QQ": {
+          "bet_33": 40,
+          "bet_75": 20,
+          "check": 40,
+          "note": "overpair OOP"
+        },
+        "JJ": {
+          "bet_33": 35,
+          "bet_75": 15,
+          "check": 50,
+          "note": "危險 overpair"
+        },
+        "AKs": {
+          "bet_33": 50,
+          "bet_75": 25,
+          "check": 25,
+          "note": "TPTK"
+        },
+        "AKo": {
+          "bet_33": 45,
+          "bet_75": 20,
+          "check": 35,
+          "note": "TPTK"
+        },
+        "AQs": {
+          "bet_33": 45,
+          "bet_75": 15,
+          "check": 40,
+          "note": "強頂對"
+        },
+        "AQo": {
+          "bet_33": 40,
+          "bet_75": 10,
+          "check": 50,
+          "note": "頂對"
+        },
+        "AJs": {
+          "bet_33": 40,
+          "bet_75": 10,
+          "check": 50,
+          "note": "中等 Ax"
+        },
+        "ATs": {
+          "bet_33": 35,
+          "bet_75": 10,
+          "check": 55,
+          "note": "弱 Ax"
+        },
+        "KQs": {
+          "bet_33": 35,
+          "bet_75": 10,
+          "check": 55,
+          "note": "broadway"
+        },
+        "TT": {
+          "bet_33": 30,
+          "bet_75": 10,
+          "check": 60,
+          "note": "中對"
+        },
+        "99": {
+          "bet_33": 25,
+          "bet_75": 10,
+          "check": 65,
+          "note": "小對"
+        }
+      }
+    },
+    {
+      "scenario_id": "squeeze_bb_QQ4_hsd",
+      "position": "BB",
+      "villain": "BTN+CO",
+      "pot_type": "squeeze",
+      "board": [
+        "Qh",
+        "Qs",
+        "4d"
+      ],
+      "texture": "paired_high",
+      "texture_zh": "高對子牌面",
+      "strategies": {
+        "AA": {
+          "bet_33": 50,
+          "bet_75": 30,
+          "check": 20,
+          "note": "堅果"
+        },
+        "KK": {
+          "bet_33": 45,
+          "bet_75": 25,
+          "check": 30,
+          "note": "強 overpair"
+        },
+        "QQ": {
+          "bet_33": 40,
+          "bet_75": 20,
+          "check": 40,
+          "note": "overpair OOP"
+        },
+        "JJ": {
+          "bet_33": 35,
+          "bet_75": 15,
+          "check": 50,
+          "note": "危險 overpair"
+        },
+        "AKs": {
+          "bet_33": 50,
+          "bet_75": 25,
+          "check": 25,
+          "note": "TPTK"
+        },
+        "AKo": {
+          "bet_33": 45,
+          "bet_75": 20,
+          "check": 35,
+          "note": "TPTK"
+        },
+        "AQs": {
+          "bet_33": 45,
+          "bet_75": 15,
+          "check": 40,
+          "note": "強頂對"
+        },
+        "AQo": {
+          "bet_33": 40,
+          "bet_75": 10,
+          "check": 50,
+          "note": "頂對"
+        },
+        "AJs": {
+          "bet_33": 40,
+          "bet_75": 10,
+          "check": 50,
+          "note": "中等 Ax"
+        },
+        "ATs": {
+          "bet_33": 35,
+          "bet_75": 10,
+          "check": 55,
+          "note": "弱 Ax"
+        },
+        "KQs": {
+          "bet_33": 35,
+          "bet_75": 10,
+          "check": 55,
+          "note": "broadway"
+        },
+        "TT": {
+          "bet_33": 30,
+          "bet_75": 10,
+          "check": 60,
+          "note": "中對"
+        },
+        "99": {
+          "bet_33": 25,
+          "bet_75": 10,
+          "check": 65,
+          "note": "小對"
+        }
+      }
+    },
+    {
+      "scenario_id": "squeeze_bb_JJ3_hsd",
+      "position": "BB",
+      "villain": "BTN+CO",
+      "pot_type": "squeeze",
+      "board": [
+        "Jh",
+        "Js",
+        "3d"
+      ],
+      "texture": "paired_high",
+      "texture_zh": "高對子牌面",
+      "strategies": {
+        "AA": {
+          "bet_33": 50,
+          "bet_75": 30,
+          "check": 20,
+          "note": "堅果"
+        },
+        "KK": {
+          "bet_33": 45,
+          "bet_75": 25,
+          "check": 30,
+          "note": "強 overpair"
+        },
+        "QQ": {
+          "bet_33": 40,
+          "bet_75": 20,
+          "check": 40,
+          "note": "overpair OOP"
+        },
+        "JJ": {
+          "bet_33": 35,
+          "bet_75": 15,
+          "check": 50,
+          "note": "危險 overpair"
+        },
+        "AKs": {
+          "bet_33": 50,
+          "bet_75": 25,
+          "check": 25,
+          "note": "TPTK"
+        },
+        "AKo": {
+          "bet_33": 45,
+          "bet_75": 20,
+          "check": 35,
+          "note": "TPTK"
+        },
+        "AQs": {
+          "bet_33": 45,
+          "bet_75": 15,
+          "check": 40,
+          "note": "強頂對"
+        },
+        "AQo": {
+          "bet_33": 40,
+          "bet_75": 10,
+          "check": 50,
+          "note": "頂對"
+        },
+        "AJs": {
+          "bet_33": 40,
+          "bet_75": 10,
+          "check": 50,
+          "note": "中等 Ax"
+        },
+        "ATs": {
+          "bet_33": 35,
+          "bet_75": 10,
+          "check": 55,
+          "note": "弱 Ax"
+        },
+        "KQs": {
+          "bet_33": 35,
+          "bet_75": 10,
+          "check": 55,
+          "note": "broadway"
+        },
+        "TT": {
+          "bet_33": 30,
+          "bet_75": 10,
+          "check": 60,
+          "note": "中對"
+        },
+        "99": {
+          "bet_33": 25,
+          "bet_75": 10,
+          "check": 65,
+          "note": "小對"
+        }
+      }
+    },
+    {
+      "scenario_id": "squeeze_bb_KK7_hsd",
+      "position": "BB",
+      "villain": "BTN+CO",
+      "pot_type": "squeeze",
+      "board": [
+        "Kh",
+        "Ks",
+        "7d"
+      ],
+      "texture": "paired_high",
+      "texture_zh": "高對子牌面",
+      "strategies": {
+        "AA": {
+          "bet_33": 50,
+          "bet_75": 30,
+          "check": 20,
+          "note": "堅果"
+        },
+        "KK": {
+          "bet_33": 45,
+          "bet_75": 25,
+          "check": 30,
+          "note": "強 overpair"
+        },
+        "QQ": {
+          "bet_33": 40,
+          "bet_75": 20,
+          "check": 40,
+          "note": "overpair OOP"
+        },
+        "JJ": {
+          "bet_33": 35,
+          "bet_75": 15,
+          "check": 50,
+          "note": "危險 overpair"
+        },
+        "AKs": {
+          "bet_33": 50,
+          "bet_75": 25,
+          "check": 25,
+          "note": "TPTK"
+        },
+        "AKo": {
+          "bet_33": 45,
+          "bet_75": 20,
+          "check": 35,
+          "note": "TPTK"
+        },
+        "AQs": {
+          "bet_33": 45,
+          "bet_75": 15,
+          "check": 40,
+          "note": "強頂對"
+        },
+        "AQo": {
+          "bet_33": 40,
+          "bet_75": 10,
+          "check": 50,
+          "note": "頂對"
+        },
+        "AJs": {
+          "bet_33": 40,
+          "bet_75": 10,
+          "check": 50,
+          "note": "中等 Ax"
+        },
+        "ATs": {
+          "bet_33": 35,
+          "bet_75": 10,
+          "check": 55,
+          "note": "弱 Ax"
+        },
+        "KQs": {
+          "bet_33": 35,
+          "bet_75": 10,
+          "check": 55,
+          "note": "broadway"
+        },
+        "TT": {
+          "bet_33": 30,
+          "bet_75": 10,
+          "check": 60,
+          "note": "中對"
+        },
+        "99": {
+          "bet_33": 25,
+          "bet_75": 10,
+          "check": 65,
+          "note": "小對"
+        }
+      }
+    },
+    {
+      "scenario_id": "squeeze_bb_882_hsd",
+      "position": "BB",
+      "villain": "BTN+CO",
+      "pot_type": "squeeze",
+      "board": [
+        "8h",
+        "8s",
+        "2d"
+      ],
+      "texture": "paired_low",
+      "texture_zh": "低對子牌面",
+      "strategies": {
+        "AA": {
+          "bet_33": 50,
+          "bet_75": 30,
+          "check": 20,
+          "note": "堅果"
+        },
+        "KK": {
+          "bet_33": 45,
+          "bet_75": 25,
+          "check": 30,
+          "note": "強 overpair"
+        },
+        "QQ": {
+          "bet_33": 40,
+          "bet_75": 20,
+          "check": 40,
+          "note": "overpair OOP"
+        },
+        "JJ": {
+          "bet_33": 35,
+          "bet_75": 15,
+          "check": 50,
+          "note": "危險 overpair"
+        },
+        "AKs": {
+          "bet_33": 50,
+          "bet_75": 25,
+          "check": 25,
+          "note": "TPTK"
+        },
+        "AKo": {
+          "bet_33": 45,
+          "bet_75": 20,
+          "check": 35,
+          "note": "TPTK"
+        },
+        "AQs": {
+          "bet_33": 45,
+          "bet_75": 15,
+          "check": 40,
+          "note": "強頂對"
+        },
+        "AQo": {
+          "bet_33": 40,
+          "bet_75": 10,
+          "check": 50,
+          "note": "頂對"
+        },
+        "AJs": {
+          "bet_33": 40,
+          "bet_75": 10,
+          "check": 50,
+          "note": "中等 Ax"
+        },
+        "ATs": {
+          "bet_33": 35,
+          "bet_75": 10,
+          "check": 55,
+          "note": "弱 Ax"
+        },
+        "KQs": {
+          "bet_33": 35,
+          "bet_75": 10,
+          "check": 55,
+          "note": "broadway"
+        },
+        "TT": {
+          "bet_33": 30,
+          "bet_75": 10,
+          "check": 60,
+          "note": "中對"
+        },
+        "99": {
+          "bet_33": 25,
+          "bet_75": 10,
+          "check": 65,
+          "note": "小對"
+        }
+      }
+    },
+    {
+      "scenario_id": "squeeze_bb_773_hsd",
+      "position": "BB",
+      "villain": "BTN+CO",
+      "pot_type": "squeeze",
+      "board": [
+        "7h",
+        "7s",
+        "3d"
+      ],
+      "texture": "paired_low",
+      "texture_zh": "低對子牌面",
+      "strategies": {
+        "AA": {
+          "bet_33": 50,
+          "bet_75": 30,
+          "check": 20,
+          "note": "堅果"
+        },
+        "KK": {
+          "bet_33": 45,
+          "bet_75": 25,
+          "check": 30,
+          "note": "強 overpair"
+        },
+        "QQ": {
+          "bet_33": 40,
+          "bet_75": 20,
+          "check": 40,
+          "note": "overpair OOP"
+        },
+        "JJ": {
+          "bet_33": 35,
+          "bet_75": 15,
+          "check": 50,
+          "note": "危險 overpair"
+        },
+        "AKs": {
+          "bet_33": 50,
+          "bet_75": 25,
+          "check": 25,
+          "note": "TPTK"
+        },
+        "AKo": {
+          "bet_33": 45,
+          "bet_75": 20,
+          "check": 35,
+          "note": "TPTK"
+        },
+        "AQs": {
+          "bet_33": 45,
+          "bet_75": 15,
+          "check": 40,
+          "note": "強頂對"
+        },
+        "AQo": {
+          "bet_33": 40,
+          "bet_75": 10,
+          "check": 50,
+          "note": "頂對"
+        },
+        "AJs": {
+          "bet_33": 40,
+          "bet_75": 10,
+          "check": 50,
+          "note": "中等 Ax"
+        },
+        "ATs": {
+          "bet_33": 35,
+          "bet_75": 10,
+          "check": 55,
+          "note": "弱 Ax"
+        },
+        "KQs": {
+          "bet_33": 35,
+          "bet_75": 10,
+          "check": 55,
+          "note": "broadway"
+        },
+        "TT": {
+          "bet_33": 30,
+          "bet_75": 10,
+          "check": 60,
+          "note": "中對"
+        },
+        "99": {
+          "bet_33": 25,
+          "bet_75": 10,
+          "check": 65,
+          "note": "小對"
+        }
+      }
+    },
+    {
+      "scenario_id": "squeeze_bb_662_hsd",
+      "position": "BB",
+      "villain": "BTN+CO",
+      "pot_type": "squeeze",
+      "board": [
+        "6h",
+        "6s",
+        "2d"
+      ],
+      "texture": "paired_low",
+      "texture_zh": "低對子牌面",
+      "strategies": {
+        "AA": {
+          "bet_33": 50,
+          "bet_75": 30,
+          "check": 20,
+          "note": "堅果"
+        },
+        "KK": {
+          "bet_33": 45,
+          "bet_75": 25,
+          "check": 30,
+          "note": "強 overpair"
+        },
+        "QQ": {
+          "bet_33": 40,
+          "bet_75": 20,
+          "check": 40,
+          "note": "overpair OOP"
+        },
+        "JJ": {
+          "bet_33": 35,
+          "bet_75": 15,
+          "check": 50,
+          "note": "危險 overpair"
+        },
+        "AKs": {
+          "bet_33": 50,
+          "bet_75": 25,
+          "check": 25,
+          "note": "TPTK"
+        },
+        "AKo": {
+          "bet_33": 45,
+          "bet_75": 20,
+          "check": 35,
+          "note": "TPTK"
+        },
+        "AQs": {
+          "bet_33": 45,
+          "bet_75": 15,
+          "check": 40,
+          "note": "強頂對"
+        },
+        "AQo": {
+          "bet_33": 40,
+          "bet_75": 10,
+          "check": 50,
+          "note": "頂對"
+        },
+        "AJs": {
+          "bet_33": 40,
+          "bet_75": 10,
+          "check": 50,
+          "note": "中等 Ax"
+        },
+        "ATs": {
+          "bet_33": 35,
+          "bet_75": 10,
+          "check": 55,
+          "note": "弱 Ax"
+        },
+        "KQs": {
+          "bet_33": 35,
+          "bet_75": 10,
+          "check": 55,
+          "note": "broadway"
+        },
+        "TT": {
+          "bet_33": 30,
+          "bet_75": 10,
+          "check": 60,
+          "note": "中對"
+        },
+        "99": {
+          "bet_33": 25,
+          "bet_75": 10,
+          "check": 65,
+          "note": "小對"
+        }
+      }
+    },
+    {
+      "scenario_id": "squeeze_bb_552_hsd",
+      "position": "BB",
+      "villain": "BTN+CO",
+      "pot_type": "squeeze",
+      "board": [
+        "5h",
+        "5s",
+        "2d"
+      ],
+      "texture": "paired_low",
+      "texture_zh": "低對子牌面",
+      "strategies": {
+        "AA": {
+          "bet_33": 50,
+          "bet_75": 30,
+          "check": 20,
+          "note": "堅果"
+        },
+        "KK": {
+          "bet_33": 45,
+          "bet_75": 25,
+          "check": 30,
+          "note": "強 overpair"
+        },
+        "QQ": {
+          "bet_33": 40,
+          "bet_75": 20,
+          "check": 40,
+          "note": "overpair OOP"
+        },
+        "JJ": {
+          "bet_33": 35,
+          "bet_75": 15,
+          "check": 50,
+          "note": "危險 overpair"
+        },
+        "AKs": {
+          "bet_33": 50,
+          "bet_75": 25,
+          "check": 25,
+          "note": "TPTK"
+        },
+        "AKo": {
+          "bet_33": 45,
+          "bet_75": 20,
+          "check": 35,
+          "note": "TPTK"
+        },
+        "AQs": {
+          "bet_33": 45,
+          "bet_75": 15,
+          "check": 40,
+          "note": "強頂對"
+        },
+        "AQo": {
+          "bet_33": 40,
+          "bet_75": 10,
+          "check": 50,
+          "note": "頂對"
+        },
+        "AJs": {
+          "bet_33": 40,
+          "bet_75": 10,
+          "check": 50,
+          "note": "中等 Ax"
+        },
+        "ATs": {
+          "bet_33": 35,
+          "bet_75": 10,
+          "check": 55,
+          "note": "弱 Ax"
+        },
+        "KQs": {
+          "bet_33": 35,
+          "bet_75": 10,
+          "check": 55,
+          "note": "broadway"
+        },
+        "TT": {
+          "bet_33": 30,
+          "bet_75": 10,
+          "check": 60,
+          "note": "中對"
+        },
+        "99": {
+          "bet_33": 25,
+          "bet_75": 10,
+          "check": 65,
+          "note": "小對"
+        }
+      }
+    },
+    {
+      "scenario_id": "squeeze_bb_442_hsd",
+      "position": "BB",
+      "villain": "BTN+CO",
+      "pot_type": "squeeze",
+      "board": [
+        "4h",
+        "4s",
+        "2d"
+      ],
+      "texture": "paired_low",
+      "texture_zh": "低對子牌面",
+      "strategies": {
+        "AA": {
+          "bet_33": 50,
+          "bet_75": 30,
+          "check": 20,
+          "note": "堅果"
+        },
+        "KK": {
+          "bet_33": 45,
+          "bet_75": 25,
+          "check": 30,
+          "note": "強 overpair"
+        },
+        "QQ": {
+          "bet_33": 40,
+          "bet_75": 20,
+          "check": 40,
+          "note": "overpair OOP"
+        },
+        "JJ": {
+          "bet_33": 35,
+          "bet_75": 15,
+          "check": 50,
+          "note": "危險 overpair"
+        },
+        "AKs": {
+          "bet_33": 50,
+          "bet_75": 25,
+          "check": 25,
+          "note": "TPTK"
+        },
+        "AKo": {
+          "bet_33": 45,
+          "bet_75": 20,
+          "check": 35,
+          "note": "TPTK"
+        },
+        "AQs": {
+          "bet_33": 45,
+          "bet_75": 15,
+          "check": 40,
+          "note": "強頂對"
+        },
+        "AQo": {
+          "bet_33": 40,
+          "bet_75": 10,
+          "check": 50,
+          "note": "頂對"
+        },
+        "AJs": {
+          "bet_33": 40,
+          "bet_75": 10,
+          "check": 50,
+          "note": "中等 Ax"
+        },
+        "ATs": {
+          "bet_33": 35,
+          "bet_75": 10,
+          "check": 55,
+          "note": "弱 Ax"
+        },
+        "KQs": {
+          "bet_33": 35,
+          "bet_75": 10,
+          "check": 55,
+          "note": "broadway"
+        },
+        "TT": {
+          "bet_33": 30,
+          "bet_75": 10,
+          "check": 60,
+          "note": "中對"
+        },
+        "99": {
+          "bet_33": 25,
+          "bet_75": 10,
+          "check": 65,
+          "note": "小對"
+        }
+      }
+    },
+    {
+      "scenario_id": "squeeze_bb_A94_hhh",
+      "position": "BB",
+      "villain": "BTN+CO",
+      "pot_type": "squeeze",
+      "board": [
+        "Ah",
+        "9h",
+        "4h"
+      ],
+      "texture": "monotone",
+      "texture_zh": "同花牌面",
+      "strategies": {
+        "AA": {
+          "bet_33": 50,
+          "bet_75": 30,
+          "check": 20,
+          "note": "堅果"
+        },
+        "KK": {
+          "bet_33": 45,
+          "bet_75": 25,
+          "check": 30,
+          "note": "強 overpair"
+        },
+        "QQ": {
+          "bet_33": 40,
+          "bet_75": 20,
+          "check": 40,
+          "note": "overpair OOP"
+        },
+        "JJ": {
+          "bet_33": 35,
+          "bet_75": 15,
+          "check": 50,
+          "note": "危險 overpair"
+        },
+        "AKs": {
+          "bet_33": 50,
+          "bet_75": 25,
+          "check": 25,
+          "note": "TPTK"
+        },
+        "AKo": {
+          "bet_33": 45,
+          "bet_75": 20,
+          "check": 35,
+          "note": "TPTK"
+        },
+        "AQs": {
+          "bet_33": 45,
+          "bet_75": 15,
+          "check": 40,
+          "note": "強頂對"
+        },
+        "AQo": {
+          "bet_33": 40,
+          "bet_75": 10,
+          "check": 50,
+          "note": "頂對"
+        },
+        "AJs": {
+          "bet_33": 40,
+          "bet_75": 10,
+          "check": 50,
+          "note": "中等 Ax"
+        },
+        "ATs": {
+          "bet_33": 35,
+          "bet_75": 10,
+          "check": 55,
+          "note": "弱 Ax"
+        },
+        "KQs": {
+          "bet_33": 35,
+          "bet_75": 10,
+          "check": 55,
+          "note": "broadway"
+        },
+        "TT": {
+          "bet_33": 30,
+          "bet_75": 10,
+          "check": 60,
+          "note": "中對"
+        },
+        "99": {
+          "bet_33": 25,
+          "bet_75": 10,
+          "check": 65,
+          "note": "小對"
+        }
+      }
+    },
+    {
+      "scenario_id": "squeeze_bb_K83_hhh",
+      "position": "BB",
+      "villain": "BTN+CO",
+      "pot_type": "squeeze",
+      "board": [
+        "Kh",
+        "8h",
+        "3h"
+      ],
+      "texture": "monotone",
+      "texture_zh": "同花牌面",
+      "strategies": {
+        "AA": {
+          "bet_33": 50,
+          "bet_75": 30,
+          "check": 20,
+          "note": "堅果"
+        },
+        "KK": {
+          "bet_33": 45,
+          "bet_75": 25,
+          "check": 30,
+          "note": "強 overpair"
+        },
+        "QQ": {
+          "bet_33": 40,
+          "bet_75": 20,
+          "check": 40,
+          "note": "overpair OOP"
+        },
+        "JJ": {
+          "bet_33": 35,
+          "bet_75": 15,
+          "check": 50,
+          "note": "危險 overpair"
+        },
+        "AKs": {
+          "bet_33": 50,
+          "bet_75": 25,
+          "check": 25,
+          "note": "TPTK"
+        },
+        "AKo": {
+          "bet_33": 45,
+          "bet_75": 20,
+          "check": 35,
+          "note": "TPTK"
+        },
+        "AQs": {
+          "bet_33": 45,
+          "bet_75": 15,
+          "check": 40,
+          "note": "強頂對"
+        },
+        "AQo": {
+          "bet_33": 40,
+          "bet_75": 10,
+          "check": 50,
+          "note": "頂對"
+        },
+        "AJs": {
+          "bet_33": 40,
+          "bet_75": 10,
+          "check": 50,
+          "note": "中等 Ax"
+        },
+        "ATs": {
+          "bet_33": 35,
+          "bet_75": 10,
+          "check": 55,
+          "note": "弱 Ax"
+        },
+        "KQs": {
+          "bet_33": 35,
+          "bet_75": 10,
+          "check": 55,
+          "note": "broadway"
+        },
+        "TT": {
+          "bet_33": 30,
+          "bet_75": 10,
+          "check": 60,
+          "note": "中對"
+        },
+        "99": {
+          "bet_33": 25,
+          "bet_75": 10,
+          "check": 65,
+          "note": "小對"
+        }
+      }
+    },
+    {
+      "scenario_id": "squeeze_bb_Q72_hhh",
+      "position": "BB",
+      "villain": "BTN+CO",
+      "pot_type": "squeeze",
+      "board": [
+        "Qh",
+        "7h",
+        "2h"
+      ],
+      "texture": "monotone",
+      "texture_zh": "同花牌面",
+      "strategies": {
+        "AA": {
+          "bet_33": 50,
+          "bet_75": 30,
+          "check": 20,
+          "note": "堅果"
+        },
+        "KK": {
+          "bet_33": 45,
+          "bet_75": 25,
+          "check": 30,
+          "note": "強 overpair"
+        },
+        "QQ": {
+          "bet_33": 40,
+          "bet_75": 20,
+          "check": 40,
+          "note": "overpair OOP"
+        },
+        "JJ": {
+          "bet_33": 35,
+          "bet_75": 15,
+          "check": 50,
+          "note": "危險 overpair"
+        },
+        "AKs": {
+          "bet_33": 50,
+          "bet_75": 25,
+          "check": 25,
+          "note": "TPTK"
+        },
+        "AKo": {
+          "bet_33": 45,
+          "bet_75": 20,
+          "check": 35,
+          "note": "TPTK"
+        },
+        "AQs": {
+          "bet_33": 45,
+          "bet_75": 15,
+          "check": 40,
+          "note": "強頂對"
+        },
+        "AQo": {
+          "bet_33": 40,
+          "bet_75": 10,
+          "check": 50,
+          "note": "頂對"
+        },
+        "AJs": {
+          "bet_33": 40,
+          "bet_75": 10,
+          "check": 50,
+          "note": "中等 Ax"
+        },
+        "ATs": {
+          "bet_33": 35,
+          "bet_75": 10,
+          "check": 55,
+          "note": "弱 Ax"
+        },
+        "KQs": {
+          "bet_33": 35,
+          "bet_75": 10,
+          "check": 55,
+          "note": "broadway"
+        },
+        "TT": {
+          "bet_33": 30,
+          "bet_75": 10,
+          "check": 60,
+          "note": "中對"
+        },
+        "99": {
+          "bet_33": 25,
+          "bet_75": 10,
+          "check": 65,
+          "note": "小對"
+        }
+      }
+    },
+    {
+      "scenario_id": "squeeze_bb_J73_hhh",
+      "position": "BB",
+      "villain": "BTN+CO",
+      "pot_type": "squeeze",
+      "board": [
+        "Jh",
+        "7h",
+        "3h"
+      ],
+      "texture": "monotone",
+      "texture_zh": "同花牌面",
+      "strategies": {
+        "AA": {
+          "bet_33": 50,
+          "bet_75": 30,
+          "check": 20,
+          "note": "堅果"
+        },
+        "KK": {
+          "bet_33": 45,
+          "bet_75": 25,
+          "check": 30,
+          "note": "強 overpair"
+        },
+        "QQ": {
+          "bet_33": 40,
+          "bet_75": 20,
+          "check": 40,
+          "note": "overpair OOP"
+        },
+        "JJ": {
+          "bet_33": 35,
+          "bet_75": 15,
+          "check": 50,
+          "note": "危險 overpair"
+        },
+        "AKs": {
+          "bet_33": 50,
+          "bet_75": 25,
+          "check": 25,
+          "note": "TPTK"
+        },
+        "AKo": {
+          "bet_33": 45,
+          "bet_75": 20,
+          "check": 35,
+          "note": "TPTK"
+        },
+        "AQs": {
+          "bet_33": 45,
+          "bet_75": 15,
+          "check": 40,
+          "note": "強頂對"
+        },
+        "AQo": {
+          "bet_33": 40,
+          "bet_75": 10,
+          "check": 50,
+          "note": "頂對"
+        },
+        "AJs": {
+          "bet_33": 40,
+          "bet_75": 10,
+          "check": 50,
+          "note": "中等 Ax"
+        },
+        "ATs": {
+          "bet_33": 35,
+          "bet_75": 10,
+          "check": 55,
+          "note": "弱 Ax"
+        },
+        "KQs": {
+          "bet_33": 35,
+          "bet_75": 10,
+          "check": 55,
+          "note": "broadway"
+        },
+        "TT": {
+          "bet_33": 30,
+          "bet_75": 10,
+          "check": 60,
+          "note": "中對"
+        },
+        "99": {
+          "bet_33": 25,
+          "bet_75": 10,
+          "check": 65,
+          "note": "小對"
+        }
+      }
+    },
+    {
+      "scenario_id": "squeeze_bb_T52_hhh",
+      "position": "BB",
+      "villain": "BTN+CO",
+      "pot_type": "squeeze",
+      "board": [
+        "Th",
+        "5h",
+        "2h"
+      ],
+      "texture": "monotone",
+      "texture_zh": "同花牌面",
+      "strategies": {
+        "AA": {
+          "bet_33": 50,
+          "bet_75": 30,
+          "check": 20,
+          "note": "堅果"
+        },
+        "KK": {
+          "bet_33": 45,
+          "bet_75": 25,
+          "check": 30,
+          "note": "強 overpair"
+        },
+        "QQ": {
+          "bet_33": 40,
+          "bet_75": 20,
+          "check": 40,
+          "note": "overpair OOP"
+        },
+        "JJ": {
+          "bet_33": 35,
+          "bet_75": 15,
+          "check": 50,
+          "note": "危險 overpair"
+        },
+        "AKs": {
+          "bet_33": 50,
+          "bet_75": 25,
+          "check": 25,
+          "note": "TPTK"
+        },
+        "AKo": {
+          "bet_33": 45,
+          "bet_75": 20,
+          "check": 35,
+          "note": "TPTK"
+        },
+        "AQs": {
+          "bet_33": 45,
+          "bet_75": 15,
+          "check": 40,
+          "note": "強頂對"
+        },
+        "AQo": {
+          "bet_33": 40,
+          "bet_75": 10,
+          "check": 50,
+          "note": "頂對"
+        },
+        "AJs": {
+          "bet_33": 40,
+          "bet_75": 10,
+          "check": 50,
+          "note": "中等 Ax"
+        },
+        "ATs": {
+          "bet_33": 35,
+          "bet_75": 10,
+          "check": 55,
+          "note": "弱 Ax"
+        },
+        "KQs": {
+          "bet_33": 35,
+          "bet_75": 10,
+          "check": 55,
+          "note": "broadway"
+        },
+        "TT": {
+          "bet_33": 30,
+          "bet_75": 10,
+          "check": 60,
+          "note": "中對"
+        },
+        "99": {
+          "bet_33": 25,
+          "bet_75": 10,
+          "check": 65,
+          "note": "小對"
+        }
+      }
+    },
+    {
+      "scenario_id": "squeeze_bb_AK5_hhd",
+      "position": "BB",
+      "villain": "BTN+CO",
+      "pot_type": "squeeze",
+      "board": [
+        "Ah",
+        "Kh",
+        "5d"
+      ],
+      "texture": "two_tone_high",
+      "texture_zh": "雙色高牌面",
+      "strategies": {
+        "AA": {
+          "bet_33": 50,
+          "bet_75": 30,
+          "check": 20,
+          "note": "堅果"
+        },
+        "KK": {
+          "bet_33": 45,
+          "bet_75": 25,
+          "check": 30,
+          "note": "強 overpair"
+        },
+        "QQ": {
+          "bet_33": 40,
+          "bet_75": 20,
+          "check": 40,
+          "note": "overpair OOP"
+        },
+        "JJ": {
+          "bet_33": 35,
+          "bet_75": 15,
+          "check": 50,
+          "note": "危險 overpair"
+        },
+        "AKs": {
+          "bet_33": 50,
+          "bet_75": 25,
+          "check": 25,
+          "note": "TPTK"
+        },
+        "AKo": {
+          "bet_33": 45,
+          "bet_75": 20,
+          "check": 35,
+          "note": "TPTK"
+        },
+        "AQs": {
+          "bet_33": 45,
+          "bet_75": 15,
+          "check": 40,
+          "note": "強頂對"
+        },
+        "AQo": {
+          "bet_33": 40,
+          "bet_75": 10,
+          "check": 50,
+          "note": "頂對"
+        },
+        "AJs": {
+          "bet_33": 40,
+          "bet_75": 10,
+          "check": 50,
+          "note": "中等 Ax"
+        },
+        "ATs": {
+          "bet_33": 35,
+          "bet_75": 10,
+          "check": 55,
+          "note": "弱 Ax"
+        },
+        "KQs": {
+          "bet_33": 35,
+          "bet_75": 10,
+          "check": 55,
+          "note": "broadway"
+        },
+        "TT": {
+          "bet_33": 30,
+          "bet_75": 10,
+          "check": 60,
+          "note": "中對"
+        },
+        "99": {
+          "bet_33": 25,
+          "bet_75": 10,
+          "check": 65,
+          "note": "小對"
+        }
+      }
+    },
+    {
+      "scenario_id": "squeeze_bb_KQ4_hhd",
+      "position": "BB",
+      "villain": "BTN+CO",
+      "pot_type": "squeeze",
+      "board": [
+        "Kh",
+        "Qh",
+        "4d"
+      ],
+      "texture": "two_tone_high",
+      "texture_zh": "雙色高牌面",
+      "strategies": {
+        "AA": {
+          "bet_33": 50,
+          "bet_75": 30,
+          "check": 20,
+          "note": "堅果"
+        },
+        "KK": {
+          "bet_33": 45,
+          "bet_75": 25,
+          "check": 30,
+          "note": "強 overpair"
+        },
+        "QQ": {
+          "bet_33": 40,
+          "bet_75": 20,
+          "check": 40,
+          "note": "overpair OOP"
+        },
+        "JJ": {
+          "bet_33": 35,
+          "bet_75": 15,
+          "check": 50,
+          "note": "危險 overpair"
+        },
+        "AKs": {
+          "bet_33": 50,
+          "bet_75": 25,
+          "check": 25,
+          "note": "TPTK"
+        },
+        "AKo": {
+          "bet_33": 45,
+          "bet_75": 20,
+          "check": 35,
+          "note": "TPTK"
+        },
+        "AQs": {
+          "bet_33": 45,
+          "bet_75": 15,
+          "check": 40,
+          "note": "強頂對"
+        },
+        "AQo": {
+          "bet_33": 40,
+          "bet_75": 10,
+          "check": 50,
+          "note": "頂對"
+        },
+        "AJs": {
+          "bet_33": 40,
+          "bet_75": 10,
+          "check": 50,
+          "note": "中等 Ax"
+        },
+        "ATs": {
+          "bet_33": 35,
+          "bet_75": 10,
+          "check": 55,
+          "note": "弱 Ax"
+        },
+        "KQs": {
+          "bet_33": 35,
+          "bet_75": 10,
+          "check": 55,
+          "note": "broadway"
+        },
+        "TT": {
+          "bet_33": 30,
+          "bet_75": 10,
+          "check": 60,
+          "note": "中對"
+        },
+        "99": {
+          "bet_33": 25,
+          "bet_75": 10,
+          "check": 65,
+          "note": "小對"
+        }
+      }
+    },
+    {
+      "scenario_id": "squeeze_bb_AJ3_hhd",
+      "position": "BB",
+      "villain": "BTN+CO",
+      "pot_type": "squeeze",
+      "board": [
+        "Ah",
+        "Jh",
+        "3d"
+      ],
+      "texture": "two_tone_high",
+      "texture_zh": "雙色高牌面",
+      "strategies": {
+        "AA": {
+          "bet_33": 50,
+          "bet_75": 30,
+          "check": 20,
+          "note": "堅果"
+        },
+        "KK": {
+          "bet_33": 45,
+          "bet_75": 25,
+          "check": 30,
+          "note": "強 overpair"
+        },
+        "QQ": {
+          "bet_33": 40,
+          "bet_75": 20,
+          "check": 40,
+          "note": "overpair OOP"
+        },
+        "JJ": {
+          "bet_33": 35,
+          "bet_75": 15,
+          "check": 50,
+          "note": "危險 overpair"
+        },
+        "AKs": {
+          "bet_33": 50,
+          "bet_75": 25,
+          "check": 25,
+          "note": "TPTK"
+        },
+        "AKo": {
+          "bet_33": 45,
+          "bet_75": 20,
+          "check": 35,
+          "note": "TPTK"
+        },
+        "AQs": {
+          "bet_33": 45,
+          "bet_75": 15,
+          "check": 40,
+          "note": "強頂對"
+        },
+        "AQo": {
+          "bet_33": 40,
+          "bet_75": 10,
+          "check": 50,
+          "note": "頂對"
+        },
+        "AJs": {
+          "bet_33": 40,
+          "bet_75": 10,
+          "check": 50,
+          "note": "中等 Ax"
+        },
+        "ATs": {
+          "bet_33": 35,
+          "bet_75": 10,
+          "check": 55,
+          "note": "弱 Ax"
+        },
+        "KQs": {
+          "bet_33": 35,
+          "bet_75": 10,
+          "check": 55,
+          "note": "broadway"
+        },
+        "TT": {
+          "bet_33": 30,
+          "bet_75": 10,
+          "check": 60,
+          "note": "中對"
+        },
+        "99": {
+          "bet_33": 25,
+          "bet_75": 10,
+          "check": 65,
+          "note": "小對"
+        }
+      }
+    },
+    {
+      "scenario_id": "squeeze_bb_AK7_hhd",
+      "position": "BB",
+      "villain": "BTN+CO",
+      "pot_type": "squeeze",
+      "board": [
+        "Ah",
+        "Kh",
+        "7d"
+      ],
+      "texture": "two_tone_high",
+      "texture_zh": "雙色高牌面",
+      "strategies": {
+        "AA": {
+          "bet_33": 50,
+          "bet_75": 30,
+          "check": 20,
+          "note": "堅果"
+        },
+        "KK": {
+          "bet_33": 45,
+          "bet_75": 25,
+          "check": 30,
+          "note": "強 overpair"
+        },
+        "QQ": {
+          "bet_33": 40,
+          "bet_75": 20,
+          "check": 40,
+          "note": "overpair OOP"
+        },
+        "JJ": {
+          "bet_33": 35,
+          "bet_75": 15,
+          "check": 50,
+          "note": "危險 overpair"
+        },
+        "AKs": {
+          "bet_33": 50,
+          "bet_75": 25,
+          "check": 25,
+          "note": "TPTK"
+        },
+        "AKo": {
+          "bet_33": 45,
+          "bet_75": 20,
+          "check": 35,
+          "note": "TPTK"
+        },
+        "AQs": {
+          "bet_33": 45,
+          "bet_75": 15,
+          "check": 40,
+          "note": "強頂對"
+        },
+        "AQo": {
+          "bet_33": 40,
+          "bet_75": 10,
+          "check": 50,
+          "note": "頂對"
+        },
+        "AJs": {
+          "bet_33": 40,
+          "bet_75": 10,
+          "check": 50,
+          "note": "中等 Ax"
+        },
+        "ATs": {
+          "bet_33": 35,
+          "bet_75": 10,
+          "check": 55,
+          "note": "弱 Ax"
+        },
+        "KQs": {
+          "bet_33": 35,
+          "bet_75": 10,
+          "check": 55,
+          "note": "broadway"
+        },
+        "TT": {
+          "bet_33": 30,
+          "bet_75": 10,
+          "check": 60,
+          "note": "中對"
+        },
+        "99": {
+          "bet_33": 25,
+          "bet_75": 10,
+          "check": 65,
+          "note": "小對"
+        }
+      }
+    },
+    {
+      "scenario_id": "squeeze_bb_KJ4_hhd",
+      "position": "BB",
+      "villain": "BTN+CO",
+      "pot_type": "squeeze",
+      "board": [
+        "Kh",
+        "Jh",
+        "4d"
+      ],
+      "texture": "two_tone_high",
+      "texture_zh": "雙色高牌面",
+      "strategies": {
+        "AA": {
+          "bet_33": 50,
+          "bet_75": 30,
+          "check": 20,
+          "note": "堅果"
+        },
+        "KK": {
+          "bet_33": 45,
+          "bet_75": 25,
+          "check": 30,
+          "note": "強 overpair"
+        },
+        "QQ": {
+          "bet_33": 40,
+          "bet_75": 20,
+          "check": 40,
+          "note": "overpair OOP"
+        },
+        "JJ": {
+          "bet_33": 35,
+          "bet_75": 15,
+          "check": 50,
+          "note": "危險 overpair"
+        },
+        "AKs": {
+          "bet_33": 50,
+          "bet_75": 25,
+          "check": 25,
+          "note": "TPTK"
+        },
+        "AKo": {
+          "bet_33": 45,
+          "bet_75": 20,
+          "check": 35,
+          "note": "TPTK"
+        },
+        "AQs": {
+          "bet_33": 45,
+          "bet_75": 15,
+          "check": 40,
+          "note": "強頂對"
+        },
+        "AQo": {
+          "bet_33": 40,
+          "bet_75": 10,
+          "check": 50,
+          "note": "頂對"
+        },
+        "AJs": {
+          "bet_33": 40,
+          "bet_75": 10,
+          "check": 50,
+          "note": "中等 Ax"
+        },
+        "ATs": {
+          "bet_33": 35,
+          "bet_75": 10,
+          "check": 55,
+          "note": "弱 Ax"
+        },
+        "KQs": {
+          "bet_33": 35,
+          "bet_75": 10,
+          "check": 55,
+          "note": "broadway"
+        },
+        "TT": {
+          "bet_33": 30,
+          "bet_75": 10,
+          "check": 60,
+          "note": "中對"
+        },
+        "99": {
+          "bet_33": 25,
+          "bet_75": 10,
+          "check": 65,
+          "note": "小對"
+        }
+      }
+    },
+    {
+      "scenario_id": "squeeze_bb_862_hhd",
+      "position": "BB",
+      "villain": "BTN+CO",
+      "pot_type": "squeeze",
+      "board": [
+        "8h",
+        "6h",
+        "2d"
+      ],
+      "texture": "two_tone_low",
+      "texture_zh": "雙色低牌面",
+      "strategies": {
+        "AA": {
+          "bet_33": 50,
+          "bet_75": 30,
+          "check": 20,
+          "note": "堅果"
+        },
+        "KK": {
+          "bet_33": 45,
+          "bet_75": 25,
+          "check": 30,
+          "note": "強 overpair"
+        },
+        "QQ": {
+          "bet_33": 40,
+          "bet_75": 20,
+          "check": 40,
+          "note": "overpair OOP"
+        },
+        "JJ": {
+          "bet_33": 35,
+          "bet_75": 15,
+          "check": 50,
+          "note": "危險 overpair"
+        },
+        "AKs": {
+          "bet_33": 50,
+          "bet_75": 25,
+          "check": 25,
+          "note": "TPTK"
+        },
+        "AKo": {
+          "bet_33": 45,
+          "bet_75": 20,
+          "check": 35,
+          "note": "TPTK"
+        },
+        "AQs": {
+          "bet_33": 45,
+          "bet_75": 15,
+          "check": 40,
+          "note": "強頂對"
+        },
+        "AQo": {
+          "bet_33": 40,
+          "bet_75": 10,
+          "check": 50,
+          "note": "頂對"
+        },
+        "AJs": {
+          "bet_33": 40,
+          "bet_75": 10,
+          "check": 50,
+          "note": "中等 Ax"
+        },
+        "ATs": {
+          "bet_33": 35,
+          "bet_75": 10,
+          "check": 55,
+          "note": "弱 Ax"
+        },
+        "KQs": {
+          "bet_33": 35,
+          "bet_75": 10,
+          "check": 55,
+          "note": "broadway"
+        },
+        "TT": {
+          "bet_33": 30,
+          "bet_75": 10,
+          "check": 60,
+          "note": "中對"
+        },
+        "99": {
+          "bet_33": 25,
+          "bet_75": 10,
+          "check": 65,
+          "note": "小對"
+        }
+      }
+    },
+    {
+      "scenario_id": "squeeze_bb_973_hhd",
+      "position": "BB",
+      "villain": "BTN+CO",
+      "pot_type": "squeeze",
+      "board": [
+        "9h",
+        "7h",
+        "3d"
+      ],
+      "texture": "two_tone_low",
+      "texture_zh": "雙色低牌面",
+      "strategies": {
+        "AA": {
+          "bet_33": 50,
+          "bet_75": 30,
+          "check": 20,
+          "note": "堅果"
+        },
+        "KK": {
+          "bet_33": 45,
+          "bet_75": 25,
+          "check": 30,
+          "note": "強 overpair"
+        },
+        "QQ": {
+          "bet_33": 40,
+          "bet_75": 20,
+          "check": 40,
+          "note": "overpair OOP"
+        },
+        "JJ": {
+          "bet_33": 35,
+          "bet_75": 15,
+          "check": 50,
+          "note": "危險 overpair"
+        },
+        "AKs": {
+          "bet_33": 50,
+          "bet_75": 25,
+          "check": 25,
+          "note": "TPTK"
+        },
+        "AKo": {
+          "bet_33": 45,
+          "bet_75": 20,
+          "check": 35,
+          "note": "TPTK"
+        },
+        "AQs": {
+          "bet_33": 45,
+          "bet_75": 15,
+          "check": 40,
+          "note": "強頂對"
+        },
+        "AQo": {
+          "bet_33": 40,
+          "bet_75": 10,
+          "check": 50,
+          "note": "頂對"
+        },
+        "AJs": {
+          "bet_33": 40,
+          "bet_75": 10,
+          "check": 50,
+          "note": "中等 Ax"
+        },
+        "ATs": {
+          "bet_33": 35,
+          "bet_75": 10,
+          "check": 55,
+          "note": "弱 Ax"
+        },
+        "KQs": {
+          "bet_33": 35,
+          "bet_75": 10,
+          "check": 55,
+          "note": "broadway"
+        },
+        "TT": {
+          "bet_33": 30,
+          "bet_75": 10,
+          "check": 60,
+          "note": "中對"
+        },
+        "99": {
+          "bet_33": 25,
+          "bet_75": 10,
+          "check": 65,
+          "note": "小對"
+        }
+      }
+    },
+    {
+      "scenario_id": "squeeze_bb_752_hhd",
+      "position": "BB",
+      "villain": "BTN+CO",
+      "pot_type": "squeeze",
+      "board": [
+        "7h",
+        "5h",
+        "2d"
+      ],
+      "texture": "two_tone_low",
+      "texture_zh": "雙色低牌面",
+      "strategies": {
+        "AA": {
+          "bet_33": 50,
+          "bet_75": 30,
+          "check": 20,
+          "note": "堅果"
+        },
+        "KK": {
+          "bet_33": 45,
+          "bet_75": 25,
+          "check": 30,
+          "note": "強 overpair"
+        },
+        "QQ": {
+          "bet_33": 40,
+          "bet_75": 20,
+          "check": 40,
+          "note": "overpair OOP"
+        },
+        "JJ": {
+          "bet_33": 35,
+          "bet_75": 15,
+          "check": 50,
+          "note": "危險 overpair"
+        },
+        "AKs": {
+          "bet_33": 50,
+          "bet_75": 25,
+          "check": 25,
+          "note": "TPTK"
+        },
+        "AKo": {
+          "bet_33": 45,
+          "bet_75": 20,
+          "check": 35,
+          "note": "TPTK"
+        },
+        "AQs": {
+          "bet_33": 45,
+          "bet_75": 15,
+          "check": 40,
+          "note": "強頂對"
+        },
+        "AQo": {
+          "bet_33": 40,
+          "bet_75": 10,
+          "check": 50,
+          "note": "頂對"
+        },
+        "AJs": {
+          "bet_33": 40,
+          "bet_75": 10,
+          "check": 50,
+          "note": "中等 Ax"
+        },
+        "ATs": {
+          "bet_33": 35,
+          "bet_75": 10,
+          "check": 55,
+          "note": "弱 Ax"
+        },
+        "KQs": {
+          "bet_33": 35,
+          "bet_75": 10,
+          "check": 55,
+          "note": "broadway"
+        },
+        "TT": {
+          "bet_33": 30,
+          "bet_75": 10,
+          "check": 60,
+          "note": "中對"
+        },
+        "99": {
+          "bet_33": 25,
+          "bet_75": 10,
+          "check": 65,
+          "note": "小對"
+        }
+      }
+    },
+    {
+      "scenario_id": "squeeze_bb_T84_hhd",
+      "position": "BB",
+      "villain": "BTN+CO",
+      "pot_type": "squeeze",
+      "board": [
+        "Th",
+        "8h",
+        "4d"
+      ],
+      "texture": "two_tone_low",
+      "texture_zh": "雙色低牌面",
+      "strategies": {
+        "AA": {
+          "bet_33": 50,
+          "bet_75": 30,
+          "check": 20,
+          "note": "堅果"
+        },
+        "KK": {
+          "bet_33": 45,
+          "bet_75": 25,
+          "check": 30,
+          "note": "強 overpair"
+        },
+        "QQ": {
+          "bet_33": 40,
+          "bet_75": 20,
+          "check": 40,
+          "note": "overpair OOP"
+        },
+        "JJ": {
+          "bet_33": 35,
+          "bet_75": 15,
+          "check": 50,
+          "note": "危險 overpair"
+        },
+        "AKs": {
+          "bet_33": 50,
+          "bet_75": 25,
+          "check": 25,
+          "note": "TPTK"
+        },
+        "AKo": {
+          "bet_33": 45,
+          "bet_75": 20,
+          "check": 35,
+          "note": "TPTK"
+        },
+        "AQs": {
+          "bet_33": 45,
+          "bet_75": 15,
+          "check": 40,
+          "note": "強頂對"
+        },
+        "AQo": {
+          "bet_33": 40,
+          "bet_75": 10,
+          "check": 50,
+          "note": "頂對"
+        },
+        "AJs": {
+          "bet_33": 40,
+          "bet_75": 10,
+          "check": 50,
+          "note": "中等 Ax"
+        },
+        "ATs": {
+          "bet_33": 35,
+          "bet_75": 10,
+          "check": 55,
+          "note": "弱 Ax"
+        },
+        "KQs": {
+          "bet_33": 35,
+          "bet_75": 10,
+          "check": 55,
+          "note": "broadway"
+        },
+        "TT": {
+          "bet_33": 30,
+          "bet_75": 10,
+          "check": 60,
+          "note": "中對"
+        },
+        "99": {
+          "bet_33": 25,
+          "bet_75": 10,
+          "check": 65,
+          "note": "小對"
+        }
+      }
+    },
+    {
+      "scenario_id": "squeeze_bb_642_hhd",
+      "position": "BB",
+      "villain": "BTN+CO",
+      "pot_type": "squeeze",
+      "board": [
+        "6h",
+        "4h",
+        "2d"
+      ],
+      "texture": "two_tone_low",
+      "texture_zh": "雙色低牌面",
+      "strategies": {
+        "AA": {
+          "bet_33": 50,
+          "bet_75": 30,
+          "check": 20,
+          "note": "堅果"
+        },
+        "KK": {
+          "bet_33": 45,
+          "bet_75": 25,
+          "check": 30,
+          "note": "強 overpair"
+        },
+        "QQ": {
+          "bet_33": 40,
+          "bet_75": 20,
+          "check": 40,
+          "note": "overpair OOP"
+        },
+        "JJ": {
+          "bet_33": 35,
+          "bet_75": 15,
+          "check": 50,
+          "note": "危險 overpair"
+        },
+        "AKs": {
+          "bet_33": 50,
+          "bet_75": 25,
+          "check": 25,
+          "note": "TPTK"
+        },
+        "AKo": {
+          "bet_33": 45,
+          "bet_75": 20,
+          "check": 35,
+          "note": "TPTK"
+        },
+        "AQs": {
+          "bet_33": 45,
+          "bet_75": 15,
+          "check": 40,
+          "note": "強頂對"
+        },
+        "AQo": {
+          "bet_33": 40,
+          "bet_75": 10,
+          "check": 50,
+          "note": "頂對"
+        },
+        "AJs": {
+          "bet_33": 40,
+          "bet_75": 10,
+          "check": 50,
+          "note": "中等 Ax"
+        },
+        "ATs": {
+          "bet_33": 35,
+          "bet_75": 10,
+          "check": 55,
+          "note": "弱 Ax"
+        },
+        "KQs": {
+          "bet_33": 35,
+          "bet_75": 10,
+          "check": 55,
+          "note": "broadway"
+        },
+        "TT": {
+          "bet_33": 30,
+          "bet_75": 10,
+          "check": 60,
+          "note": "中對"
+        },
+        "99": {
+          "bet_33": 25,
+          "bet_75": 10,
+          "check": 65,
+          "note": "小對"
+        }
+      }
+    },
+    {
+      "scenario_id": "squeeze_bb_QJT_hdc",
+      "position": "BB",
+      "villain": "BTN+CO",
+      "pot_type": "squeeze",
+      "board": [
+        "Qh",
+        "Jd",
+        "Tc"
+      ],
+      "texture": "connected_high",
+      "texture_zh": "高連接牌面",
+      "strategies": {
+        "AA": {
+          "bet_33": 50,
+          "bet_75": 30,
+          "check": 20,
+          "note": "堅果"
+        },
+        "KK": {
+          "bet_33": 45,
+          "bet_75": 25,
+          "check": 30,
+          "note": "強 overpair"
+        },
+        "QQ": {
+          "bet_33": 40,
+          "bet_75": 20,
+          "check": 40,
+          "note": "overpair OOP"
+        },
+        "JJ": {
+          "bet_33": 35,
+          "bet_75": 15,
+          "check": 50,
+          "note": "危險 overpair"
+        },
+        "AKs": {
+          "bet_33": 50,
+          "bet_75": 25,
+          "check": 25,
+          "note": "TPTK"
+        },
+        "AKo": {
+          "bet_33": 45,
+          "bet_75": 20,
+          "check": 35,
+          "note": "TPTK"
+        },
+        "AQs": {
+          "bet_33": 45,
+          "bet_75": 15,
+          "check": 40,
+          "note": "強頂對"
+        },
+        "AQo": {
+          "bet_33": 40,
+          "bet_75": 10,
+          "check": 50,
+          "note": "頂對"
+        },
+        "AJs": {
+          "bet_33": 40,
+          "bet_75": 10,
+          "check": 50,
+          "note": "中等 Ax"
+        },
+        "ATs": {
+          "bet_33": 35,
+          "bet_75": 10,
+          "check": 55,
+          "note": "弱 Ax"
+        },
+        "KQs": {
+          "bet_33": 35,
+          "bet_75": 10,
+          "check": 55,
+          "note": "broadway"
+        },
+        "TT": {
+          "bet_33": 30,
+          "bet_75": 10,
+          "check": 60,
+          "note": "中對"
+        },
+        "99": {
+          "bet_33": 25,
+          "bet_75": 10,
+          "check": 65,
+          "note": "小對"
+        }
+      }
+    },
+    {
+      "scenario_id": "squeeze_bb_KQJ_hds",
+      "position": "BB",
+      "villain": "BTN+CO",
+      "pot_type": "squeeze",
+      "board": [
+        "Kh",
+        "Qd",
+        "Js"
+      ],
+      "texture": "connected_high",
+      "texture_zh": "高連接牌面",
+      "strategies": {
+        "AA": {
+          "bet_33": 50,
+          "bet_75": 30,
+          "check": 20,
+          "note": "堅果"
+        },
+        "KK": {
+          "bet_33": 45,
+          "bet_75": 25,
+          "check": 30,
+          "note": "強 overpair"
+        },
+        "QQ": {
+          "bet_33": 40,
+          "bet_75": 20,
+          "check": 40,
+          "note": "overpair OOP"
+        },
+        "JJ": {
+          "bet_33": 35,
+          "bet_75": 15,
+          "check": 50,
+          "note": "危險 overpair"
+        },
+        "AKs": {
+          "bet_33": 50,
+          "bet_75": 25,
+          "check": 25,
+          "note": "TPTK"
+        },
+        "AKo": {
+          "bet_33": 45,
+          "bet_75": 20,
+          "check": 35,
+          "note": "TPTK"
+        },
+        "AQs": {
+          "bet_33": 45,
+          "bet_75": 15,
+          "check": 40,
+          "note": "強頂對"
+        },
+        "AQo": {
+          "bet_33": 40,
+          "bet_75": 10,
+          "check": 50,
+          "note": "頂對"
+        },
+        "AJs": {
+          "bet_33": 40,
+          "bet_75": 10,
+          "check": 50,
+          "note": "中等 Ax"
+        },
+        "ATs": {
+          "bet_33": 35,
+          "bet_75": 10,
+          "check": 55,
+          "note": "弱 Ax"
+        },
+        "KQs": {
+          "bet_33": 35,
+          "bet_75": 10,
+          "check": 55,
+          "note": "broadway"
+        },
+        "TT": {
+          "bet_33": 30,
+          "bet_75": 10,
+          "check": 60,
+          "note": "中對"
+        },
+        "99": {
+          "bet_33": 25,
+          "bet_75": 10,
+          "check": 65,
+          "note": "小對"
+        }
+      }
+    },
+    {
+      "scenario_id": "squeeze_bb_JT9_hdc",
+      "position": "BB",
+      "villain": "BTN+CO",
+      "pot_type": "squeeze",
+      "board": [
+        "Jh",
+        "Td",
+        "9c"
+      ],
+      "texture": "connected_high",
+      "texture_zh": "高連接牌面",
+      "strategies": {
+        "AA": {
+          "bet_33": 50,
+          "bet_75": 30,
+          "check": 20,
+          "note": "堅果"
+        },
+        "KK": {
+          "bet_33": 45,
+          "bet_75": 25,
+          "check": 30,
+          "note": "強 overpair"
+        },
+        "QQ": {
+          "bet_33": 40,
+          "bet_75": 20,
+          "check": 40,
+          "note": "overpair OOP"
+        },
+        "JJ": {
+          "bet_33": 35,
+          "bet_75": 15,
+          "check": 50,
+          "note": "危險 overpair"
+        },
+        "AKs": {
+          "bet_33": 50,
+          "bet_75": 25,
+          "check": 25,
+          "note": "TPTK"
+        },
+        "AKo": {
+          "bet_33": 45,
+          "bet_75": 20,
+          "check": 35,
+          "note": "TPTK"
+        },
+        "AQs": {
+          "bet_33": 45,
+          "bet_75": 15,
+          "check": 40,
+          "note": "強頂對"
+        },
+        "AQo": {
+          "bet_33": 40,
+          "bet_75": 10,
+          "check": 50,
+          "note": "頂對"
+        },
+        "AJs": {
+          "bet_33": 40,
+          "bet_75": 10,
+          "check": 50,
+          "note": "中等 Ax"
+        },
+        "ATs": {
+          "bet_33": 35,
+          "bet_75": 10,
+          "check": 55,
+          "note": "弱 Ax"
+        },
+        "KQs": {
+          "bet_33": 35,
+          "bet_75": 10,
+          "check": 55,
+          "note": "broadway"
+        },
+        "TT": {
+          "bet_33": 30,
+          "bet_75": 10,
+          "check": 60,
+          "note": "中對"
+        },
+        "99": {
+          "bet_33": 25,
+          "bet_75": 10,
+          "check": 65,
+          "note": "小對"
+        }
+      }
+    },
+    {
+      "scenario_id": "squeeze_bb_AKQ_hds",
+      "position": "BB",
+      "villain": "BTN+CO",
+      "pot_type": "squeeze",
+      "board": [
+        "Ah",
+        "Kd",
+        "Qs"
+      ],
+      "texture": "connected_high",
+      "texture_zh": "高連接牌面",
+      "strategies": {
+        "AA": {
+          "bet_33": 50,
+          "bet_75": 30,
+          "check": 20,
+          "note": "堅果"
+        },
+        "KK": {
+          "bet_33": 45,
+          "bet_75": 25,
+          "check": 30,
+          "note": "強 overpair"
+        },
+        "QQ": {
+          "bet_33": 40,
+          "bet_75": 20,
+          "check": 40,
+          "note": "overpair OOP"
+        },
+        "JJ": {
+          "bet_33": 35,
+          "bet_75": 15,
+          "check": 50,
+          "note": "危險 overpair"
+        },
+        "AKs": {
+          "bet_33": 50,
+          "bet_75": 25,
+          "check": 25,
+          "note": "TPTK"
+        },
+        "AKo": {
+          "bet_33": 45,
+          "bet_75": 20,
+          "check": 35,
+          "note": "TPTK"
+        },
+        "AQs": {
+          "bet_33": 45,
+          "bet_75": 15,
+          "check": 40,
+          "note": "強頂對"
+        },
+        "AQo": {
+          "bet_33": 40,
+          "bet_75": 10,
+          "check": 50,
+          "note": "頂對"
+        },
+        "AJs": {
+          "bet_33": 40,
+          "bet_75": 10,
+          "check": 50,
+          "note": "中等 Ax"
+        },
+        "ATs": {
+          "bet_33": 35,
+          "bet_75": 10,
+          "check": 55,
+          "note": "弱 Ax"
+        },
+        "KQs": {
+          "bet_33": 35,
+          "bet_75": 10,
+          "check": 55,
+          "note": "broadway"
+        },
+        "TT": {
+          "bet_33": 30,
+          "bet_75": 10,
+          "check": 60,
+          "note": "中對"
+        },
+        "99": {
+          "bet_33": 25,
+          "bet_75": 10,
+          "check": 65,
+          "note": "小對"
+        }
+      }
+    },
+    {
+      "scenario_id": "squeeze_bb_QJT_hsd",
+      "position": "BB",
+      "villain": "BTN+CO",
+      "pot_type": "squeeze",
+      "board": [
+        "Qh",
+        "Js",
+        "Td"
+      ],
+      "texture": "connected_high",
+      "texture_zh": "高連接牌面",
+      "strategies": {
+        "AA": {
+          "bet_33": 50,
+          "bet_75": 30,
+          "check": 20,
+          "note": "堅果"
+        },
+        "KK": {
+          "bet_33": 45,
+          "bet_75": 25,
+          "check": 30,
+          "note": "強 overpair"
+        },
+        "QQ": {
+          "bet_33": 40,
+          "bet_75": 20,
+          "check": 40,
+          "note": "overpair OOP"
+        },
+        "JJ": {
+          "bet_33": 35,
+          "bet_75": 15,
+          "check": 50,
+          "note": "危險 overpair"
+        },
+        "AKs": {
+          "bet_33": 50,
+          "bet_75": 25,
+          "check": 25,
+          "note": "TPTK"
+        },
+        "AKo": {
+          "bet_33": 45,
+          "bet_75": 20,
+          "check": 35,
+          "note": "TPTK"
+        },
+        "AQs": {
+          "bet_33": 45,
+          "bet_75": 15,
+          "check": 40,
+          "note": "強頂對"
+        },
+        "AQo": {
+          "bet_33": 40,
+          "bet_75": 10,
+          "check": 50,
+          "note": "頂對"
+        },
+        "AJs": {
+          "bet_33": 40,
+          "bet_75": 10,
+          "check": 50,
+          "note": "中等 Ax"
+        },
+        "ATs": {
+          "bet_33": 35,
+          "bet_75": 10,
+          "check": 55,
+          "note": "弱 Ax"
+        },
+        "KQs": {
+          "bet_33": 35,
+          "bet_75": 10,
+          "check": 55,
+          "note": "broadway"
+        },
+        "TT": {
+          "bet_33": 30,
+          "bet_75": 10,
+          "check": 60,
+          "note": "中對"
+        },
+        "99": {
+          "bet_33": 25,
+          "bet_75": 10,
+          "check": 65,
+          "note": "小對"
+        }
+      }
+    },
+    {
+      "scenario_id": "squeeze_bb_987_hdc",
+      "position": "BB",
+      "villain": "BTN+CO",
+      "pot_type": "squeeze",
+      "board": [
+        "9h",
+        "8d",
+        "7c"
+      ],
+      "texture": "connected_middle",
+      "texture_zh": "中連接牌面",
+      "strategies": {
+        "AA": {
+          "bet_33": 50,
+          "bet_75": 30,
+          "check": 20,
+          "note": "堅果"
+        },
+        "KK": {
+          "bet_33": 45,
+          "bet_75": 25,
+          "check": 30,
+          "note": "強 overpair"
+        },
+        "QQ": {
+          "bet_33": 40,
+          "bet_75": 20,
+          "check": 40,
+          "note": "overpair OOP"
+        },
+        "JJ": {
+          "bet_33": 35,
+          "bet_75": 15,
+          "check": 50,
+          "note": "危險 overpair"
+        },
+        "AKs": {
+          "bet_33": 50,
+          "bet_75": 25,
+          "check": 25,
+          "note": "TPTK"
+        },
+        "AKo": {
+          "bet_33": 45,
+          "bet_75": 20,
+          "check": 35,
+          "note": "TPTK"
+        },
+        "AQs": {
+          "bet_33": 45,
+          "bet_75": 15,
+          "check": 40,
+          "note": "強頂對"
+        },
+        "AQo": {
+          "bet_33": 40,
+          "bet_75": 10,
+          "check": 50,
+          "note": "頂對"
+        },
+        "AJs": {
+          "bet_33": 40,
+          "bet_75": 10,
+          "check": 50,
+          "note": "中等 Ax"
+        },
+        "ATs": {
+          "bet_33": 35,
+          "bet_75": 10,
+          "check": 55,
+          "note": "弱 Ax"
+        },
+        "KQs": {
+          "bet_33": 35,
+          "bet_75": 10,
+          "check": 55,
+          "note": "broadway"
+        },
+        "TT": {
+          "bet_33": 30,
+          "bet_75": 10,
+          "check": 60,
+          "note": "中對"
+        },
+        "99": {
+          "bet_33": 25,
+          "bet_75": 10,
+          "check": 65,
+          "note": "小對"
+        }
+      }
+    },
+    {
+      "scenario_id": "squeeze_bb_T98_hdc",
+      "position": "BB",
+      "villain": "BTN+CO",
+      "pot_type": "squeeze",
+      "board": [
+        "Th",
+        "9d",
+        "8c"
+      ],
+      "texture": "connected_middle",
+      "texture_zh": "中連接牌面",
+      "strategies": {
+        "AA": {
+          "bet_33": 50,
+          "bet_75": 30,
+          "check": 20,
+          "note": "堅果"
+        },
+        "KK": {
+          "bet_33": 45,
+          "bet_75": 25,
+          "check": 30,
+          "note": "強 overpair"
+        },
+        "QQ": {
+          "bet_33": 40,
+          "bet_75": 20,
+          "check": 40,
+          "note": "overpair OOP"
+        },
+        "JJ": {
+          "bet_33": 35,
+          "bet_75": 15,
+          "check": 50,
+          "note": "危險 overpair"
+        },
+        "AKs": {
+          "bet_33": 50,
+          "bet_75": 25,
+          "check": 25,
+          "note": "TPTK"
+        },
+        "AKo": {
+          "bet_33": 45,
+          "bet_75": 20,
+          "check": 35,
+          "note": "TPTK"
+        },
+        "AQs": {
+          "bet_33": 45,
+          "bet_75": 15,
+          "check": 40,
+          "note": "強頂對"
+        },
+        "AQo": {
+          "bet_33": 40,
+          "bet_75": 10,
+          "check": 50,
+          "note": "頂對"
+        },
+        "AJs": {
+          "bet_33": 40,
+          "bet_75": 10,
+          "check": 50,
+          "note": "中等 Ax"
+        },
+        "ATs": {
+          "bet_33": 35,
+          "bet_75": 10,
+          "check": 55,
+          "note": "弱 Ax"
+        },
+        "KQs": {
+          "bet_33": 35,
+          "bet_75": 10,
+          "check": 55,
+          "note": "broadway"
+        },
+        "TT": {
+          "bet_33": 30,
+          "bet_75": 10,
+          "check": 60,
+          "note": "中對"
+        },
+        "99": {
+          "bet_33": 25,
+          "bet_75": 10,
+          "check": 65,
+          "note": "小對"
+        }
+      }
+    },
+    {
+      "scenario_id": "squeeze_bb_876_hdc",
+      "position": "BB",
+      "villain": "BTN+CO",
+      "pot_type": "squeeze",
+      "board": [
+        "8h",
+        "7d",
+        "6c"
+      ],
+      "texture": "connected_middle",
+      "texture_zh": "中連接牌面",
+      "strategies": {
+        "AA": {
+          "bet_33": 50,
+          "bet_75": 30,
+          "check": 20,
+          "note": "堅果"
+        },
+        "KK": {
+          "bet_33": 45,
+          "bet_75": 25,
+          "check": 30,
+          "note": "強 overpair"
+        },
+        "QQ": {
+          "bet_33": 40,
+          "bet_75": 20,
+          "check": 40,
+          "note": "overpair OOP"
+        },
+        "JJ": {
+          "bet_33": 35,
+          "bet_75": 15,
+          "check": 50,
+          "note": "危險 overpair"
+        },
+        "AKs": {
+          "bet_33": 50,
+          "bet_75": 25,
+          "check": 25,
+          "note": "TPTK"
+        },
+        "AKo": {
+          "bet_33": 45,
+          "bet_75": 20,
+          "check": 35,
+          "note": "TPTK"
+        },
+        "AQs": {
+          "bet_33": 45,
+          "bet_75": 15,
+          "check": 40,
+          "note": "強頂對"
+        },
+        "AQo": {
+          "bet_33": 40,
+          "bet_75": 10,
+          "check": 50,
+          "note": "頂對"
+        },
+        "AJs": {
+          "bet_33": 40,
+          "bet_75": 10,
+          "check": 50,
+          "note": "中等 Ax"
+        },
+        "ATs": {
+          "bet_33": 35,
+          "bet_75": 10,
+          "check": 55,
+          "note": "弱 Ax"
+        },
+        "KQs": {
+          "bet_33": 35,
+          "bet_75": 10,
+          "check": 55,
+          "note": "broadway"
+        },
+        "TT": {
+          "bet_33": 30,
+          "bet_75": 10,
+          "check": 60,
+          "note": "中對"
+        },
+        "99": {
+          "bet_33": 25,
+          "bet_75": 10,
+          "check": 65,
+          "note": "小對"
+        }
+      }
+    },
+    {
+      "scenario_id": "squeeze_bb_987_hsd",
+      "position": "BB",
+      "villain": "BTN+CO",
+      "pot_type": "squeeze",
+      "board": [
+        "9h",
+        "8s",
+        "7d"
+      ],
+      "texture": "connected_middle",
+      "texture_zh": "中連接牌面",
+      "strategies": {
+        "AA": {
+          "bet_33": 50,
+          "bet_75": 30,
+          "check": 20,
+          "note": "堅果"
+        },
+        "KK": {
+          "bet_33": 45,
+          "bet_75": 25,
+          "check": 30,
+          "note": "強 overpair"
+        },
+        "QQ": {
+          "bet_33": 40,
+          "bet_75": 20,
+          "check": 40,
+          "note": "overpair OOP"
+        },
+        "JJ": {
+          "bet_33": 35,
+          "bet_75": 15,
+          "check": 50,
+          "note": "危險 overpair"
+        },
+        "AKs": {
+          "bet_33": 50,
+          "bet_75": 25,
+          "check": 25,
+          "note": "TPTK"
+        },
+        "AKo": {
+          "bet_33": 45,
+          "bet_75": 20,
+          "check": 35,
+          "note": "TPTK"
+        },
+        "AQs": {
+          "bet_33": 45,
+          "bet_75": 15,
+          "check": 40,
+          "note": "強頂對"
+        },
+        "AQo": {
+          "bet_33": 40,
+          "bet_75": 10,
+          "check": 50,
+          "note": "頂對"
+        },
+        "AJs": {
+          "bet_33": 40,
+          "bet_75": 10,
+          "check": 50,
+          "note": "中等 Ax"
+        },
+        "ATs": {
+          "bet_33": 35,
+          "bet_75": 10,
+          "check": 55,
+          "note": "弱 Ax"
+        },
+        "KQs": {
+          "bet_33": 35,
+          "bet_75": 10,
+          "check": 55,
+          "note": "broadway"
+        },
+        "TT": {
+          "bet_33": 30,
+          "bet_75": 10,
+          "check": 60,
+          "note": "中對"
+        },
+        "99": {
+          "bet_33": 25,
+          "bet_75": 10,
+          "check": 65,
+          "note": "小對"
+        }
+      }
+    },
+    {
+      "scenario_id": "squeeze_bb_T98_hsd",
+      "position": "BB",
+      "villain": "BTN+CO",
+      "pot_type": "squeeze",
+      "board": [
+        "Th",
+        "9s",
+        "8d"
+      ],
+      "texture": "connected_middle",
+      "texture_zh": "中連接牌面",
+      "strategies": {
+        "AA": {
+          "bet_33": 50,
+          "bet_75": 30,
+          "check": 20,
+          "note": "堅果"
+        },
+        "KK": {
+          "bet_33": 45,
+          "bet_75": 25,
+          "check": 30,
+          "note": "強 overpair"
+        },
+        "QQ": {
+          "bet_33": 40,
+          "bet_75": 20,
+          "check": 40,
+          "note": "overpair OOP"
+        },
+        "JJ": {
+          "bet_33": 35,
+          "bet_75": 15,
+          "check": 50,
+          "note": "危險 overpair"
+        },
+        "AKs": {
+          "bet_33": 50,
+          "bet_75": 25,
+          "check": 25,
+          "note": "TPTK"
+        },
+        "AKo": {
+          "bet_33": 45,
+          "bet_75": 20,
+          "check": 35,
+          "note": "TPTK"
+        },
+        "AQs": {
+          "bet_33": 45,
+          "bet_75": 15,
+          "check": 40,
+          "note": "強頂對"
+        },
+        "AQo": {
+          "bet_33": 40,
+          "bet_75": 10,
+          "check": 50,
+          "note": "頂對"
+        },
+        "AJs": {
+          "bet_33": 40,
+          "bet_75": 10,
+          "check": 50,
+          "note": "中等 Ax"
+        },
+        "ATs": {
+          "bet_33": 35,
+          "bet_75": 10,
+          "check": 55,
+          "note": "弱 Ax"
+        },
+        "KQs": {
+          "bet_33": 35,
+          "bet_75": 10,
+          "check": 55,
+          "note": "broadway"
+        },
+        "TT": {
+          "bet_33": 30,
+          "bet_75": 10,
+          "check": 60,
+          "note": "中對"
+        },
+        "99": {
+          "bet_33": 25,
+          "bet_75": 10,
+          "check": 65,
+          "note": "小對"
+        }
+      }
+    },
+    {
+      "scenario_id": "squeeze_bb_654_hdc",
+      "position": "BB",
+      "villain": "BTN+CO",
+      "pot_type": "squeeze",
+      "board": [
+        "6h",
+        "5d",
+        "4c"
+      ],
+      "texture": "connected_low",
+      "texture_zh": "低連接牌面",
+      "strategies": {
+        "AA": {
+          "bet_33": 50,
+          "bet_75": 30,
+          "check": 20,
+          "note": "堅果"
+        },
+        "KK": {
+          "bet_33": 45,
+          "bet_75": 25,
+          "check": 30,
+          "note": "強 overpair"
+        },
+        "QQ": {
+          "bet_33": 40,
+          "bet_75": 20,
+          "check": 40,
+          "note": "overpair OOP"
+        },
+        "JJ": {
+          "bet_33": 35,
+          "bet_75": 15,
+          "check": 50,
+          "note": "危險 overpair"
+        },
+        "AKs": {
+          "bet_33": 50,
+          "bet_75": 25,
+          "check": 25,
+          "note": "TPTK"
+        },
+        "AKo": {
+          "bet_33": 45,
+          "bet_75": 20,
+          "check": 35,
+          "note": "TPTK"
+        },
+        "AQs": {
+          "bet_33": 45,
+          "bet_75": 15,
+          "check": 40,
+          "note": "強頂對"
+        },
+        "AQo": {
+          "bet_33": 40,
+          "bet_75": 10,
+          "check": 50,
+          "note": "頂對"
+        },
+        "AJs": {
+          "bet_33": 40,
+          "bet_75": 10,
+          "check": 50,
+          "note": "中等 Ax"
+        },
+        "ATs": {
+          "bet_33": 35,
+          "bet_75": 10,
+          "check": 55,
+          "note": "弱 Ax"
+        },
+        "KQs": {
+          "bet_33": 35,
+          "bet_75": 10,
+          "check": 55,
+          "note": "broadway"
+        },
+        "TT": {
+          "bet_33": 30,
+          "bet_75": 10,
+          "check": 60,
+          "note": "中對"
+        },
+        "99": {
+          "bet_33": 25,
+          "bet_75": 10,
+          "check": 65,
+          "note": "小對"
+        }
+      }
+    },
+    {
+      "scenario_id": "squeeze_bb_765_hdc",
+      "position": "BB",
+      "villain": "BTN+CO",
+      "pot_type": "squeeze",
+      "board": [
+        "7h",
+        "6d",
+        "5c"
+      ],
+      "texture": "connected_low",
+      "texture_zh": "低連接牌面",
+      "strategies": {
+        "AA": {
+          "bet_33": 50,
+          "bet_75": 30,
+          "check": 20,
+          "note": "堅果"
+        },
+        "KK": {
+          "bet_33": 45,
+          "bet_75": 25,
+          "check": 30,
+          "note": "強 overpair"
+        },
+        "QQ": {
+          "bet_33": 40,
+          "bet_75": 20,
+          "check": 40,
+          "note": "overpair OOP"
+        },
+        "JJ": {
+          "bet_33": 35,
+          "bet_75": 15,
+          "check": 50,
+          "note": "危險 overpair"
+        },
+        "AKs": {
+          "bet_33": 50,
+          "bet_75": 25,
+          "check": 25,
+          "note": "TPTK"
+        },
+        "AKo": {
+          "bet_33": 45,
+          "bet_75": 20,
+          "check": 35,
+          "note": "TPTK"
+        },
+        "AQs": {
+          "bet_33": 45,
+          "bet_75": 15,
+          "check": 40,
+          "note": "強頂對"
+        },
+        "AQo": {
+          "bet_33": 40,
+          "bet_75": 10,
+          "check": 50,
+          "note": "頂對"
+        },
+        "AJs": {
+          "bet_33": 40,
+          "bet_75": 10,
+          "check": 50,
+          "note": "中等 Ax"
+        },
+        "ATs": {
+          "bet_33": 35,
+          "bet_75": 10,
+          "check": 55,
+          "note": "弱 Ax"
+        },
+        "KQs": {
+          "bet_33": 35,
+          "bet_75": 10,
+          "check": 55,
+          "note": "broadway"
+        },
+        "TT": {
+          "bet_33": 30,
+          "bet_75": 10,
+          "check": 60,
+          "note": "中對"
+        },
+        "99": {
+          "bet_33": 25,
+          "bet_75": 10,
+          "check": 65,
+          "note": "小對"
+        }
+      }
+    },
+    {
+      "scenario_id": "squeeze_bb_543_hdc",
+      "position": "BB",
+      "villain": "BTN+CO",
+      "pot_type": "squeeze",
+      "board": [
+        "5h",
+        "4d",
+        "3c"
+      ],
+      "texture": "connected_low",
+      "texture_zh": "低連接牌面",
+      "strategies": {
+        "AA": {
+          "bet_33": 50,
+          "bet_75": 30,
+          "check": 20,
+          "note": "堅果"
+        },
+        "KK": {
+          "bet_33": 45,
+          "bet_75": 25,
+          "check": 30,
+          "note": "強 overpair"
+        },
+        "QQ": {
+          "bet_33": 40,
+          "bet_75": 20,
+          "check": 40,
+          "note": "overpair OOP"
+        },
+        "JJ": {
+          "bet_33": 35,
+          "bet_75": 15,
+          "check": 50,
+          "note": "危險 overpair"
+        },
+        "AKs": {
+          "bet_33": 50,
+          "bet_75": 25,
+          "check": 25,
+          "note": "TPTK"
+        },
+        "AKo": {
+          "bet_33": 45,
+          "bet_75": 20,
+          "check": 35,
+          "note": "TPTK"
+        },
+        "AQs": {
+          "bet_33": 45,
+          "bet_75": 15,
+          "check": 40,
+          "note": "強頂對"
+        },
+        "AQo": {
+          "bet_33": 40,
+          "bet_75": 10,
+          "check": 50,
+          "note": "頂對"
+        },
+        "AJs": {
+          "bet_33": 40,
+          "bet_75": 10,
+          "check": 50,
+          "note": "中等 Ax"
+        },
+        "ATs": {
+          "bet_33": 35,
+          "bet_75": 10,
+          "check": 55,
+          "note": "弱 Ax"
+        },
+        "KQs": {
+          "bet_33": 35,
+          "bet_75": 10,
+          "check": 55,
+          "note": "broadway"
+        },
+        "TT": {
+          "bet_33": 30,
+          "bet_75": 10,
+          "check": 60,
+          "note": "中對"
+        },
+        "99": {
+          "bet_33": 25,
+          "bet_75": 10,
+          "check": 65,
+          "note": "小對"
+        }
+      }
+    },
+    {
+      "scenario_id": "squeeze_bb_654_hsd",
+      "position": "BB",
+      "villain": "BTN+CO",
+      "pot_type": "squeeze",
+      "board": [
+        "6h",
+        "5s",
+        "4d"
+      ],
+      "texture": "connected_low",
+      "texture_zh": "低連接牌面",
+      "strategies": {
+        "AA": {
+          "bet_33": 50,
+          "bet_75": 30,
+          "check": 20,
+          "note": "堅果"
+        },
+        "KK": {
+          "bet_33": 45,
+          "bet_75": 25,
+          "check": 30,
+          "note": "強 overpair"
+        },
+        "QQ": {
+          "bet_33": 40,
+          "bet_75": 20,
+          "check": 40,
+          "note": "overpair OOP"
+        },
+        "JJ": {
+          "bet_33": 35,
+          "bet_75": 15,
+          "check": 50,
+          "note": "危險 overpair"
+        },
+        "AKs": {
+          "bet_33": 50,
+          "bet_75": 25,
+          "check": 25,
+          "note": "TPTK"
+        },
+        "AKo": {
+          "bet_33": 45,
+          "bet_75": 20,
+          "check": 35,
+          "note": "TPTK"
+        },
+        "AQs": {
+          "bet_33": 45,
+          "bet_75": 15,
+          "check": 40,
+          "note": "強頂對"
+        },
+        "AQo": {
+          "bet_33": 40,
+          "bet_75": 10,
+          "check": 50,
+          "note": "頂對"
+        },
+        "AJs": {
+          "bet_33": 40,
+          "bet_75": 10,
+          "check": 50,
+          "note": "中等 Ax"
+        },
+        "ATs": {
+          "bet_33": 35,
+          "bet_75": 10,
+          "check": 55,
+          "note": "弱 Ax"
+        },
+        "KQs": {
+          "bet_33": 35,
+          "bet_75": 10,
+          "check": 55,
+          "note": "broadway"
+        },
+        "TT": {
+          "bet_33": 30,
+          "bet_75": 10,
+          "check": 60,
+          "note": "中對"
+        },
+        "99": {
+          "bet_33": 25,
+          "bet_75": 10,
+          "check": 65,
+          "note": "小對"
+        }
+      }
+    },
+    {
+      "scenario_id": "squeeze_bb_765_hsd",
+      "position": "BB",
+      "villain": "BTN+CO",
+      "pot_type": "squeeze",
+      "board": [
+        "7h",
+        "6s",
+        "5d"
+      ],
+      "texture": "connected_low",
+      "texture_zh": "低連接牌面",
+      "strategies": {
+        "AA": {
+          "bet_33": 50,
+          "bet_75": 30,
+          "check": 20,
+          "note": "堅果"
+        },
+        "KK": {
+          "bet_33": 45,
+          "bet_75": 25,
+          "check": 30,
+          "note": "強 overpair"
+        },
+        "QQ": {
+          "bet_33": 40,
+          "bet_75": 20,
+          "check": 40,
+          "note": "overpair OOP"
+        },
+        "JJ": {
+          "bet_33": 35,
+          "bet_75": 15,
+          "check": 50,
+          "note": "危險 overpair"
+        },
+        "AKs": {
+          "bet_33": 50,
+          "bet_75": 25,
+          "check": 25,
+          "note": "TPTK"
+        },
+        "AKo": {
+          "bet_33": 45,
+          "bet_75": 20,
+          "check": 35,
+          "note": "TPTK"
+        },
+        "AQs": {
+          "bet_33": 45,
+          "bet_75": 15,
+          "check": 40,
+          "note": "強頂對"
+        },
+        "AQo": {
+          "bet_33": 40,
+          "bet_75": 10,
+          "check": 50,
+          "note": "頂對"
+        },
+        "AJs": {
+          "bet_33": 40,
+          "bet_75": 10,
+          "check": 50,
+          "note": "中等 Ax"
+        },
+        "ATs": {
+          "bet_33": 35,
+          "bet_75": 10,
+          "check": 55,
+          "note": "弱 Ax"
+        },
+        "KQs": {
+          "bet_33": 35,
+          "bet_75": 10,
+          "check": 55,
+          "note": "broadway"
+        },
+        "TT": {
+          "bet_33": 30,
+          "bet_75": 10,
+          "check": 60,
+          "note": "中對"
+        },
+        "99": {
+          "bet_33": 25,
+          "bet_75": 10,
+          "check": 65,
+          "note": "小對"
+        }
+      }
+    }
+  ]
+}
