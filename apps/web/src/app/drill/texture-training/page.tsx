@@ -77,10 +77,10 @@ interface TextureProgress {
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
 const CATEGORY_COLORS: Record<string, string> = {
-  dry: "bg-amber-100 text-amber-800 border-amber-200",
-  paired: "bg-purple-100 text-purple-800 border-purple-200",
-  wet: "bg-blue-100 text-blue-800 border-blue-200",
-  connected: "bg-green-100 text-green-800 border-green-200",
+  dry: "bg-amber-100 text-amber-800 border-amber-200 dark:bg-amber-900 dark:text-amber-200 dark:border-amber-700",
+  paired: "bg-purple-100 text-purple-800 border-purple-200 dark:bg-purple-900 dark:text-purple-200 dark:border-purple-700",
+  wet: "bg-blue-100 text-blue-800 border-blue-200 dark:bg-blue-900 dark:text-blue-200 dark:border-blue-700",
+  connected: "bg-green-100 text-green-800 border-green-200 dark:bg-green-900 dark:text-green-200 dark:border-green-700",
 };
 
 const CATEGORY_NAMES: Record<string, string> = {
@@ -478,8 +478,8 @@ function DrillMode({
                   className={cn(
                     "flex items-center gap-3 p-4 rounded-lg",
                     result.correct
-                      ? "bg-green-50 border border-green-200"
-                      : "bg-red-50 border border-red-200"
+                      ? "bg-green-50 border border-green-200 dark:bg-green-950 dark:border-green-800"
+                      : "bg-red-50 border border-red-200 dark:bg-red-950 dark:border-red-800"
                   )}
                 >
                   {result.correct ? (
@@ -570,7 +570,7 @@ function ResultsSummary({
         <div
           className={cn(
             "w-32 h-32 rounded-full mx-auto flex items-center justify-center",
-            passed ? "bg-green-100" : "bg-yellow-100"
+            passed ? "bg-green-100 dark:bg-green-900" : "bg-yellow-100 dark:bg-yellow-900"
           )}
         >
           {passed ? (
