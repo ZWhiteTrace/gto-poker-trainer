@@ -36,7 +36,7 @@ interface TextureData {
   category: string;
   difficulty: number;
   representative_board: string[];
-  concept: TextureConcept;
+  concept?: TextureConcept;
   hand_count: number;
 }
 
@@ -192,9 +192,11 @@ function TextureCard({
       </CardHeader>
       <CardContent>
         <div className="mb-3">{renderBoard(texture.representative_board)}</div>
-        <p className="text-sm text-muted-foreground line-clamp-2 mb-3">
-          {texture.concept.summary}
-        </p>
+        {texture.concept?.summary && (
+          <p className="text-sm text-muted-foreground line-clamp-2 mb-3">
+            {texture.concept.summary}
+          </p>
+        )}
         {progress && progress.attempts > 0 && (
           <div className="space-y-1">
             <div className="flex justify-between text-xs">
@@ -241,46 +243,54 @@ function TextureDetail({
             </Badge>
           </div>
           <CardTitle className="text-2xl">{texture.texture_zh}</CardTitle>
-          <CardDescription>{texture.concept.title}</CardDescription>
+          {texture.concept?.title && (
+            <CardDescription>{texture.concept.title}</CardDescription>
+          )}
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="flex justify-center py-4">
             {renderBoard(texture.representative_board)}
           </div>
 
-          <div className="bg-slate-50 rounded-lg p-4">
-            <p className="text-lg">{texture.concept.summary}</p>
-          </div>
+          {texture.concept?.summary && (
+            <div className="bg-slate-50 rounded-lg p-4">
+              <p className="text-lg">{texture.concept.summary}</p>
+            </div>
+          )}
 
-          <div>
-            <h3 className="flex items-center gap-2 font-semibold mb-3">
-              <Lightbulb className="w-5 h-5 text-yellow-500" />
-              關鍵要點
-            </h3>
-            <ul className="space-y-2">
-              {texture.concept.key_points.map((point, i) => (
-                <li key={i} className="flex items-start gap-2">
-                  <CheckCircle2 className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
-                  <span>{point}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
+          {texture.concept?.key_points && texture.concept.key_points.length > 0 && (
+            <div>
+              <h3 className="flex items-center gap-2 font-semibold mb-3">
+                <Lightbulb className="w-5 h-5 text-yellow-500" />
+                關鍵要點
+              </h3>
+              <ul className="space-y-2">
+                {texture.concept.key_points.map((point, i) => (
+                  <li key={i} className="flex items-start gap-2">
+                    <CheckCircle2 className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
+                    <span>{point}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
 
-          <div>
-            <h3 className="flex items-center gap-2 font-semibold mb-3">
-              <AlertTriangle className="w-5 h-5 text-orange-500" />
-              常見錯誤
-            </h3>
-            <ul className="space-y-2">
-              {texture.concept.common_mistakes.map((mistake, i) => (
-                <li key={i} className="flex items-start gap-2">
-                  <XCircle className="w-5 h-5 text-red-500 mt-0.5 flex-shrink-0" />
-                  <span>{mistake}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
+          {texture.concept?.common_mistakes && texture.concept.common_mistakes.length > 0 && (
+            <div>
+              <h3 className="flex items-center gap-2 font-semibold mb-3">
+                <AlertTriangle className="w-5 h-5 text-orange-500" />
+                常見錯誤
+              </h3>
+              <ul className="space-y-2">
+                {texture.concept.common_mistakes.map((mistake, i) => (
+                  <li key={i} className="flex items-start gap-2">
+                    <XCircle className="w-5 h-5 text-red-500 mt-0.5 flex-shrink-0" />
+                    <span>{mistake}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
 
           <Button onClick={onStartDrill} className="w-full" size="lg">
             <Target className="w-5 h-5 mr-2" />

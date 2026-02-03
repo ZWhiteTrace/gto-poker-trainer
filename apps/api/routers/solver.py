@@ -433,6 +433,7 @@ def list_level1_textures():
                 "category": t.get("category"),
                 "difficulty": t.get("difficulty"),
                 "representative_board": t.get("representative_board"),
+                "concept": t.get("concept"),
                 "hand_count": len(t.get("strategies", {}))
             }
             for t in textures
