@@ -232,43 +232,189 @@
       "brick": {
         "description": "磚塊稍微減少順子威脅",
         "adjustments": {
-          "strong_value": {
-            "bet_delta": 5,
-            "check_delta": -5
-          },
-          "medium_value": {
-            "bet_delta": 5,
-            "check_delta": -5
-          },
-          "draws": {
-            "bet_delta": -15,
-            "check_delta": 15
-          },
-          "bluffs": {
-            "bet_delta": -10,
-            "check_delta": 10
-          }
+          "strong_value": { "bet_delta": 5, "check_delta": -5 },
+          "medium_value": { "bet_delta": 5, "check_delta": -5 },
+          "draws": { "bet_delta": -15, "check_delta": 15 },
+          "bluffs": { "bet_delta": -10, "check_delta": 10 }
         }
       },
       "straight_card": {
         "description": "順子完成！重新評估",
         "adjustments": {
-          "strong_value": {
-            "bet_delta": -20,
-            "check_delta": 20
-          },
-          "medium_value": {
-            "bet_delta": -30,
-            "check_delta": 30
-          },
-          "draws": {
-            "bet_delta": -25,
-            "check_delta": 25
-          },
-          "bluffs": {
-            "bet_delta": -20,
-            "check_delta": 20
-          }
+          "strong_value": { "bet_delta": -20, "check_delta": 20 },
+          "medium_value": { "bet_delta": -30, "check_delta": 30 },
+          "draws": { "bet_delta": -25, "check_delta": 25 },
+          "bluffs": { "bet_delta": -20, "check_delta": 20 }
+        }
+      },
+      "overcard": {
+        "description": "新高牌可能完成更高順子",
+        "adjustments": {
+          "strong_value": { "bet_delta": -10, "check_delta": 10 },
+          "medium_value": { "bet_delta": -15, "check_delta": 15 },
+          "draws": { "bet_delta": 5, "check_delta": -5 },
+          "bluffs": { "bet_delta": 10, "check_delta": -10 }
+        }
+      }
+    },
+    "wet_board": {
+      "brick": {
+        "description": "聽牌沒完成，價值牌可加注",
+        "adjustments": {
+          "strong_value": { "bet_delta": 10, "check_delta": -10 },
+          "medium_value": { "bet_delta": 5, "check_delta": -5 },
+          "draws": { "bet_delta": -20, "check_delta": 20 },
+          "bluffs": { "bet_delta": -15, "check_delta": 15 }
+        }
+      },
+      "flush_card": {
+        "description": "同花完成！極化下注",
+        "adjustments": {
+          "strong_value": { "bet_delta": 15, "check_delta": -15 },
+          "medium_value": { "bet_delta": -25, "check_delta": 25 },
+          "draws": { "bet_delta": -35, "check_delta": 35 },
+          "bluffs": { "bet_delta": -30, "check_delta": 30 }
+        }
+      },
+      "straight_card": {
+        "description": "順子完成！需謹慎",
+        "adjustments": {
+          "strong_value": { "bet_delta": 10, "check_delta": -10 },
+          "medium_value": { "bet_delta": -20, "check_delta": 20 },
+          "draws": { "bet_delta": -25, "check_delta": 25 },
+          "bluffs": { "bet_delta": -20, "check_delta": 20 }
+        }
+      },
+      "overcard": {
+        "description": "新高牌增加範圍複雜度",
+        "adjustments": {
+          "strong_value": { "bet_delta": -5, "check_delta": 5 },
+          "medium_value": { "bet_delta": -10, "check_delta": 10 },
+          "draws": { "bet_delta": 5, "check_delta": -5 },
+          "bluffs": { "bet_delta": 10, "check_delta": -10 }
+        }
+      },
+      "pair_board": {
+        "description": "配對減少聽牌威脅，增加葫蘆可能",
+        "adjustments": {
+          "strong_value": { "bet_delta": 15, "check_delta": -15 },
+          "medium_value": { "bet_delta": -10, "check_delta": 10 },
+          "draws": { "bet_delta": -20, "check_delta": 20 },
+          "bluffs": { "bet_delta": 15, "check_delta": -15 }
+        }
+      }
+    },
+    "paired_board": {
+      "brick": {
+        "description": "磚塊不改變配對牌面結構",
+        "adjustments": {
+          "strong_value": { "bet_delta": 5, "check_delta": -5 },
+          "medium_value": { "bet_delta": 0, "check_delta": 0 },
+          "draws": { "bet_delta": -10, "check_delta": 10 },
+          "bluffs": { "bet_delta": -5, "check_delta": 5 }
+        }
+      },
+      "pair_board": {
+        "description": "雙配對！葫蘆和四條可能大增",
+        "adjustments": {
+          "strong_value": { "bet_delta": 20, "check_delta": -20 },
+          "medium_value": { "bet_delta": -25, "check_delta": 25 },
+          "draws": { "bet_delta": -30, "check_delta": 30 },
+          "bluffs": { "bet_delta": 20, "check_delta": -20 }
+        }
+      },
+      "overcard": {
+        "description": "新高牌可能形成更大的兩對",
+        "adjustments": {
+          "strong_value": { "bet_delta": 0, "check_delta": 0 },
+          "medium_value": { "bet_delta": -15, "check_delta": 15 },
+          "draws": { "bet_delta": 5, "check_delta": -5 },
+          "bluffs": { "bet_delta": 10, "check_delta": -10 }
+        }
+      },
+      "flush_card": {
+        "description": "同花威脅出現，但配對削弱聽牌",
+        "adjustments": {
+          "strong_value": { "bet_delta": 5, "check_delta": -5 },
+          "medium_value": { "bet_delta": -10, "check_delta": 10 },
+          "draws": { "bet_delta": -20, "check_delta": 20 },
+          "bluffs": { "bet_delta": -15, "check_delta": 15 }
+        }
+      }
+    },
+    "low_connected": {
+      "brick": {
+        "description": "磚塊維持低連接結構",
+        "adjustments": {
+          "strong_value": { "bet_delta": 5, "check_delta": -5 },
+          "medium_value": { "bet_delta": 5, "check_delta": -5 },
+          "draws": { "bet_delta": -10, "check_delta": 10 },
+          "bluffs": { "bet_delta": -5, "check_delta": 5 }
+        }
+      },
+      "straight_card": {
+        "description": "小順子完成！對 overpair 不利",
+        "adjustments": {
+          "strong_value": { "bet_delta": -15, "check_delta": 15 },
+          "medium_value": { "bet_delta": -25, "check_delta": 25 },
+          "draws": { "bet_delta": -20, "check_delta": 20 },
+          "bluffs": { "bet_delta": -15, "check_delta": 15 }
+        }
+      },
+      "overcard": {
+        "description": "新高牌有利於 overpair",
+        "adjustments": {
+          "strong_value": { "bet_delta": 10, "check_delta": -10 },
+          "medium_value": { "bet_delta": 5, "check_delta": -5 },
+          "draws": { "bet_delta": 0, "check_delta": 0 },
+          "bluffs": { "bet_delta": 5, "check_delta": -5 }
+        }
+      },
+      "pair_board": {
+        "description": "低牌配對，葫蘆可能較低",
+        "adjustments": {
+          "strong_value": { "bet_delta": 10, "check_delta": -10 },
+          "medium_value": { "bet_delta": 5, "check_delta": -5 },
+          "draws": { "bet_delta": -15, "check_delta": 15 },
+          "bluffs": { "bet_delta": 10, "check_delta": -10 }
+        }
+      }
+    },
+    "broadway_heavy": {
+      "brick": {
+        "description": "低牌磚塊不改變高牌面",
+        "adjustments": {
+          "strong_value": { "bet_delta": 5, "check_delta": -5 },
+          "medium_value": { "bet_delta": 0, "check_delta": 0 },
+          "draws": { "bet_delta": -15, "check_delta": 15 },
+          "bluffs": { "bet_delta": -10, "check_delta": 10 }
+        }
+      },
+      "overcard": {
+        "description": "又一張高牌，範圍優勢更重要",
+        "adjustments": {
+          "strong_value": { "bet_delta": 5, "check_delta": -5 },
+          "medium_value": { "bet_delta": -5, "check_delta": 5 },
+          "draws": { "bet_delta": 10, "check_delta": -10 },
+          "bluffs": { "bet_delta": 15, "check_delta": -15 }
+        }
+      },
+      "pair_board": {
+        "description": "高牌配對，頂對貶值",
+        "adjustments": {
+          "strong_value": { "bet_delta": 15, "check_delta": -15 },
+          "medium_value": { "bet_delta": -15, "check_delta": 15 },
+          "draws": { "bet_delta": -10, "check_delta": 10 },
+          "bluffs": { "bet_delta": 15, "check_delta": -15 }
+        }
+      },
+      "straight_card": {
+        "description": "Broadway 順子威脅",
+        "adjustments": {
+          "strong_value": { "bet_delta": -10, "check_delta": 10 },
+          "medium_value": { "bet_delta": -20, "check_delta": 20 },
+          "draws": { "bet_delta": -15, "check_delta": 15 },
+          "bluffs": { "bet_delta": -10, "check_delta": 10 }
         }
       }
     }
