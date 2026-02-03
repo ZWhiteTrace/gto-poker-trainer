@@ -24,6 +24,8 @@ import {
 } from "lucide-react";
 import { useProgressStore } from "@/stores/progressStore";
 import { useAuthStore } from "@/stores/authStore";
+import { HoleCards } from "@/components/poker/cards/PlayingCard";
+import type { Card as PokerCard, Suit, Rank } from "@/lib/poker/types";
 
 type DrillType = "rfi" | "vs_rfi" | "vs_3bet" | "vs_4bet";
 
@@ -49,6 +51,39 @@ const initialStats: SessionStats = {
   streak: 0,
   bestStreak: 0,
 };
+
+// Convert hand notation (e.g., "Q9s", "AKo", "TT") to visual cards
+function handNotationToCards(hand: string): [PokerCard, PokerCard] | null {
+  if (!hand || hand.length < 2) return null;
+
+  const rank1 = hand[0] as Rank;
+  const rank2 = hand[1] as Rank;
+  const suffix = hand[2] as "s" | "o" | undefined;
+
+  // Validate ranks
+  const validRanks = ["A", "K", "Q", "J", "T", "9", "8", "7", "6", "5", "4", "3", "2"];
+  if (!validRanks.includes(rank1) || !validRanks.includes(rank2)) return null;
+
+  if (rank1 === rank2) {
+    // Pair: use different suits (spades and hearts)
+    return [
+      { rank: rank1, suit: "s" },
+      { rank: rank2, suit: "h" },
+    ];
+  } else if (suffix === "s") {
+    // Suited: same suit (spades)
+    return [
+      { rank: rank1, suit: "s" },
+      { rank: rank2, suit: "s" },
+    ];
+  } else {
+    // Offsuit: different suits (spades and hearts)
+    return [
+      { rank: rank1, suit: "s" },
+      { rank: rank2, suit: "h" },
+    ];
+  }
+}
 
 export function DrillSession({
   drillType,
@@ -403,12 +438,15 @@ export function DrillSession({
                     initial={{ y: 20, opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
                     transition={{ delay: 0.1 }}
-                    className="text-4xl sm:text-6xl font-bold"
+                    className="flex justify-center"
                   >
-                    {currentSpot.hand}
+                    <HoleCards
+                      cards={handNotationToCards(currentSpot.hand)}
+                      size="lg"
+                    />
                   </motion.div>
                   <div className="mt-2 text-sm text-muted-foreground">
-                    {t("drill.yourHand")}
+                    {currentSpot.hand}
                   </div>
                 </div>
                 <div className="text-center">
