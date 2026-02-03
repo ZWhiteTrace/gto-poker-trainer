@@ -445,6 +445,7 @@ export async function getTurnAdjustment(
 
 /**
  * Categorize hand strength into turn adjustment categories
+ * Maps to: value, marginal, bluff (API categories)
  */
 export function categorizeHandForTurn(
   handStrength: string,
@@ -453,15 +454,15 @@ export function categorizeHandForTurn(
 ): string {
   // Map hand strength to turn adjustment categories
   if (handStrength === "nuts" || handStrength === "strong") {
-    return "strong_value";
+    return "value";  // Strong hands
   }
   if (handStrength === "medium") {
-    return "medium_value";
+    return "marginal";  // Medium strength
   }
   if (hasFlushDraw || hasStraightDraw) {
-    return "draws";
+    return "bluff";  // Draws play like bluffs (semi-bluff)
   }
-  return "bluffs";
+  return "bluff";  // Air/weak = bluff
 }
 
 /**

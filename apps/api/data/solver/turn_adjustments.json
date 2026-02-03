@@ -1,529 +1,105 @@
 {
   "meta": {
-    "description": "Turn/River strategy adjustments based on card types",
-    "version": "1.0.0"
+    "description": "Turn card type adjustments based on flop texture",
+    "version": "1.0",
+    "turn_card_types": ["brick", "overcard", "pair_board", "flush_complete", "flush_draw", "straight_complete", "straight_card"]
   },
-  "turn_card_types": {
+  "turn_card_classification": {
     "brick": {
-      "description": "無關緊要的低牌 (2-6，不配對、不完成聽牌)",
-      "description_zh": "磚塊牌",
-      "examples": [
-        "2",
-        "3",
-        "4",
-        "5",
-        "6"
-      ]
+      "description": "Low card that doesn't change board texture significantly",
+      "description_zh": "低牌，不改變牌面結構",
+      "examples": ["2", "3", "4", "5", "6"],
+      "conditions": ["rank <= 6", "no flush complete", "no straight complete", "no board pair"]
     },
     "overcard": {
-      "description": "新的高牌，可能改變牌力排名",
-      "description_zh": "高張牌",
-      "examples": [
-        "A",
-        "K",
-        "Q",
-        "J",
-        "T"
-      ]
+      "description": "Card higher than all flop cards",
+      "description_zh": "超牌，比翻牌所有牌都高",
+      "examples": ["A on K72", "K on QJ5"]
     },
     "pair_board": {
-      "description": "公牌配對，改變牌面結構",
-      "description_zh": "配對牌",
-      "examples": [
-        "與 flop 任一張相同"
-      ]
+      "description": "Turn pairs one of the flop cards",
+      "description_zh": "公牌配對",
+      "examples": ["7 on A72", "K on KJ5"]
     },
-    "flush_card": {
-      "description": "第三或第四張同花牌",
-      "description_zh": "同花牌",
-      "examples": [
-        "與 flop 同花色"
-      ]
+    "flush_complete": {
+      "description": "Fourth card of same suit, completing flush draws",
+      "description_zh": "同花完成牌",
+      "examples": ["4h on Ah7h2s"]
+    },
+    "flush_draw": {
+      "description": "Third card of same suit, creating flush draw",
+      "description_zh": "同花聽牌出現",
+      "examples": ["Jh on Ah7s2h"]
+    },
+    "straight_complete": {
+      "description": "Card that completes obvious straight draws",
+      "description_zh": "順子完成牌",
+      "examples": ["T on QJ9", "8 on T97"]
     },
     "straight_card": {
-      "description": "完成順子或增加順子可能",
-      "description_zh": "順子牌",
-      "examples": [
-        "連接 flop 的牌"
-      ]
+      "description": "Card that adds straight potential without completing",
+      "description_zh": "順子潛力牌",
+      "examples": ["J on K92", "9 on Q75"]
+    }
+  },
+  "adjustments_by_texture": {
+    "dry_ace_high": {
+      "brick": {"ip": {"value": 5, "bluff": 5, "marginal": 0}, "oop": {"x_raise": 0, "donk": 0, "x_call": 5}, "explanation_zh": "低牌不改變乾燥 A 高牌面的動態"},
+      "overcard": {"ip": {"value": -10, "bluff": -15, "marginal": -20}, "oop": {"x_raise": -10, "donk": -10, "x_call": -15}, "explanation_zh": "A 高只有 K 可能超牌"},
+      "pair_board": {"ip": {"value": -20, "bluff": 10, "marginal": -30}, "oop": {"x_raise": 15, "donk": -5, "x_call": -20}, "explanation_zh": "配對牌面降低一對價值"},
+      "flush_draw": {"ip": {"value": 10, "bluff": -10, "marginal": -5}, "oop": {"x_raise": 10, "donk": 5, "x_call": 0}, "explanation_zh": "同花聽牌出現，需保護價值牌"},
+      "flush_complete": {"ip": {"value": -30, "bluff": -25, "marginal": -40}, "oop": {"x_raise": -20, "donk": 20, "x_call": -25}, "explanation_zh": "同花完成，沒有同花要減速"},
+      "straight_card": {"ip": {"value": 0, "bluff": 5, "marginal": -10}, "oop": {"x_raise": 5, "donk": 0, "x_call": -5}, "explanation_zh": "順子潛力增加"},
+      "straight_complete": {"ip": {"value": -25, "bluff": -20, "marginal": -35}, "oop": {"x_raise": -15, "donk": 15, "x_call": -20}, "explanation_zh": "順子完成，沒有順子需減速"}
+    },
+    "dry_king_high": {
+      "brick": {"ip": {"value": 5, "bluff": 5, "marginal": 0}, "oop": {"x_raise": 0, "donk": 0, "x_call": 5}, "explanation_zh": "低牌維持乾燥質地"},
+      "overcard": {"ip": {"value": -15, "bluff": -20, "marginal": -25}, "oop": {"x_raise": -10, "donk": -5, "x_call": -15}, "explanation_zh": "A 在 K 高牌面嚴重影響防守方範圍"},
+      "pair_board": {"ip": {"value": -20, "bluff": 10, "marginal": -30}, "oop": {"x_raise": 15, "donk": -5, "x_call": -20}, "explanation_zh": "配對牌面，更極化策略"},
+      "flush_draw": {"ip": {"value": 10, "bluff": -5, "marginal": -10}, "oop": {"x_raise": 10, "donk": 5, "x_call": -5}, "explanation_zh": "同花聽牌出現"},
+      "flush_complete": {"ip": {"value": -30, "bluff": -20, "marginal": -40}, "oop": {"x_raise": -20, "donk": 15, "x_call": -25}, "explanation_zh": "同花完成，大幅減速"},
+      "straight_card": {"ip": {"value": 0, "bluff": 0, "marginal": -10}, "oop": {"x_raise": 0, "donk": 0, "x_call": -5}, "explanation_zh": "順子牌影響小"},
+      "straight_complete": {"ip": {"value": -20, "bluff": -15, "marginal": -30}, "oop": {"x_raise": -15, "donk": 10, "x_call": -20}, "explanation_zh": "順子完成，減速"}
+    },
+    "wet_connected": {
+      "brick": {"ip": {"value": 15, "bluff": 10, "marginal": 5}, "oop": {"x_raise": 10, "donk": 5, "x_call": 10}, "explanation_zh": "濕潤牌面的低牌對進攻方有利，聽牌落空"},
+      "overcard": {"ip": {"value": -5, "bluff": -10, "marginal": -15}, "oop": {"x_raise": 5, "donk": 0, "x_call": -10}, "explanation_zh": "超牌增加複雜度"},
+      "pair_board": {"ip": {"value": -15, "bluff": 15, "marginal": -25}, "oop": {"x_raise": 20, "donk": 0, "x_call": -15}, "explanation_zh": "濕潤牌面配對，非常極化"},
+      "flush_draw": {"ip": {"value": 5, "bluff": 0, "marginal": -10}, "oop": {"x_raise": 5, "donk": 5, "x_call": -5}, "explanation_zh": "已經濕潤的牌面加上同花聽牌"},
+      "flush_complete": {"ip": {"value": -25, "bluff": -15, "marginal": -35}, "oop": {"x_raise": -15, "donk": 20, "x_call": -20}, "explanation_zh": "濕潤牌面同花完成，大幅減速"},
+      "straight_card": {"ip": {"value": -10, "bluff": -5, "marginal": -15}, "oop": {"x_raise": 0, "donk": 5, "x_call": -10}, "explanation_zh": "已連接牌面增加更多順子潛力"},
+      "straight_complete": {"ip": {"value": -30, "bluff": -25, "marginal": -40}, "oop": {"x_raise": -20, "donk": 25, "x_call": -30}, "explanation_zh": "連接牌面順子完成，非常危險"}
+    },
+    "monotone": {
+      "brick": {"ip": {"value": 10, "bluff": 5, "marginal": 0}, "oop": {"x_raise": 5, "donk": 0, "x_call": 5}, "explanation_zh": "不同花低牌對沒有同花的範圍有利"},
+      "overcard": {"ip": {"value": -10, "bluff": -15, "marginal": -20}, "oop": {"x_raise": -5, "donk": -5, "x_call": -10}, "explanation_zh": "同花超牌非常可怕"},
+      "pair_board": {"ip": {"value": -10, "bluff": 10, "marginal": -20}, "oop": {"x_raise": 10, "donk": 0, "x_call": -15}, "explanation_zh": "單色配對，葫蘆潛力"},
+      "flush_complete": {"ip": {"value": -35, "bluff": -30, "marginal": -45}, "oop": {"x_raise": -25, "donk": 30, "x_call": -35}, "explanation_zh": "第四張同花，幾乎所有人都有同花或沒有"},
+      "straight_card": {"ip": {"value": 0, "bluff": 0, "marginal": -5}, "oop": {"x_raise": 0, "donk": 0, "x_call": -5}, "explanation_zh": "順子潛力在單色牌面較不重要"},
+      "straight_complete": {"ip": {"value": -15, "bluff": -10, "marginal": -25}, "oop": {"x_raise": -10, "donk": 10, "x_call": -15}, "explanation_zh": "單色牌面順子，同花仍是主要考量"}
+    },
+    "paired_board": {
+      "brick": {"ip": {"value": 10, "bluff": 10, "marginal": 5}, "oop": {"x_raise": 5, "donk": 5, "x_call": 5}, "explanation_zh": "配對牌面低牌，繼續侵略"},
+      "overcard": {"ip": {"value": -10, "bluff": -15, "marginal": -20}, "oop": {"x_raise": -5, "donk": -5, "x_call": -10}, "explanation_zh": "配對牌面超牌，減速"},
+      "pair_board": {"ip": {"value": -25, "bluff": 20, "marginal": -35}, "oop": {"x_raise": 20, "donk": 10, "x_call": -25}, "explanation_zh": "雙配對牌面，四條和葫蘆區域"},
+      "flush_draw": {"ip": {"value": 5, "bluff": 0, "marginal": -5}, "oop": {"x_raise": 5, "donk": 0, "x_call": 0}, "explanation_zh": "配對牌面同花聽牌"},
+      "flush_complete": {"ip": {"value": -20, "bluff": -15, "marginal": -30}, "oop": {"x_raise": -10, "donk": 15, "x_call": -20}, "explanation_zh": "配對牌面同花完成，但葫蘆可能"},
+      "straight_card": {"ip": {"value": 0, "bluff": 0, "marginal": -5}, "oop": {"x_raise": 0, "donk": 0, "x_call": -5}, "explanation_zh": "配對牌面順子牌，影響最小"},
+      "straight_complete": {"ip": {"value": -15, "bluff": -10, "marginal": -25}, "oop": {"x_raise": -10, "donk": 10, "x_call": -15}, "explanation_zh": "配對牌面順子完成，葫蘆贏順子"}
+    },
+    "low_connected": {
+      "brick": {"ip": {"value": 10, "bluff": 10, "marginal": 5}, "oop": {"x_raise": 5, "donk": 5, "x_call": 5}, "explanation_zh": "低牌對超對有利"},
+      "overcard": {"ip": {"value": 5, "bluff": 0, "marginal": -10}, "oop": {"x_raise": 10, "donk": 5, "x_call": -5}, "explanation_zh": "低牌面超牌更有利於進攻方"},
+      "pair_board": {"ip": {"value": -15, "bluff": 15, "marginal": -25}, "oop": {"x_raise": 15, "donk": 5, "x_call": -15}, "explanation_zh": "低牌配對，防守方可能有三條"},
+      "flush_draw": {"ip": {"value": 5, "bluff": 0, "marginal": -10}, "oop": {"x_raise": 5, "donk": 5, "x_call": -5}, "explanation_zh": "低連接牌面同花聽牌"},
+      "flush_complete": {"ip": {"value": -25, "bluff": -20, "marginal": -35}, "oop": {"x_raise": -15, "donk": 20, "x_call": -25}, "explanation_zh": "同花完成，大幅減速"},
+      "straight_card": {"ip": {"value": -10, "bluff": -5, "marginal": -15}, "oop": {"x_raise": 0, "donk": 5, "x_call": -10}, "explanation_zh": "已連接牌面更多順子潛力"},
+      "straight_complete": {"ip": {"value": -30, "bluff": -25, "marginal": -40}, "oop": {"x_raise": -20, "donk": 25, "x_call": -30}, "explanation_zh": "低連接牌面順子完成，非常危險"}
     }
   },
   "hand_categories": {
-    "strong_value": [
-      "AA",
-      "KK",
-      "QQ",
-      "AKs",
-      "AKo",
-      "Sets"
-    ],
-    "medium_value": [
-      "JJ",
-      "TT",
-      "AQs",
-      "AQo",
-      "KQs",
-      "Top Pair"
-    ],
-    "draws": [
-      "Flush draws",
-      "Straight draws",
-      "Combo draws"
-    ],
-    "bluffs": [
-      "Air",
-      "Weak backdoors",
-      "Overcards only"
-    ]
-  },
-  "texture_adjustments": {
-    "dry_ace_high": {
-      "brick": {
-        "description": "磚塊不改變牌力，繼續原策略",
-        "adjustments": {
-          "strong_value": {
-            "bet_delta": 0,
-            "check_delta": 0
-          },
-          "medium_value": {
-            "bet_delta": 0,
-            "check_delta": 0
-          },
-          "draws": {
-            "bet_delta": -10,
-            "check_delta": 10
-          },
-          "bluffs": {
-            "bet_delta": -15,
-            "check_delta": 15
-          }
-        }
-      },
-      "overcard": {
-        "description": "新高牌可能改變牌力關係",
-        "adjustments": {
-          "strong_value": {
-            "bet_delta": -5,
-            "check_delta": 5
-          },
-          "medium_value": {
-            "bet_delta": -10,
-            "check_delta": 10
-          },
-          "draws": {
-            "bet_delta": 5,
-            "check_delta": -5
-          },
-          "bluffs": {
-            "bet_delta": 10,
-            "check_delta": -10
-          }
-        }
-      },
-      "pair_board": {
-        "description": "配對增加葫蘆可能",
-        "adjustments": {
-          "strong_value": {
-            "bet_delta": 10,
-            "check_delta": -10
-          },
-          "medium_value": {
-            "bet_delta": -5,
-            "check_delta": 5
-          },
-          "draws": {
-            "bet_delta": -20,
-            "check_delta": 20
-          },
-          "bluffs": {
-            "bet_delta": 15,
-            "check_delta": -15
-          }
-        }
-      },
-      "flush_card": {
-        "description": "同花完成威脅",
-        "adjustments": {
-          "strong_value": {
-            "bet_delta": -15,
-            "check_delta": 15
-          },
-          "medium_value": {
-            "bet_delta": -20,
-            "check_delta": 20
-          },
-          "draws": {
-            "bet_delta": -30,
-            "check_delta": 30
-          },
-          "bluffs": {
-            "bet_delta": -25,
-            "check_delta": 25
-          }
-        }
-      },
-      "straight_card": {
-        "description": "順子完成威脅",
-        "adjustments": {
-          "strong_value": {
-            "bet_delta": -10,
-            "check_delta": 10
-          },
-          "medium_value": {
-            "bet_delta": -15,
-            "check_delta": 15
-          },
-          "draws": {
-            "bet_delta": -20,
-            "check_delta": 20
-          },
-          "bluffs": {
-            "bet_delta": -15,
-            "check_delta": 15
-          }
-        }
-      }
-    },
-    "monotone": {
-      "brick": {
-        "description": "磚塊不改變同花威脅",
-        "adjustments": {
-          "strong_value": {
-            "bet_delta": 5,
-            "check_delta": -5
-          },
-          "medium_value": {
-            "bet_delta": 0,
-            "check_delta": 0
-          },
-          "draws": {
-            "bet_delta": -15,
-            "check_delta": 15
-          },
-          "bluffs": {
-            "bet_delta": -10,
-            "check_delta": 10
-          }
-        }
-      },
-      "flush_card": {
-        "description": "第四張同花！極度危險",
-        "adjustments": {
-          "strong_value": {
-            "bet_delta": -30,
-            "check_delta": 30
-          },
-          "medium_value": {
-            "bet_delta": -40,
-            "check_delta": 40
-          },
-          "draws": {
-            "bet_delta": -50,
-            "check_delta": 50
-          },
-          "bluffs": {
-            "bet_delta": -40,
-            "check_delta": 40
-          }
-        }
-      }
-    },
-    "connected_high": {
-      "brick": {
-        "description": "磚塊稍微減少順子威脅",
-        "adjustments": {
-          "strong_value": { "bet_delta": 5, "check_delta": -5 },
-          "medium_value": { "bet_delta": 5, "check_delta": -5 },
-          "draws": { "bet_delta": -15, "check_delta": 15 },
-          "bluffs": { "bet_delta": -10, "check_delta": 10 }
-        }
-      },
-      "straight_card": {
-        "description": "順子完成！重新評估",
-        "adjustments": {
-          "strong_value": { "bet_delta": -20, "check_delta": 20 },
-          "medium_value": { "bet_delta": -30, "check_delta": 30 },
-          "draws": { "bet_delta": -25, "check_delta": 25 },
-          "bluffs": { "bet_delta": -20, "check_delta": 20 }
-        }
-      },
-      "overcard": {
-        "description": "新高牌可能完成更高順子",
-        "adjustments": {
-          "strong_value": { "bet_delta": -10, "check_delta": 10 },
-          "medium_value": { "bet_delta": -15, "check_delta": 15 },
-          "draws": { "bet_delta": 5, "check_delta": -5 },
-          "bluffs": { "bet_delta": 10, "check_delta": -10 }
-        }
-      }
-    },
-    "wet_board": {
-      "brick": {
-        "description": "聽牌沒完成，價值牌可加注",
-        "adjustments": {
-          "strong_value": { "bet_delta": 10, "check_delta": -10 },
-          "medium_value": { "bet_delta": 5, "check_delta": -5 },
-          "draws": { "bet_delta": -20, "check_delta": 20 },
-          "bluffs": { "bet_delta": -15, "check_delta": 15 }
-        }
-      },
-      "flush_card": {
-        "description": "同花完成！極化下注",
-        "adjustments": {
-          "strong_value": { "bet_delta": 15, "check_delta": -15 },
-          "medium_value": { "bet_delta": -25, "check_delta": 25 },
-          "draws": { "bet_delta": -35, "check_delta": 35 },
-          "bluffs": { "bet_delta": -30, "check_delta": 30 }
-        }
-      },
-      "straight_card": {
-        "description": "順子完成！需謹慎",
-        "adjustments": {
-          "strong_value": { "bet_delta": 10, "check_delta": -10 },
-          "medium_value": { "bet_delta": -20, "check_delta": 20 },
-          "draws": { "bet_delta": -25, "check_delta": 25 },
-          "bluffs": { "bet_delta": -20, "check_delta": 20 }
-        }
-      },
-      "overcard": {
-        "description": "新高牌增加範圍複雜度",
-        "adjustments": {
-          "strong_value": { "bet_delta": -5, "check_delta": 5 },
-          "medium_value": { "bet_delta": -10, "check_delta": 10 },
-          "draws": { "bet_delta": 5, "check_delta": -5 },
-          "bluffs": { "bet_delta": 10, "check_delta": -10 }
-        }
-      },
-      "pair_board": {
-        "description": "配對減少聽牌威脅，增加葫蘆可能",
-        "adjustments": {
-          "strong_value": { "bet_delta": 15, "check_delta": -15 },
-          "medium_value": { "bet_delta": -10, "check_delta": 10 },
-          "draws": { "bet_delta": -20, "check_delta": 20 },
-          "bluffs": { "bet_delta": 15, "check_delta": -15 }
-        }
-      }
-    },
-    "paired_board": {
-      "brick": {
-        "description": "磚塊不改變配對牌面結構",
-        "adjustments": {
-          "strong_value": { "bet_delta": 5, "check_delta": -5 },
-          "medium_value": { "bet_delta": 0, "check_delta": 0 },
-          "draws": { "bet_delta": -10, "check_delta": 10 },
-          "bluffs": { "bet_delta": -5, "check_delta": 5 }
-        }
-      },
-      "pair_board": {
-        "description": "雙配對！葫蘆和四條可能大增",
-        "adjustments": {
-          "strong_value": { "bet_delta": 20, "check_delta": -20 },
-          "medium_value": { "bet_delta": -25, "check_delta": 25 },
-          "draws": { "bet_delta": -30, "check_delta": 30 },
-          "bluffs": { "bet_delta": 20, "check_delta": -20 }
-        }
-      },
-      "overcard": {
-        "description": "新高牌可能形成更大的兩對",
-        "adjustments": {
-          "strong_value": { "bet_delta": 0, "check_delta": 0 },
-          "medium_value": { "bet_delta": -15, "check_delta": 15 },
-          "draws": { "bet_delta": 5, "check_delta": -5 },
-          "bluffs": { "bet_delta": 10, "check_delta": -10 }
-        }
-      },
-      "flush_card": {
-        "description": "同花威脅出現，但配對削弱聽牌",
-        "adjustments": {
-          "strong_value": { "bet_delta": 5, "check_delta": -5 },
-          "medium_value": { "bet_delta": -10, "check_delta": 10 },
-          "draws": { "bet_delta": -20, "check_delta": 20 },
-          "bluffs": { "bet_delta": -15, "check_delta": 15 }
-        }
-      }
-    },
-    "low_connected": {
-      "brick": {
-        "description": "磚塊維持低連接結構",
-        "adjustments": {
-          "strong_value": { "bet_delta": 5, "check_delta": -5 },
-          "medium_value": { "bet_delta": 5, "check_delta": -5 },
-          "draws": { "bet_delta": -10, "check_delta": 10 },
-          "bluffs": { "bet_delta": -5, "check_delta": 5 }
-        }
-      },
-      "straight_card": {
-        "description": "小順子完成！對 overpair 不利",
-        "adjustments": {
-          "strong_value": { "bet_delta": -15, "check_delta": 15 },
-          "medium_value": { "bet_delta": -25, "check_delta": 25 },
-          "draws": { "bet_delta": -20, "check_delta": 20 },
-          "bluffs": { "bet_delta": -15, "check_delta": 15 }
-        }
-      },
-      "overcard": {
-        "description": "新高牌有利於 overpair",
-        "adjustments": {
-          "strong_value": { "bet_delta": 10, "check_delta": -10 },
-          "medium_value": { "bet_delta": 5, "check_delta": -5 },
-          "draws": { "bet_delta": 0, "check_delta": 0 },
-          "bluffs": { "bet_delta": 5, "check_delta": -5 }
-        }
-      },
-      "pair_board": {
-        "description": "低牌配對，葫蘆可能較低",
-        "adjustments": {
-          "strong_value": { "bet_delta": 10, "check_delta": -10 },
-          "medium_value": { "bet_delta": 5, "check_delta": -5 },
-          "draws": { "bet_delta": -15, "check_delta": 15 },
-          "bluffs": { "bet_delta": 10, "check_delta": -10 }
-        }
-      }
-    },
-    "broadway_heavy": {
-      "brick": {
-        "description": "低牌磚塊不改變高牌面",
-        "adjustments": {
-          "strong_value": { "bet_delta": 5, "check_delta": -5 },
-          "medium_value": { "bet_delta": 0, "check_delta": 0 },
-          "draws": { "bet_delta": -15, "check_delta": 15 },
-          "bluffs": { "bet_delta": -10, "check_delta": 10 }
-        }
-      },
-      "overcard": {
-        "description": "又一張高牌，範圍優勢更重要",
-        "adjustments": {
-          "strong_value": { "bet_delta": 5, "check_delta": -5 },
-          "medium_value": { "bet_delta": -5, "check_delta": 5 },
-          "draws": { "bet_delta": 10, "check_delta": -10 },
-          "bluffs": { "bet_delta": 15, "check_delta": -15 }
-        }
-      },
-      "pair_board": {
-        "description": "高牌配對，頂對貶值",
-        "adjustments": {
-          "strong_value": { "bet_delta": 15, "check_delta": -15 },
-          "medium_value": { "bet_delta": -15, "check_delta": 15 },
-          "draws": { "bet_delta": -10, "check_delta": 10 },
-          "bluffs": { "bet_delta": 15, "check_delta": -15 }
-        }
-      },
-      "straight_card": {
-        "description": "Broadway 順子威脅",
-        "adjustments": {
-          "strong_value": { "bet_delta": -10, "check_delta": 10 },
-          "medium_value": { "bet_delta": -20, "check_delta": 20 },
-          "draws": { "bet_delta": -15, "check_delta": 15 },
-          "bluffs": { "bet_delta": -10, "check_delta": 10 }
-        }
-      }
-    }
-  },
-  "default_adjustments": {
-    "brick": {
-      "description": "磚塊通常不改變太多",
-      "adjustments": {
-        "strong_value": {
-          "bet_delta": 0,
-          "check_delta": 0
-        },
-        "medium_value": {
-          "bet_delta": 0,
-          "check_delta": 0
-        },
-        "draws": {
-          "bet_delta": -10,
-          "check_delta": 10
-        },
-        "bluffs": {
-          "bet_delta": -10,
-          "check_delta": 10
-        }
-      }
-    },
-    "overcard": {
-      "description": "高牌可能改變牌力",
-      "adjustments": {
-        "strong_value": {
-          "bet_delta": -5,
-          "check_delta": 5
-        },
-        "medium_value": {
-          "bet_delta": -10,
-          "check_delta": 10
-        },
-        "draws": {
-          "bet_delta": 0,
-          "check_delta": 0
-        },
-        "bluffs": {
-          "bet_delta": 5,
-          "check_delta": -5
-        }
-      }
-    },
-    "pair_board": {
-      "description": "配對改變結構",
-      "adjustments": {
-        "strong_value": {
-          "bet_delta": 5,
-          "check_delta": -5
-        },
-        "medium_value": {
-          "bet_delta": -5,
-          "check_delta": 5
-        },
-        "draws": {
-          "bet_delta": -15,
-          "check_delta": 15
-        },
-        "bluffs": {
-          "bet_delta": 10,
-          "check_delta": -10
-        }
-      }
-    },
-    "flush_card": {
-      "description": "同花威脅增加",
-      "adjustments": {
-        "strong_value": {
-          "bet_delta": -10,
-          "check_delta": 10
-        },
-        "medium_value": {
-          "bet_delta": -15,
-          "check_delta": 15
-        },
-        "draws": {
-          "bet_delta": -25,
-          "check_delta": 25
-        },
-        "bluffs": {
-          "bet_delta": -20,
-          "check_delta": 20
-        }
-      }
-    },
-    "straight_card": {
-      "description": "順子威脅增加",
-      "adjustments": {
-        "strong_value": {
-          "bet_delta": -10,
-          "check_delta": 10
-        },
-        "medium_value": {
-          "bet_delta": -15,
-          "check_delta": 15
-        },
-        "draws": {
-          "bet_delta": -15,
-          "check_delta": 15
-        },
-        "bluffs": {
-          "bet_delta": -10,
-          "check_delta": 10
-        }
-      }
-    }
+    "value": {"description_zh": "強成手牌：頂對好踢腳+、超對、兩對+、暗三、順子、同花"},
+    "marginal": {"description_zh": "中等強度：中對、弱頂對、低於頂對的口袋對"},
+    "bluff": {"description_zh": "詐唬牌：聽牌、卡順、後門聽牌、A高、有阻擋牌的超牌"}
   }
 }

@@ -693,37 +693,63 @@ def classify_turn_card(
 @router.get("/turn")
 def get_turn_adjustment(
     flop_texture: str = Query(..., description="Flop texture ID (e.g., 'dry_ace_high')"),
-    turn_type: str = Query(..., description="Turn card type: brick, overcard, pair_board, flush_card, straight_card"),
-    hand_category: Optional[str] = Query(default=None, description="Hand category: strong_value, medium_value, draws, bluffs"),
+    turn_type: str = Query(..., description="Turn card type: brick, overcard, pair_board, flush_draw, flush_complete, straight_card, straight_complete"),
+    position: str = Query(default="ip", description="Position: ip (in position) or oop (out of position)"),
+    hand_category: Optional[str] = Query(default=None, description="Hand category: value, marginal, bluff"),
 ):
-    """Get strategy adjustments for turn based on card type."""
+    """Get strategy adjustments for turn based on card type and position."""
     data = get_turn_adjustments()
     if not data:
         raise HTTPException(status_code=404, detail="Turn adjustment data not found")
 
-    # Get texture-specific adjustments or default
-    texture_adjustments = data.get("texture_adjustments", {}).get(flop_texture)
+    # Get texture-specific adjustments
+    texture_adjustments = data.get("adjustments_by_texture", {}).get(flop_texture)
     if not texture_adjustments:
-        texture_adjustments = data.get("default_adjustments", {})
+        # Try first available texture as fallback
+        all_textures = data.get("adjustments_by_texture", {})
+        if all_textures:
+            texture_adjustments = list(all_textures.values())[0]
+        else:
+            raise HTTPException(status_code=404, detail=f"No adjustment data for texture '{flop_texture}'")
 
     turn_adjustment = texture_adjustments.get(turn_type)
     if not turn_adjustment:
-        return {"error": f"No adjustment data for turn type '{turn_type}'"}
+        return {"error": f"No adjustment data for turn type '{turn_type}'", "available_types": list(texture_adjustments.keys())}
+
+    pos_key = position.lower()
+    if pos_key not in ["ip", "oop"]:
+        pos_key = "ip"
+
+    pos_adjustments = turn_adjustment.get(pos_key, {})
+    explanation = turn_adjustment.get("explanation_zh", "")
 
     result = {
         "flop_texture": flop_texture,
         "turn_type": turn_type,
-        "description": turn_adjustment.get("description", ""),
+        "position": pos_key,
+        "explanation_zh": explanation,
     }
 
     if hand_category:
-        adj = turn_adjustment.get("adjustments", {}).get(hand_category)
-        if adj:
-            result["hand_category"] = hand_category
-            result["bet_frequency_delta"] = adj.get("bet_delta", 0)
-            result["check_frequency_delta"] = adj.get("check_delta", 0)
+        # Map hand category to the key used in JSON
+        category_map = {
+            "strong_value": "value",
+            "medium_value": "marginal",
+            "draws": "bluff",
+            "bluffs": "bluff",
+            "value": "value",
+            "marginal": "marginal",
+            "bluff": "bluff"
+        }
+        cat_key = category_map.get(hand_category, "marginal")
+        freq_delta = pos_adjustments.get(cat_key, 0)
+        result["hand_category"] = hand_category
+        # Return both bet and check deltas for client compatibility
+        result["bet_frequency_delta"] = freq_delta
+        result["check_frequency_delta"] = -freq_delta  # Inverse relationship
+        result["description"] = explanation
     else:
-        result["adjustments"] = turn_adjustment.get("adjustments", {})
+        result["adjustments"] = pos_adjustments
 
     return result
 
@@ -768,8 +794,9 @@ def list_turn_card_types():
     """List all turn card type classifications."""
     data = get_turn_adjustments()
     return {
-        "turn_card_types": data.get("turn_card_types", {}),
-        "hand_categories": data.get("hand_categories", {})
+        "turn_card_types": data.get("turn_card_classification", {}),
+        "hand_categories": data.get("hand_categories", {}),
+        "available_textures": list(data.get("adjustments_by_texture", {}).keys())
     }
 
 
@@ -933,8 +960,133 @@ def list_river_card_types():
     data = get_river_adjustments()
     return {
         "river_card_types": data.get("river_card_types", {}),
-        "river_hand_categories": data.get("river_hand_categories", {})
+        "river_hand_categories": data.get("river_hand_categories", {}),
+        "available_textures": list(data.get("texture_adjustments", {}).keys())
     }
+
+
+# ============ Multi-Street Strategy ============
+
+@router.get("/multistreet")
+def get_multistreet_strategy(
+    flop: str = Query(..., description="Flop cards (e.g., 'Ah7s2d')"),
+    turn: Optional[str] = Query(default=None, description="Turn card (e.g., 'Kc')"),
+    river: Optional[str] = Query(default=None, description="River card (e.g., '3h')"),
+    hand: str = Query(..., description="Hero hand (e.g., 'AKo')"),
+    position: str = Query(..., description="Hero position (BTN, CO, BB, etc.)"),
+    villain: str = Query(default="BB", description="Villain position"),
+    pot_type: str = Query(default="srp", description="Pot type: srp, 3bet"),
+):
+    """Get comprehensive multi-street strategy with turn/river adjustments."""
+    # Parse flop
+    flop_cards = normalize_board(flop)
+    if len(flop_cards) < 3:
+        raise HTTPException(status_code=400, detail="Invalid flop format")
+
+    normalized_hand = normalize_hand(hand)
+    pos = position.upper()
+
+    # Get flop strategy
+    flop_scenario = find_matching_scenario(flop_cards, pos, villain.upper(), pot_type.lower())
+
+    result = {
+        "flop": flop_cards,
+        "hand": normalized_hand,
+        "position": pos,
+        "villain": villain.upper(),
+        "pot_type": pot_type,
+        "streets": {}
+    }
+
+    # Flop strategy
+    if flop_scenario:
+        strategies = flop_scenario.get("strategies", {})
+        hand_strategy = strategies.get(normalized_hand)
+        if not hand_strategy:
+            # Try suited/offsuit variants
+            if normalized_hand.endswith("o"):
+                hand_strategy = strategies.get(normalized_hand[:-1] + "s")
+            elif normalized_hand.endswith("s"):
+                hand_strategy = strategies.get(normalized_hand[:-1] + "o")
+
+        if hand_strategy:
+            hand_strategy = {k: v for k, v in hand_strategy.items() if isinstance(v, (int, float))}
+
+        result["streets"]["flop"] = {
+            "texture": flop_scenario.get("texture"),
+            "texture_zh": flop_scenario.get("texture_zh"),
+            "strategy": hand_strategy,
+        }
+        flop_texture = flop_scenario.get("texture", "dry_ace_high")
+    else:
+        result["streets"]["flop"] = {"texture": None, "strategy": None, "message": "No flop data"}
+        flop_texture = "dry_ace_high"
+
+    # Turn analysis
+    if turn:
+        turn_type = classify_turn_card(flop_cards, turn)
+        turn_data = get_turn_adjustments()
+        texture_adj = turn_data.get("adjustments_by_texture", {}).get(flop_texture, {})
+        turn_adj = texture_adj.get(turn_type, {})
+
+        is_ip = pos in ["BTN", "CO", "SB"] and villain.upper() == "BB"
+        pos_key = "ip" if is_ip else "oop"
+
+        result["streets"]["turn"] = {
+            "card": turn,
+            "card_type": turn_type,
+            "card_type_zh": {
+                "brick": "磚塊牌",
+                "overcard": "高張牌",
+                "pair_board": "配對牌",
+                "flush_draw": "同花聽牌",
+                "flush_complete": "同花完成",
+                "straight_card": "順子潛力",
+                "straight_complete": "順子完成",
+            }.get(turn_type, turn_type),
+            "position_context": pos_key,
+            "adjustments": turn_adj.get(pos_key, {}),
+            "explanation_zh": turn_adj.get("explanation_zh", ""),
+        }
+
+    # River analysis
+    if turn and river:
+        board_4 = flop_cards + [turn]
+        river_type = classify_river_card(board_4, river)
+        river_data = get_river_adjustments()
+
+        # Map flop texture to river texture key
+        river_texture_map = {
+            "dry_ace_high": "dry_ace_high",
+            "dry_king_high": "dry_ace_high",
+            "wet_connected": "wet_board",
+            "monotone": "monotone",
+            "paired_board": "paired_board",
+            "low_connected": "low_connected",
+        }
+        river_texture = river_texture_map.get(flop_texture, "dry_ace_high")
+        texture_adj = river_data.get("texture_adjustments", {}).get(river_texture)
+        if not texture_adj:
+            texture_adj = river_data.get("default_adjustments", {})
+
+        river_adj = texture_adj.get(river_type, {})
+
+        result["streets"]["river"] = {
+            "card": river,
+            "card_type": river_type,
+            "card_type_zh": {
+                "brick": "磚塊牌",
+                "overcard": "高張牌",
+                "pair_board": "配對牌",
+                "flush_complete": "同花完成",
+                "straight_complete": "順子完成",
+                "counterfeit": "反殺牌",
+            }.get(river_type, river_type),
+            "adjustments": river_adj.get("adjustments", {}),
+            "description": river_adj.get("description", ""),
+        }
+
+    return result
 
 
 # ============ Random Drill (Endless Practice) ============
