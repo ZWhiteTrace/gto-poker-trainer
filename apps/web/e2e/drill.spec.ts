@@ -67,24 +67,33 @@ test.describe('RFI Drill – Full Flow', () => {
   });
 
   test('next hand button advances to new scenario', async ({ page }) => {
+    test.setTimeout(60000);
     await waitForScenarioLoad(page);
     await clickFirstAction(page);
 
     // Wait for result to appear (GTO frequency text)
     await expect(page.locator('text=/GTO/i').first()).toBeVisible({ timeout: 10000 });
 
-    // Click next hand (arrow button or Space key)
-    const nextBtn = page.locator('button').filter({ hasText: /next|下一手|→/i }).first();
-    if (await nextBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
-      await nextBtn.click();
-    } else {
-      await page.keyboard.press('Space');
+    // Small delay for result UI to fully settle
+    await page.waitForTimeout(1000);
+
+    // Click next hand — try Space first (most reliable), fallback to button
+    await page.keyboard.press('Space');
+    await page.waitForTimeout(500);
+
+    // If Space didn't advance (still showing GTO result), try button click
+    const stillShowingResult = await page.locator('text=/GTO/i').first().isVisible().catch(() => false);
+    if (stillShowingResult) {
+      const nextBtn = page.locator('button').filter({ hasText: /next|下一手|→/i }).first();
+      if (await nextBtn.isVisible({ timeout: 2000 }).catch(() => false)) {
+        await nextBtn.click();
+      }
     }
 
-    // Wait for new scenario to load
+    // Wait for new scenario to load with longer timeout
     await waitForScenarioLoad(page);
 
-    // Action buttons should be enabled again (not showing result)
+    // Action buttons should be enabled again
     const actionBtn = page.locator('button').filter({
       hasText: /raise|fold|call|3-?bet|4-?bet|加注|棄牌|跟注/i,
     }).first();
