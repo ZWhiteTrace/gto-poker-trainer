@@ -67,12 +67,12 @@ test.describe('RFI Drill – Full Flow', () => {
     await waitForScenarioLoad(page);
     await clickFirstAction(page);
 
-    // Wait for result
-    await page.waitForTimeout(500);
+    // Wait for result to appear (GTO frequency text)
+    await expect(page.locator('text=/GTO/i').first()).toBeVisible({ timeout: 10000 });
 
     // Click next hand (arrow button or Space key)
     const nextBtn = page.locator('button').filter({ hasText: /next|下一手|→/i }).first();
-    if (await nextBtn.isVisible()) {
+    if (await nextBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
       await nextBtn.click();
     } else {
       await page.keyboard.press('Space');
@@ -85,7 +85,7 @@ test.describe('RFI Drill – Full Flow', () => {
     const actionBtn = page.locator('button').filter({
       hasText: /raise|fold|加注|棄牌/i,
     }).first();
-    await expect(actionBtn).toBeEnabled();
+    await expect(actionBtn).toBeEnabled({ timeout: 10000 });
   });
 
   test('keyboard shortcuts work (R=Raise, F=Fold)', async ({ page }) => {

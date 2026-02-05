@@ -61,8 +61,8 @@ export default function QuizIndexPage() {
       <div className="grid gap-6 md:grid-cols-2">
         {quizTypes.map((quiz) => {
           const Icon = quiz.icon;
-          const titleKey = `home.drills.${quiz.id === "equity" ? "rangeViewer" : quiz.id}.name` as any;
-          const descKey = `home.drills.${quiz.id === "equity" ? "rangeViewer" : quiz.id}.description` as any;
+          const titleKey = `home.drills.${quiz.id === "equity" ? "rangeViewer" : quiz.id}.name` as string;
+          const descKey = `home.drills.${quiz.id === "equity" ? "rangeViewer" : quiz.id}.description` as string;
 
           return (
             <Card

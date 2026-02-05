@@ -8,7 +8,6 @@ import {
   CardContent,
   CardHeader,
   CardTitle,
-  CardDescription,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
@@ -22,7 +21,6 @@ import {
   TrendingUp,
   TrendingDown,
   Minus,
-  ArrowRight,
 } from "lucide-react";
 
 import { API_BASE_URL } from "@/lib/api";

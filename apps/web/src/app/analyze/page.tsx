@@ -27,7 +27,7 @@ import {
   AlertTriangle,
 } from "lucide-react";
 import Link from "next/link";
-import { api, AIInsight, AIReviewResponse } from "@/lib/api";
+import { api, AIReviewResponse } from "@/lib/api";
 import { cn } from "@/lib/utils";
 
 interface PositionStat {
@@ -84,7 +84,6 @@ export default function AnalyzePage() {
   const [expandedLeaks, setExpandedLeaks] = useState<Set<number>>(new Set());
   const [aiReview, setAiReview] = useState<AIReviewResponse | null>(null);
   const [aiLoading, setAiLoading] = useState(false);
-  const [showAiReview, setShowAiReview] = useState(false);
 
   const handleFileChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -202,7 +201,6 @@ export default function AnalyzePage() {
         total_ev_loss: result.total_ev_loss,
       });
       setAiReview(review);
-      setShowAiReview(true);
     } catch (err) {
       console.error("AI Review error:", err);
     } finally {

@@ -1,13 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useTranslations } from "next-intl";
 import {
   Card,
   CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -179,7 +176,7 @@ export default function AchievementsPage() {
     setLocale(htmlLang || "en");
   }, []);
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     setIsLoading(true);
     try {
       const achievements = await getAllAchievements();
@@ -198,11 +195,11 @@ export default function AchievementsPage() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [user?.id]);
 
   useEffect(() => {
     fetchData();
-  }, [user?.id]);
+  }, [fetchData]);
 
   const handleCheckAchievements = async () => {
     if (!user?.id || isChecking) return;

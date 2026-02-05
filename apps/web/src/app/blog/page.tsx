@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { useTranslations } from "next-intl";
 import {
   Card,
   CardContent,
@@ -13,8 +12,6 @@ import { Button } from "@/components/ui/button";
 import { BookOpen, ArrowRight } from "lucide-react";
 
 export default function BlogPage() {
-  const t = useTranslations();
-
   // Placeholder blog posts - can be expanded later
   const posts = [
     {

@@ -47,7 +47,7 @@ export default function TermsPage() {
 
           <h2 className="text-lg font-semibold mt-6">5. Disclaimer</h2>
           <p>
-            The service is provided "as is" without warranties of any kind. We do
+            The service is provided &quot;as is&quot; without warranties of any kind. We do
             not guarantee that GTO strategies will result in winning at poker.
             Gambling involves risk.
           </p>
