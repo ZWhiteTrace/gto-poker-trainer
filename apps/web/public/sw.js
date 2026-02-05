@@ -1,5 +1,5 @@
 // GTO Poker Trainer Service Worker
-const CACHE_NAME = 'gto-trainer-v1';
+const CACHE_NAME = 'grindgto-v2';
 const OFFLINE_URL = '/offline.html';
 
 // Files to cache immediately

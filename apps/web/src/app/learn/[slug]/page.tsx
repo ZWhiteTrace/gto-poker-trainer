@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft, ArrowRight, BookOpen } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
-const BASE_URL = "https://gto-trainer.com";
+const BASE_URL = "https://grindgto.com";
 
 const categoryLabels: Record<string, string> = {
   preflop: "翻前策略",
