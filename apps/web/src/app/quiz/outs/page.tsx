@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
+import { SUIT_SYMBOLS, SUIT_CARD_COLORS } from "@/lib/poker/types";
 import { RefreshCw, CheckCircle2, XCircle, Trophy } from "lucide-react";
 import { useQuizProgressStore } from "@/stores/quizProgressStore";
 import { useAuthStore } from "@/stores/authStore";
@@ -317,20 +318,6 @@ function generateChoices(correctOuts: number): number[] {
 
 // Card display component
 function PlayingCard({ card, size = "normal" }: { card: CardType; size?: "normal" | "large" }) {
-  const suitSymbols: Record<Suit, string> = {
-    h: "♥",
-    d: "♦",
-    c: "♣",
-    s: "♠",
-  };
-
-  const suitColors: Record<Suit, string> = {
-    s: "text-slate-900 dark:text-slate-100",  // 黑桃：黑色
-    h: "text-red-600 dark:text-red-400",      // 紅心：紅色
-    d: "text-blue-600 dark:text-blue-400",    // 方塊：藍色（四色牌）
-    c: "text-green-600 dark:text-green-400",  // 梅花：綠色（四色牌）
-  };
-
   return (
     <div
       className={cn(
@@ -341,7 +328,7 @@ function PlayingCard({ card, size = "normal" }: { card: CardType; size?: "normal
       <span
         className={cn(
           "font-bold",
-          suitColors[card.suit],
+          SUIT_CARD_COLORS[card.suit],
           size === "large" ? "text-xl sm:text-2xl" : "text-lg sm:text-xl"
         )}
       >
@@ -349,11 +336,11 @@ function PlayingCard({ card, size = "normal" }: { card: CardType; size?: "normal
       </span>
       <span
         className={cn(
-          suitColors[card.suit],
+          SUIT_CARD_COLORS[card.suit],
           size === "large" ? "text-lg sm:text-xl" : "text-base sm:text-lg"
         )}
       >
-        {suitSymbols[card.suit]}
+        {SUIT_SYMBOLS[card.suit]}
       </span>
     </div>
   );

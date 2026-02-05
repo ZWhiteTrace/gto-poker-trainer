@@ -3,7 +3,7 @@
 import { memo } from "react";
 import { cn } from "@/lib/utils";
 import type { Card, Suit, Rank } from "@/lib/poker/types";
-import { SUIT_SYMBOLS, SUIT_COLORS } from "@/lib/poker/types";
+import { SUIT_SYMBOLS, SUIT_CARD_COLORS } from "@/lib/poker/types";
 
 interface PlayingCardProps {
   card: Card;
@@ -30,7 +30,7 @@ export const PlayingCard = memo(function PlayingCard({
     return <CardBack size={size} className={className} />;
   }
 
-  const suitColor = SUIT_COLORS[card.suit];
+  const suitColor = SUIT_CARD_COLORS[card.suit];
   const suitSymbol = SUIT_SYMBOLS[card.suit];
 
   return (

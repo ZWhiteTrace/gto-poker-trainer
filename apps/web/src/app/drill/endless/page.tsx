@@ -24,7 +24,7 @@ import {
 import { useAuthStore } from "@/stores/authStore";
 import { updateLeaderboardStats } from "@/lib/supabase/leaderboard";
 import { API_BASE_URL } from "@/lib/api";
-import { SUIT_SYMBOLS, SUIT_COLORS } from "@/lib/poker/types";
+import { SUIT_SYMBOLS, SUIT_CARD_COLORS } from "@/lib/poker/types";
 
 // Local storage key for endless drill stats
 const ENDLESS_STATS_KEY = "endless-drill-stats";
@@ -105,10 +105,10 @@ function BoardCard({ card }: { card: string }) {
 
   return (
     <div className="bg-white dark:bg-gray-100 rounded-lg shadow-md w-12 h-16 sm:w-14 sm:h-20 flex flex-col items-center justify-center border-2 border-gray-200">
-      <span className={cn("text-xl sm:text-2xl font-bold", SUIT_COLORS[suit])}>
+      <span className={cn("text-xl sm:text-2xl font-bold", SUIT_CARD_COLORS[suit])}>
         {rank}
       </span>
-      <span className={cn("text-lg sm:text-xl", SUIT_COLORS[suit])}>
+      <span className={cn("text-lg sm:text-xl", SUIT_CARD_COLORS[suit])}>
         {SUIT_SYMBOLS[suit]}
       </span>
     </div>
@@ -148,18 +148,18 @@ function HeroHand({ hand, board = [] }: { hand: string; board?: string[] }) {
   return (
     <div className="flex gap-2">
       <div className="bg-white dark:bg-gray-100 rounded-lg shadow-md w-12 h-16 sm:w-14 sm:h-20 flex flex-col items-center justify-center border-2 border-primary">
-        <span className={cn("text-xl sm:text-2xl font-bold", SUIT_COLORS[suit1])}>
+        <span className={cn("text-xl sm:text-2xl font-bold", SUIT_CARD_COLORS[suit1])}>
           {rank1}
         </span>
-        <span className={cn("text-lg sm:text-xl", SUIT_COLORS[suit1])}>
+        <span className={cn("text-lg sm:text-xl", SUIT_CARD_COLORS[suit1])}>
           {SUIT_SYMBOLS[suit1]}
         </span>
       </div>
       <div className="bg-white dark:bg-gray-100 rounded-lg shadow-md w-12 h-16 sm:w-14 sm:h-20 flex flex-col items-center justify-center border-2 border-primary">
-        <span className={cn("text-xl sm:text-2xl font-bold", SUIT_COLORS[suit2])}>
+        <span className={cn("text-xl sm:text-2xl font-bold", SUIT_CARD_COLORS[suit2])}>
           {rank2}
         </span>
-        <span className={cn("text-lg sm:text-xl", SUIT_COLORS[suit2])}>
+        <span className={cn("text-lg sm:text-xl", SUIT_CARD_COLORS[suit2])}>
           {SUIT_SYMBOLS[suit2]}
         </span>
       </div>

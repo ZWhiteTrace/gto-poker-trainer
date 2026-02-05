@@ -15,7 +15,7 @@ import {
   type FlopTextureType,
 } from "@/lib/poker/flopTexture";
 import type { Rank, Suit } from "@/lib/poker/types";
-import { SUIT_SYMBOLS, SUIT_COLORS } from "@/lib/poker/types";
+import { SUIT_SYMBOLS, SUIT_CARD_COLORS } from "@/lib/poker/types";
 
 // ============================================
 // Types
@@ -407,10 +407,10 @@ function generateMustCheckScenario(): MustCheckScenario {
 function BoardCard({ rank, suit }: { rank: Rank; suit: Suit }) {
   return (
     <div className="w-14 h-20 sm:w-16 sm:h-24 bg-white rounded-lg shadow-lg flex flex-col items-center justify-center border-2 border-gray-200">
-      <span className={cn("text-2xl sm:text-3xl font-bold", SUIT_COLORS[suit])}>
+      <span className={cn("text-2xl sm:text-3xl font-bold", SUIT_CARD_COLORS[suit])}>
         {rank}
       </span>
-      <span className={cn("text-xl sm:text-2xl", SUIT_COLORS[suit])}>
+      <span className={cn("text-xl sm:text-2xl", SUIT_CARD_COLORS[suit])}>
         {SUIT_SYMBOLS[suit]}
       </span>
     </div>

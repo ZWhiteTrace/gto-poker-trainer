@@ -2,7 +2,7 @@
 
 import { cn } from "@/lib/utils";
 import type { Player, Card } from "@/lib/poker/types";
-import { SUIT_SYMBOLS, SUIT_COLORS } from "@/lib/poker/types";
+import { SUIT_SYMBOLS, SUIT_CARD_COLORS } from "@/lib/poker/types";
 import { Seat } from "./Seat";
 import { CommunityCards } from "./CommunityCards";
 import { PotDisplay } from "./PotDisplay";
@@ -15,7 +15,7 @@ function MiniCard({ card }: { card: Card }) {
     <div
       className={cn(
         "w-5 h-7 bg-white rounded-sm border flex flex-col items-center justify-center text-[8px] font-bold",
-        SUIT_COLORS[card.suit]
+        SUIT_CARD_COLORS[card.suit]
       )}
     >
       <span>{card.rank}</span>
@@ -390,11 +390,11 @@ function MobileHeroSeat({ player, isActive }: MobileHeroSeatProps) {
               key={i}
               className="w-11 h-16 bg-white rounded-md shadow-lg flex flex-col items-center justify-center border-2 border-gray-200"
             >
-              <span className={cn("text-base font-bold leading-none", getCardColor(card.suit))}>
+              <span className={cn("text-base font-bold leading-none", SUIT_CARD_COLORS[card.suit])}>
                 {card.rank}
               </span>
-              <span className={cn("text-lg leading-none", getCardColor(card.suit))}>
-                {getSuitSymbol(card.suit)}
+              <span className={cn("text-lg leading-none", SUIT_CARD_COLORS[card.suit])}>
+                {SUIT_SYMBOLS[card.suit]}
               </span>
             </div>
           ))
@@ -442,22 +442,4 @@ function MobileHeroSeat({ player, isActive }: MobileHeroSeatProps) {
   );
 }
 
-function getCardColor(suit: string): string {
-  const colors: Record<string, string> = {
-    s: "text-slate-900",  // 黑桃：黑色
-    h: "text-red-500",    // 紅心：紅色
-    d: "text-blue-500",   // 方塊：藍色
-    c: "text-green-700",  // 梅花：深綠色
-  };
-  return colors[suit] || "text-black";
-}
-
-function getSuitSymbol(suit: string): string {
-  const symbols: Record<string, string> = {
-    s: "♠",
-    h: "♥",
-    d: "♦",
-    c: "♣",
-  };
-  return symbols[suit] || suit;
-}
+// Use centralized SUIT_CARD_COLORS and SUIT_SYMBOLS from types.ts

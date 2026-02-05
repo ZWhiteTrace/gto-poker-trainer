@@ -506,11 +506,20 @@ export const SUIT_SYMBOLS: Record<string, string> = {
   c: "♣",
 };
 
+// For inline text on page background (supports dark mode)
 export const SUIT_COLORS: Record<string, string> = {
   s: "text-slate-900 dark:text-slate-100",  // 黑桃：黑色
   h: "text-red-600 dark:text-red-400",      // 紅心：紅色
   d: "text-blue-600 dark:text-blue-400",    // 方塊：藍色（四色牌）
   c: "text-green-600 dark:text-green-400",  // 梅花：綠色（四色牌）
+};
+
+// For text on card backgrounds (always light/white bg, no dark mode override)
+export const SUIT_CARD_COLORS: Record<string, string> = {
+  s: "text-slate-900",   // 黑桃：黑色
+  h: "text-red-600",     // 紅心：紅色
+  d: "text-blue-600",    // 方塊：藍色（四色牌）
+  c: "text-green-600",   // 梅花：綠色（四色牌）
 };
 
 export const HAND_RANK_VALUES: Record<HandRank, number> = {

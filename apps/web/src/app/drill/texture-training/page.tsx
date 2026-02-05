@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
+import { SUIT_SYMBOLS, SUIT_CARD_COLORS } from "@/lib/poker/types";
 import {
   CheckCircle2,
   XCircle,
@@ -113,24 +114,17 @@ const ACTION_LABELS: Record<string, string> = {
 function renderCard(card: string): React.ReactElement {
   const rank = card[0];
   const suit = card[1];
-  const suitSymbols: Record<string, string> = { h: "♥", d: "♦", c: "♣", s: "♠" };
-  const suitColors: Record<string, string> = {
-    h: "text-red-500",
-    d: "text-blue-500",
-    c: "text-green-700",
-    s: "text-slate-900",
-  };
 
   return (
     <span
       key={card}
       className={cn(
         "inline-flex items-center justify-center w-10 h-14 rounded-lg border-2 border-slate-300 bg-white shadow-sm font-bold text-lg",
-        suitColors[suit]
+        SUIT_CARD_COLORS[suit]
       )}
     >
       {rank}
-      {suitSymbols[suit]}
+      {SUIT_SYMBOLS[suit]}
     </span>
   );
 }
