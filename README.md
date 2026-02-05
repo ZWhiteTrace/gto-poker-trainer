@@ -1,40 +1,76 @@
 # GTO Poker Trainer
 
-A free, open-source preflop GTO trainer for No-Limit Hold'em.
+Free, open-source preflop & postflop GTO training app.
 
-## Features
+**Live**: [grindgto.com](https://grindgto.com)
 
-- **Range Viewer**: Visualize GTO preflop ranges with 13x13 grid
-- **Drill Mode**: Practice with random hands and instant feedback
-- **Spaced Repetition**: Smart review system to strengthen weak spots
-- **Hand Review**: Analyze your hand history with detailed stats
+## Architecture
 
-## Quick Start
+```
+apps/
+├── web/          # Next.js 16 frontend (Vercel)
+│   ├── src/app/           # App Router pages
+│   ├── src/components/    # UI components
+│   ├── src/lib/poker/     # Poker domain logic (AI, equity, sizing)
+│   ├── src/stores/        # Zustand state management
+│   └── messages/          # i18n (en, zh-TW)
+└── api/          # FastAPI backend (Railway)
+    ├── routers/           # API routes
+    └── data/              # Question bank / solver data
 
-```bash
-# Install dependencies
-pip install -r requirements.txt
-
-# Run the app
-streamlit run ui/app.py
+data/             # Training data (bundled into frontend for offline use)
 ```
 
-## Supported Scenarios
+## Local Development
 
-### 6-max Cash (100bb)
-- RFI (Raise First In) from all positions
-- Facing Open Raise (3-bet or fold)
-- Facing 3-bet (4-bet, call, or fold)
-- Facing 4-bet (5-bet, call, or fold)
+**API**
+```bash
+cd apps/api
+pip install -r requirements.txt
+uvicorn main:app --reload --port 8000
+```
+
+**Frontend**
+```bash
+cd apps/web
+npm ci
+npm run dev
+```
+
+## Tests
+
+```bash
+# API
+cd apps/api && pytest tests
+
+# Frontend unit tests
+cd apps/web && npm run test:run
+
+# Frontend E2E (against production)
+cd apps/web && E2E_BASE_URL=https://grindgto.com E2E_EXTERNAL_SERVER=1 npm run test:e2e
+
+# Frontend E2E (local dev server)
+cd apps/web && npm run test:e2e
+```
 
 ## Data Sources
 
-Preflop ranges based on simplified GTO solutions from:
-- [PokerCoaching.com](https://pokercoaching.com/preflop-charts) - Implementable GTO Charts
+| Directory | Purpose | Consumed by |
+|-----------|---------|-------------|
+| `data/` | Range charts, reasoning, postflop strategies | Frontend (bundled at build time for 0-latency) |
+| `apps/api/data/` | Question bank, solver data, flop textures | API endpoints |
 
-## License
+## Deployment
 
-MIT
-# 2026年 1月14日 週三 00時25分06秒 CST
-# Last deploy: 2026年 1月26日 週一 20時04分38秒 CST
-# Last deploy: 2026年 1月26日 週一 20時04分51秒 CST
+- **Frontend**: Vercel (`grindgto.com`)
+- **API**: Railway (`api.grindgto.com`)
+- **Monitoring**: Sentry (`@sentry/nextjs`)
+
+See `DEPLOYMENT.md` for details.
+
+## CI
+
+GitHub Actions runs on every push to `main` and PRs:
+- **api-tests**: `pytest`
+- **web-lint-test-build**: `eslint` → `vitest` → `next build`
+- **web-e2e**: Playwright tests against production (push/manual only)

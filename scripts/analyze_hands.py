@@ -12,8 +12,8 @@ import os
 import json
 import argparse
 
-# Add project root to path
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+# Add API package to path
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "apps", "api"))
 
 from analyzer.hand_parser import GGPokerParser
 from analyzer.preflop_analyzer import PreflopAnalyzer, LeakReport, format_leak_report

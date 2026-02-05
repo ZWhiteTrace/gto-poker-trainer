@@ -1,9 +1,5 @@
 """Tests for Evaluator class."""
 import pytest
-import sys
-from pathlib import Path
-
-sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from core.hand import Hand
 from core.position import Position

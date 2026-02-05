@@ -9,18 +9,36 @@ env/
 .venv/
 ENV/
 
+# Node.js
+node_modules/
+.npm
+.pnpm-store/
+
+# Next.js
+.next/
+out/
+.vercel
+
+# Build
+dist/
+build/
+*.tsbuildinfo
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+test-results/
+playwright-report/
+blob-report/
+
 # IDE
 .idea/
 .vscode/
 *.swp
 *.swo
 
-# Testing
-.pytest_cache/
-.coverage
-htmlcov/
-
-# Streamlit
+# Streamlit (legacy)
 .streamlit/secrets.toml
 
 # User data (keep structure, ignore content)
@@ -34,3 +52,8 @@ Thumbs.db
 # Environment
 .env
 .env.local
+.env.production.local
+.env.development.local
+
+# Sentry
+.sentryclirc

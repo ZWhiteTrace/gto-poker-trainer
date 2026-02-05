@@ -1,36 +1,52 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# GTO Poker Trainer — Frontend
 
-## Getting Started
+Next.js 16 App Router frontend for [grindgto.com](https://grindgto.com).
 
-First, run the development server:
+## Stack
+
+- **Framework**: Next.js 16 (App Router)
+- **Language**: TypeScript
+- **State**: Zustand (persisted to localStorage)
+- **i18n**: next-intl (en, zh-TW)
+- **UI**: Tailwind CSS + shadcn/ui
+- **Monitoring**: Sentry (`@sentry/nextjs`)
+
+## Development
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm ci
+npm run dev       # http://localhost:3000
+npm run build     # production build
+npm run lint      # ESLint
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Tests
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+npm run test:run               # Vitest unit tests
+npm run test:e2e               # Playwright E2E (local dev server)
+npm run test:e2e -- --ui       # Playwright UI mode
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+# E2E against production
+E2E_BASE_URL=https://grindgto.com E2E_EXTERNAL_SERVER=1 npm run test:e2e
+```
 
-## Learn More
+## Key Directories
 
-To learn more about Next.js, take a look at the following resources:
+```
+src/
+├── app/                  # Pages (drill, learn, quiz, progress, etc.)
+├── components/
+│   ├── layout/           # Navbar, Footer, ThemeProvider
+│   └── poker/            # DrillSession, CardDisplay, RangeGrid
+├── lib/poker/            # AI decision engine, equity, sizing, board texture
+├── stores/               # Zustand stores (progress, settings)
+└── i18n/                 # next-intl configuration
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+e2e/                      # Playwright E2E specs
+messages/                 # Translation files (en.json, zh-TW.json)
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Environment Variables
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+See `.env.example` for required variables.

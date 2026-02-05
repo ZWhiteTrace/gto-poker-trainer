@@ -20,12 +20,12 @@ from typing import Dict, List, Set, Tuple
 # 專案根目錄
 ROOT = Path(__file__).parent.parent
 
-# 添加專案根目錄到 Python 路徑
-sys.path.insert(0, str(ROOT))
+# 添加 API 套件到 Python 路徑
+sys.path.insert(0, str(ROOT / "apps" / "api"))
 
 # 檔案路徑
 RFI_JSON = ROOT / "data" / "ranges" / "6max" / "rfi_frequencies.json"
-DRILL_PY = ROOT / "trainer" / "drill.py"
+DRILL_PY = ROOT / "apps" / "api" / "trainer" / "drill.py"
 RFI_CHART_PY = ROOT / "ui" / "components" / "rfi_chart.py"
 
 # 常數

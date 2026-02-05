@@ -44,7 +44,7 @@ if sentry_dsn:
 app = FastAPI(
     title="GTO Poker Trainer API",
     description="Backend API for GTO poker training application",
-    version="2.1.0",
+    version="2.1.0",  # Also update root() below when changing
 )
 
 # Add rate limiter to app state
@@ -58,9 +58,8 @@ app.add_middleware(
         "http://localhost:3000",  # Next.js dev
         "https://grindgto.com",  # Production domain
         "https://www.grindgto.com",  # Production www
-        "https://*.vercel.app",  # Vercel preview deployments
     ],
-    allow_origin_regex=r"https://.*\.vercel\.app",  # Allow all Vercel subdomains
+    allow_origin_regex=r"https://.*\.vercel\.app",  # Vercel preview deployments
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -78,7 +77,7 @@ app.include_router(solver.router, prefix="/api/solver", tags=["solver"])
 
 @app.get("/")
 def root():
-    return {"message": "GTO Poker Trainer API v2.0", "status": "ok"}
+    return {"message": "GTO Poker Trainer API v2.1.0", "status": "ok"}
 
 
 @app.get("/health")

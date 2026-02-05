@@ -1,9 +1,5 @@
 """Tests for Hand class."""
 import pytest
-import sys
-from pathlib import Path
-
-sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from core.hand import Hand, parse_range, ALL_HANDS, RANKS
 
