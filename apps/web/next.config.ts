@@ -13,10 +13,17 @@ const nextConfig: NextConfig = {
   },
 
   // Resolve @data/* alias for Turbopack (mirrors tsconfig paths)
+  // Uses both __dirname and process.cwd() for CI compatibility
   turbopack: {
     resolveAlias: {
-      "@data": path.resolve(__dirname, "../../data"),
+      "@data": path.resolve(process.cwd(), "../../data"),
     },
+  },
+
+  // Webpack fallback for @data/* alias
+  webpack: (config) => {
+    config.resolve.alias["@data"] = path.resolve(process.cwd(), "../../data");
+    return config;
   },
 
   // Experimental features for better performance
