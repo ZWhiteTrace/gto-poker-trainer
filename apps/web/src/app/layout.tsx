@@ -18,6 +18,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://grindgto.com"),
   title: {
     default: "免費德州撲克 GTO 練習工具 - 在線撲克範圍訓練器",
     template: "%s | GTO 撲克訓練器",
@@ -70,11 +71,20 @@ export const metadata: Metadata = {
     siteName: "GTO 撲克訓練器",
     title: "免費德州撲克 GTO 練習工具 - 在線撲克範圍訓練器",
     description: "提升德撲技巧的免費 GTO 訓練器。提供翻前範圍表 (Preflop Ranges)、推圖 (Push/Fold) 練習及 ICM 計算。無需下載註冊，立即開啟在線練習。",
+    images: [
+      {
+        url: "https://grindgto.com/opengraph-image",
+        width: 1200,
+        height: 630,
+        alt: "GTO 撲克訓練器 - 免費德州撲克 GTO 練習工具",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
     title: "免費德州撲克 GTO 練習工具 - 在線撲克範圍訓練器",
     description: "提升德撲技巧的免費 GTO 訓練器。提供翻前範圍表 (Preflop Ranges)、推圖 (Push/Fold) 練習及 ICM 計算。無需下載註冊，立即開啟在線練習。",
+    images: ["https://grindgto.com/opengraph-image"],
   },
   alternates: {
     canonical: "https://grindgto.com",
@@ -88,9 +98,9 @@ function WebsiteJsonLd() {
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "WebSite",
-    name: "GTO 扑克训练器 - 免费德州扑克练习工具",
+    name: "GTO 撲克訓練器 - 免費德州撲克練習工具",
     url: "https://grindgto.com",
-    description: "提升德扑技巧的免费 GTO 训练器。提供翻前范围表、推图练习及 ICM 计算。",
+    description: "提升德撲技巧的免費 GTO 訓練器。提供翻前範圍表、推圖練習及 ICM 計算。",
     inLanguage: ["zh-TW", "zh-CN"],
     potentialAction: {
       "@type": "SearchAction",
@@ -111,7 +121,7 @@ function OrganizationJsonLd() {
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "Organization",
-    name: "GTO 扑克训练器",
+    name: "GTO 撲克訓練器",
     url: "https://grindgto.com",
     logo: "https://grindgto.com/icon-512.png",
     sameAs: [],
@@ -129,7 +139,7 @@ function SoftwareApplicationJsonLd() {
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "SoftwareApplication",
-    name: "GTO 扑克训练器",
+    name: "GTO 撲克訓練器",
     applicationCategory: "GameApplication",
     operatingSystem: "Web Browser",
     offers: {
@@ -144,13 +154,13 @@ function SoftwareApplicationJsonLd() {
       bestRating: "5",
       worstRating: "1",
     },
-    description: "免费 GTO 德州扑克训练应用，提供翻前范围练习、推图表和 AI 手牌分析",
+    description: "免費 GTO 德州撲克訓練應用，提供翻前範圍練習、推圖表和 AI 手牌分析",
     featureList: [
-      "翻前范围训练",
-      "推图 (Push/Fold) 练习",
-      "ICM 计算器",
+      "翻前範圍訓練",
+      "推圖 (Push/Fold) 練習",
+      "ICM 計算器",
       "AI 手牌分析",
-      "学习进度追踪",
+      "學習進度追蹤",
     ],
   };
 
@@ -166,11 +176,11 @@ function CourseJsonLd() {
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "Course",
-    name: "GTO 扑克策略训练",
-    description: "通过互动练习和范围表掌握 GTO 最优扑克策略",
+    name: "GTO 撲克策略訓練",
+    description: "透過互動練習和範圍表掌握 GTO 最優撲克策略",
     provider: {
       "@type": "Organization",
-      name: "GTO 扑克训练器",
+      name: "GTO 撲克訓練器",
       url: "https://grindgto.com",
     },
     offers: {
@@ -187,9 +197,9 @@ function CourseJsonLd() {
       },
     ],
     teaches: [
-      "各位置的翻前范围",
+      "各位置的翻前範圍",
       "3-bet 和 4-bet 策略",
-      "锦标赛推图策略",
+      "錦標賽推圖策略",
       "ICM 考量",
     ],
   };
