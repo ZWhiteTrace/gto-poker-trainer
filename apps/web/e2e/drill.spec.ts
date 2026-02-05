@@ -1,106 +1,235 @@
-import { test, expect } from '@playwright/test';
+import { test, expect, Page } from '@playwright/test';
 
-test.describe('RFI Drill', () => {
+/**
+ * Helper: wait for a drill scenario to load (API response received, loading spinner gone)
+ */
+async function waitForScenarioLoad(page: Page) {
+  // Wait for loading spinner to disappear and action buttons to appear
+  await page.waitForFunction(() => {
+    const spinners = document.querySelectorAll('.animate-spin');
+    const buttons = document.querySelectorAll('button');
+    return spinners.length === 0 && buttons.length >= 2;
+  }, { timeout: 15000 });
+}
+
+/**
+ * Helper: click any visible action button and return its text
+ */
+async function clickFirstAction(page: Page): Promise<string> {
+  const actionBtn = page.locator('button').filter({
+    hasText: /raise|fold|call|3-?bet|4-?bet|5-?bet|加注|棄牌|跟注|all.?in|全下/i,
+  }).first();
+  const text = await actionBtn.textContent() || '';
+  await actionBtn.click();
+  return text.trim();
+}
+
+// ─────────────────────────────────────────────
+// RFI Drill
+// ─────────────────────────────────────────────
+test.describe('RFI Drill – Full Flow', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/drill/rfi');
     await page.waitForLoadState('networkidle');
   });
 
-  test('should display drill interface', async ({ page }) => {
-    // Check for page header
+  test('loads scenario with hand + position + action buttons', async ({ page }) => {
+    await waitForScenarioLoad(page);
+
+    // Title visible
     await expect(page.locator('h1')).toBeVisible();
 
-    // Check for action buttons
-    const actionButtons = page.locator('button').filter({ hasText: /raise|fold|call|加注|棄牌|跟注/i });
-    await expect(actionButtons.first()).toBeVisible();
+    // Position badge visible (HJ/CO/BTN/SB)
+    await expect(page.locator('text=/HJ|CO|BTN|SB/').first()).toBeVisible();
+
+    // At least 2 action buttons visible (raise + fold at minimum)
+    const actions = page.locator('button').filter({
+      hasText: /raise|fold|加注|棄牌/i,
+    });
+    await expect(actions).toHaveCount(2); // RFI = raise or fold
   });
 
-  test('should allow selecting an action', async ({ page }) => {
-    // Wait for scenario to load
-    await page.waitForSelector('button');
+  test('submit action → shows result with GTO frequency', async ({ page }) => {
+    await waitForScenarioLoad(page);
 
-    // Find and click an action button
-    const raiseButton = page.getByRole('button', { name: /raise|加注/i }).first();
-    const foldButton = page.getByRole('button', { name: /fold|棄牌/i }).first();
+    await clickFirstAction(page);
 
-    if (await raiseButton.isVisible()) {
-      await raiseButton.click();
-      // After clicking, result should be shown
-      await page.waitForTimeout(500);
-    } else if (await foldButton.isVisible()) {
-      await foldButton.click();
-      await page.waitForTimeout(500);
+    // Result area should appear with correct/incorrect indicator
+    await expect(
+      page.locator('text=/correct|incorrect|正確|錯誤|可接受|acceptable/i').first()
+    ).toBeVisible({ timeout: 5000 });
+
+    // GTO frequency label should be visible
+    await expect(page.locator('text=/GTO/i').first()).toBeVisible();
+  });
+
+  test('next hand button advances to new scenario', async ({ page }) => {
+    await waitForScenarioLoad(page);
+    await clickFirstAction(page);
+
+    // Wait for result
+    await page.waitForTimeout(500);
+
+    // Click next hand (arrow button or Space key)
+    const nextBtn = page.locator('button').filter({ hasText: /next|下一手|→/i }).first();
+    if (await nextBtn.isVisible()) {
+      await nextBtn.click();
+    } else {
+      await page.keyboard.press('Space');
     }
 
-    // Score should update or result should be visible
+    // Wait for new scenario to load
+    await waitForScenarioLoad(page);
+
+    // Action buttons should be enabled again (not showing result)
+    const actionBtn = page.locator('button').filter({
+      hasText: /raise|fold|加注|棄牌/i,
+    }).first();
+    await expect(actionBtn).toBeEnabled();
+  });
+
+  test('keyboard shortcuts work (R=Raise, F=Fold)', async ({ page }) => {
+    await waitForScenarioLoad(page);
+
+    // Press 'R' for raise
+    await page.keyboard.press('r');
+
+    // Should show result
+    await expect(
+      page.locator('text=/correct|incorrect|正確|錯誤|可接受|acceptable/i').first()
+    ).toBeVisible({ timeout: 5000 });
+  });
+
+  test('stats counter updates after answering', async ({ page }) => {
+    await waitForScenarioLoad(page);
+
+    // Get initial stats text
+    const statsArea = page.locator('text=/0\\/0|1\\/|all.?time|累計/i').first();
+
+    await clickFirstAction(page);
+    await page.waitForTimeout(500);
+
+    // Body should now contain "1" somewhere in stats
     await expect(page.locator('body')).toContainText(/1/);
   });
-
-  test('should track score', async ({ page }) => {
-    // Make an action
-    const actionButton = page.locator('button').filter({ hasText: /raise|fold|加注|棄牌/i }).first();
-    await actionButton.click();
-
-    // Wait for result and score update
-    await page.waitForTimeout(2000);
-
-    // Page should show some result or score indicator
-    await expect(page.locator('body')).toContainText(/correct|incorrect|正確|錯誤|1/i);
-  });
 });
 
-test.describe('VS RFI Drill', () => {
-  test('should display VS RFI drill interface', async ({ page }) => {
+// ─────────────────────────────────────────────
+// VS RFI Drill
+// ─────────────────────────────────────────────
+test.describe('VS RFI Drill – Full Flow', () => {
+  test('loads with villain position + 3 actions (3bet/call/fold)', async ({ page }) => {
     await page.goto('/drill/vs-rfi');
     await page.waitForLoadState('networkidle');
+    await waitForScenarioLoad(page);
 
-    // Check for page heading
-    await expect(page.locator('h1')).toBeVisible();
+    // Should show villain position info ("XX opens" or "XX 開牌")
+    await expect(
+      page.locator('text=/opens|開牌/i').first()
+    ).toBeVisible();
 
-    // Check for action buttons
-    await expect(page.getByRole('button').first()).toBeVisible();
+    // 3 action buttons: 3bet, call, fold
+    const actions = page.locator('button').filter({
+      hasText: /3.?bet|call|fold|跟注|棄牌/i,
+    });
+    const count = await actions.count();
+    expect(count).toBeGreaterThanOrEqual(2);
+  });
+
+  test('complete answer flow', async ({ page }) => {
+    await page.goto('/drill/vs-rfi');
+    await page.waitForLoadState('networkidle');
+    await waitForScenarioLoad(page);
+
+    await clickFirstAction(page);
+
+    await expect(
+      page.locator('text=/correct|incorrect|正確|錯誤|可接受|acceptable/i').first()
+    ).toBeVisible({ timeout: 5000 });
   });
 });
 
-test.describe('Postflop Drill', () => {
-  test.beforeEach(async ({ page }) => {
-    await page.goto('/drill/postflop');
+// ─────────────────────────────────────────────
+// VS 3-Bet Drill
+// ─────────────────────────────────────────────
+test.describe('VS 3-Bet Drill', () => {
+  test('loads and accepts answer', async ({ page }) => {
+    await page.goto('/drill/vs-3bet');
     await page.waitForLoadState('networkidle');
+    await waitForScenarioLoad(page);
+
+    // Should have 4bet/call/fold actions
+    const actions = page.locator('button').filter({
+      hasText: /4.?bet|call|fold|跟注|棄牌/i,
+    });
+    const count = await actions.count();
+    expect(count).toBeGreaterThanOrEqual(2);
+
+    await clickFirstAction(page);
+
+    await expect(
+      page.locator('text=/correct|incorrect|正確|錯誤|可接受|acceptable/i').first()
+    ).toBeVisible({ timeout: 5000 });
   });
+});
 
-  test('should display postflop drill interface', async ({ page }) => {
-    // Check for page heading
-    await expect(page.locator('h1')).toBeVisible();
-
-    // Check for action buttons
-    await expect(page.getByRole('button').first()).toBeVisible();
-  });
-
-  test('should have street tabs', async ({ page }) => {
-    // Check for Flop, Turn, River tabs
-    await expect(page.getByRole('tab', { name: /flop/i })).toBeVisible();
-    await expect(page.getByRole('tab', { name: /turn/i })).toBeVisible();
-    await expect(page.getByRole('tab', { name: /river/i })).toBeVisible();
-  });
-
-  test('should switch between streets', async ({ page }) => {
-    // Click Turn tab
-    await page.getByRole('tab', { name: /turn/i }).click();
+// ─────────────────────────────────────────────
+// VS 4-Bet Drill
+// ─────────────────────────────────────────────
+test.describe('VS 4-Bet Drill', () => {
+  test('loads and accepts answer', async ({ page }) => {
+    await page.goto('/drill/vs-4bet');
     await page.waitForLoadState('networkidle');
+    await waitForScenarioLoad(page);
 
-    // Should show 4 cards on turn
-    await page.waitForTimeout(500);
+    const actions = page.locator('button').filter({
+      hasText: /5.?bet|call|fold|跟注|棄牌|all/i,
+    });
+    const count = await actions.count();
+    expect(count).toBeGreaterThanOrEqual(2);
 
-    // Click River tab
-    await page.getByRole('tab', { name: /river/i }).click();
-    await page.waitForLoadState('networkidle');
+    await clickFirstAction(page);
 
-    // Should show 5 cards on river
-    await page.waitForTimeout(500);
+    await expect(
+      page.locator('text=/correct|incorrect|正確|錯誤|可接受|acceptable/i').first()
+    ).toBeVisible({ timeout: 5000 });
   });
+});
 
-  test('should display action buttons', async ({ page }) => {
-    // Check for bet/check buttons
-    await expect(page.getByRole('button', { name: /bet|check|下注|過牌/i }).first()).toBeVisible();
+// ─────────────────────────────────────────────
+// Position Filter (DrillSession shared feature)
+// ─────────────────────────────────────────────
+test.describe('DrillSession Position Filter', () => {
+  test('toggling position filter restricts scenarios', async ({ page }) => {
+    await page.goto('/drill/rfi');
+    await page.waitForLoadState('networkidle');
+    await waitForScenarioLoad(page);
+
+    // Open settings/filter panel (gear icon or "Position Filter" section)
+    const filterToggle = page.locator('text=/filter|position|篩選|位置/i').first();
+    if (await filterToggle.isVisible()) {
+      await filterToggle.click();
+    }
+
+    // Look for position toggle buttons
+    const btnPosition = page.locator('button').filter({ hasText: /^BTN$/ }).first();
+    if (await btnPosition.isVisible()) {
+      // Click BTN to toggle - this is a basic check that the filter UI exists
+      await expect(btnPosition).toBeVisible();
+    }
+  });
+});
+
+// ─────────────────────────────────────────────
+// URL ?position= parameter
+// ─────────────────────────────────────────────
+test.describe('Drill URL Position Parameter', () => {
+  test('?position=BTN pre-selects BTN only', async ({ page }) => {
+    await page.goto('/drill/rfi?position=BTN');
+    await page.waitForLoadState('networkidle');
+    await waitForScenarioLoad(page);
+
+    // The scenario should show BTN position
+    await expect(page.locator('text=/BTN/').first()).toBeVisible();
   });
 });

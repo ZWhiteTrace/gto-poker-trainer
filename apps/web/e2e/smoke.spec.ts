@@ -49,8 +49,8 @@ test.describe('Smoke Tests', () => {
     expect(links).toBeGreaterThan(0);
   });
 
-  test('ranges page loads', async ({ page }) => {
-    await page.goto('/ranges');
+  test('range page loads', async ({ page }) => {
+    await page.goto('/range');
     await page.waitForLoadState('domcontentloaded');
 
     // Page should load without error
