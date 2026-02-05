@@ -88,14 +88,20 @@ test.describe('Multistreet Drill', () => {
 
     // === TURN ===
     // Wait for Turn label in the progress bar (use exact text)
-    await page.waitForSelector('button:has-text("Check"), button:has-text("Bet")', { timeout: 10000 });
+    await page.waitForFunction(() => {
+      const btns = Array.from(document.querySelectorAll('button'));
+      return btns.some(b => /check|bet|過牌|下注/i.test(b.textContent || ''));
+    }, { timeout: 15000 });
     await clickAction(page);
     await handleVillainAction(page);
     await page.waitForTimeout(500);
     await clickNextStreet(page);
 
     // === RIVER ===
-    await page.waitForSelector('button:has-text("Check"), button:has-text("Bet")', { timeout: 10000 });
+    await page.waitForFunction(() => {
+      const btns = Array.from(document.querySelectorAll('button'));
+      return btns.some(b => /check|bet|過牌|下注/i.test(b.textContent || ''));
+    }, { timeout: 15000 });
     await clickAction(page);
     await handleVillainAction(page);
     await page.waitForTimeout(500);

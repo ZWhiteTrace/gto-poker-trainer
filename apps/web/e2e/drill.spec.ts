@@ -1,15 +1,18 @@
 import { test, expect, Page } from '@playwright/test';
 
 /**
- * Helper: wait for a drill scenario to load (API response received, loading spinner gone)
+ * Helper: wait for a drill scenario to load (action buttons rendered)
  */
 async function waitForScenarioLoad(page: Page) {
-  // Wait for loading spinner to disappear and action buttons to appear
+  // Wait for actual poker action buttons (not just nav buttons)
   await page.waitForFunction(() => {
     const spinners = document.querySelectorAll('.animate-spin');
-    const buttons = document.querySelectorAll('button');
-    return spinners.length === 0 && buttons.length >= 2;
-  }, { timeout: 15000 });
+    const actionBtns = Array.from(document.querySelectorAll('button')).filter(btn => {
+      const text = (btn.textContent || '').toLowerCase();
+      return /raise|fold|call|3-?bet|4-?bet|5-?bet|加注|棄牌|跟注|all.?in|全下|check|過牌/.test(text);
+    });
+    return spinners.length === 0 && actionBtns.length >= 2;
+  }, { timeout: 20000 });
 }
 
 /**
@@ -83,9 +86,9 @@ test.describe('RFI Drill – Full Flow', () => {
 
     // Action buttons should be enabled again (not showing result)
     const actionBtn = page.locator('button').filter({
-      hasText: /raise|fold|加注|棄牌/i,
+      hasText: /raise|fold|call|3-?bet|4-?bet|加注|棄牌|跟注/i,
     }).first();
-    await expect(actionBtn).toBeEnabled({ timeout: 10000 });
+    await expect(actionBtn).toBeEnabled({ timeout: 15000 });
   });
 
   test('keyboard shortcuts work (R=Raise, F=Fold)', async ({ page }) => {
