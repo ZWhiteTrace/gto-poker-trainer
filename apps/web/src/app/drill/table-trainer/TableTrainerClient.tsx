@@ -351,9 +351,9 @@ export default function TableTrainerClient() {
   }, []);
 
   return (
-    <div className="fixed inset-0 bg-gradient-to-b from-gray-900 to-gray-950 text-white flex flex-col z-40">
+    <div className="fixed inset-0 bg-gradient-to-b from-gray-900 to-gray-950 text-white flex flex-col z-40 pb-[env(safe-area-inset-bottom)]">
       {/* Header */}
-      <header data-table-trainer-header className="border-b border-gray-800 bg-gray-900/50 backdrop-blur-sm shrink-0 z-50">
+      <header data-table-trainer-header className="border-b border-gray-800 bg-gray-900/50 backdrop-blur-sm shrink-0 z-50 pt-[env(safe-area-inset-top)]">
         <div className="container mx-auto px-4 py-2 sm:py-3 flex items-center justify-between">
           <div className="flex items-center gap-2 sm:gap-4">
             <Link href="/" className="p-2 hover:bg-gray-800 rounded-lg transition-colors" title="回首頁">
