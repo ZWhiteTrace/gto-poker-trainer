@@ -67,7 +67,7 @@ jobs:
         run: npm run test:run
 
       - name: Build
-        run: npm run build
+        run: npx next build --webpack
         env:
           NEXT_PUBLIC_API_URL: https://api.grindgto.com
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
