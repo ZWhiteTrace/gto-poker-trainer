@@ -5,7 +5,7 @@ export default function robots(): MetadataRoute.Robots {
     rules: {
       userAgent: "*",
       allow: "/",
-      disallow: ["/api/", "/auth/", "/progress"],
+      disallow: ["/api/", "/auth/", "/progress", "/profile"],
     },
     sitemap: "https://grindgto.com/sitemap.xml",
   };

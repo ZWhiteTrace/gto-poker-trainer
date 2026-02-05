@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages } from "next-intl/server";
@@ -16,6 +16,14 @@ const inter = Inter({
   display: "swap",
   preload: true,
 });
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  viewportFit: "cover",
+  themeColor: "#0a0a0a",
+};
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://grindgto.com"),
@@ -94,113 +102,85 @@ export const metadata: Metadata = {
   },
 };
 
-function WebsiteJsonLd() {
+function StructuredDataJsonLd() {
   const jsonLd = {
     "@context": "https://schema.org",
-    "@type": "WebSite",
-    name: "GTO 撲克訓練器 - 免費德州撲克練習工具",
-    url: "https://grindgto.com",
-    description: "提升德撲技巧的免費 GTO 訓練器。提供翻前範圍表、推圖練習及 ICM 計算。",
-    inLanguage: ["zh-TW", "zh-CN"],
-    potentialAction: {
-      "@type": "SearchAction",
-      target: "https://grindgto.com/learn?q={search_term_string}",
-      "query-input": "required name=search_term_string",
-    },
-  };
-
-  return (
-    <script
-      type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-    />
-  );
-}
-
-function OrganizationJsonLd() {
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@type": "Organization",
-    name: "GTO 撲克訓練器",
-    url: "https://grindgto.com",
-    logo: "https://grindgto.com/icon-512.png",
-    sameAs: [],
-  };
-
-  return (
-    <script
-      type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-    />
-  );
-}
-
-function SoftwareApplicationJsonLd() {
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@type": "SoftwareApplication",
-    name: "GTO 撲克訓練器",
-    applicationCategory: "GameApplication",
-    operatingSystem: "Web Browser",
-    offers: {
-      "@type": "Offer",
-      price: "0",
-      priceCurrency: "USD",
-    },
-    aggregateRating: {
-      "@type": "AggregateRating",
-      ratingValue: "4.8",
-      ratingCount: "150",
-      bestRating: "5",
-      worstRating: "1",
-    },
-    description: "免費 GTO 德州撲克訓練應用，提供翻前範圍練習、推圖表和 AI 手牌分析",
-    featureList: [
-      "翻前範圍訓練",
-      "推圖 (Push/Fold) 練習",
-      "ICM 計算器",
-      "AI 手牌分析",
-      "學習進度追蹤",
-    ],
-  };
-
-  return (
-    <script
-      type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-    />
-  );
-}
-
-function CourseJsonLd() {
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@type": "Course",
-    name: "GTO 撲克策略訓練",
-    description: "透過互動練習和範圍表掌握 GTO 最優撲克策略",
-    provider: {
-      "@type": "Organization",
-      name: "GTO 撲克訓練器",
-      url: "https://grindgto.com",
-    },
-    offers: {
-      "@type": "Offer",
-      price: "0",
-      priceCurrency: "USD",
-      availability: "https://schema.org/InStock",
-    },
-    hasCourseInstance: [
+    "@graph": [
       {
-        "@type": "CourseInstance",
-        courseMode: "online",
-        courseWorkload: "PT30M",
+        "@type": "WebSite",
+        "@id": "https://grindgto.com/#website",
+        name: "GTO 撲克訓練器 - 免費德州撲克練習工具",
+        url: "https://grindgto.com",
+        description:
+          "提升德撲技巧的免費 GTO 訓練器。提供翻前範圍表、推圖練習及 ICM 計算。",
+        inLanguage: ["zh-TW", "zh-CN"],
+        publisher: { "@id": "https://grindgto.com/#organization" },
+        potentialAction: {
+          "@type": "SearchAction",
+          target: "https://grindgto.com/learn?q={search_term_string}",
+          "query-input": "required name=search_term_string",
+        },
       },
-    ],
-    teaches: [
-      "各位置的翻前範圍",
-      "3-bet 和 4-bet 策略",
-      "錦標賽推圖策略",
-      "ICM 考量",
+      {
+        "@type": "Organization",
+        "@id": "https://grindgto.com/#organization",
+        name: "GTO 撲克訓練器",
+        url: "https://grindgto.com",
+        logo: {
+          "@type": "ImageObject",
+          url: "https://grindgto.com/icon-512.png",
+          width: 512,
+          height: 512,
+        },
+      },
+      {
+        "@type": "SoftwareApplication",
+        "@id": "https://grindgto.com/#app",
+        name: "GTO 撲克訓練器",
+        applicationCategory: "GameApplication",
+        operatingSystem: "Web Browser",
+        offers: {
+          "@type": "Offer",
+          price: "0",
+          priceCurrency: "USD",
+        },
+        description:
+          "免費 GTO 德州撲克訓練應用，提供翻前範圍練習、推圖表和 AI 手牌分析",
+        featureList: [
+          "翻前範圍訓練",
+          "推圖 (Push/Fold) 練習",
+          "ICM 計算器",
+          "AI 手牌分析",
+          "學習進度追蹤",
+        ],
+        author: { "@id": "https://grindgto.com/#organization" },
+      },
+      {
+        "@type": "Course",
+        "@id": "https://grindgto.com/#course",
+        name: "GTO 撲克策略訓練",
+        description: "透過互動練習和範圍表掌握 GTO 最優撲克策略",
+        provider: { "@id": "https://grindgto.com/#organization" },
+        offers: {
+          "@type": "Offer",
+          price: "0",
+          priceCurrency: "USD",
+          availability: "https://schema.org/InStock",
+        },
+        hasCourseInstance: [
+          {
+            "@type": "CourseInstance",
+            courseMode: "online",
+            courseWorkload: "PT30M",
+          },
+        ],
+        teaches: [
+          "各位置的翻前範圍",
+          "3-bet 和 4-bet 策略",
+          "錦標賽推圖策略",
+          "ICM 考量",
+        ],
+      },
     ],
   };
 
@@ -223,10 +203,7 @@ export default async function RootLayout({
   return (
     <html lang={locale} className="dark" suppressHydrationWarning>
       <head>
-        <WebsiteJsonLd />
-        <OrganizationJsonLd />
-        <SoftwareApplicationJsonLd />
-        <CourseJsonLd />
+        <StructuredDataJsonLd />
         {/* Apple splash screens for PWA */}
         <link rel="apple-touch-startup-image" href="/api/splash?w=1290&h=2796" media="(device-width: 430px) and (device-height: 932px) and (-webkit-device-pixel-ratio: 3)" />
         <link rel="apple-touch-startup-image" href="/api/splash?w=1179&h=2556" media="(device-width: 393px) and (device-height: 852px) and (-webkit-device-pixel-ratio: 3)" />
