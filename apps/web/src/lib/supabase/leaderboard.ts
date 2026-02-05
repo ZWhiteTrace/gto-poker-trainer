@@ -103,8 +103,8 @@ export async function updateLeaderboardStats(
     const resetMonthly = existingMonthStart < monthStart;
 
     // Calculate new streak
-    let newStreak = isCorrect ? existing.current_streak + 1 : 0;
-    let newBestStreak = Math.max(existing.best_streak, newStreak);
+    const newStreak = isCorrect ? existing.current_streak + 1 : 0;
+    const newBestStreak = Math.max(existing.best_streak, newStreak);
 
     const { error } = await supabase
       .from("leaderboard_stats")

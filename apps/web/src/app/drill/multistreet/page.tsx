@@ -553,7 +553,7 @@ export default function MultistreetDrillPage() {
           const delta = adjustment.bet_frequency_delta || 0;
           const newStrategy: Record<string, number> = {};
           let totalBet = 0;
-          let checkFreq = currentStrategy.check || 0;
+          const checkFreq = currentStrategy.check || 0;
 
           for (const [key, val] of Object.entries(currentStrategy)) {
             if (key.startsWith("bet_")) {
