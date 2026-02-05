@@ -24,32 +24,14 @@ import {
   ArrowRight,
 } from "lucide-react";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://api.grindgto.com";
+import { API_BASE_URL } from "@/lib/api";
+import { SUIT_SYMBOLS, SUIT_COLORS, RANKS, SUITS } from "@/lib/poker/types";
 
 // Storage key
 const MULTISTREET_STATS_KEY = "multistreet-drill-stats";
 
 // Streets
 type Street = "flop" | "turn" | "river" | "complete";
-
-// Card display
-const SUIT_SYMBOLS: Record<string, string> = {
-  s: "♠",
-  h: "♥",
-  d: "♦",
-  c: "♣",
-};
-
-const SUIT_COLORS: Record<string, string> = {
-  s: "text-slate-900 dark:text-slate-100",
-  h: "text-red-500",
-  d: "text-blue-500",
-  c: "text-green-600",
-};
-
-// All possible cards for dealing
-const RANKS = ["A", "K", "Q", "J", "T", "9", "8", "7", "6", "5", "4", "3", "2"];
-const SUITS = ["s", "h", "d", "c"];
 
 interface FlopScenario {
   scenario_id: string;
@@ -82,7 +64,10 @@ interface StreetDecision {
   cardType?: string;
   cardTypeZh?: string;
   adjustment?: string;
+  villainAction?: string;
 }
+
+type VillainAction = "check" | "bet_50" | "bet_75" | "check_raise";
 
 interface Stats {
   totalHands: number;
@@ -128,14 +113,44 @@ function BoardCard({ card, isNew = false }: { card: string; isNew?: boolean }) {
   );
 }
 
-function HeroHand({ hand }: { hand: string }) {
+// Resolve abstract hand notation (e.g. "AKs") to concrete card strings avoiding board conflicts
+function resolveHeroCards(hand: string, board: string[]): [string, string] {
   const rank1 = hand[0];
   const rank2 = hand[1];
   const suited = hand.endsWith("s");
   const isPair = rank1 === rank2 && hand.length === 2;
 
-  const suit1 = suited ? "h" : "s";
-  const suit2 = suited ? "h" : isPair ? "d" : "c";
+  const boardSuitsFor = (rank: string) => {
+    const s = new Set<string>();
+    for (const c of board) if (c[0] === rank) s.add(c[1]?.toLowerCase());
+    return s;
+  };
+  const used1 = boardSuitsFor(rank1);
+  const used2 = boardSuitsFor(rank2);
+  const allSuits = ["h", "d", "c", "s"];
+
+  let suit1: string;
+  let suit2: string;
+  if (suited) {
+    suit1 = allSuits.find(s => !used1.has(s) && !used2.has(s)) || "h";
+    suit2 = suit1;
+  } else if (isPair) {
+    const avail = allSuits.filter(s => !used1.has(s));
+    suit1 = avail[0] || "h";
+    suit2 = avail[1] || "d";
+  } else {
+    suit1 = allSuits.find(s => !used1.has(s)) || "s";
+    suit2 = allSuits.find(s => !used2.has(s) && s !== suit1) || "c";
+  }
+  return [`${rank1}${suit1}`, `${rank2}${suit2}`];
+}
+
+function HeroHand({ hand, board = [] }: { hand: string; board?: string[] }) {
+  const [card1, card2] = resolveHeroCards(hand, board);
+  const rank1 = card1[0];
+  const suit1 = card1[1];
+  const rank2 = card2[0];
+  const suit2 = card2[1];
 
   return (
     <div className="flex gap-2">
@@ -166,7 +181,153 @@ const ACTION_LABELS: Record<string, string> = {
   bet_66: "Bet 66%",
   bet_75: "Bet 75%",
   bet_100: "Bet 100%",
+  fold: "Fold",
+  call: "Call",
+  raise: "Raise",
 };
+
+// Opponent bet frequency based on texture and position
+function shouldVillainBet(
+  texture: string,
+  previousHeroAction: string,
+  street: Street
+): { shouldBet: boolean; sizing: "bet_50" | "bet_75" } {
+  // Villain only bets if hero checked
+  if (previousHeroAction !== "check") {
+    return { shouldBet: false, sizing: "bet_50" };
+  }
+
+  // Base probe bet frequency varies by street and texture
+  let probeFreq = 0.25; // Base 25%
+
+  // Adjust by texture
+  if (texture.includes("dry") || texture.includes("rainbow")) {
+    probeFreq = 0.35; // Dry boards: more stabs
+  } else if (texture.includes("wet") || texture.includes("two_tone")) {
+    probeFreq = 0.3;
+  } else if (texture.includes("monotone") || texture.includes("connected")) {
+    probeFreq = 0.2; // Scary boards: fewer stabs
+  }
+
+  // Increase on river (polarized)
+  if (street === "river") {
+    probeFreq = Math.min(probeFreq + 0.1, 0.4);
+  }
+
+  const shouldBet = Math.random() < probeFreq;
+  const sizing = Math.random() < 0.6 ? "bet_50" : "bet_75";
+
+  return { shouldBet, sizing };
+}
+
+// When hero faces bet, what's the GTO response?
+function getResponseStrategy(
+  heroHand: string,
+  texture: string,
+  villainSizing: string
+): { fold: number; call: number; raise: number } {
+  // Simplified MDF-based response
+  // MDF = 1 - (bet / (pot + bet))
+  // bet_50 → MDF ~67%, bet_75 → MDF ~57%
+  const mdf = villainSizing === "bet_50" ? 67 : 57;
+
+  // Check hand strength heuristically
+  const isPair = heroHand[0] === heroHand[1];
+  const hasAce = heroHand.includes("A");
+  const hasKing = heroHand.includes("K");
+  const isSuited = heroHand.endsWith("s");
+  const isConnector = Math.abs("AKQJT98765432".indexOf(heroHand[0]) - "AKQJT98765432".indexOf(heroHand[1])) <= 2;
+
+  let foldFreq = 100 - mdf;
+  let callFreq = mdf * 0.8;
+  let raiseFreq = mdf * 0.2;
+
+  // Strong hands: more raise
+  if (isPair || (hasAce && hasKing)) {
+    foldFreq = Math.max(0, foldFreq - 20);
+    raiseFreq = Math.min(30, raiseFreq + 15);
+  }
+
+  // Medium hands: more call
+  if (hasAce || hasKing || isPair) {
+    foldFreq = Math.max(5, foldFreq - 10);
+    callFreq += 10;
+  }
+
+  // Weak hands: more fold
+  if (!hasAce && !hasKing && !isPair) {
+    foldFreq = Math.min(60, foldFreq + 15);
+  }
+
+  // Normalize
+  const total = foldFreq + callFreq + raiseFreq;
+  return {
+    fold: Math.round((foldFreq / total) * 100),
+    call: Math.round((callFreq / total) * 100),
+    raise: Math.round((raiseFreq / total) * 100),
+  };
+}
+
+// When hero bets, check if villain check-raises
+function shouldVillainCheckRaise(
+  texture: string,
+  street: Street
+): boolean {
+  let crFreq = 0.08; // Base 8%
+
+  if (texture.includes("wet") || texture.includes("two_tone")) {
+    crFreq = 0.12;
+  } else if (texture.includes("monotone") || texture.includes("connected")) {
+    crFreq = 0.15;
+  } else if (texture.includes("dry") || texture.includes("rainbow")) {
+    crFreq = 0.08;
+  }
+
+  // Later streets: less frequent
+  if (street === "turn") crFreq *= 0.7;
+  else if (street === "river") crFreq *= 0.6;
+
+  return Math.random() < crFreq;
+}
+
+// Hero's response strategy when facing a check-raise (3x pot)
+function getCheckRaiseResponseStrategy(
+  heroHand: string
+): { fold: number; call: number; raise: number } {
+  // CR to 3x → MDF ~50%
+  const mdf = 50;
+
+  const isPair = heroHand[0] === heroHand[1];
+  const hasAce = heroHand.includes("A");
+  const hasKing = heroHand.includes("K");
+
+  let foldFreq = 100 - mdf; // 50% base fold
+  let callFreq = mdf * 0.75; // 37.5% call
+  let raiseFreq = mdf * 0.25; // 12.5% re-raise
+
+  // Strong hands: less fold, more re-raise
+  if (isPair && (hasAce || hasKing)) {
+    foldFreq = Math.max(5, foldFreq - 25);
+    raiseFreq = Math.min(40, raiseFreq + 20);
+  } else if (isPair || (hasAce && hasKing)) {
+    foldFreq = Math.max(10, foldFreq - 15);
+    callFreq += 15;
+  }
+
+  // Weak hands: more fold
+  if (!hasAce && !hasKing && !isPair) {
+    foldFreq = Math.min(75, foldFreq + 15);
+    raiseFreq = Math.max(0, raiseFreq - 10);
+  }
+
+  // Normalize
+  const total = foldFreq + callFreq + raiseFreq;
+  return {
+    fold: Math.round((foldFreq / total) * 100),
+    call: Math.round((callFreq / total) * 100),
+    raise: Math.round((raiseFreq / total) * 100),
+  };
+}
 
 function getRandomCard(excludeCards: string[]): string {
   const excludeSet = new Set(excludeCards.map(c => c.toUpperCase()));
@@ -199,6 +360,11 @@ export default function MultistreetDrillPage() {
   // Current strategy (adjusted for turn/river)
   const [currentStrategy, setCurrentStrategy] = useState<Record<string, number>>({});
 
+  // Opponent action state
+  const [villainAction, setVillainAction] = useState<VillainAction | null>(null);
+  const [facingBet, setFacingBet] = useState(false);
+  const [responseStrategy, setResponseStrategy] = useState<{ fold: number; call: number; raise: number } | null>(null);
+
   const fetchNewScenario = useCallback(async () => {
     setLoading(true);
     setCurrentStreet("flop");
@@ -209,9 +375,12 @@ export default function MultistreetDrillPage() {
     setDecisions([]);
     setShowStreetResult(false);
     setCurrentStrategy({});
+    setVillainAction(null);
+    setFacingBet(false);
+    setResponseStrategy(null);
 
     try {
-      const response = await fetch(`${API_URL}/api/solver/random-drill?pot_type=srp`);
+      const response = await fetch(`${API_BASE_URL}/api/solver/random-drill?pot_type=srp`);
       if (!response.ok) throw new Error("Failed to fetch");
 
       const data: FlopScenario = await response.json();
@@ -232,7 +401,7 @@ export default function MultistreetDrillPage() {
     try {
       const flopStr = flop.join("");
       const response = await fetch(
-        `${API_URL}/api/solver/turn/classify?flop=${flopStr}&turn=${turn}`
+        `${API_BASE_URL}/api/solver/turn/classify?flop=${flopStr}&turn=${turn}`
       );
       if (response.ok) {
         const data = await response.json();
@@ -249,7 +418,7 @@ export default function MultistreetDrillPage() {
     try {
       const boardStr = board.join("");
       const response = await fetch(
-        `${API_URL}/api/solver/river/classify?board=${boardStr}&river=${river}`
+        `${API_BASE_URL}/api/solver/river/classify?board=${boardStr}&river=${river}`
       );
       if (response.ok) {
         const data = await response.json();
@@ -265,7 +434,7 @@ export default function MultistreetDrillPage() {
   const getTurnAdjustment = async (texture: string, turnType: string) => {
     try {
       const response = await fetch(
-        `${API_URL}/api/solver/turn?flop_texture=${texture}&turn_type=${turnType}&position=ip&hand_category=value`
+        `${API_BASE_URL}/api/solver/turn?flop_texture=${texture}&turn_type=${turnType}&position=ip&hand_category=value`
       );
       if (response.ok) {
         return await response.json();
@@ -279,8 +448,68 @@ export default function MultistreetDrillPage() {
   const handleActionSelect = async (action: string) => {
     if (!scenario || showStreetResult) return;
 
+    // If facing a bet, handle response
+    if (facingBet && responseStrategy) {
+      const actionFreq = responseStrategy[action as "fold" | "call" | "raise"] || 0;
+      const isCorrect = actionFreq >= 25;
+
+      const decision: StreetDecision = {
+        street: currentStreet,
+        action,
+        isCorrect,
+        gtoStrategy: { fold: responseStrategy.fold, call: responseStrategy.call, raise: responseStrategy.raise },
+        villainAction: villainAction || undefined,
+      };
+
+      if (currentStreet === "turn" && turnClassification) {
+        decision.cardType = turnClassification.turn_type;
+        decision.cardTypeZh = turnClassification.turn_type_zh;
+      }
+      if (currentStreet === "river" && riverClassification) {
+        decision.cardType = riverClassification.river_type;
+        decision.cardTypeZh = riverClassification.river_type_zh;
+      }
+
+      setDecisions(prev => [...prev, decision]);
+      setShowStreetResult(true);
+      setFacingBet(false);
+      setVillainAction(null);
+      setResponseStrategy(null);
+      return;
+    }
+
     const actionFreq = currentStrategy[action] || 0;
     const isCorrect = actionFreq >= 25; // 25% threshold for multi-street
+
+    // If hero bets, check if villain check-raises
+    if (action.startsWith("bet_") && scenario) {
+      if (shouldVillainCheckRaise(scenario.texture, currentStreet)) {
+        setVillainAction("check_raise");
+        setFacingBet(true);
+        const response = getCheckRaiseResponseStrategy(scenario.hand);
+        setResponseStrategy(response);
+        return;
+      }
+    }
+
+    // If hero checks, check if villain bets
+    if (action === "check" && currentStreet !== "flop") {
+      const previousDecision = decisions.find(d => d.street === (currentStreet === "turn" ? "flop" : "turn"));
+      const { shouldBet, sizing } = shouldVillainBet(
+        scenario.texture,
+        previousDecision?.action || "check",
+        currentStreet
+      );
+
+      if (shouldBet) {
+        // Villain bets - hero needs to respond
+        setVillainAction(sizing);
+        setFacingBet(true);
+        const response = getResponseStrategy(scenario.hand, scenario.texture, sizing);
+        setResponseStrategy(response);
+        return;
+      }
+    }
 
     const decision: StreetDecision = {
       street: currentStreet,
@@ -307,8 +536,9 @@ export default function MultistreetDrillPage() {
     if (!scenario) return;
 
     if (currentStreet === "flop") {
-      // Deal turn
-      const usedCards = [...scenario.board];
+      // Deal turn — exclude board + hero hand cards
+      const heroCards = resolveHeroCards(scenario.hand, scenario.board);
+      const usedCards = [...scenario.board, ...heroCards];
       const turn = getRandomCard(usedCards);
       setTurnCard(turn);
 
@@ -346,8 +576,9 @@ export default function MultistreetDrillPage() {
       setCurrentStreet("turn");
       setShowStreetResult(false);
     } else if (currentStreet === "turn") {
-      // Deal river
-      const usedCards = [...scenario.board, turnCard!];
+      // Deal river — exclude board + turn + hero hand cards
+      const heroCardsR = resolveHeroCards(scenario.hand, [...scenario.board, turnCard!]);
+      const usedCards = [...scenario.board, turnCard!, ...heroCardsR];
       const river = getRandomCard(usedCards);
       setRiverCard(river);
 
@@ -394,6 +625,11 @@ export default function MultistreetDrillPage() {
   };
 
   const getOptions = () => {
+    // If facing a bet, return response options
+    if (facingBet) {
+      return ["fold", "call", "raise"];
+    }
+
     // Return available actions based on current strategy
     const options = new Set<string>();
     for (const key of Object.keys(currentStrategy)) {
@@ -526,18 +762,47 @@ export default function MultistreetDrillPage() {
               <div className="flex justify-center">
                 <div className="text-center">
                   <div className="text-sm text-muted-foreground mb-2">你的手牌</div>
-                  <HeroHand hand={scenario.hand} />
+                  <HeroHand hand={scenario.hand} board={getCurrentBoard()} />
                 </div>
               </div>
 
               {/* Current Street Label */}
-              <div className="text-center">
+              <div className="text-center space-y-2">
                 <Badge variant="outline" className="text-lg px-4 py-1">
                   {currentStreet === "flop" && "Flop 決策"}
                   {currentStreet === "turn" && "Turn 決策"}
                   {currentStreet === "river" && "River 決策"}
                   {currentStreet === "complete" && "手牌完成"}
                 </Badge>
+
+                {/* Villain action notification */}
+                {facingBet && villainAction && (
+                  <div className={`p-3 rounded-lg border ${
+                    villainAction === "check_raise"
+                      ? "bg-red-500/20 border-red-500/30"
+                      : "bg-orange-500/20 border-orange-500/30"
+                  }`}>
+                    <div className="flex items-center justify-center gap-2">
+                      <span className={`font-bold ${
+                        villainAction === "check_raise" ? "text-red-600" : "text-orange-600"
+                      }`}>
+                        {villainAction === "check_raise" ? "對手 Check-Raise！" : "對手下注！"}
+                      </span>
+                      <Badge className={villainAction === "check_raise" ? "bg-red-500" : "bg-orange-500"}>
+                        {villainAction === "check_raise"
+                          ? "3× Pot"
+                          : villainAction === "bet_50"
+                            ? "50% Pot"
+                            : "75% Pot"}
+                      </Badge>
+                    </div>
+                    <div className="text-sm text-muted-foreground mt-1">
+                      {villainAction === "check_raise"
+                        ? "對手 check-raise 了你的下注，你要如何應對？"
+                        : "你要如何應對？"}
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* Action Buttons or Result */}
@@ -559,42 +824,56 @@ export default function MultistreetDrillPage() {
               {/* Street Result */}
               {showStreetResult && currentStreet !== "complete" && (
                 <div className="space-y-4">
-                  {decisions.length > 0 && (
-                    <div
-                      className={cn(
-                        "p-4 rounded-lg",
-                        decisions[decisions.length - 1].isCorrect
-                          ? "bg-green-500/10 border border-green-500/30"
-                          : "bg-red-500/10 border border-red-500/30"
-                      )}
-                    >
-                      <div className="flex items-center gap-2 mb-2">
-                        {decisions[decisions.length - 1].isCorrect ? (
-                          <>
-                            <CheckCircle2 className="h-5 w-5 text-green-500" />
-                            <span className="font-bold text-green-600">正確！</span>
-                          </>
-                        ) : (
-                          <>
-                            <XCircle className="h-5 w-5 text-red-500" />
-                            <span className="font-bold text-red-600">可以更好</span>
-                          </>
-                        )}
-                      </div>
+                  {decisions.length > 0 && (() => {
+                    const lastDecision = decisions[decisions.length - 1];
+                    const gtoStrategy = lastDecision.gtoStrategy;
 
-                      <div className="text-sm text-muted-foreground">
-                        GTO 頻率：
-                        {Object.entries(currentStrategy)
-                          .filter(([, freq]) => (freq as number) > 0)
-                          .sort(([, a], [, b]) => (b as number) - (a as number))
-                          .map(([action, freq]) => (
-                            <span key={action} className="mx-1">
-                              {ACTION_LABELS[action] || action} {freq}%
-                            </span>
-                          ))}
+                    return (
+                      <div
+                        className={cn(
+                          "p-4 rounded-lg",
+                          lastDecision.isCorrect
+                            ? "bg-green-500/10 border border-green-500/30"
+                            : "bg-red-500/10 border border-red-500/30"
+                        )}
+                      >
+                        <div className="flex items-center gap-2 mb-2">
+                          {lastDecision.isCorrect ? (
+                            <>
+                              <CheckCircle2 className="h-5 w-5 text-green-500" />
+                              <span className="font-bold text-green-600">正確！</span>
+                            </>
+                          ) : (
+                            <>
+                              <XCircle className="h-5 w-5 text-red-500" />
+                              <span className="font-bold text-red-600">可以更好</span>
+                            </>
+                          )}
+                          {lastDecision.villainAction && (
+                            <Badge variant="outline" className="ml-2">
+                              vs {lastDecision.villainAction === "check_raise"
+                                ? "Check-Raise"
+                                : lastDecision.villainAction === "bet_50"
+                                  ? "50% Bet"
+                                  : "75% Bet"}
+                            </Badge>
+                          )}
+                        </div>
+
+                        <div className="text-sm text-muted-foreground">
+                          GTO 頻率：
+                          {Object.entries(gtoStrategy)
+                            .filter(([, freq]) => (freq as number) > 0)
+                            .sort(([, a], [, b]) => (b as number) - (a as number))
+                            .map(([action, freq]) => (
+                              <span key={action} className="mx-1">
+                                {ACTION_LABELS[action] || action} {freq}%
+                              </span>
+                            ))}
+                        </div>
                       </div>
-                    </div>
-                  )}
+                    );
+                  })()}
 
                   <Button onClick={handleNextStreet} className="w-full gap-2">
                     {currentStreet === "river" ? "完成手牌" : "發下一張"}
@@ -628,6 +907,15 @@ export default function MultistreetDrillPage() {
                         {d.cardTypeZh && (
                           <Badge variant="outline" className="text-xs">
                             {d.cardTypeZh}
+                          </Badge>
+                        )}
+                        {d.villainAction && (
+                          <Badge variant="secondary" className="text-xs">
+                            vs {d.villainAction === "check_raise"
+                              ? "Check-Raise"
+                              : d.villainAction === "bet_50"
+                                ? "50% Bet"
+                                : "75% Bet"}
                           </Badge>
                         )}
                       </div>

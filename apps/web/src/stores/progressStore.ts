@@ -1,12 +1,16 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { createClient } from "@/lib/supabase/client";
-import { updateLeaderboardStats, type Achievement } from "@/lib/supabase/leaderboard";
+import { updateLeaderboardStats } from "@/lib/supabase/leaderboard";
+import { createModuleLogger } from "@/lib/errors";
+import { TrackedDrillType } from "@/lib/constants/drills";
 
-type DrillType = "rfi" | "vs_rfi" | "vs_3bet" | "vs_4bet" | "push_fold" | "push_fold_defense" | "push_fold_resteal" | "push_fold_hu" | "table_trainer";
-type QuizType = "equity" | "outs" | "ev" | "logic" | "exploit";
+const log = createModuleLogger("Progress");
 
-interface DrillResult {
+// Re-export for backward compatibility
+export type DrillType = TrackedDrillType;
+
+export interface DrillResult {
   id?: string;
   drill_type: DrillType;
   hand: string;
@@ -20,13 +24,13 @@ interface DrillResult {
   created_at?: string;
 }
 
-interface PositionStats {
+export interface PositionStats {
   total: number;
   correct: number;
   acceptable: number;
 }
 
-interface DrillStats {
+export interface DrillStats {
   total: number;
   correct: number;
   acceptable: number;
@@ -34,29 +38,7 @@ interface DrillStats {
   lastPracticed?: string;
 }
 
-interface QuizStats {
-  total: number;
-  correct: number;
-  byCategory: Record<string, { total: number; correct: number }>;
-  lastPracticed?: string;
-}
-
-// Track individual question attempts
-interface QuestionAttempt {
-  questionId: string;
-  attempts: number;
-  correctOnFirstTry: boolean;
-  lastAttemptCorrect: boolean;
-  lastAttemptAt: string;
-}
-
-// Quiz progress tracking
-interface QuizProgressState {
-  totalQuestionsInBank: number;
-  attemptedQuestions: Record<string, QuestionAttempt>;
-}
-
-interface DailyRecord {
+export interface DailyRecord {
   date: string; // YYYY-MM-DD
   total: number;
   correct: number;
@@ -66,16 +48,10 @@ interface ProgressState {
   // Stats by drill type
   stats: Record<DrillType, DrillStats>;
 
-  // Quiz stats by quiz type
-  quizStats: Record<QuizType, QuizStats>;
-
-  // Quiz progress tracking (question-level)
-  quizProgress: QuizProgressState;
-
   // Recent results (local cache)
   recentResults: DrillResult[];
 
-  // Daily history for trend charts (last 30 days)
+  // Daily history for trend charts (last 30 days) - shared between drill and quiz
   dailyHistory: DailyRecord[];
 
   // Sync status
@@ -84,39 +60,19 @@ interface ProgressState {
 
   // Actions
   recordResult: (result: DrillResult, userId?: string) => Promise<void>;
-  recordQuizResult: (
-    quizType: QuizType,
-    category: string,
-    isCorrect: boolean,
-    userId?: string
-  ) => Promise<void>;
-  recordQuestionAttempt: (
-    questionId: string,
-    isCorrect: boolean
-  ) => void;
   recordTableTrainerHand: (
     heroPosition: string,
     isWin: boolean,
     profitBB: number,
     userId?: string
   ) => Promise<void>;
+  addToDailyHistory: (isCorrect: boolean) => void;
   syncToCloud: (userId: string) => Promise<void>;
   loadFromCloud: (userId: string) => Promise<void>;
   getWeakPositions: (drillType: DrillType) => string[];
   getDailyHistory: (days: number) => DailyRecord[];
-  getQuizCompletionStats: () => {
-    attempted: number;
-    mastered: number;
-    needsReview: number;
-    total: number;
-    completionRate: number;
-    masteryRate: number;
-  };
-  getMasteredQuestionIds: () => string[];
-  getNeedsReviewQuestionIds: () => string[];
-  getUnansweredQuestionIds: (allQuestionIds: string[]) => string[];
-  setTotalQuestionsInBank: (total: number) => void;
   resetStats: () => void;
+  resetDrillStats: (drillType: DrillType) => void;
 }
 
 const initialStats: DrillStats = {
@@ -125,15 +81,6 @@ const initialStats: DrillStats = {
   acceptable: 0,
   byPosition: {},
 };
-
-const initialQuizStats: QuizStats = {
-  total: 0,
-  correct: 0,
-  byCategory: {},
-};
-
-// Total questions available in the quiz bank (will be dynamically updated by exam page)
-const TOTAL_QUIZ_QUESTIONS = 45; // Default value, updated dynamically
 
 const initialState = {
   stats: {
@@ -146,22 +93,12 @@ const initialState = {
     push_fold_resteal: { ...initialStats },
     push_fold_hu: { ...initialStats },
     table_trainer: { ...initialStats },
+    postflop: { ...initialStats },
   },
-  quizStats: {
-    equity: { ...initialQuizStats },
-    outs: { ...initialQuizStats },
-    ev: { ...initialQuizStats },
-    logic: { ...initialQuizStats },
-    exploit: { ...initialQuizStats },
-  },
-  quizProgress: {
-    totalQuestionsInBank: TOTAL_QUIZ_QUESTIONS,
-    attemptedQuestions: {} as Record<string, QuestionAttempt>,
-  },
-  recentResults: [],
-  dailyHistory: [],
+  recentResults: [] as DrillResult[],
+  dailyHistory: [] as DailyRecord[],
   isSyncing: false,
-  lastSyncedAt: null,
+  lastSyncedAt: null as string | null,
 };
 
 // Helper to get today's date string
@@ -260,7 +197,10 @@ export const useProgressStore = create<ProgressState>()(
 
             // Update leaderboard stats and check achievements
             const isCorrect = result.is_correct || result.is_acceptable;
-            const leaderboardResult = await updateLeaderboardStats(userId, isCorrect);
+            const leaderboardResult = await updateLeaderboardStats(
+              userId,
+              isCorrect
+            );
 
             // If new achievements were unlocked, dispatch a custom event
             if (leaderboardResult?.newAchievements?.length) {
@@ -271,91 +211,15 @@ export const useProgressStore = create<ProgressState>()(
               );
             }
           } catch (error) {
-            console.error("Failed to sync result to cloud:", error);
+            log.error("Failed to sync result to cloud:", error);
           }
         }
-      },
-
-      recordQuizResult: async (
-        quizType: QuizType,
-        category: string,
-        isCorrect: boolean,
-        userId?: string
-      ) => {
-        const { quizStats, dailyHistory } = get();
-        const currentStats = quizStats[quizType] || { ...initialQuizStats };
-
-        // Update local stats
-        const newStats = { ...currentStats };
-        newStats.total += 1;
-        if (isCorrect) newStats.correct += 1;
-        newStats.lastPracticed = new Date().toISOString();
-
-        // Update category stats
-        const catStats = newStats.byCategory[category] || { total: 0, correct: 0 };
-        catStats.total += 1;
-        if (isCorrect) catStats.correct += 1;
-        newStats.byCategory[category] = catStats;
-
-        // Update daily history
-        const newDailyHistory = updateDailyHistory(dailyHistory, isCorrect);
-
-        set({
-          quizStats: { ...quizStats, [quizType]: newStats },
-          dailyHistory: newDailyHistory,
-        });
-
-        // Sync to cloud if user is logged in
-        if (userId) {
-          try {
-            const supabase = createClient();
-            await supabase.from("quiz_results").insert({
-              user_id: userId,
-              quiz_type: quizType,
-              category,
-              is_correct: isCorrect,
-            });
-          } catch (error) {
-            console.error("Failed to sync quiz result to cloud:", error);
-          }
-        }
-      },
-
-      recordQuestionAttempt: (questionId: string, isCorrect: boolean) => {
-        const { quizProgress } = get();
-        const existing = quizProgress.attemptedQuestions[questionId];
-        const now = new Date().toISOString();
-
-        const newAttempt: QuestionAttempt = existing
-          ? {
-              ...existing,
-              attempts: existing.attempts + 1,
-              lastAttemptCorrect: isCorrect,
-              lastAttemptAt: now,
-            }
-          : {
-              questionId,
-              attempts: 1,
-              correctOnFirstTry: isCorrect,
-              lastAttemptCorrect: isCorrect,
-              lastAttemptAt: now,
-            };
-
-        set({
-          quizProgress: {
-            ...quizProgress,
-            attemptedQuestions: {
-              ...quizProgress.attemptedQuestions,
-              [questionId]: newAttempt,
-            },
-          },
-        });
       },
 
       recordTableTrainerHand: async (
         heroPosition: string,
         isWin: boolean,
-        profitBB: number,
+        _profitBB: number,
         userId?: string
       ) => {
         const { stats, dailyHistory } = get();
@@ -390,9 +254,16 @@ export const useProgressStore = create<ProgressState>()(
           try {
             await updateLeaderboardStats(userId, isWin);
           } catch (error) {
-            console.error("Failed to update leaderboard:", error);
+            log.error("Failed to update leaderboard:", error);
           }
         }
+      },
+
+      // Exported for quizProgressStore to use
+      addToDailyHistory: (isCorrect: boolean) => {
+        const { dailyHistory } = get();
+        const newDailyHistory = updateDailyHistory(dailyHistory, isCorrect);
+        set({ dailyHistory: newDailyHistory });
       },
 
       syncToCloud: async (userId: string) => {
@@ -410,7 +281,7 @@ export const useProgressStore = create<ProgressState>()(
           });
 
           if (error) {
-            console.warn("Could not sync stats to cloud:", error.message);
+            log.warn("Could not sync stats to cloud:", error.message);
           }
 
           set({
@@ -418,7 +289,7 @@ export const useProgressStore = create<ProgressState>()(
             lastSyncedAt: new Date().toISOString(),
           });
         } catch (error) {
-          console.warn("Failed to sync to cloud:", error);
+          log.warn("Failed to sync to cloud:", error);
           set({ isSyncing: false });
         }
       },
@@ -438,7 +309,7 @@ export const useProgressStore = create<ProgressState>()(
 
           // If table doesn't exist or other error, just log and continue
           if (statsError && statsError.code !== "PGRST116") {
-            console.warn("Could not load user stats:", statsError.message);
+            log.warn("Could not load user stats:", statsError.message);
           }
 
           // Load recent results
@@ -450,7 +321,7 @@ export const useProgressStore = create<ProgressState>()(
             .limit(100);
 
           if (resultsError) {
-            console.warn("Could not load drill results:", resultsError.message);
+            log.warn("Could not load drill results:", resultsError.message);
           }
 
           if (statsData?.stats) {
@@ -464,7 +335,7 @@ export const useProgressStore = create<ProgressState>()(
             set({ isSyncing: false });
           }
         } catch (error) {
-          console.warn("Failed to load from cloud:", error);
+          log.warn("Failed to load from cloud:", error);
           set({ isSyncing: false });
         }
       },
@@ -475,7 +346,7 @@ export const useProgressStore = create<ProgressState>()(
 
         // Find positions with accuracy < 70%
         return positions
-          .filter(([_, stats]) => {
+          .filter(([, stats]) => {
             if (stats.total < 5) return false; // Need at least 5 attempts
             const accuracy =
               ((stats.correct + stats.acceptable) / stats.total) * 100;
@@ -502,64 +373,27 @@ export const useProgressStore = create<ProgressState>()(
         return result;
       },
 
-      getQuizCompletionStats: () => {
-        const { quizProgress } = get();
-        const attempts = Object.values(quizProgress.attemptedQuestions);
-        const total = quizProgress.totalQuestionsInBank;
-
-        const attempted = attempts.length;
-        const mastered = attempts.filter((a) => a.correctOnFirstTry || a.lastAttemptCorrect).length;
-        const needsReview = attempts.filter((a) => !a.lastAttemptCorrect).length;
-
-        return {
-          attempted,
-          mastered,
-          needsReview,
-          total,
-          completionRate: total > 0 ? Math.round((attempted / total) * 100) : 0,
-          masteryRate: attempted > 0 ? Math.round((mastered / attempted) * 100) : 0,
-        };
-      },
-
-      getMasteredQuestionIds: () => {
-        const { quizProgress } = get();
-        return Object.values(quizProgress.attemptedQuestions)
-          .filter((a) => a.correctOnFirstTry || a.lastAttemptCorrect)
-          .map((a) => a.questionId);
-      },
-
-      getNeedsReviewQuestionIds: () => {
-        const { quizProgress } = get();
-        return Object.values(quizProgress.attemptedQuestions)
-          .filter((a) => !a.lastAttemptCorrect)
-          .map((a) => a.questionId);
-      },
-
-      getUnansweredQuestionIds: (allQuestionIds: string[]) => {
-        const { quizProgress } = get();
-        const attemptedIds = new Set(Object.keys(quizProgress.attemptedQuestions));
-        return allQuestionIds.filter((id) => !attemptedIds.has(id));
-      },
-
-      setTotalQuestionsInBank: (total: number) => {
-        set((state) => ({
-          quizProgress: {
-            ...state.quizProgress,
-            totalQuestionsInBank: total,
-          },
-        }));
-      },
-
       resetStats: () => {
         set(initialState);
+      },
+
+      resetDrillStats: (drillType: DrillType) => {
+        const { stats, recentResults } = get();
+        set({
+          stats: {
+            ...stats,
+            [drillType]: { ...initialStats, byPosition: {} },
+          },
+          recentResults: recentResults.filter(
+            (r) => r.drill_type !== drillType
+          ),
+        });
       },
     }),
     {
       name: "progress-storage",
       partialize: (state) => ({
         stats: state.stats,
-        quizStats: state.quizStats,
-        quizProgress: state.quizProgress,
         recentResults: state.recentResults,
         dailyHistory: state.dailyHistory,
         lastSyncedAt: state.lastSyncedAt,

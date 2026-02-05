@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import {
@@ -14,6 +14,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useAuthStore } from "@/stores/authStore";
 import { useProgressStore } from "@/stores/progressStore";
+import { getDrillHref } from "@/lib/constants/drills";
+import { useQuizProgressStore } from "@/stores/quizProgressStore";
 import {
   Target,
   TrendingUp,
@@ -25,6 +27,9 @@ import {
   Lightbulb,
   RotateCcw,
   XCircle,
+  Filter,
+  ChevronDown,
+  Trash2,
 } from "lucide-react";
 
 type DrillType = "rfi" | "vs_rfi" | "vs_3bet" | "vs_4bet" | "push_fold" | "push_fold_defense" | "push_fold_resteal" | "push_fold_hu" | "table_trainer";
@@ -50,12 +55,86 @@ const quizTypeLabels: Record<QuizType, { en: string; zh: string }> = {
   exploit: { en: "Exploit Quiz", zh: "剝削測驗" },
 };
 
+const POSITIONS = ["UTG", "HJ", "CO", "BTN", "SB", "BB"];
+
+type TimeRange = "all" | "today" | "week" | "month";
+
+const TIME_RANGE_LABELS: Record<TimeRange, string> = {
+  all: "全部",
+  today: "今天",
+  week: "本週",
+  month: "本月",
+};
+
+function isWithinTimeRange(dateStr: string | undefined, range: TimeRange): boolean {
+  if (!dateStr || range === "all") return true;
+
+  const date = new Date(dateStr);
+  const now = new Date();
+
+  switch (range) {
+    case "today":
+      return date.toDateString() === now.toDateString();
+    case "week": {
+      const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+      return date >= weekAgo;
+    }
+    case "month": {
+      const monthAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+      return date >= monthAgo;
+    }
+    default:
+      return true;
+  }
+}
+
 export default function ProgressPage() {
   const t = useTranslations();
   const router = useRouter();
   const { user, isInitialized } = useAuthStore();
-  const { stats, quizStats, recentResults, getWeakPositions, syncToCloud, isSyncing, lastSyncedAt } =
+  const { stats, recentResults, getWeakPositions, syncToCloud, isSyncing, lastSyncedAt, resetDrillStats } =
     useProgressStore();
+  const { quizStats } = useQuizProgressStore();
+
+  // Filter state for wrong answers
+  const [filterDrillType, setFilterDrillType] = useState<DrillType | "all">("all");
+  const [filterPosition, setFilterPosition] = useState<string>("all");
+  const [filterTimeRange, setFilterTimeRange] = useState<TimeRange>("all");
+  const [showFilters, setShowFilters] = useState(false);
+
+  // Filter wrong answers
+  const filteredWrongAnswers = useMemo(() => {
+    return recentResults
+      .filter((r) => !r.is_correct && !r.is_acceptable)
+      .filter((r) => filterDrillType === "all" || r.drill_type === filterDrillType)
+      .filter((r) => filterPosition === "all" || r.hero_position === filterPosition)
+      .filter((r) => isWithinTimeRange(r.created_at, filterTimeRange));
+  }, [recentResults, filterDrillType, filterPosition, filterTimeRange]);
+
+  // Analyze error patterns
+  const errorPatterns = useMemo(() => {
+    const patterns: Record<string, { count: number; action: string; correctAction: string }> = {};
+
+    filteredWrongAnswers.forEach((r) => {
+      const key = `${r.drill_type}-${r.hero_position}-${r.player_action}`;
+      if (!patterns[key]) {
+        patterns[key] = { count: 0, action: r.player_action, correctAction: r.correct_action };
+      }
+      patterns[key].count++;
+    });
+
+    return Object.entries(patterns)
+      .sort(([, a], [, b]) => b.count - a.count)
+      .slice(0, 5)
+      .map(([key, data]) => {
+        const [drillType, position] = key.split("-");
+        return {
+          drillType: drillType as DrillType,
+          position,
+          ...data,
+        };
+      });
+  }, [filteredWrongAnswers]);
 
   // Redirect to home if not logged in
   useEffect(() => {
@@ -266,6 +345,27 @@ export default function ProgressPage() {
                   >
                     {t("progress.practiceNow")}
                   </Button>
+
+                  {/* Reset this drill type */}
+                  {drillStats.total > 0 && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="w-full text-muted-foreground hover:text-destructive"
+                      onClick={() => {
+                        if (
+                          window.confirm(
+                            `確定要重置「${drillTypeLabels[drillType]?.zh || drillType}」的統計數據嗎？\n此類型的所有歷史記錄將被清除。`
+                          )
+                        ) {
+                          resetDrillStats(drillType);
+                        }
+                      }}
+                    >
+                      <Trash2 className="h-3 w-3 mr-1" />
+                      {t("progress.resetDrill") || "重置此練習統計"}
+                    </Button>
+                  )}
                 </div>
               </CardContent>
             </Card>
@@ -372,22 +472,167 @@ export default function ProgressPage() {
             {t("progress.wrongAnswers") || "錯題複習"}
           </h2>
 
+          {/* Error Pattern Analysis */}
+          {errorPatterns.length > 0 && (
+            <Card className="mb-4">
+              <CardHeader className="pb-2">
+                <CardTitle className="flex items-center gap-2 text-base">
+                  <AlertTriangle className="h-5 w-5 text-yellow-500" />
+                  {t("progress.errorPatterns") || "常見錯誤模式"}
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-2">
+                  {errorPatterns.map((pattern, idx) => (
+                    <div
+                      key={idx}
+                      className="flex items-center justify-between p-2 rounded bg-muted/50"
+                    >
+                      <div className="flex items-center gap-2">
+                        <Badge variant="outline">{pattern.position}</Badge>
+                        <span className="text-sm">
+                          {drillTypeLabels[pattern.drillType]?.zh || pattern.drillType}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2 text-sm">
+                        <span className="text-destructive">{pattern.action}</span>
+                        <span className="text-muted-foreground">→</span>
+                        <span className="text-green-500">{pattern.correctAction}</span>
+                        <Badge variant="secondary">{pattern.count}x</Badge>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="h-7 px-2 ml-1"
+                          onClick={() =>
+                            router.push(
+                              `${getDrillHref(pattern.drillType as import("@/lib/constants/drills").DrillType)}?position=${pattern.position}`
+                            )
+                          }
+                        >
+                          <Target className="h-3 w-3 mr-1" />
+                          練習
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
           <Card className="mb-8">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-base">
-                <XCircle className="h-5 w-5 text-destructive" />
-                {t("progress.recentMistakes") || "最近錯誤"}
-              </CardTitle>
-              <CardDescription>
-                {t("progress.reviewMistakesDesc") || "複習這些錯誤的手牌，加強記憶"}
-              </CardDescription>
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle className="flex items-center gap-2 text-base">
+                    <XCircle className="h-5 w-5 text-destructive" />
+                    {t("progress.recentMistakes") || "最近錯誤"}
+                    <Badge variant="secondary" className="ml-2">
+                      {filteredWrongAnswers.length}
+                    </Badge>
+                  </CardTitle>
+                  <CardDescription>
+                    {t("progress.reviewMistakesDesc") || "複習這些錯誤的手牌，加強記憶"}
+                  </CardDescription>
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowFilters(!showFilters)}
+                >
+                  <Filter className="h-4 w-4 mr-1" />
+                  {t("common.filter") || "篩選"}
+                  <ChevronDown className={`h-4 w-4 ml-1 transition-transform ${showFilters ? "rotate-180" : ""}`} />
+                </Button>
+              </div>
+
+              {/* Filters */}
+              {showFilters && (
+                <div className="mt-4 p-4 rounded-lg bg-muted/50 space-y-3">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                    {/* Drill Type Filter */}
+                    <div>
+                      <label className="text-xs font-medium text-muted-foreground mb-1 block">
+                        {t("progress.drillType") || "練習類型"}
+                      </label>
+                      <select
+                        className="w-full p-2 rounded border bg-background text-sm"
+                        value={filterDrillType}
+                        onChange={(e) => setFilterDrillType(e.target.value as DrillType | "all")}
+                      >
+                        <option value="all">{t("common.all") || "全部"}</option>
+                        {(Object.keys(drillTypeLabels) as DrillType[]).map((type) => (
+                          <option key={type} value={type}>
+                            {drillTypeLabels[type].zh}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                    {/* Position Filter */}
+                    <div>
+                      <label className="text-xs font-medium text-muted-foreground mb-1 block">
+                        {t("drill.position") || "位置"}
+                      </label>
+                      <select
+                        className="w-full p-2 rounded border bg-background text-sm"
+                        value={filterPosition}
+                        onChange={(e) => setFilterPosition(e.target.value)}
+                      >
+                        <option value="all">{t("common.all") || "全部"}</option>
+                        {POSITIONS.map((pos) => (
+                          <option key={pos} value={pos}>
+                            {pos}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                    {/* Time Range Filter */}
+                    <div>
+                      <label className="text-xs font-medium text-muted-foreground mb-1 block">
+                        {t("progress.timeRange") || "時間範圍"}
+                      </label>
+                      <select
+                        className="w-full p-2 rounded border bg-background text-sm"
+                        value={filterTimeRange}
+                        onChange={(e) => setFilterTimeRange(e.target.value as TimeRange)}
+                      >
+                        {(Object.keys(TIME_RANGE_LABELS) as TimeRange[]).map((range) => (
+                          <option key={range} value={range}>
+                            {TIME_RANGE_LABELS[range]}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+
+                  {/* Clear filters */}
+                  {(filterDrillType !== "all" || filterPosition !== "all" || filterTimeRange !== "all") && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => {
+                        setFilterDrillType("all");
+                        setFilterPosition("all");
+                        setFilterTimeRange("all");
+                      }}
+                    >
+                      <RotateCcw className="h-3 w-3 mr-1" />
+                      {t("common.clearFilters") || "清除篩選"}
+                    </Button>
+                  )}
+                </div>
+              )}
             </CardHeader>
             <CardContent>
-              <div className="space-y-3 max-h-96 overflow-y-auto">
-                {recentResults
-                  .filter(r => !r.is_correct && !r.is_acceptable)
-                  .slice(0, 20)
-                  .map((result, index) => (
+              {filteredWrongAnswers.length === 0 ? (
+                <div className="text-center py-8 text-muted-foreground">
+                  {t("progress.noMatchingErrors") || "沒有符合條件的錯題"}
+                </div>
+              ) : (
+                <div className="space-y-3 max-h-96 overflow-y-auto">
+                  {filteredWrongAnswers.slice(0, 50).map((result, index) => (
                     <div
                       key={result.id || index}
                       className="flex items-center justify-between p-3 rounded-lg bg-destructive/5 border border-destructive/20"
@@ -404,6 +649,9 @@ export default function ProgressPage() {
                             </span>
                           )}
                         </div>
+                        <Badge variant="secondary" className="text-xs">
+                          {drillTypeLabels[result.drill_type as DrillType]?.zh || result.drill_type}
+                        </Badge>
                       </div>
                       <div className="text-right text-sm">
                         <div className="text-destructive">
@@ -416,15 +664,13 @@ export default function ProgressPage() {
                       </div>
                     </div>
                   ))}
-              </div>
+                </div>
+              )}
 
-              {/* Practice button for the drill type of the most common mistake */}
-              {(() => {
-                const wrongAnswers = recentResults.filter(r => !r.is_correct && !r.is_acceptable);
-                if (wrongAnswers.length === 0) return null;
-
-                // Find most common drill type among wrong answers
-                const drillCounts = wrongAnswers.reduce((acc, r) => {
+              {/* Practice button for filtered results */}
+              {filteredWrongAnswers.length > 0 && (() => {
+                // Find most common drill type among filtered wrong answers
+                const drillCounts = filteredWrongAnswers.reduce((acc, r) => {
                   acc[r.drill_type] = (acc[r.drill_type] || 0) + 1;
                   return acc;
                 }, {} as Record<string, number>);

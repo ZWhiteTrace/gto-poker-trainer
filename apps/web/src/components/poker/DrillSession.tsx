@@ -14,6 +14,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { api, SpotResponse, EvaluateResponse } from "@/lib/api";
+import { getErrorMessage } from "@/lib/errors";
 import {
   Loader2,
   CheckCircle2,
@@ -34,6 +35,7 @@ interface DrillSessionProps {
   titleKey: string;
   descriptionKey: string;
   positions?: string[];
+  initialPosition?: string;
 }
 
 interface SessionStats {
@@ -90,6 +92,7 @@ export function DrillSession({
   titleKey,
   descriptionKey,
   positions = ["UTG", "HJ", "CO", "BTN", "SB", "BB"],
+  initialPosition,
 }: DrillSessionProps) {
   const t = useTranslations();
   const [currentSpot, setCurrentSpot] = useState<SpotResponse | null>(null);
@@ -97,7 +100,11 @@ export function DrillSession({
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [sessionStats, setSessionStats] = useState<SessionStats>(initialStats);
-  const [enabledPositions, setEnabledPositions] = useState<string[]>(positions);
+  const [enabledPositions, setEnabledPositions] = useState<string[]>(
+    initialPosition && positions.includes(initialPosition)
+      ? [initialPosition]
+      : positions
+  );
   const [showSettings, setShowSettings] = useState(false);
 
   // Progress persistence
@@ -117,7 +124,7 @@ export function DrillSession({
       });
       setCurrentSpot(spot);
     } catch (err) {
-      setError(err instanceof Error ? err.message : t("common.error"));
+      setError(getErrorMessage(err, t("common.error")));
     } finally {
       setIsLoading(false);
     }
@@ -146,8 +153,7 @@ export function DrillSession({
         newStats.bestStreak = Math.max(newStats.streak, newStats.bestStreak);
       } else if (result.is_acceptable) {
         newStats.acceptable += 1;
-        newStats.streak += 1;
-        newStats.bestStreak = Math.max(newStats.streak, newStats.bestStreak);
+        // Acceptable keeps streak alive but doesn't increment
       } else {
         newStats.streak = 0;
       }
@@ -171,7 +177,7 @@ export function DrillSession({
         user?.id
       );
     } catch (err) {
-      setError(err instanceof Error ? err.message : t("common.error"));
+      setError(getErrorMessage(err, t("common.error")));
     } finally {
       setIsLoading(false);
     }
@@ -223,6 +229,8 @@ export function DrillSession({
       switch (e.key.toLowerCase()) {
         case "r":
           if (actions.includes("raise")) action = "raise";
+          else if (actions.includes("3bet")) action = "3bet";
+          else if (actions.includes("4bet")) action = "4bet";
           break;
         case "c":
           if (actions.includes("call")) action = "call";
@@ -232,12 +240,15 @@ export function DrillSession({
           break;
         case "a":
           if (actions.includes("allin")) action = "allin";
+          else if (actions.includes("5bet")) action = "5bet";
           break;
         case "3":
-          if (actions.includes("raise")) action = "raise"; // 3-bet
+          if (actions.includes("3bet")) action = "3bet";
+          else if (actions.includes("raise")) action = "raise";
           break;
         case "4":
-          if (actions.includes("allin")) action = "allin"; // 4-bet/all-in
+          if (actions.includes("4bet")) action = "4bet";
+          else if (actions.includes("allin")) action = "allin";
           break;
       }
 
@@ -272,6 +283,9 @@ export function DrillSession({
   const getActionLabel = (action: string) => {
     const actionMap: Record<string, string> = {
       raise: t("drill.actions.raise"),
+      "3bet": "3-Bet",
+      "4bet": "4-Bet",
+      "5bet": "5-Bet",
       call: t("drill.actions.call"),
       fold: t("drill.actions.fold"),
       allin: t("drill.actions.allin"),
@@ -525,7 +539,7 @@ export function DrillSession({
                 <div className="space-y-3">
                   <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-4">
                     {currentSpot.available_actions.map((action) => {
-                      const shortcutKey = action === "raise" ? "R" : action === "call" ? "C" : action === "fold" ? "F" : action === "allin" ? "A" : "";
+                      const shortcutKey = action === "raise" ? "R" : action === "3bet" ? "3" : action === "4bet" ? "4" : action === "call" ? "C" : action === "fold" ? "F" : action === "allin" ? "A" : action === "5bet" ? "A" : "";
                       return (
                         <Button
                           key={action}
