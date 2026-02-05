@@ -9,7 +9,7 @@ import { test, expect } from '@playwright/test';
 test.describe('Progress Page', () => {
   test('loads page or redirects gracefully', async ({ page }) => {
     await page.goto('/progress');
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState('domcontentloaded');
 
     // Check if we actually landed on the progress page (has h1 with progress-related text)
     const isProgressPage = await page.locator('h1').first()
@@ -26,7 +26,7 @@ test.describe('Progress Page', () => {
 
   test('shows drill stats when progress page is available', async ({ page }) => {
     await page.goto('/progress');
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState('domcontentloaded');
 
     // Check if we're on the progress page
     const h1Text = await page.locator('h1').first()
@@ -45,7 +45,7 @@ test.describe('Progress Page', () => {
 
   test('practice now button navigates to drill page', async ({ page }) => {
     await page.goto('/progress');
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState('domcontentloaded');
 
     const h1Text = await page.locator('h1').first()
       .textContent({ timeout: 5000 }).catch(() => '');
@@ -62,7 +62,7 @@ test.describe('Progress Page', () => {
 
     if (await practiceBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
       await practiceBtn.click();
-      await page.waitForLoadState('networkidle');
+      await page.waitForLoadState('domcontentloaded');
       await expect(page).toHaveURL(/drill/);
     }
   });
@@ -70,7 +70,7 @@ test.describe('Progress Page', () => {
   test('reset button shows confirmation dialog', async ({ page }) => {
     // Inject fake stats before navigating
     await page.goto('/progress');
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState('domcontentloaded');
 
     const h1Text = await page.locator('h1').first()
       .textContent({ timeout: 5000 }).catch(() => '');
@@ -100,7 +100,7 @@ test.describe('Progress Page', () => {
     });
 
     await page.reload();
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState('domcontentloaded');
 
     // Look for reset/trash button
     const resetBtn = page.locator('button').filter({

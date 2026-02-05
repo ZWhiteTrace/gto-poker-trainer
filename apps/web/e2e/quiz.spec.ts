@@ -3,7 +3,7 @@ import { test, expect } from '@playwright/test';
 test.describe('Quiz Section', () => {
   test('should display quiz overview page', async ({ page }) => {
     await page.goto('/quiz');
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState('domcontentloaded');
 
     // Check for page title
     await expect(page.locator('h1')).toBeVisible();
@@ -14,7 +14,7 @@ test.describe('Quiz Section', () => {
 
   test('should navigate to logic quiz', async ({ page }) => {
     await page.goto('/quiz/logic');
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState('domcontentloaded');
 
     // Check for quiz interface
     await expect(page.locator('h1, h2').first()).toBeVisible();
@@ -25,7 +25,7 @@ test.describe('Quiz Section', () => {
 
   test('should navigate to equity quiz', async ({ page }) => {
     await page.goto('/quiz/equity');
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState('domcontentloaded');
 
     // Check for quiz interface
     await expect(page.locator('h1, h2').first()).toBeVisible();
@@ -33,7 +33,7 @@ test.describe('Quiz Section', () => {
 
   test('should navigate to exploit quiz', async ({ page }) => {
     await page.goto('/quiz/exploit');
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState('domcontentloaded');
 
     // Check for quiz interface
     await expect(page.locator('h1, h2').first()).toBeVisible();
@@ -43,7 +43,7 @@ test.describe('Quiz Section', () => {
 test.describe('Mock Exam', () => {
   test('should display exam start page', async ({ page }) => {
     await page.goto('/exam');
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState('domcontentloaded');
 
     // Check page loaded successfully (no 404/500)
     const title = await page.title();
@@ -56,7 +56,7 @@ test.describe('Mock Exam', () => {
 
   test('should start exam when clicking start button', async ({ page }) => {
     await page.goto('/exam');
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState('domcontentloaded');
 
     // Find and click the start exam button (has 'Start' or contains exam-related text)
     const startButton = page.getByRole('button').filter({ hasText: /start exam|開始|模擬考/i }).first();
@@ -73,7 +73,7 @@ test.describe('Mock Exam', () => {
 test.describe('Statistics Page', () => {
   test('should display statistics dashboard', async ({ page }) => {
     await page.goto('/stats');
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState('domcontentloaded');
 
     // Check for page title
     await expect(page.locator('h1')).toBeVisible();
@@ -86,7 +86,7 @@ test.describe('Statistics Page', () => {
 test.describe('Analyze Page', () => {
   test('should display hand analyzer', async ({ page }) => {
     await page.goto('/analyze');
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState('domcontentloaded');
 
     // Check for page title
     await expect(page.locator('h1')).toBeVisible();

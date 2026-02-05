@@ -31,7 +31,7 @@ async function waitForResult(page: Page) {
 test.describe('Endless Drill', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/drill/endless');
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState('domcontentloaded');
   });
 
   test('loads scenario with board + hand + action buttons', async ({ page }) => {

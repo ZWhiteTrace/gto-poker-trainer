@@ -30,7 +30,7 @@ test.describe('Smoke Tests', () => {
 
   test('postflop drill page loads', async ({ page }) => {
     await page.goto('/drill/postflop');
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState('domcontentloaded');
 
     // Should have page heading
     await expect(page.locator('h1')).toBeVisible();

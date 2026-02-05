@@ -24,7 +24,7 @@ async function countSuitSymbols(page: Page): Promise<number> {
 test.describe('Postflop Drill', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/drill/postflop');
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState('domcontentloaded');
   });
 
   test('loads page with 3 street tabs', async ({ page }) => {
@@ -72,7 +72,7 @@ test.describe('Postflop Drill', () => {
 
   test('switching to Turn tab loads new scenario', async ({ page }) => {
     await page.getByRole('tab', { name: /Turn/i }).click();
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState('domcontentloaded');
     await waitForScenario(page);
 
     // Turn tab should show more suit symbols (4 board + 2 hero ≈ 6, allow 5 for rendering variance)
@@ -82,7 +82,7 @@ test.describe('Postflop Drill', () => {
 
   test('switching to River tab loads scenario or shows error', async ({ page }) => {
     await page.getByRole('tab', { name: /River/i }).click();
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState('domcontentloaded');
 
     // River tab may fail to load on some API configurations
     const hasScenario = await page.locator('button').filter({ hasText: /^過牌$/ }).first()

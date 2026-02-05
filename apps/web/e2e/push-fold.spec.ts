@@ -17,7 +17,7 @@ async function waitForSpot(page: Page) {
 test.describe('Push/Fold Drill', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/drill/push-fold');
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState('domcontentloaded');
   });
 
   test('loads page with mode tabs and stats', async ({ page }) => {
@@ -112,7 +112,7 @@ test.describe('Push/Fold Drill', () => {
 
   test('?position=BTN URL param works', async ({ page }) => {
     await page.goto('/drill/push-fold?position=BTN');
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState('domcontentloaded');
     await waitForSpot(page);
 
     // BTN should be displayed in the scenario

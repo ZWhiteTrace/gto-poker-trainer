@@ -30,7 +30,7 @@ async function clickFirstAction(page: Page): Promise<string> {
 test.describe('RFI Drill – Full Flow', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/drill/rfi');
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState('domcontentloaded');
   });
 
   test('loads scenario with hand + position + action buttons', async ({ page }) => {
@@ -120,7 +120,7 @@ test.describe('RFI Drill – Full Flow', () => {
 test.describe('VS RFI Drill – Full Flow', () => {
   test('loads with villain position + 3 actions (3bet/call/fold)', async ({ page }) => {
     await page.goto('/drill/vs-rfi');
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState('domcontentloaded');
     await waitForScenarioLoad(page);
 
     // Should show villain position info ("XX opens" or "XX 開牌")
@@ -138,7 +138,7 @@ test.describe('VS RFI Drill – Full Flow', () => {
 
   test('complete answer flow', async ({ page }) => {
     await page.goto('/drill/vs-rfi');
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState('domcontentloaded');
     await waitForScenarioLoad(page);
 
     await clickFirstAction(page);
@@ -155,7 +155,7 @@ test.describe('VS RFI Drill – Full Flow', () => {
 test.describe('VS 3-Bet Drill', () => {
   test('loads and accepts answer', async ({ page }) => {
     await page.goto('/drill/vs-3bet');
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState('domcontentloaded');
     await waitForScenarioLoad(page);
 
     // Should have 4bet/call/fold actions
@@ -179,7 +179,7 @@ test.describe('VS 3-Bet Drill', () => {
 test.describe('VS 4-Bet Drill', () => {
   test('loads and accepts answer', async ({ page }) => {
     await page.goto('/drill/vs-4bet');
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState('domcontentloaded');
     await waitForScenarioLoad(page);
 
     const actions = page.locator('button').filter({
@@ -202,7 +202,7 @@ test.describe('VS 4-Bet Drill', () => {
 test.describe('DrillSession Position Filter', () => {
   test('toggling position filter restricts scenarios', async ({ page }) => {
     await page.goto('/drill/rfi');
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState('domcontentloaded');
     await waitForScenarioLoad(page);
 
     // Open settings/filter panel (gear icon or "Position Filter" section)
@@ -226,7 +226,7 @@ test.describe('DrillSession Position Filter', () => {
 test.describe('Drill URL Position Parameter', () => {
   test('?position=BTN pre-selects BTN only', async ({ page }) => {
     await page.goto('/drill/rfi?position=BTN');
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState('domcontentloaded');
     await waitForScenarioLoad(page);
 
     // The scenario should show BTN position

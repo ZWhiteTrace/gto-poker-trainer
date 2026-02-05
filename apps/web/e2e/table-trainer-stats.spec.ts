@@ -8,7 +8,7 @@ import { test, expect } from "@playwright/test";
 test.describe("Table Trainer Stats Panel", () => {
   test.beforeEach(async ({ page }) => {
     await page.goto("/drill/table-trainer");
-    await page.waitForLoadState("networkidle");
+    await page.waitForLoadState("domcontentloaded");
   });
 
   test("shows data collection message or stats when loaded", async ({ page }) => {
@@ -76,7 +76,7 @@ test.describe("Table Trainer Stats Panel", () => {
 test.describe("AI Exploit Analysis", () => {
   test("AI analysis section exists in stats panel", async ({ page }) => {
     await page.goto("/drill/table-trainer");
-    await page.waitForLoadState("networkidle");
+    await page.waitForLoadState("domcontentloaded");
 
     // Navigate to stats tab
     const statsTab = page.getByRole("button", { name: /統計|Stats/i });

@@ -3,7 +3,7 @@ import { test, expect } from '@playwright/test';
 test.describe('Home Page', () => {
   test('should display the home page', async ({ page }) => {
     await page.goto('/');
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState('domcontentloaded');
 
     // Check main title is visible
     await expect(page.locator('h1')).toBeVisible();
@@ -17,7 +17,7 @@ test.describe('Home Page', () => {
 
   test('should navigate to RFI drill', async ({ page }) => {
     await page.goto('/');
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState('domcontentloaded');
 
     // Click on Practice menu or RFI Drill link
     const practiceNav = page.getByRole('button', { name: /practice|練習/i });
@@ -34,7 +34,7 @@ test.describe('Home Page', () => {
 
   test('should navigate to Learn section', async ({ page }) => {
     await page.goto('/');
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState('domcontentloaded');
 
     const learnLink = page.getByRole('link', { name: /learn|學習/i }).first();
     if (await learnLink.isVisible()) {

@@ -45,7 +45,7 @@ async function clickNextStreet(page: Page) {
 test.describe('Multistreet Drill', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/drill/multistreet');
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState('domcontentloaded');
   });
 
   test('loads flop scenario with board + hand + action buttons', async ({ page }) => {
