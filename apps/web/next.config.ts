@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import path from "path";
 import createNextIntlPlugin from "next-intl/plugin";
 import { withSentryConfig } from "@sentry/nextjs";
 
@@ -9,6 +10,13 @@ const nextConfig: NextConfig = {
   images: {
     formats: ["image/avif", "image/webp"],
     minimumCacheTTL: 60 * 60 * 24 * 30, // 30 days
+  },
+
+  // Resolve @data/* alias for Turbopack (mirrors tsconfig paths)
+  turbopack: {
+    resolveAlias: {
+      "@data": path.resolve(__dirname, "../../data"),
+    },
   },
 
   // Experimental features for better performance
