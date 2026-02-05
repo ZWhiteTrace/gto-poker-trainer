@@ -12,7 +12,11 @@ import {
   FLOP_TEXTURE_CATEGORIES,
   analyzeFlop,
   generateFlopOfTexture,
+  getIpCbetMidpoint,
+  getOopCbetMidpoint,
+  getAdvantageColor,
   type FlopTextureType,
+  type AdvantageTier,
 } from "@/lib/poker/flopTexture";
 import type { Rank, Suit } from "@/lib/poker/types";
 import { SUIT_SYMBOLS, SUIT_CARD_COLORS } from "@/lib/poker/types";
@@ -42,7 +46,7 @@ interface CbetScenario {
 interface QuickScenario {
   flop: Rank[];
   suits: Suit[];
-  questionType: "connectivity" | "suit_distribution" | "wetness" | "high_card";
+  questionType: "connectivity" | "suit_distribution" | "texture_category" | "advantage_tier";
   correctAnswer: string;
 }
 
@@ -86,17 +90,18 @@ interface MustCheckScenario {
 // ============================================
 
 const FREQUENCY_OPTIONS = [
-  { key: "very_high", label: "很高 (70%+)" },
-  { key: "medium_high", label: "中高 (55-70%)" },
-  { key: "medium", label: "中等 (40-55%)" },
-  { key: "low", label: "低 (25-40%)" },
-  { key: "very_low", label: "很低 (<25%)" },
+  { key: "very_high", label: "很高 (80%+)" },
+  { key: "medium_high", label: "中高 (65-79%)" },
+  { key: "medium", label: "中等 (50-64%)" },
+  { key: "low", label: "低 (35-49%)" },
+  { key: "very_low", label: "很低 (<35%)" },
 ];
 
 const SIZING_OPTIONS = [
-  { key: "small", label: "小 (25-35%)" },
-  { key: "medium", label: "中 (40-60%)" },
-  { key: "large", label: "大 (66-80%)" },
+  { key: "small", label: "小 (25-33%)" },
+  { key: "mixed", label: "混合 (33/66%)" },
+  { key: "large", label: "大 (66-100%)" },
+  { key: "polarized", label: "極端化 (check/大注)" },
 ];
 
 // ============================================
@@ -123,19 +128,18 @@ function generateCbetScenario(): CbetScenario {
   const potType = Math.random() > 0.7 ? "3bp" : "srp";
   const position = Math.random() > 0.3 ? "IP" : "OOP";
 
-  // Determine correct answers based on texture
-  let correctFrequency: string;
-  let correctSizing: string;
+  // Use IP or OOP data based on position
+  const stratData = position === "IP" ? category.ip : category.oop;
+  const midFreq = Math.round((stratData.cbetFreqMin + stratData.cbetFreqMax) / 2);
 
-  if (category.cbet >= 70) correctFrequency = "very_high";
-  else if (category.cbet >= 55) correctFrequency = "medium_high";
-  else if (category.cbet >= 40) correctFrequency = "medium";
-  else if (category.cbet >= 25) correctFrequency = "low";
+  let correctFrequency: string;
+  if (midFreq >= 80) correctFrequency = "very_high";
+  else if (midFreq >= 65) correctFrequency = "medium_high";
+  else if (midFreq >= 50) correctFrequency = "medium";
+  else if (midFreq >= 35) correctFrequency = "low";
   else correctFrequency = "very_low";
 
-  if (category.sizing <= 35) correctSizing = "small";
-  else if (category.sizing <= 60) correctSizing = "medium";
-  else correctSizing = "large";
+  const correctSizing = stratData.sizing;
 
   return {
     flop: ranks,
@@ -154,7 +158,7 @@ function generateQuickScenario(): QuickScenario {
   const { ranks, suits } = generateFlopOfTexture(randomTexture);
 
   const questionTypes: QuickScenario["questionType"][] = [
-    "connectivity", "suit_distribution", "wetness", "high_card",
+    "connectivity", "suit_distribution", "texture_category", "advantage_tier",
   ];
   const questionType = questionTypes[Math.floor(Math.random() * questionTypes.length)];
 
@@ -163,16 +167,16 @@ function generateQuickScenario(): QuickScenario {
 
   switch (questionType) {
     case "connectivity":
-      correctAnswer = analysis.connectivity;
+      correctAnswer = analysis.isConnected ? "connected" : "disconnected";
       break;
     case "suit_distribution":
       correctAnswer = analysis.suitDistribution;
       break;
-    case "wetness":
-      correctAnswer = analysis.wetness;
+    case "texture_category":
+      correctAnswer = analysis.texture;
       break;
-    case "high_card":
-      correctAnswer = analysis.highCard;
+    case "advantage_tier":
+      correctAnswer = FLOP_TEXTURE_CATEGORIES[analysis.texture].advantageTier;
       break;
   }
 
@@ -207,9 +211,9 @@ const THREE_LAYER_SCENARIOS: Array<{
   };
   actionSummary: string;
 }> = [
-  // ① 高張乾燥（A72r / K83r）
+  // ① A高乾燥（A72r / A83r）— Axx
   {
-    textureHint: ["dry_ace_high", "dry_king_high"],
+    textureHint: ["Axx", "KQx"],
     potType: "srp",
     position: "IP",
     heroRange: "BTN open",
@@ -222,29 +226,44 @@ const THREE_LAYER_SCENARIOS: Array<{
     },
     actionSummary: "高頻小尺寸 (25-33%)，幾乎整個 range 都可以碰",
   },
-  // ② 高張但連結（AJT / KQ9）
+  // ② A+大牌連接（AKQ / AJT）— ABB
   {
-    textureHint: ["wet_broadway"],
+    textureHint: ["ABB", "BBB"],
     potType: "srp",
     position: "IP",
     heroRange: "CO open",
     villainRange: "BB call",
-    boardExample: "AJT / KQ9",
+    boardExample: "AKQ / KQJ",
     layers: {
-      initiative: { answer: "partial", explanation: "Range 優勢在但很脆，對手也有很多組合" },
-      volatility: { answer: "high", explanation: "Turn 任何牌都可能完成順子或改變局面" },
-      purpose: { answer: "value_protect", explanation: "有牌才打，目的是 Value + Protection" },
+      initiative: { answer: "yes", explanation: "壓倒性 range 優勢，BB 的強牌多已 3-bet" },
+      volatility: { answer: "medium", explanation: "已有順子可能，但 PFR 仍主導" },
+      purpose: { answer: "value_protect", explanation: "大尺寸取值 + 保護，BB 很難反擊" },
     },
-    actionSummary: "降頻率，中尺寸 (40-60%)，空氣牌直接 check",
+    actionSummary: "幾乎 100% c-bet，大尺寸 (66-100%)",
   },
-  // ③ 中張乾燥（952r / T63r）
+  // ③ 雙大牌+低牌（KQ5 / JT3）— BBx
   {
-    textureHint: ["dry_low_rainbow"],
+    textureHint: ["BBx", "ABx"],
     potType: "srp",
     position: "IP",
     heroRange: "BTN open",
     villainRange: "BB call",
-    boardExample: "952r / T63r",
+    boardExample: "KQ5 / AJ3",
+    layers: {
+      initiative: { answer: "partial", explanation: "Range 優勢在但低牌給 BB 一些連接" },
+      volatility: { answer: "high", explanation: "Turn 任何高牌或連接牌都可能改變局面" },
+      purpose: { answer: "value_protect", explanation: "有牌才打，混合尺寸" },
+    },
+    actionSummary: "高頻混合尺寸 (33% range bet 或 66% 選擇性)",
+  },
+  // ④ 低牌不連接（952r / 742r）— Low_unconn / JTx
+  {
+    textureHint: ["Low_unconn", "JTx"],
+    potType: "srp",
+    position: "IP",
+    heroRange: "BTN open",
+    villainRange: "BB call",
+    boardExample: "952r / J83r",
     layers: {
       initiative: { answer: "no", explanation: "低牌面對 BB 的 call range 更有利" },
       volatility: { answer: "medium", explanation: "變化中低，但 overcard 會影響" },
@@ -252,14 +271,14 @@ const THREE_LAYER_SCENARIOS: Array<{
     },
     actionSummary: "高頻 check，只用 Overpair 或有後門的高張下注",
   },
-  // ④ 中張濕（987 / 865）
+  // ⑤ 連接低/中牌（987 / 865 / T87）— Low_conn / JT_conn
   {
-    textureHint: ["wet_middle_connected", "wet_low_connected"],
+    textureHint: ["JT_conn", "Low_conn"],
     potType: "srp",
     position: "IP",
     heroRange: "BTN open",
     villainRange: "BB call",
-    boardExample: "987 / 865",
+    boardExample: "987 / T87",
     layers: {
       initiative: { answer: "no", explanation: "Range 優勢在對手，他們有更多 set 和兩對" },
       volatility: { answer: "explosive", explanation: "Turn 爆炸快，很多牌完成順子或同花" },
@@ -267,24 +286,9 @@ const THREE_LAYER_SCENARIOS: Array<{
     },
     actionSummary: "翻牌高頻 check，只用 strong made hand 或 combo draw 才打",
   },
-  // ⑤ 單色牌面（Monotone）
-  {
-    textureHint: ["monotone"],
-    potType: "srp",
-    position: "IP",
-    heroRange: "CO open",
-    villainRange: "BB call",
-    boardExample: "Ks8s3s",
-    layers: {
-      initiative: { answer: "depends", explanation: "看你有沒有高花，有花 = 有主動權" },
-      volatility: { answer: "high", explanation: "第四張同花牌會完全改變局面" },
-      purpose: { answer: "polarized", explanation: "非常極端：很強或帶高花 blocker 才 bluff" },
-    },
-    actionSummary: "小頻率、小尺寸，很多強牌要 check 保護 check range",
-  },
   // ⑥ Paired 牌面（KK5 / 772）
   {
-    textureHint: ["paired_high", "paired_low"],
+    textureHint: ["Paired"],
     potType: "srp",
     position: "IP",
     heroRange: "UTG open",
@@ -356,28 +360,28 @@ const MUST_CHECK_SCENARIOS_DATA: Array<{
   reason: string;
 }> = [
   // 中張濕牌面空氣牌
-  { textureHint: ["wet_middle_connected"], position: "IP", heroHand: "AhKc", heroHandType: "AK 高張空氣", shouldCheck: true, categoryId: "mid_wet_air", reason: "987 這類牌面，AK 沒有後門沒有 blocking，應該直接 check" },
-  { textureHint: ["wet_middle_connected"], position: "IP", heroHand: "QcJc", heroHandType: "QJ 同花有後門", shouldCheck: false, categoryId: "mid_wet_air", reason: "有後門同花聽牌，可以作為 bluff 候選" },
+  { textureHint: ["JT_conn", "Low_conn"], position: "IP", heroHand: "AhKc", heroHandType: "AK 高張空氣", shouldCheck: true, categoryId: "mid_wet_air", reason: "987 這類牌面，AK 沒有後門沒有 blocking，應該直接 check" },
+  { textureHint: ["JT_conn", "Low_conn"], position: "IP", heroHand: "QcJc", heroHandType: "QJ 同花有後門", shouldCheck: false, categoryId: "mid_wet_air", reason: "有後門同花聽牌，可以作為 bluff 候選" },
 
   // 低牌面無 Overpair
-  { textureHint: ["dry_low_rainbow"], position: "IP", heroHand: "AhQc", heroHandType: "AQ 高張", shouldCheck: true, categoryId: "low_board_no_overpair", reason: "952r 牌面，AQ 沒有 pair，下注目的不明確" },
-  { textureHint: ["dry_low_rainbow"], position: "IP", heroHand: "TsTc", heroHandType: "TT Overpair", shouldCheck: false, categoryId: "low_board_no_overpair", reason: "TT 是 Overpair，可以下注獲取價值" },
+  { textureHint: ["Low_unconn"], position: "IP", heroHand: "AhQc", heroHandType: "AQ 高張", shouldCheck: true, categoryId: "low_board_no_overpair", reason: "952r 牌面，AQ 沒有 pair，下注目的不明確" },
+  { textureHint: ["Low_unconn"], position: "IP", heroHand: "TsTc", heroHandType: "TT Overpair", shouldCheck: false, categoryId: "low_board_no_overpair", reason: "TT 是 Overpair，可以下注獲取價值" },
 
   // 連接牌面弱成牌
-  { textureHint: ["wet_broadway"], position: "IP", heroHand: "9h9c", heroHandType: "99 中對", shouldCheck: true, categoryId: "connected_weak_made", reason: "JT9 牌面 99 是中對，被 call 幾乎都是輸，應該 check" },
-  { textureHint: ["wet_broadway"], position: "IP", heroHand: "JsJc", heroHandType: "JJ 頂對", shouldCheck: false, categoryId: "connected_weak_made", reason: "JJ 是頂 set，強牌可以下注" },
+  { textureHint: ["BBx", "JT_conn"], position: "IP", heroHand: "9h9c", heroHandType: "99 中對", shouldCheck: true, categoryId: "connected_weak_made", reason: "JT9 牌面 99 是中對，被 call 幾乎都是輸，應該 check" },
+  { textureHint: ["BBx", "JT_conn"], position: "IP", heroHand: "JsJc", heroHandType: "JJ 頂對", shouldCheck: false, categoryId: "connected_weak_made", reason: "JJ 是頂 set，強牌可以下注" },
 
-  // 單花面無同花
-  { textureHint: ["monotone"], position: "IP", heroHand: "AhKh", heroHandType: "AK 無同花", shouldCheck: true, categoryId: "monotone_no_flush", reason: "單花牌面沒有同花，下注容易被有同花的牌 raise" },
-  { textureHint: ["monotone"], position: "IP", heroHand: "AsKs", heroHandType: "AK 帶堅果同花聽牌", shouldCheck: false, categoryId: "monotone_no_flush", reason: "有堅果同花聽牌，可以下注作為半詐唬" },
+  // 單花面無同花（概念：全同花牌面你沒有同花時應 check）
+  { textureHint: ["ABx", "BBx"], position: "IP", heroHand: "AhKh", heroHandType: "AK 無同花", shouldCheck: true, categoryId: "monotone_no_flush", reason: "單花牌面沒有同花，下注容易被有同花的牌 raise" },
+  { textureHint: ["ABx", "BBx"], position: "IP", heroHand: "AsKs", heroHandType: "AK 帶堅果同花聽牌", shouldCheck: false, categoryId: "monotone_no_flush", reason: "有堅果同花聽牌，可以下注作為半詐唬" },
 
   // OOP 濕潤牌面
-  { textureHint: ["twotone_wet"], position: "OOP", heroHand: "AhAc", heroHandType: "AA Overpair", shouldCheck: true, categoryId: "oop_wet_board", reason: "OOP 在濕潤牌面，即使是 AA 也要考慮 check 保護 range" },
-  { textureHint: ["dry_ace_high"], position: "OOP", heroHand: "AhAc", heroHandType: "AA 頂 set", shouldCheck: false, categoryId: "oop_wet_board", reason: "乾燥 A 高牌面，AA 是頂 set，可以下注" },
+  { textureHint: ["JT_conn", "Low_conn"], position: "OOP", heroHand: "AhAc", heroHandType: "AA Overpair", shouldCheck: true, categoryId: "oop_wet_board", reason: "OOP 在動態牌面，即使是 AA 也要考慮 check 保護 range" },
+  { textureHint: ["Axx"], position: "OOP", heroHand: "AhAc", heroHandType: "AA 頂 set", shouldCheck: false, categoryId: "oop_wet_board", reason: "乾燥 A 高牌面，AA 是頂 set，可以下注" },
 
   // 下注目的不明
-  { textureHint: ["dry_low_rainbow"], position: "IP", heroHand: "KhQc", heroHandType: "KQ 兩高張", shouldCheck: true, categoryId: "no_clear_purpose", reason: "說不出「我下注是因為___，被 call 後我打算___」= 不該下注" },
-  { textureHint: ["dry_ace_high"], position: "IP", heroHand: "KhQc", heroHandType: "KQ 第二對", shouldCheck: false, categoryId: "no_clear_purpose", reason: "K 高牌面 KQ 是第二對，可以薄價值" },
+  { textureHint: ["Low_unconn"], position: "IP", heroHand: "KhQc", heroHandType: "KQ 兩高張", shouldCheck: true, categoryId: "no_clear_purpose", reason: "說不出「我下注是因為___，被 call 後我打算___」= 不該下注" },
+  { textureHint: ["ABx"], position: "IP", heroHand: "KhQc", heroHandType: "KQ 第二對", shouldCheck: false, categoryId: "no_clear_purpose", reason: "A-K-x 牌面 KQ 是第二對，可以薄價值" },
 ];
 
 function generateMustCheckScenario(): MustCheckScenario {
@@ -528,13 +532,16 @@ function ClassifyDrill() {
                 <p className="text-gray-400 text-sm">
                   {correctCategory.descriptionZh}
                 </p>
-                <div className="flex items-center gap-4 mt-3 text-sm">
+                <div className="flex flex-wrap items-center gap-4 mt-3 text-sm">
                   <span className="text-gray-400">
-                    建議 C-bet: <span className="text-cyan-400">{correctCategory.cbet}%</span>
+                    IP C-bet: <span className="text-cyan-400">{correctCategory.ip.cbetFreqMin}-{correctCategory.ip.cbetFreqMax}%</span>
                   </span>
                   <span className="text-gray-400">
-                    建議尺寸: <span className="text-yellow-400">{correctCategory.sizing}% pot</span>
+                    Sizing: <span className="text-yellow-400">{correctCategory.ip.sizing}</span>
                   </span>
+                  <Badge className={getAdvantageColor(correctCategory.advantageTier)}>
+                    {correctCategory.advantageTier}
+                  </Badge>
                 </div>
               </CardContent>
             </Card>
@@ -646,7 +653,7 @@ function CbetDrill() {
           {/* Sizing Selection */}
           <div className="space-y-2">
             <p className="text-sm text-gray-400">下注尺寸:</p>
-            <div className="grid grid-cols-3 gap-2">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
               {SIZING_OPTIONS.map((opt) => (
                 <Button
                   key={opt.key}
@@ -687,8 +694,15 @@ function CbetDrill() {
                   {isFreqCorrect && isSizingCorrect ? "完全正確！" : isFreqCorrect || isSizingCorrect ? "部分正確" : "需要改進"}
                 </div>
                 <p className="text-gray-300 text-sm">
-                  {category.nameZh} 牌面，建議 C-bet 頻率約 <span className="text-cyan-400">{category.cbet}%</span>，
-                  使用 <span className="text-yellow-400">{category.sizing}% pot</span> 尺寸。
+                  {category.nameZh} 牌面（{scenario.position}），建議 C-bet 頻率約{" "}
+                  <span className="text-cyan-400">
+                    {scenario.position === "IP"
+                      ? `${category.ip.cbetFreqMin}-${category.ip.cbetFreqMax}%`
+                      : `${category.oop.cbetFreqMin}-${category.oop.cbetFreqMax}%`}
+                  </span>，
+                  使用 <span className="text-yellow-400">
+                    {scenario.position === "IP" ? category.ip.sizing : category.oop.sizing}
+                  </span> 尺寸。
                 </p>
                 <p className="text-gray-400 text-sm mt-2">
                   {category.descriptionZh}
@@ -768,8 +782,8 @@ function QuickDrill() {
     switch (scenario?.questionType) {
       case "connectivity": return "這個牌面的連接性？";
       case "suit_distribution": return "這個牌面的花色分佈？";
-      case "wetness": return "這個牌面的濕潤度？";
-      case "high_card": return "這個牌面的最高牌？";
+      case "texture_category": return "這個牌面的質地類型？";
+      case "advantage_tier": return "PFR 的 Range 優勢等級？";
       default: return "";
     }
   };
@@ -778,9 +792,8 @@ function QuickDrill() {
     switch (scenario?.questionType) {
       case "connectivity":
         return [
-          { key: "connected", label: "高度連接" },
-          { key: "semi_connected", label: "半連接" },
-          { key: "disconnected", label: "斷開" },
+          { key: "connected", label: "連接 (gapSum≤4)" },
+          { key: "disconnected", label: "不連接" },
         ];
       case "suit_distribution":
         return [
@@ -788,18 +801,16 @@ function QuickDrill() {
           { key: "twotone", label: "雙花" },
           { key: "monotone", label: "單花" },
         ];
-      case "wetness":
+      case "texture_category": {
+        const allTypes = Object.values(FLOP_TEXTURE_CATEGORIES);
+        return allTypes.map((cat) => ({ key: cat.id, label: cat.nameZh }));
+      }
+      case "advantage_tier":
         return [
-          { key: "dry", label: "乾燥" },
-          { key: "medium", label: "中等" },
-          { key: "wet", label: "濕潤" },
-        ];
-      case "high_card":
-        return [
-          { key: "ace", label: "A" },
-          { key: "king", label: "K" },
-          { key: "queen", label: "Q" },
-          { key: "low", label: "J以下" },
+          { key: "high", label: "高 (PFR 大優勢)" },
+          { key: "medium", label: "中 (部分優勢)" },
+          { key: "low", label: "低 (對手有利)" },
+          { key: "special", label: "特殊" },
         ];
       default:
         return [];
@@ -844,7 +855,14 @@ function QuickDrill() {
           </div>
 
           {/* Options */}
-          <div className="grid grid-cols-3 gap-2">
+          <div className={cn(
+            "grid gap-2",
+            scenario.questionType === "texture_category"
+              ? "grid-cols-2 sm:grid-cols-3"
+              : scenario.questionType === "advantage_tier"
+                ? "grid-cols-2"
+                : "grid-cols-2 sm:grid-cols-3"
+          )}>
             {getOptions().map((opt) => {
               const isSelected = selectedAnswer === opt.key;
               const isCorrectAnswer = scenario.correctAnswer === opt.key;
@@ -854,7 +872,7 @@ function QuickDrill() {
                   key={opt.key}
                   variant="outline"
                   className={cn(
-                    "h-auto py-4 text-lg",
+                    "h-auto py-3 text-sm sm:text-base",
                     showResult && isCorrectAnswer && "bg-green-600 hover:bg-green-600 text-white border-green-600",
                     showResult && isSelected && !isCorrectAnswer && "bg-red-600 hover:bg-red-600 text-white border-red-600",
                     !showResult && "hover:bg-gray-700"
@@ -863,6 +881,7 @@ function QuickDrill() {
                   disabled={showResult}
                 >
                   {opt.label}
+                  {showResult && isCorrectAnswer && <CheckCircle2 className="h-4 w-4 ml-1" />}
                 </Button>
               );
             })}
@@ -1335,13 +1354,19 @@ export default function FlopTextureDrillPage() {
             <CardTitle className="text-lg">質地參考表</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm">
+            <div className="grid grid-cols-1 gap-2 text-sm">
               {Object.values(FLOP_TEXTURE_CATEGORIES).map((cat) => (
-                <div key={cat.id} className="flex items-center justify-between p-2 bg-gray-900/50 rounded">
-                  <span className="text-gray-300">{cat.nameZh}</span>
-                  <div className="flex gap-2">
-                    <span className="text-cyan-400">{cat.cbet}%</span>
-                    <span className="text-yellow-400">{cat.sizing}%</span>
+                <div key={cat.id} className="flex items-center justify-between p-2 bg-gray-900/50 rounded gap-2">
+                  <div className="flex items-center gap-2 min-w-0">
+                    <Badge className={cn("text-[10px] shrink-0", getAdvantageColor(cat.advantageTier))}>
+                      {cat.advantageTier}
+                    </Badge>
+                    <span className="text-gray-300 truncate">{cat.nameZh}</span>
+                  </div>
+                  <div className="flex gap-3 shrink-0 text-xs">
+                    <span className="text-gray-500">{cat.frequencyPct}%</span>
+                    <span className="text-cyan-400">{cat.ip.cbetFreqMin}-{cat.ip.cbetFreqMax}%</span>
+                    <span className="text-yellow-400">{cat.ip.sizing}</span>
                   </div>
                 </div>
               ))}
