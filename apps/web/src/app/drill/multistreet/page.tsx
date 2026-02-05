@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -346,6 +347,7 @@ function getRandomCard(excludeCards: string[]): string {
 }
 
 export default function MultistreetDrillPage() {
+  const t = useTranslations("drill.multistreet");
   const [scenario, setScenario] = useState<FlopScenario | null>(null);
   const [currentStreet, setCurrentStreet] = useState<Street>("flop");
   const [turnCard, setTurnCard] = useState<string | null>(null);
@@ -657,10 +659,10 @@ export default function MultistreetDrillPage() {
       <div className="mb-6">
         <h1 className="text-2xl font-bold mb-2 flex items-center gap-2">
           <Layers className="h-6 w-6" />
-          多街道練習
+          {t("title")}
         </h1>
         <p className="text-muted-foreground">
-          從 Flop 到 River，練習完整的多街決策
+          {t("description")}
         </p>
       </div>
 
@@ -669,7 +671,7 @@ export default function MultistreetDrillPage() {
         <Card>
           <CardContent className="p-3 text-center">
             <div className="text-lg font-bold">{stats.totalHands}</div>
-            <div className="text-xs text-muted-foreground">總手數</div>
+            <div className="text-xs text-muted-foreground">{t("totalHands")}</div>
           </CardContent>
         </Card>
         <Card className="bg-blue-500/10">
@@ -687,7 +689,7 @@ export default function MultistreetDrillPage() {
         <Card className="bg-green-500/10">
           <CardContent className="p-3 text-center">
             <div className="text-lg font-bold text-green-600">{perfectRate}%</div>
-            <div className="text-xs text-muted-foreground">完美</div>
+            <div className="text-xs text-muted-foreground">{t("perfect")}</div>
           </CardContent>
         </Card>
       </div>
@@ -761,7 +763,7 @@ export default function MultistreetDrillPage() {
               {/* Hero Hand */}
               <div className="flex justify-center">
                 <div className="text-center">
-                  <div className="text-sm text-muted-foreground mb-2">你的手牌</div>
+                  <div className="text-sm text-muted-foreground mb-2">{t("yourHand")}</div>
                   <HeroHand hand={scenario.hand} board={getCurrentBoard()} />
                 </div>
               </div>
@@ -769,10 +771,10 @@ export default function MultistreetDrillPage() {
               {/* Current Street Label */}
               <div className="text-center space-y-2">
                 <Badge variant="outline" className="text-lg px-4 py-1">
-                  {currentStreet === "flop" && "Flop 決策"}
-                  {currentStreet === "turn" && "Turn 決策"}
-                  {currentStreet === "river" && "River 決策"}
-                  {currentStreet === "complete" && "手牌完成"}
+                  {currentStreet === "flop" && t("flopDecision")}
+                  {currentStreet === "turn" && t("turnDecision")}
+                  {currentStreet === "river" && t("riverDecision")}
+                  {currentStreet === "complete" && t("handComplete")}
                 </Badge>
 
                 {/* Villain action notification */}
@@ -786,7 +788,7 @@ export default function MultistreetDrillPage() {
                       <span className={`font-bold ${
                         villainAction === "check_raise" ? "text-red-600" : "text-orange-600"
                       }`}>
-                        {villainAction === "check_raise" ? "對手 Check-Raise！" : "對手下注！"}
+                        {villainAction === "check_raise" ? t("villainCheckRaise") : t("villainBets")}
                       </span>
                       <Badge className={villainAction === "check_raise" ? "bg-red-500" : "bg-orange-500"}>
                         {villainAction === "check_raise"
@@ -798,8 +800,8 @@ export default function MultistreetDrillPage() {
                     </div>
                     <div className="text-sm text-muted-foreground mt-1">
                       {villainAction === "check_raise"
-                        ? "對手 check-raise 了你的下注，你要如何應對？"
-                        : "你要如何應對？"}
+                        ? t("villainCRPrompt")
+                        : t("villainBetPrompt")}
                     </div>
                   </div>
                 )}
@@ -841,12 +843,12 @@ export default function MultistreetDrillPage() {
                           {lastDecision.isCorrect ? (
                             <>
                               <CheckCircle2 className="h-5 w-5 text-green-500" />
-                              <span className="font-bold text-green-600">正確！</span>
+                              <span className="font-bold text-green-600">{t("correct")}</span>
                             </>
                           ) : (
                             <>
                               <XCircle className="h-5 w-5 text-red-500" />
-                              <span className="font-bold text-red-600">可以更好</span>
+                              <span className="font-bold text-red-600">{t("couldBeBetter")}</span>
                             </>
                           )}
                           {lastDecision.villainAction && (
@@ -861,7 +863,7 @@ export default function MultistreetDrillPage() {
                         </div>
 
                         <div className="text-sm text-muted-foreground">
-                          GTO 頻率：
+                          {t("gtoFrequency")}
                           {Object.entries(gtoStrategy)
                             .filter(([, freq]) => (freq as number) > 0)
                             .sort(([, a], [, b]) => (b as number) - (a as number))
@@ -876,7 +878,7 @@ export default function MultistreetDrillPage() {
                   })()}
 
                   <Button onClick={handleNextStreet} className="w-full gap-2">
-                    {currentStreet === "river" ? "完成手牌" : "發下一張"}
+                    {currentStreet === "river" ? t("completeHand") : t("dealNext")}
                     <ChevronRight className="h-4 w-4" />
                   </Button>
                 </div>
@@ -886,7 +888,7 @@ export default function MultistreetDrillPage() {
               {currentStreet === "complete" && (
                 <div className="space-y-4">
                   <div className="text-center text-lg font-bold mb-4">
-                    手牌回顧
+                    {t("handReview")}
                   </div>
 
                   {decisions.map((d, i) => (
@@ -920,7 +922,7 @@ export default function MultistreetDrillPage() {
                         )}
                       </div>
                       <div className="text-sm">
-                        你選: {ACTION_LABELS[d.action] || d.action}
+                        {t("youChose")} {ACTION_LABELS[d.action] || d.action}
                       </div>
                     </div>
                   ))}
@@ -928,25 +930,25 @@ export default function MultistreetDrillPage() {
                   <div className="text-center pt-4">
                     {decisions.every(d => d.isCorrect) ? (
                       <div className="text-green-600 font-bold text-lg">
-                        🎉 完美的多街決策！
+                        🎉 {t("perfectPlay")}
                       </div>
                     ) : (
                       <div className="text-muted-foreground">
-                        正確 {decisions.filter(d => d.isCorrect).length} / {decisions.length} 街
+                        {t("correctStreets", { correct: decisions.filter(d => d.isCorrect).length, total: decisions.length })}
                       </div>
                     )}
                   </div>
 
                   <Button onClick={fetchNewScenario} className="w-full gap-2">
                     <RefreshCw className="h-4 w-4" />
-                    下一手
+                    {t("nextHand")}
                   </Button>
                 </div>
               )}
             </>
           ) : (
             <div className="text-center py-12 text-muted-foreground">
-              載入中...
+              {t("loading")}
             </div>
           )}
         </CardContent>
@@ -955,20 +957,20 @@ export default function MultistreetDrillPage() {
       {/* Tips */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-sm">多街道提示</CardTitle>
+          <CardTitle className="text-sm">{t("tipsTitle")}</CardTitle>
         </CardHeader>
         <CardContent className="text-sm text-muted-foreground space-y-2">
           <div className="flex items-center gap-2">
             <TrendingUp className="h-4 w-4 text-green-500" />
-            <span><strong>Brick (磚塊)：</strong>有利於進攻方，聽牌落空</span>
+            <span><strong>{t("tipBrickLabel")}</strong>{t("tipBrickDesc")}</span>
           </div>
           <div className="flex items-center gap-2">
             <TrendingDown className="h-4 w-4 text-red-500" />
-            <span><strong>完成牌：</strong>同花/順子完成時需減速</span>
+            <span><strong>{t("tipCompleteLabel")}</strong>{t("tipCompleteDesc")}</span>
           </div>
           <div className="flex items-center gap-2">
             <Minus className="h-4 w-4 text-yellow-500" />
-            <span><strong>配對牌：</strong>策略更極化，中等牌貶值</span>
+            <span><strong>{t("tipPairedLabel")}</strong>{t("tipPairedDesc")}</span>
           </div>
         </CardContent>
       </Card>

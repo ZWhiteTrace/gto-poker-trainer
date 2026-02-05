@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
@@ -203,6 +203,12 @@ export function DrillSession({
     }
   }, []);
 
+  // Refs to avoid stale closures in keyboard handler
+  const submitAnswerRef = useRef(submitAnswer);
+  submitAnswerRef.current = submitAnswer;
+  const generateSpotRef = useRef(generateSpot);
+  generateSpotRef.current = generateSpot;
+
   // Keyboard shortcuts
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -215,7 +221,7 @@ export function DrillSession({
       if (lastResult) {
         if (e.key === " " || e.key === "Enter") {
           e.preventDefault();
-          generateSpot();
+          generateSpotRef.current();
         }
         return;
       }
@@ -254,7 +260,7 @@ export function DrillSession({
 
       if (action) {
         e.preventDefault();
-        submitAnswer(action);
+        submitAnswerRef.current(action);
       }
     };
 

@@ -32,7 +32,7 @@ import {
   Trash2,
 } from "lucide-react";
 
-type DrillType = "rfi" | "vs_rfi" | "vs_3bet" | "vs_4bet" | "push_fold" | "push_fold_defense" | "push_fold_resteal" | "push_fold_hu" | "table_trainer";
+type DrillType = "rfi" | "vs_rfi" | "vs_3bet" | "vs_4bet" | "push_fold" | "push_fold_defense" | "push_fold_resteal" | "push_fold_hu" | "table_trainer" | "postflop";
 type QuizType = "equity" | "outs" | "ev" | "logic" | "exploit";
 
 const drillTypeLabels: Record<DrillType, { en: string; zh: string }> = {
@@ -45,6 +45,7 @@ const drillTypeLabels: Record<DrillType, { en: string; zh: string }> = {
   push_fold_resteal: { en: "Resteal Drill", zh: "Resteal 練習" },
   push_fold_hu: { en: "Heads Up P/F", zh: "單挑 Push/Fold" },
   table_trainer: { en: "Table Trainer", zh: "撲克桌訓練" },
+  postflop: { en: "Postflop Drill", zh: "翻後練習" },
 };
 
 const quizTypeLabels: Record<QuizType, { en: string; zh: string }> = {

@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import {
@@ -71,8 +72,11 @@ const HU_SCENARIOS = [
   { key: "BB_call_vs_SB_shove", label: "BB Call vs SB (HU)" },
 ];
 
-export default function PushFoldDrillPage() {
+function PushFoldDrillInner() {
   const t = useTranslations();
+  const searchParams = useSearchParams();
+  const focusPosition = searchParams.get("position") || undefined;
+
   const [mode, setMode] = useState<DrillMode>("push");
   const [currentSpot, setCurrentSpot] = useState<MttDrillSpotResponse | null>(null);
   const [lastResult, setLastResult] = useState<MttDrillEvaluateResponse | null>(null);
@@ -87,8 +91,11 @@ export default function PushFoldDrillPage() {
   const drillType = modeToDrillType[mode];
   const cumulativeStats = stats[drillType];
 
+  const allPositions = ["UTG", "HJ", "CO", "BTN", "SB"];
   // Settings state
-  const [enabledPositions, setEnabledPositions] = useState<string[]>(["UTG", "HJ", "CO", "BTN", "SB"]);
+  const [enabledPositions, setEnabledPositions] = useState<string[]>(
+    focusPosition && allPositions.includes(focusPosition) ? [focusPosition] : allPositions
+  );
   const [enabledStackDepths, setEnabledStackDepths] = useState<string[]>(["5bb", "8bb", "10bb", "12bb", "15bb"]);
   const [enabledScenarios, setEnabledScenarios] = useState<string[]>([]);
 
@@ -545,5 +552,13 @@ export default function PushFoldDrillPage() {
         </CardContent>
       </Card>
     </div>
+  );
+}
+
+export default function PushFoldDrillPage() {
+  return (
+    <Suspense>
+      <PushFoldDrillInner />
+    </Suspense>
   );
 }

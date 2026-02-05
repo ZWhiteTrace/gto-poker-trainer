@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -29,15 +30,16 @@ import { SUIT_SYMBOLS, SUIT_COLORS } from "@/lib/poker/types";
 const ENDLESS_STATS_KEY = "endless-drill-stats";
 
 // Pot types with Chinese names
-const POT_TYPES = {
-  all: { label: "全部", color: "bg-purple-500" },
-  srp: { label: "SRP", color: "bg-blue-500" },
-  "3bet": { label: "3bet", color: "bg-orange-500" },
-  "4bet": { label: "4bet", color: "bg-red-500" },
-  multiway: { label: "多人底池", color: "bg-green-500" },
-  limp: { label: "Limp", color: "bg-gray-500" },
-  squeeze: { label: "Squeeze", color: "bg-pink-500" },
+const POT_TYPE_COLORS: Record<string, string> = {
+  all: "bg-purple-500",
+  srp: "bg-blue-500",
+  "3bet": "bg-orange-500",
+  "4bet": "bg-red-500",
+  multiway: "bg-green-500",
+  limp: "bg-gray-500",
+  squeeze: "bg-pink-500",
 };
+const POT_TYPE_KEYS = Object.keys(POT_TYPE_COLORS);
 
 interface Scenario {
   scenario_id: string;
@@ -178,6 +180,7 @@ const ACTION_LABELS: Record<string, string> = {
 };
 
 export default function EndlessDrillPage() {
+  const t = useTranslations("drill.endless");
   const { user } = useAuthStore();
   const [selectedPotType, setSelectedPotType] = useState<string>("all");
   const [scenario, setScenario] = useState<Scenario | null>(null);
@@ -311,9 +314,9 @@ export default function EndlessDrillPage() {
     <div className="container mx-auto px-4 py-8 max-w-4xl">
       {/* Header */}
       <div className="mb-6">
-        <h1 className="text-2xl font-bold mb-2">無限練習模式</h1>
+        <h1 className="text-2xl font-bold mb-2">{t("title")}</h1>
         <p className="text-muted-foreground">
-          隨機練習所有場景類型，持續提升 GTO 直覺
+          {t("description")}
         </p>
       </div>
 
@@ -324,7 +327,7 @@ export default function EndlessDrillPage() {
             <Target className="h-8 w-8 text-blue-500" />
             <div>
               <div className="text-2xl font-bold">{stats.total}</div>
-              <div className="text-xs text-muted-foreground">總題數</div>
+              <div className="text-xs text-muted-foreground">{t("totalQuestions")}</div>
             </div>
           </CardContent>
         </Card>
@@ -334,7 +337,7 @@ export default function EndlessDrillPage() {
             <CheckCircle2 className="h-8 w-8 text-green-500" />
             <div>
               <div className="text-2xl font-bold">{accuracy}%</div>
-              <div className="text-xs text-muted-foreground">正確率</div>
+              <div className="text-xs text-muted-foreground">{t("accuracy")}</div>
             </div>
           </CardContent>
         </Card>
@@ -344,7 +347,7 @@ export default function EndlessDrillPage() {
             <Flame className="h-8 w-8 text-orange-500" />
             <div>
               <div className="text-2xl font-bold">{stats.streak}</div>
-              <div className="text-xs text-muted-foreground">連勝</div>
+              <div className="text-xs text-muted-foreground">{t("streak")}</div>
             </div>
           </CardContent>
         </Card>
@@ -354,7 +357,7 @@ export default function EndlessDrillPage() {
             <Trophy className="h-8 w-8 text-purple-500" />
             <div>
               <div className="text-2xl font-bold">{stats.maxStreak}</div>
-              <div className="text-xs text-muted-foreground">最高連勝</div>
+              <div className="text-xs text-muted-foreground">{t("maxStreak")}</div>
             </div>
           </CardContent>
         </Card>
@@ -362,15 +365,15 @@ export default function EndlessDrillPage() {
 
       {/* Pot Type Filter */}
       <div className="flex flex-wrap gap-2 mb-6">
-        {Object.entries(POT_TYPES).map(([key, { label, color }]) => (
+        {POT_TYPE_KEYS.map((key) => (
           <Button
             key={key}
             variant={selectedPotType === key ? "default" : "outline"}
             size="sm"
             onClick={() => setSelectedPotType(key)}
-            className={cn(selectedPotType === key && color)}
+            className={cn(selectedPotType === key && POT_TYPE_COLORS[key])}
           >
-            {label}
+            {t(`potTypes.${key}`)}
           </Button>
         ))}
       </div>
@@ -385,8 +388,8 @@ export default function EndlessDrillPage() {
                   <Badge variant="secondary">
                     {scenario.position} vs {scenario.villain}
                   </Badge>
-                  <Badge className={POT_TYPES[scenario.pot_type as keyof typeof POT_TYPES]?.color || "bg-gray-500"}>
-                    {POT_TYPES[scenario.pot_type as keyof typeof POT_TYPES]?.label || scenario.pot_type}
+                  <Badge className={POT_TYPE_COLORS[scenario.pot_type] || "bg-gray-500"}>
+                    {t(`potTypes.${scenario.pot_type}`)}
                   </Badge>
                   <Badge variant="outline">{scenario.texture_zh}</Badge>
                 </>
@@ -421,7 +424,7 @@ export default function EndlessDrillPage() {
               <div className="flex justify-center">
                 <div className="text-center">
                   <div className="text-sm text-muted-foreground mb-2">
-                    你的手牌
+                    {t("yourHand")}
                   </div>
                   <HeroHand hand={scenario.hand} board={scenario.board} />
                 </div>
@@ -469,20 +472,20 @@ export default function EndlessDrillPage() {
                     {isCorrect ? (
                       <>
                         <CheckCircle2 className="h-6 w-6 text-green-500" />
-                        <span className="font-bold text-green-600">正確！</span>
+                        <span className="font-bold text-green-600">{t("correct")}</span>
                       </>
                     ) : (
                       <>
                         <XCircle className="h-6 w-6 text-red-500" />
                         <span className="font-bold text-red-600">
-                          可以更好
+                          {t("couldBeBetter")}
                         </span>
                       </>
                     )}
                   </div>
 
                   <div className="text-sm text-muted-foreground mb-4">
-                    最佳策略頻率：
+                    {t("bestStrategy")}
                     {Object.entries(scenario.correct_strategy || {})
                       .filter(([, freq]) => (freq as number) > 0)
                       .sort(([, a], [, b]) => (b as number) - (a as number))
@@ -495,14 +498,14 @@ export default function EndlessDrillPage() {
 
                   <Button onClick={handleNext} className="gap-2">
                     <Zap className="h-4 w-4" />
-                    下一題
+                    {t("nextQuestion")}
                   </Button>
                 </div>
               )}
             </>
           ) : (
             <div className="text-center py-12 text-muted-foreground">
-              載入中...
+              {t("loading")}
             </div>
           )}
         </CardContent>
@@ -514,13 +517,13 @@ export default function EndlessDrillPage() {
           <CardHeader>
             <CardTitle className="text-sm flex items-center gap-2">
               <AlertTriangle className="h-4 w-4 text-orange-500" />
-              弱點分析
+              {t("weakpoints")}
             </CardTitle>
           </CardHeader>
           <CardContent className="text-sm space-y-3">
             {weakpoints.potTypes.length > 0 && (
               <div>
-                <span className="text-muted-foreground">需加強的底池類型：</span>
+                <span className="text-muted-foreground">{t("weakPotTypes")}</span>
                 <div className="flex flex-wrap gap-2 mt-1">
                   {weakpoints.potTypes.map((pt) => (
                     <Badge
@@ -529,7 +532,7 @@ export default function EndlessDrillPage() {
                       className="cursor-pointer hover:bg-orange-500/20"
                       onClick={() => setSelectedPotType(pt)}
                     >
-                      {POT_TYPES[pt as keyof typeof POT_TYPES]?.label || pt}
+                      {t(`potTypes.${pt}`)}
                       {stats.byPotType[pt] && (
                         <span className="ml-1 text-orange-500">
                           {Math.round((stats.byPotType[pt].correct / stats.byPotType[pt].total) * 100)}%
@@ -542,7 +545,7 @@ export default function EndlessDrillPage() {
             )}
             {weakpoints.textures.length > 0 && (
               <div>
-                <span className="text-muted-foreground">需加強的牌面質地：</span>
+                <span className="text-muted-foreground">{t("weakTextures")}</span>
                 <div className="flex flex-wrap gap-2 mt-1">
                   {weakpoints.textures.slice(0, 5).map((tex) => (
                     <Badge key={tex} variant="outline">
@@ -564,17 +567,17 @@ export default function EndlessDrillPage() {
       {/* Tips */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-sm">練習提示</CardTitle>
+          <CardTitle className="text-sm">{t("tipsTitle")}</CardTitle>
         </CardHeader>
         <CardContent className="text-sm text-muted-foreground space-y-2">
           <p>
-            <strong>正確判定：</strong>選擇頻率 ≥ 25% 的動作視為正確
+            <strong>{t("tipCorrectLabel")}</strong>{t("tipCorrectDesc")}
           </p>
           <p>
-            <strong>混合策略：</strong>GTO 通常需要混合多種動作，不是只有一個正確答案
+            <strong>{t("tipMixedLabel")}</strong>{t("tipMixedDesc")}
           </p>
           <p>
-            <strong>位置優勢：</strong>IP（有位置）可以更激進，OOP 需要更謹慎
+            <strong>{t("tipPositionLabel")}</strong>{t("tipPositionDesc")}
           </p>
         </CardContent>
       </Card>
