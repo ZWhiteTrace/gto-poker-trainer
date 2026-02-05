@@ -18,6 +18,7 @@ import {
   Lightbulb,
   AlertTriangle,
 } from "lucide-react";
+import { API_BASE_URL } from "@/lib/api";
 
 // ============================================
 // Types
@@ -74,7 +75,7 @@ interface TextureProgress {
 // Constants
 // ============================================
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+const API_BASE = API_BASE_URL;
 
 const CATEGORY_COLORS: Record<string, string> = {
   dry: "bg-amber-100 text-amber-800 border-amber-200 dark:bg-amber-900 dark:text-amber-200 dark:border-amber-700",
@@ -637,10 +638,12 @@ export default function TextureTrainingPage() {
     fetchTextures();
 
     // Load progress from localStorage
-    const savedProgress = localStorage.getItem("texture-training-progress");
-    if (savedProgress) {
-      setProgress(JSON.parse(savedProgress));
-    }
+    try {
+      const savedProgress = localStorage.getItem("texture-training-progress");
+      if (savedProgress) {
+        setProgress(JSON.parse(savedProgress));
+      }
+    } catch { /* ignore corrupted data */ }
   }, []);
 
   const saveProgress = (textureId: string, correct: number, total: number) => {

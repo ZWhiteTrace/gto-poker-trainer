@@ -146,7 +146,7 @@ export default function PushFoldDrillPage() {
       // Persist to progressStore (localStorage + Supabase if logged in)
       await recordResult(
         {
-          drill_type: drillType as "rfi" | "vs_rfi" | "vs_3bet" | "vs_4bet",
+          drill_type: drillType,
           hand: currentSpot.hand,
           hero_position: currentSpot.position,
           villain_position: currentSpot.scenario || undefined,

@@ -34,12 +34,9 @@
     "postflopDrill": "翻後 C-bet",
     "flopTexture": "翻牌質地",
     "textureTraining": "質地訓練",
-    "tableTrainer": "GTO 牌桌",
-    "gtoPractice": "GTO 對練",
+    "tableTrainer": "牌桌訓練",
     "pushFold": "Push/Fold 圖表",
-    "icm": "ICM 計算器",
-    "flopTexture": "牌面結構",
-    "tableTrainer": "牌桌訓練"
+    "icm": "ICM 計算器"
   },
   "home": {
     "badge": "全中文 · 完全免費 · 免註冊",

@@ -1,4 +1,7 @@
 import { createClient } from "./client";
+import { createModuleLogger } from "@/lib/errors";
+
+const log = createModuleLogger("Leaderboard");
 
 export type LeaderboardType = "total" | "weekly" | "monthly" | "streak" | "accuracy";
 
@@ -44,7 +47,7 @@ export async function getLeaderboard(
   });
 
   if (error) {
-    console.error("Error fetching leaderboard:", error);
+    log.error("Error fetching leaderboard:", error);
     return [];
   }
 
@@ -126,7 +129,7 @@ export async function updateLeaderboardStats(
       .eq("user_id", userId);
 
     if (error) {
-      console.error("Error updating leaderboard stats:", error);
+      log.error("Error updating leaderboard stats:", error);
       return null;
     }
   } else {
@@ -146,7 +149,7 @@ export async function updateLeaderboardStats(
     });
 
     if (error) {
-      console.error("Error creating leaderboard stats:", error);
+      log.error("Error creating leaderboard stats:", error);
       return null;
     }
   }
@@ -188,7 +191,7 @@ export async function updateUserProfile(
     });
 
   if (error) {
-    console.error("Error updating profile:", error);
+    log.error("Error updating profile:", error);
     return false;
   }
 
@@ -227,7 +230,7 @@ export async function getAllAchievements(): Promise<Achievement[]> {
     .order("points", { ascending: true });
 
   if (error) {
-    console.error("Error fetching achievements:", error);
+    log.error("Error fetching achievements:", error);
     return [];
   }
 
@@ -250,7 +253,7 @@ export async function getUserAchievements(userId: string): Promise<AchievementSu
       .eq("user_id", userId);
 
     if (uaError) {
-      console.error("Error fetching user achievements:", uaError);
+      log.error("Error fetching user achievements:", uaError);
       return { total_achievements: 0, total_points: 0, achievements: [] };
     }
 
@@ -274,7 +277,7 @@ export async function getUserAchievements(userId: string): Promise<AchievementSu
       achievements,
     };
   } catch (error) {
-    console.error("Error in getUserAchievements:", error);
+    log.error("Error in getUserAchievements:", error);
     return { total_achievements: 0, total_points: 0, achievements: [] };
   }
 }
@@ -293,7 +296,7 @@ export async function checkAchievements(userId: string): Promise<Achievement[]> 
       .single();
 
     if (statsError || !stats) {
-      console.error("Error fetching stats for achievement check:", statsError);
+      log.error("Error fetching stats for achievement check:", statsError);
       return [];
     }
 
@@ -303,7 +306,7 @@ export async function checkAchievements(userId: string): Promise<Achievement[]> 
       .select("*");
 
     if (achievementsError || !allAchievements) {
-      console.error("Error fetching achievements:", achievementsError);
+      log.error("Error fetching achievements:", achievementsError);
       return [];
     }
 
@@ -314,7 +317,7 @@ export async function checkAchievements(userId: string): Promise<Achievement[]> 
       .eq("user_id", userId);
 
     if (unlockedError) {
-      console.error("Error fetching unlocked achievements:", unlockedError);
+      log.error("Error fetching unlocked achievements:", unlockedError);
       return [];
     }
 
@@ -364,12 +367,12 @@ export async function checkAchievements(userId: string): Promise<Achievement[]> 
             unlocked_at: new Date().toISOString(),
           });
         } else {
-          console.error("Error inserting achievement:", insertError);
+          log.error("Error inserting achievement:", insertError);
         }
       }
     }
   } catch (error) {
-    console.error("Error checking achievements:", error);
+    log.error("Error checking achievements:", error);
     return [];
   }
 

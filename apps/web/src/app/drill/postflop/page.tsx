@@ -14,26 +14,12 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
 import { RefreshCw, CheckCircle2, XCircle, Trophy } from "lucide-react";
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://api.grindgto.com";
+import { API_BASE_URL } from "@/lib/api";
+import { SUIT_SYMBOLS, SUIT_COLORS } from "@/lib/poker/types";
+import { useProgressStore } from "@/stores/progressStore";
+import { useAuthStore } from "@/stores/authStore";
 
 type Street = "flop" | "turn" | "river";
-
-// Card display
-const SUIT_SYMBOLS: Record<string, string> = {
-  s: "♠",
-  h: "♥",
-  d: "♦",
-  c: "♣",
-};
-
-// 四色牌顏色：黑桃黑色、紅心紅色、方塊藍色、梅花綠色
-const SUIT_COLORS: Record<string, string> = {
-  s: "text-slate-900", // 黑桃：黑色（卡牌背景是白色）
-  h: "text-red-500",   // 紅心：紅色
-  d: "text-blue-500",  // 方塊：藍色
-  c: "text-green-700", // 梅花：深綠色
-};
 
 interface BaseScenario {
   id: string;
@@ -85,14 +71,50 @@ function BoardCard({ rank, suit }: { rank: string; suit: string }) {
   );
 }
 
-function HeroHand({ hand }: { hand: string }) {
+function getBoardCards(scenario: Scenario, street: Street): string[] {
+  if (street === "river") {
+    const s = scenario as RiverScenario;
+    return s.board.map((rank, i) => `${rank}${s.board_suits?.[i] || ""}`);
+  }
+  if (street === "turn") {
+    const s = scenario as TurnScenario;
+    const cards = s.flop.map((rank, i) => `${rank}${s.flop_suits?.[i] || ""}`);
+    cards.push(`${s.turn}${s.turn_suit || ""}`);
+    return cards;
+  }
+  const s = scenario as FlopScenario;
+  return s.flop.map((rank, i) => `${rank}${s.flop_suits?.[i] || ""}`);
+}
+
+function HeroHand({ hand, board = [] }: { hand: string; board?: string[] }) {
   const rank1 = hand[0];
   const rank2 = hand[1];
   const suited = hand.endsWith("s");
+  const isPair = rank1 === rank2 && hand.length <= 3;
 
-  // 同花用紅心，不同花用黑桃/梅花（與公牌顏色一致）
-  const suit1 = suited ? "h" : "s";
-  const suit2 = suited ? "h" : "c";
+  // Pick suits that don't conflict with board cards
+  const boardSuitsFor = (rank: string) => {
+    const s = new Set<string>();
+    for (const c of board) if (c[0] === rank) s.add(c[1]?.toLowerCase());
+    return s;
+  };
+  const used1 = boardSuitsFor(rank1);
+  const used2 = boardSuitsFor(rank2);
+  const allSuits = ["h", "d", "c", "s"];
+
+  let suit1: string;
+  let suit2: string;
+  if (suited) {
+    suit1 = allSuits.find((s) => !used1.has(s) && !used2.has(s)) || "h";
+    suit2 = suit1;
+  } else if (isPair) {
+    const avail = allSuits.filter((s) => !used1.has(s));
+    suit1 = avail[0] || "h";
+    suit2 = avail[1] || "d";
+  } else {
+    suit1 = allSuits.find((s) => !used1.has(s)) || "s";
+    suit2 = allSuits.find((s) => !used2.has(s) && s !== suit1) || "c";
+  }
 
   return (
     <div className="flex gap-2">
@@ -177,8 +199,11 @@ export default function PostflopDrillPage() {
   } | null>(null);
   const [score, setScore] = useState({ correct: 0, total: 0 });
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [textureFilter, setTextureFilter] = useState<string | null>(null);
   const [textures, setTextures] = useState<Record<string, string>>({});
+  const { recordResult } = useProgressStore();
+  const { user } = useAuthStore();
 
   // Load available textures for current street
   useEffect(() => {
@@ -188,7 +213,7 @@ export default function PostflopDrillPage() {
         : street === "turn"
         ? "turn"
         : "river";
-    fetch(`${API_URL}/api/postflop/${endpoint}/textures`)
+    fetch(`${API_BASE_URL}/api/postflop/${endpoint}/textures`)
       .then((res) => res.json())
       .then((data) => setTextures(data.textures || {}))
       .catch(console.error);
@@ -198,6 +223,7 @@ export default function PostflopDrillPage() {
     setLoading(true);
     setSelectedAction(null);
     setResult(null);
+    setError(null);
 
     try {
       const endpoint =
@@ -209,15 +235,18 @@ export default function PostflopDrillPage() {
       const params = new URLSearchParams();
       if (textureFilter) params.set("texture", textureFilter);
 
-      const res = await fetch(`${API_URL}/api/postflop/${endpoint}/random?${params}`);
+      const res = await fetch(`${API_BASE_URL}/api/postflop/${endpoint}/random?${params}`);
+      if (!res.ok) throw new Error(`API error: ${res.status}`);
       const data = await res.json();
       setScenario(data.scenario);
     } catch (err) {
+      const msg = err instanceof Error ? err.message : t("common.error");
+      setError(msg);
       console.error("Failed to load scenario:", err);
     } finally {
       setLoading(false);
     }
-  }, [street, textureFilter]);
+  }, [street, textureFilter, t]);
 
   useEffect(() => {
     loadScenario();
@@ -241,7 +270,7 @@ export default function PostflopDrillPage() {
           : street === "turn"
           ? "turn"
           : "river";
-      const res = await fetch(`${API_URL}/api/postflop/${endpoint}/evaluate`, {
+      const res = await fetch(`${API_BASE_URL}/api/postflop/${endpoint}/evaluate`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -264,7 +293,25 @@ export default function PostflopDrillPage() {
         correct: prev.correct + (data.correct ? 1 : 0),
         total: prev.total + 1,
       }));
+
+      // Persist to progressStore
+      await recordResult(
+        {
+          drill_type: "postflop",
+          hand: scenario.hero_hand,
+          hero_position: scenario.hero_position,
+          villain_position: scenario.villain_position,
+          player_action: action,
+          correct_action: data.correct_action,
+          is_correct: data.correct,
+          is_acceptable: false,
+          frequency: data.frequency,
+        },
+        user?.id
+      );
     } catch (err) {
+      const msg = err instanceof Error ? err.message : t("common.error");
+      setError(msg);
       console.error("Failed to evaluate:", err);
     }
   };
@@ -407,6 +454,15 @@ export default function PostflopDrillPage() {
         </select>
       </div>
 
+      {error && (
+        <div className="mb-4 rounded-lg bg-destructive/10 p-4 text-destructive text-center">
+          {error}
+          <Button variant="outline" size="sm" className="ml-3" onClick={loadScenario}>
+            {t("common.retry") || "重試"}
+          </Button>
+        </div>
+      )}
+
       {scenario && (
         <Card className="mb-6">
           <CardHeader className="pb-2">
@@ -438,7 +494,7 @@ export default function PostflopDrillPage() {
                 {t("postflop.cbet.yourHand")}
               </div>
               <div className="flex justify-center">
-                <HeroHand hand={scenario.hero_hand} />
+                <HeroHand hand={scenario.hero_hand} board={getBoardCards(scenario, street)} />
               </div>
             </div>
 

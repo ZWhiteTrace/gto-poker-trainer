@@ -22,8 +22,8 @@ import {
 } from "lucide-react";
 import { useAuthStore } from "@/stores/authStore";
 import { updateLeaderboardStats } from "@/lib/supabase/leaderboard";
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://api.grindgto.com";
+import { API_BASE_URL } from "@/lib/api";
+import { SUIT_SYMBOLS, SUIT_COLORS } from "@/lib/poker/types";
 
 // Local storage key for endless drill stats
 const ENDLESS_STATS_KEY = "endless-drill-stats";
@@ -37,21 +37,6 @@ const POT_TYPES = {
   multiway: { label: "多人底池", color: "bg-green-500" },
   limp: { label: "Limp", color: "bg-gray-500" },
   squeeze: { label: "Squeeze", color: "bg-pink-500" },
-};
-
-// Card display
-const SUIT_SYMBOLS: Record<string, string> = {
-  s: "♠",
-  h: "♥",
-  d: "♦",
-  c: "♣",
-};
-
-const SUIT_COLORS: Record<string, string> = {
-  s: "text-slate-900",
-  h: "text-red-500",
-  d: "text-blue-500",
-  c: "text-green-700",
 };
 
 interface Scenario {
@@ -128,14 +113,35 @@ function BoardCard({ card }: { card: string }) {
   );
 }
 
-function HeroHand({ hand }: { hand: string }) {
+function HeroHand({ hand, board = [] }: { hand: string; board?: string[] }) {
   const rank1 = hand[0];
   const rank2 = hand[1];
   const suited = hand.endsWith("s");
   const isPair = rank1 === rank2 && hand.length === 2;
 
-  const suit1 = suited ? "h" : "s";
-  const suit2 = suited ? "h" : isPair ? "d" : "c";
+  // Pick suits that don't conflict with board cards
+  const boardSuitsFor = (rank: string) => {
+    const s = new Set<string>();
+    for (const c of board) if (c[0] === rank) s.add(c[1]?.toLowerCase());
+    return s;
+  };
+  const used1 = boardSuitsFor(rank1);
+  const used2 = boardSuitsFor(rank2);
+  const allSuits = ["h", "d", "c", "s"];
+
+  let suit1: string;
+  let suit2: string;
+  if (suited) {
+    suit1 = allSuits.find(s => !used1.has(s) && !used2.has(s)) || "h";
+    suit2 = suit1;
+  } else if (isPair) {
+    const avail = allSuits.filter(s => !used1.has(s));
+    suit1 = avail[0] || "h";
+    suit2 = avail[1] || "d";
+  } else {
+    suit1 = allSuits.find(s => !used1.has(s)) || "s";
+    suit2 = allSuits.find(s => !used2.has(s) && s !== suit1) || "c";
+  }
 
   return (
     <div className="flex gap-2">
@@ -200,7 +206,7 @@ export default function EndlessDrillPage() {
       }
 
       const response = await fetch(
-        `${API_URL}/api/solver/random-drill?${params.toString()}`
+        `${API_BASE_URL}/api/solver/random-drill?${params.toString()}`
       );
 
       if (!response.ok) {
@@ -213,7 +219,7 @@ export default function EndlessDrillPage() {
       console.error("Error fetching scenario:", error);
       // Fallback to level1 drill if random-drill doesn't exist
       try {
-        const response = await fetch(`${API_URL}/api/solver/level1/drill`);
+        const response = await fetch(`${API_BASE_URL}/api/solver/level1/drill`);
         if (response.ok) {
           const data = await response.json();
           setScenario({
@@ -250,7 +256,7 @@ export default function EndlessDrillPage() {
     // Check if correct (action has >= 30% frequency)
     const strategy = scenario.correct_strategy || {};
     const actionFreq = strategy[action] || 0;
-    const correct = actionFreq >= 30;
+    const correct = actionFreq >= 25;
 
     setIsCorrect(correct);
 
@@ -417,7 +423,7 @@ export default function EndlessDrillPage() {
                   <div className="text-sm text-muted-foreground mb-2">
                     你的手牌
                   </div>
-                  <HeroHand hand={scenario.hand} />
+                  <HeroHand hand={scenario.hand} board={scenario.board} />
                 </div>
               </div>
 
@@ -426,7 +432,7 @@ export default function EndlessDrillPage() {
                 {scenario.options.map((action) => {
                   const freq = scenario.correct_strategy?.[action] || 0;
                   const isSelected = selectedAction === action;
-                  const isGoodAction = freq >= 30;
+                  const isGoodAction = freq >= 25;
 
                   return (
                     <Button
@@ -562,7 +568,7 @@ export default function EndlessDrillPage() {
         </CardHeader>
         <CardContent className="text-sm text-muted-foreground space-y-2">
           <p>
-            <strong>正確判定：</strong>選擇頻率 ≥ 30% 的動作視為正確
+            <strong>正確判定：</strong>選擇頻率 ≥ 25% 的動作視為正確
           </p>
           <p>
             <strong>混合策略：</strong>GTO 通常需要混合多種動作，不是只有一個正確答案

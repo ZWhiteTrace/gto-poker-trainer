@@ -3,6 +3,7 @@
 import { useState, useEffect, type ReactNode } from "react";
 import { cn } from "@/lib/utils";
 import type { HandHistory, Card, Position } from "@/lib/poker/types";
+import { SUIT_SYMBOLS, SUIT_COLORS } from "@/lib/poker/types";
 import {
   getStoredHandHistories,
   clearHandHistories,
@@ -19,20 +20,6 @@ import {
 interface HandHistoryPanelProps {
   className?: string;
 }
-
-const SUIT_SYMBOLS: Record<string, string> = {
-  s: "♠",
-  h: "♥",
-  d: "♦",
-  c: "♣",
-};
-
-const SUIT_COLORS: Record<string, string> = {
-  s: "text-slate-800",
-  h: "text-red-500",
-  d: "text-blue-500",
-  c: "text-green-600",
-};
 
 function formatCard(card: Card): ReactNode {
   return (

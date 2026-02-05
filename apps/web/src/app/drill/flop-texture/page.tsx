@@ -15,6 +15,7 @@ import {
   type FlopTextureType,
 } from "@/lib/poker/flopTexture";
 import type { Rank, Suit } from "@/lib/poker/types";
+import { SUIT_SYMBOLS, SUIT_COLORS } from "@/lib/poker/types";
 
 // ============================================
 // Types
@@ -83,17 +84,6 @@ interface MustCheckScenario {
 // ============================================
 // Constants
 // ============================================
-
-const SUIT_SYMBOLS: Record<Suit, string> = {
-  s: "♠", h: "♥", d: "♦", c: "♣",
-};
-
-const SUIT_COLORS: Record<Suit, string> = {
-  s: "text-slate-900",
-  h: "text-red-500",
-  d: "text-blue-500",
-  c: "text-green-700",
-};
 
 const FREQUENCY_OPTIONS = [
   { key: "very_high", label: "很高 (70%+)" },

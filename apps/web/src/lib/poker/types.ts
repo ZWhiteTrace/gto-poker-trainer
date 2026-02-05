@@ -499,18 +499,18 @@ export const RANKS: Rank[] = ["A", "K", "Q", "J", "T", "9", "8", "7", "6", "5", 
 
 export const SUITS: Suit[] = ["s", "h", "d", "c"];
 
-export const SUIT_SYMBOLS: Record<Suit, string> = {
+export const SUIT_SYMBOLS: Record<string, string> = {
   s: "♠",
   h: "♥",
   d: "♦",
   c: "♣",
 };
 
-export const SUIT_COLORS: Record<Suit, string> = {
-  s: "text-slate-900",  // 黑桃：始終黑色（卡牌背景是白色）
-  h: "text-red-500",    // 紅心：紅色
-  d: "text-blue-500",   // 方塊：藍色
-  c: "text-green-700",  // 梅花：深綠色
+export const SUIT_COLORS: Record<string, string> = {
+  s: "text-slate-900 dark:text-slate-100",  // 黑桃：黑色
+  h: "text-red-600 dark:text-red-400",      // 紅心：紅色
+  d: "text-blue-600 dark:text-blue-400",    // 方塊：藍色（四色牌）
+  c: "text-green-600 dark:text-green-400",  // 梅花：綠色（四色牌）
 };
 
 export const HAND_RANK_VALUES: Record<HandRank, number> = {

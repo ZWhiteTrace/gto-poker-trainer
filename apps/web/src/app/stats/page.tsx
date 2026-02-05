@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useTranslations } from "next-intl";
 import dynamic from "next/dynamic";
 import { useProgressStore } from "@/stores/progressStore";
@@ -24,7 +25,14 @@ import {
   Clock,
   PieChart as PieChartIcon,
 } from "lucide-react";
+import { WeaknessHeatmap } from "@/components/stats/WeaknessHeatmap";
 import Link from "next/link";
+import {
+  TrackedDrillType,
+  DRILL_LABELS,
+  POSITIONS,
+  drillTypeToPath,
+} from "@/lib/constants/drills";
 
 // Dynamic import for recharts to reduce initial bundle size
 const AreaChart = dynamic(
@@ -62,36 +70,40 @@ const Cell = dynamic(() => import("recharts").then((mod) => mod.Cell), {
   ssr: false,
 });
 
-type DrillType = "rfi" | "vs_rfi" | "vs_3bet" | "vs_4bet" | "push_fold" | "push_fold_defense" | "push_fold_resteal" | "push_fold_hu" | "table_trainer";
-
-const DRILL_LABELS: Record<DrillType, { en: string; zh: string }> = {
-  rfi: { en: "RFI", zh: "RFI 開池" },
-  vs_rfi: { en: "VS RFI", zh: "VS RFI" },
-  vs_3bet: { en: "VS 3-Bet", zh: "VS 3-Bet" },
-  vs_4bet: { en: "VS 4-Bet", zh: "VS 4-Bet" },
-  push_fold: { en: "Push/Fold", zh: "Push/Fold" },
-  push_fold_defense: { en: "PF Defense", zh: "PF 防守" },
-  push_fold_resteal: { en: "PF Resteal", zh: "PF 反偷" },
-  push_fold_hu: { en: "PF Heads-Up", zh: "PF 單挑" },
-  table_trainer: { en: "Table Trainer", zh: "牌桌訓練" },
-};
-
-const POSITIONS = ["UTG", "HJ", "CO", "BTN", "SB", "BB"];
+type DrillType = TrackedDrillType;
 
 const CHART_COLORS = ["#22c55e", "#3b82f6", "#f59e0b", "#ef4444", "#8b5cf6"];
+
+type TrendRange = 7 | 30;
 
 export default function StatsPage() {
   const t = useTranslations();
   const { stats, recentResults, lastSyncedAt, resetStats, getWeakPositions, getDailyHistory } =
     useProgressStore();
 
-  // Get 7-day trend data
-  const trendData = getDailyHistory(7).map((day) => ({
+  // Trend range state
+  const [trendRange, setTrendRange] = useState<TrendRange>(7);
+
+  // Get trend data based on selected range
+  const trendData = getDailyHistory(trendRange).map((day) => ({
     date: day.date.slice(5), // MM-DD format
     total: day.total,
     correct: day.correct,
     accuracy: day.total > 0 ? Math.round((day.correct / day.total) * 100) : 0,
   }));
+
+  // Calculate trend statistics
+  const trendStats = {
+    totalHands: trendData.reduce((sum, d) => sum + d.total, 0),
+    totalCorrect: trendData.reduce((sum, d) => sum + d.correct, 0),
+    avgAccuracy: (() => {
+      const daysWithData = trendData.filter(d => d.total > 0);
+      if (daysWithData.length === 0) return 0;
+      return Math.round(daysWithData.reduce((sum, d) => sum + d.accuracy, 0) / daysWithData.length);
+    })(),
+    activeDays: trendData.filter(d => d.total > 0).length,
+    bestDay: trendData.reduce((best, d) => d.total > best.total ? d : best, { total: 0, correct: 0, accuracy: 0, date: "" }),
+  };
 
   // Pie chart data for drill distribution
   const pieData = (Object.keys(stats) as DrillType[])
@@ -228,82 +240,136 @@ export default function StatsPage() {
         </Card>
       </div>
 
-      {/* Trend Charts */}
-      <div className="mb-8 grid gap-6 md:grid-cols-2">
-        {/* 7-Day Activity Trend */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <TrendingUp className="h-5 w-5" />
-              {t("stats.weeklyTrend") || "7-Day Activity"}
-            </CardTitle>
-            <CardDescription>
-              {t("stats.weeklyTrendDesc") || "Your practice activity over the last week"}
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            {trendData.some((d) => d.total > 0) ? (
-              <div className="h-[200px] w-full">
-                <ResponsiveContainer width="100%" height="100%">
-                  <AreaChart data={trendData}>
-                    <defs>
-                      <linearGradient id="colorTotal" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3} />
-                        <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
-                      </linearGradient>
-                      <linearGradient id="colorCorrect" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="#22c55e" stopOpacity={0.3} />
-                        <stop offset="95%" stopColor="#22c55e" stopOpacity={0} />
-                      </linearGradient>
-                    </defs>
-                    <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
-                    <XAxis
-                      dataKey="date"
-                      fontSize={12}
-                      tickLine={false}
-                      axisLine={false}
-                      className="text-muted-foreground"
-                    />
-                    <YAxis
-                      fontSize={12}
-                      tickLine={false}
-                      axisLine={false}
-                      className="text-muted-foreground"
-                    />
-                    <Tooltip
-                      contentStyle={{
-                        backgroundColor: "hsl(var(--card))",
-                        border: "1px solid hsl(var(--border))",
-                        borderRadius: "8px",
-                      }}
-                    />
-                    <Area
-                      type="monotone"
-                      dataKey="total"
-                      name={t("stats.totalHands") || "Total"}
-                      stroke="#3b82f6"
-                      fillOpacity={1}
-                      fill="url(#colorTotal)"
-                    />
-                    <Area
-                      type="monotone"
-                      dataKey="correct"
-                      name={t("stats.correctAnswers") || "Correct"}
-                      stroke="#22c55e"
-                      fillOpacity={1}
-                      fill="url(#colorCorrect)"
-                    />
-                  </AreaChart>
-                </ResponsiveContainer>
-              </div>
-            ) : (
-              <div className="h-[200px] flex items-center justify-center text-muted-foreground">
-                {t("stats.noDataYet") || "No data yet. Start practicing!"}
-              </div>
-            )}
-          </CardContent>
-        </Card>
+      {/* Weakness Heatmap */}
+      <div className="mb-8">
+        <WeaknessHeatmap stats={stats} />
+      </div>
 
+      {/* Learning Curve - Full Width */}
+      <Card className="mb-8">
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle className="flex items-center gap-2">
+                <TrendingUp className="h-5 w-5" />
+                {t("stats.learningCurve") || "Learning Curve"}
+              </CardTitle>
+              <CardDescription>
+                {trendRange === 7
+                  ? (t("stats.weeklyTrendDesc") || "Your practice activity over the last week")
+                  : (t("stats.monthlyTrendDesc") || "Your practice activity over the last month")}
+              </CardDescription>
+            </div>
+            {/* Range Toggle */}
+            <div className="flex gap-1 bg-muted rounded-lg p-1">
+              <Button
+                variant={trendRange === 7 ? "default" : "ghost"}
+                size="sm"
+                onClick={() => setTrendRange(7)}
+                className="text-xs px-3"
+              >
+                7 {t("common.days") || "Days"}
+              </Button>
+              <Button
+                variant={trendRange === 30 ? "default" : "ghost"}
+                size="sm"
+                onClick={() => setTrendRange(30)}
+                className="text-xs px-3"
+              >
+                30 {t("common.days") || "Days"}
+              </Button>
+            </div>
+          </div>
+        </CardHeader>
+        <CardContent>
+          {/* Period Summary */}
+          {trendStats.totalHands > 0 && (
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4 p-4 bg-muted/50 rounded-lg">
+              <div className="text-center">
+                <div className="text-xl font-bold">{trendStats.totalHands}</div>
+                <div className="text-xs text-muted-foreground">{t("stats.totalHands") || "Total Hands"}</div>
+              </div>
+              <div className="text-center">
+                <div className="text-xl font-bold text-green-500">{trendStats.avgAccuracy}%</div>
+                <div className="text-xs text-muted-foreground">{t("stats.avgAccuracy") || "Avg Accuracy"}</div>
+              </div>
+              <div className="text-center">
+                <div className="text-xl font-bold">{trendStats.activeDays}</div>
+                <div className="text-xs text-muted-foreground">{t("stats.activeDays") || "Active Days"}</div>
+              </div>
+              <div className="text-center">
+                <div className="text-xl font-bold text-primary">{trendStats.bestDay.total}</div>
+                <div className="text-xs text-muted-foreground">{t("stats.bestDay") || "Best Day"}</div>
+              </div>
+            </div>
+          )}
+
+          {/* Chart */}
+          {trendData.some((d) => d.total > 0) ? (
+            <div className={cn("w-full", trendRange === 30 ? "h-[250px]" : "h-[200px]")}>
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={trendData}>
+                  <defs>
+                    <linearGradient id="colorTotal" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3} />
+                      <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
+                    </linearGradient>
+                    <linearGradient id="colorCorrect" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#22c55e" stopOpacity={0.3} />
+                      <stop offset="95%" stopColor="#22c55e" stopOpacity={0} />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
+                  <XAxis
+                    dataKey="date"
+                    fontSize={10}
+                    tickLine={false}
+                    axisLine={false}
+                    className="text-muted-foreground"
+                    interval={trendRange === 30 ? 4 : 0}
+                  />
+                  <YAxis
+                    fontSize={12}
+                    tickLine={false}
+                    axisLine={false}
+                    className="text-muted-foreground"
+                  />
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: "hsl(var(--card))",
+                      border: "1px solid hsl(var(--border))",
+                      borderRadius: "8px",
+                    }}
+                  />
+                  <Area
+                    type="monotone"
+                    dataKey="total"
+                    name={t("stats.totalHands") || "Total"}
+                    stroke="#3b82f6"
+                    fillOpacity={1}
+                    fill="url(#colorTotal)"
+                  />
+                  <Area
+                    type="monotone"
+                    dataKey="correct"
+                    name={t("stats.correctAnswers") || "Correct"}
+                    stroke="#22c55e"
+                    fillOpacity={1}
+                    fill="url(#colorCorrect)"
+                  />
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
+          ) : (
+            <div className="h-[200px] flex items-center justify-center text-muted-foreground">
+              {t("stats.noDataYet") || "No data yet. Start practicing!"}
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Charts Row */}
+      <div className="mb-8 grid gap-6 md:grid-cols-2">
         {/* Drill Distribution Pie Chart */}
         <Card>
           <CardHeader>
@@ -376,7 +442,7 @@ export default function StatsPage() {
               {drillAccuracies.map(({ drill, total, accuracy }) => (
                 <div key={drill} className="space-y-2">
                   <div className="flex items-center justify-between">
-                    <Link href={`/drill/${drill.replace("_", "-")}`}>
+                    <Link href={DRILL_LABELS[drill].href}>
                       <span className="font-medium hover:text-primary hover:underline">
                         {DRILL_LABELS[drill].en}
                       </span>

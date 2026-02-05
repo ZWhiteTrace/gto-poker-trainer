@@ -212,14 +212,19 @@ export function getHighCard(ranks: Rank[]): HighCard {
 export function calculateConnectedness(ranks: Rank[]): number {
   const values = ranks.map(r => RANK_VALUES[r] || 0).sort((a, b) => a - b);
 
+  // Special case: Ace-low boards (A-2-3, A-2-4, etc.)
+  // Ace is 14 but can play low — the gap to next card is huge,
+  // making these boards effectively disconnected for most ranges
+  if (values[2] === 14 && values[1] <= 5) {
+    // A-x-y where x <= 5: treat as poorly connected
+    const lowGap = values[1] - values[0];
+    if (lowGap === 1) return 0.3; // A-2-3: wheel possible but narrow
+    return 0.1; // A-2-5 etc: very disconnected
+  }
+
   // Check for gaps
   const gap1 = values[1] - values[0];
   const gap2 = values[2] - values[1];
-
-  // Perfect straight = 1,1 gaps = score 1.0
-  // One gap of 1 = score 0.7
-  // Both gaps of 2 = score 0.5
-  // Larger gaps = lower score
 
   if (gap1 === 1 && gap2 === 1) return 1.0; // Perfect: 789
   if ((gap1 === 1 && gap2 === 2) || (gap1 === 2 && gap2 === 1)) return 0.8; // 79T
@@ -292,6 +297,21 @@ export function analyzeFlop(ranks: Rank[], suits: Suit[]): FlopAnalysis {
   const wetness = getWetness(suitDistribution, connectivity, isPaired);
   const connectednessScore = calculateConnectedness(ranks);
 
+  // Find paired rank value (for paired board classification)
+  let pairedRankValue: number | undefined;
+  if (isPaired || isTrips) {
+    const counts = new Map<Rank, number>();
+    for (const rank of ranks) {
+      counts.set(rank, (counts.get(rank) || 0) + 1);
+    }
+    for (const [rank, count] of counts) {
+      if (count >= 2) {
+        pairedRankValue = RANK_VALUES[rank] || 0;
+        break;
+      }
+    }
+  }
+
   // Determine texture type
   const texture = determineTextureType(
     highCard,
@@ -299,7 +319,8 @@ export function analyzeFlop(ranks: Rank[], suits: Suit[]): FlopAnalysis {
     connectivity,
     isPaired,
     isTrips,
-    wetness
+    wetness,
+    pairedRankValue
   );
 
   return {
@@ -325,11 +346,13 @@ function determineTextureType(
   connectivity: Connectivity,
   isPaired: boolean,
   isTrips: boolean,
-  wetness: Wetness
+  wetness: Wetness,
+  pairedRankValue?: number
 ): FlopTextureType {
-  // Paired/Trips boards
+  // Paired/Trips boards — classify by the PAIRED rank, not the high card
   if (isTrips || isPaired) {
-    if (highCard === "ace" || highCard === "king" || highCard === "queen") {
+    // T(10)+ is considered "high paired"
+    if (pairedRankValue !== undefined && pairedRankValue >= 10) {
       return "paired_high";
     }
     return "paired_low";
@@ -370,7 +393,7 @@ function determineTextureType(
 /**
  * Generate a random flop of a specific texture
  */
-export function generateFlopOfTexture(texture: FlopTextureType): { ranks: Rank[]; suits: Suit[] } {
+export function generateFlopOfTexture(texture: FlopTextureType, _depth = 0): { ranks: Rank[]; suits: Suit[] } {
   const allRanks: Rank[] = ["2", "3", "4", "5", "6", "7", "8", "9", "T", "J", "Q", "K", "A"];
   const allSuits: Suit[] = ["s", "h", "d", "c"];
 
@@ -389,28 +412,52 @@ export function generateFlopOfTexture(texture: FlopTextureType): { ranks: Rank[]
   let suits: Suit[];
 
   switch (texture) {
-    case "dry_ace_high":
-      ranks = ["A", pickRandom(["2", "3", "4", "5", "6", "7"]), pickRandom(["2", "3", "4", "5", "6", "7"])];
+    case "dry_ace_high": {
+      // Pick 2 distinct low cards from non-overlapping pools
+      const aPool1: Rank[] = ["2", "3", "4"];
+      const aPool2: Rank[] = ["6", "7", "8"];
+      ranks = ["A", pickRandom(aPool1), pickRandom(aPool2)];
       suits = shuffleArray(allSuits).slice(0, 3) as Suit[];
       break;
+    }
 
-    case "dry_king_high":
-      ranks = ["K", pickRandom(["2", "3", "4", "5", "6", "7"]), pickRandom(["2", "3", "4", "5", "6", "7"])];
+    case "dry_king_high": {
+      const kPool1: Rank[] = ["2", "3", "4"];
+      const kPool2: Rank[] = ["7", "8", "9"];
+      ranks = ["K", pickRandom(kPool1), pickRandom(kPool2)];
       suits = shuffleArray(allSuits).slice(0, 3) as Suit[];
       break;
+    }
 
-    case "dry_queen_high":
-      ranks = ["Q", pickRandom(["2", "3", "4", "5", "6", "7"]), pickRandom(["2", "3", "4", "5", "6", "7"])];
+    case "dry_queen_high": {
+      const qPool1: Rank[] = ["2", "3", "4"];
+      const qPool2: Rank[] = ["7", "8", "9"];
+      ranks = ["Q", pickRandom(qPool1), pickRandom(qPool2)];
       suits = shuffleArray(allSuits).slice(0, 3) as Suit[];
       break;
+    }
 
-    case "dry_low_rainbow":
-      ranks = shuffleArray(["2", "3", "4", "5", "6", "7", "8", "9"] as Rank[]).slice(0, 3);
+    case "dry_low_rainbow": {
+      // Pick 3 non-connected low cards (gap >= 2 between each)
+      const lowPool: Rank[] = ["2", "3", "4", "5", "6", "7", "8", "9"];
+      const RANK_VAL: Record<string, number> = { "2": 2, "3": 3, "4": 4, "5": 5, "6": 6, "7": 7, "8": 8, "9": 9 };
+      let picked: Rank[];
+      let attempts = 0;
+      do {
+        picked = shuffleArray(lowPool).slice(0, 3);
+        const vals = picked.map(r => RANK_VAL[r]).sort((a, b) => a - b);
+        // Ensure no two cards are within 1 rank (avoid connected boards)
+        if (vals[1] - vals[0] >= 2 && vals[2] - vals[1] >= 2) break;
+        attempts++;
+      } while (attempts < 50);
+      ranks = picked;
       suits = shuffleArray(allSuits).slice(0, 3) as Suit[];
       break;
+    }
 
     case "paired_high": {
-      const pairRank = pickRandom(["A", "K", "Q", "J"] as Rank[]);
+      // T+ counts as high paired (matches classifier threshold >= 10)
+      const pairRank = pickRandom(["A", "K", "Q", "J", "T"] as Rank[]);
       ranks = [pairRank, pairRank, pickRandom(["2", "3", "4", "5", "6", "7"] as Rank[])];
       suits = shuffleArray(allSuits).slice(0, 3) as Suit[];
       break;
@@ -482,7 +529,13 @@ export function generateFlopOfTexture(texture: FlopTextureType): { ranks: Rank[]
   if (!texture.includes("paired")) {
     const uniqueRanks = [...new Set(ranks)];
     if (uniqueRanks.length < 3) {
-      return generateFlopOfTexture(texture); // Retry
+      if (_depth >= 10) {
+        // Safety limit: return fallback instead of infinite recursion
+        ranks = shuffleArray(allRanks).slice(0, 3);
+        suits = shuffleArray(allSuits).slice(0, 3) as Suit[];
+      } else {
+        return generateFlopOfTexture(texture, _depth + 1);
+      }
     }
   }
 

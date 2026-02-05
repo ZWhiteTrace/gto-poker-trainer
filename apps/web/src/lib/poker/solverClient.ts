@@ -4,8 +4,11 @@
  */
 
 import type { Card, HoleCards, Position } from "./types";
+import { solverLogger as log } from "@/lib/logger";
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+import { API_BASE_URL } from "@/lib/api";
+
+const API_BASE = API_BASE_URL;
 
 // ============================================
 // Types
@@ -163,7 +166,7 @@ export async function querySolverStrategy(
 
     return result;
   } catch (error) {
-    console.error("Solver query failed:", error);
+    log.error("Solver query failed:", error);
     return { found: false, message: "Network error" };
   }
 }
@@ -208,7 +211,7 @@ export async function getTextureData(textureId: string): Promise<TextureData | n
     textureCache.set(textureId, textureData);
     return textureData;
   } catch (error) {
-    console.error("Failed to fetch texture data:", error);
+    log.error("Failed to fetch texture data:", error);
     return null;
   }
 }
@@ -407,7 +410,7 @@ export async function classifyTurnCard(
     turnClassificationCache.set(cacheKey, result);
     return result;
   } catch (error) {
-    console.error("Turn classification failed:", error);
+    log.error("Turn classification failed:", error);
     return null;
   }
 }
@@ -438,7 +441,7 @@ export async function getTurnAdjustment(
     turnAdjustmentCache.set(cacheKey, result);
     return result;
   } catch (error) {
-    console.error("Turn adjustment query failed:", error);
+    log.error("Turn adjustment query failed:", error);
     return null;
   }
 }
@@ -573,7 +576,7 @@ export async function classifyRiverCard(
     riverClassificationCache.set(cacheKey, result);
     return result;
   } catch (error) {
-    console.error("River classification failed:", error);
+    log.error("River classification failed:", error);
     return null;
   }
 }
@@ -604,7 +607,7 @@ export async function getRiverAdjustment(
     riverAdjustmentCache.set(cacheKey, result);
     return result;
   } catch (error) {
-    console.error("River adjustment query failed:", error);
+    log.error("River adjustment query failed:", error);
     return null;
   }
 }

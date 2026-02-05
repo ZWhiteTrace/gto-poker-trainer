@@ -58,17 +58,6 @@ def get_drill(drill_type: str, positions: List[str] = None) -> PreflopDrill:
     return _drill_cache[cache_key]
 
 
-def get_available_actions(action_type: ActionType) -> List[str]:
-    """Get available actions based on action type."""
-    if action_type == ActionType.RFI:
-        return ["raise", "fold"]
-    elif action_type in [ActionType.VS_RFI, ActionType.VS_3BET]:
-        return ["raise", "call", "fold"]
-    elif action_type == ActionType.VS_4BET:
-        return ["call", "fold", "allin"]
-    return ["raise", "call", "fold"]
-
-
 @router.post("/generate", response_model=SpotResponse)
 def generate_spot(request: DrillRequest):
     """Generate a new training spot."""
@@ -84,7 +73,7 @@ def generate_spot(request: DrillRequest):
             hero_position=spot.scenario.hero_position.name,
             villain_position=spot.scenario.villain_position.name if spot.scenario.villain_position else None,
             action_type=spot.scenario.action_type.value,
-            available_actions=get_available_actions(spot.scenario.action_type),
+            available_actions=spot.scenario.available_actions,
             scenario_key=spot.scenario.scenario_key,
         )
     except Exception as e:

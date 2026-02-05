@@ -13,7 +13,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { RefreshCw, CheckCircle2, XCircle, Trophy } from "lucide-react";
-import { useProgressStore } from "@/stores/progressStore";
+import { useQuizProgressStore } from "@/stores/quizProgressStore";
 import { useAuthStore } from "@/stores/authStore";
 
 // Card suits and ranks
@@ -143,9 +143,12 @@ function generateScenario(drawType: DrawType): Question {
     case "flush_draw": {
       // Hero has two suited cards, board has 2 of same suit
       const suit = SUITS[Math.floor(Math.random() * SUITS.length)];
+      // Use non-overlapping rank ranges to prevent duplicate cards
+      const highRanks: Rank[] = ["A", "K", "Q", "J", "T", "9", "8"];
+      const lowRanks: Rank[] = ["7", "6", "5", "4", "3", "2"];
       heroHand = [
-        getCard(RANKS[Math.floor(Math.random() * 8)], suit),
-        getCard(RANKS[Math.floor(Math.random() * 8) + 5], suit),
+        getCard(highRanks[Math.floor(Math.random() * highRanks.length)], suit),
+        getCard(lowRanks[Math.floor(Math.random() * lowRanks.length)], suit),
       ];
       board = [
         getRandomUnusedCard({ suit }),
@@ -162,25 +165,36 @@ function generateScenario(drawType: DrawType): Question {
         getCard(RANKS[startIdx], SUITS[Math.floor(Math.random() * 4)]),
         getCard(RANKS[startIdx + 1], SUITS[Math.floor(Math.random() * 4)]),
       ];
+      // Exclude the two completing ranks that would make a straight
+      const oesdExclude = new Set<Rank>();
+      if (startIdx - 1 >= 0) oesdExclude.add(RANKS[startIdx - 1]);
+      if (startIdx + 4 < RANKS.length) oesdExclude.add(RANKS[startIdx + 4]);
+      const oesdSafeRanks = ([...RANKS] as Rank[]).filter(r => !oesdExclude.has(r));
       board = [
         getCard(RANKS[startIdx + 2], SUITS[Math.floor(Math.random() * 4)]),
         getCard(RANKS[startIdx + 3], SUITS[Math.floor(Math.random() * 4)]),
-        getRandomUnusedCard({ ranks: [RANKS[0], RANKS[11], RANKS[12]] }), // Random card not completing straight
+        getRandomUnusedCard({ ranks: oesdSafeRanks }),
       ];
       break;
     }
 
     case "gutshot": {
-      // Gutshot: e.g., 79 on 68x board (need 5 or T)
+      // Gutshot: e.g., 79 on 68x board (need T)
       const startIdx = Math.floor(Math.random() * 6) + 2;
       heroHand = [
         getCard(RANKS[startIdx], SUITS[Math.floor(Math.random() * 4)]),
         getCard(RANKS[startIdx + 2], SUITS[Math.floor(Math.random() * 4)]),
       ];
+      // Exclude: completing rank (+1), and ranks that create extra straight outs (+5, +6)
+      const gsExclude = new Set<Rank>();
+      gsExclude.add(RANKS[startIdx + 1]);
+      if (startIdx + 5 < RANKS.length) gsExclude.add(RANKS[startIdx + 5]);
+      if (startIdx + 6 < RANKS.length) gsExclude.add(RANKS[startIdx + 6]);
+      const gsSafeRanks = ([...RANKS] as Rank[]).filter(r => !gsExclude.has(r));
       board = [
         getCard(RANKS[startIdx + 3], SUITS[Math.floor(Math.random() * 4)]),
         getCard(RANKS[startIdx + 4], SUITS[Math.floor(Math.random() * 4)]),
-        getRandomUnusedCard(),
+        getRandomUnusedCard({ ranks: gsSafeRanks }),
       ];
       break;
     }
@@ -193,10 +207,16 @@ function generateScenario(drawType: DrawType): Question {
         getCard(RANKS[startIdx], suit),
         getCard(RANKS[startIdx + 2], suit),
       ];
+      // Exclude: completing rank (+1) and ranks creating extra straight outs (+5, +6)
+      const fgExclude = new Set<Rank>();
+      fgExclude.add(RANKS[startIdx + 1]);
+      if (startIdx + 5 < RANKS.length) fgExclude.add(RANKS[startIdx + 5]);
+      if (startIdx + 6 < RANKS.length) fgExclude.add(RANKS[startIdx + 6]);
+      const fgSafeRanks = ([...RANKS] as Rank[]).filter(r => !fgExclude.has(r));
       board = [
         getCard(RANKS[startIdx + 3], suit),
         getCard(RANKS[startIdx + 4], SUITS.filter((s) => s !== suit)[0]),
-        getRandomUnusedCard({ suit, notSuit: undefined }),
+        getRandomUnusedCard({ suit, ranks: fgSafeRanks }),
       ];
       break;
     }
@@ -209,10 +229,15 @@ function generateScenario(drawType: DrawType): Question {
         getCard(RANKS[startIdx], suit),
         getCard(RANKS[startIdx + 1], suit),
       ];
+      // Exclude the two completing ranks that would make a straight
+      const foExclude = new Set<Rank>();
+      if (startIdx - 1 >= 0) foExclude.add(RANKS[startIdx - 1]);
+      if (startIdx + 4 < RANKS.length) foExclude.add(RANKS[startIdx + 4]);
+      const foSafeRanks = ([...RANKS] as Rank[]).filter(r => !foExclude.has(r));
       board = [
         getCard(RANKS[startIdx + 2], suit),
         getCard(RANKS[startIdx + 3], SUITS.filter((s) => s !== suit)[0]),
-        getRandomUnusedCard({ suit }),
+        getRandomUnusedCard({ suit, ranks: foSafeRanks }),
       ];
       break;
     }
@@ -235,9 +260,11 @@ function generateScenario(drawType: DrawType): Question {
     case "pair_trips": {
       // Flopped a pair, looking to hit trips
       const pairRank = RANKS[Math.floor(Math.random() * 10) + 2];
+      // Kicker must not be the same rank as the pair (would make trips already)
+      const kickerRanks = (["A", "K", "Q", "J", "T"] as Rank[]).filter(r => r !== pairRank);
       heroHand = [
         getCard(pairRank, SUITS[0]),
-        getCard(RANKS[Math.floor(Math.random() * 5)], SUITS[1]),
+        getCard(kickerRanks[Math.floor(Math.random() * kickerRanks.length)], SUITS[1]),
       ];
       board = [
         getCard(pairRank, SUITS[2]),
@@ -248,10 +275,15 @@ function generateScenario(drawType: DrawType): Question {
     }
 
     case "set": {
-      // Pocket pair looking for set
+      // Pocket pair looking for set — board must not contain the pair rank
       const pairRank = RANKS[Math.floor(Math.random() * 10) + 2];
       heroHand = [getCard(pairRank, SUITS[0]), getCard(pairRank, SUITS[1])];
-      board = [getRandomUnusedCard(), getRandomUnusedCard(), getRandomUnusedCard()];
+      const nonPairRanks = ([...RANKS] as Rank[]).filter(r => r !== pairRank);
+      board = [
+        getRandomUnusedCard({ ranks: nonPairRanks }),
+        getRandomUnusedCard({ ranks: nonPairRanks }),
+        getRandomUnusedCard({ ranks: nonPairRanks }),
+      ];
       break;
     }
 
@@ -292,12 +324,11 @@ function PlayingCard({ card, size = "normal" }: { card: CardType; size?: "normal
     s: "♠",
   };
 
-  // 四色牌：黑桃黑色、紅心紅色、方塊藍色、梅花綠色（卡牌背景是白色）
   const suitColors: Record<Suit, string> = {
-    h: "text-red-500",   // 紅心：紅色
-    d: "text-blue-500",  // 方塊：藍色
-    c: "text-green-700", // 梅花：深綠色
-    s: "text-slate-900", // 黑桃：黑色
+    s: "text-slate-900 dark:text-slate-100",  // 黑桃：黑色
+    h: "text-red-600 dark:text-red-400",      // 紅心：紅色
+    d: "text-blue-600 dark:text-blue-400",    // 方塊：藍色（四色牌）
+    c: "text-green-600 dark:text-green-400",  // 梅花：綠色（四色牌）
   };
 
   return (
@@ -336,7 +367,7 @@ export default function OutsQuizPage() {
   const [score, setScore] = useState({ correct: 0, total: 0 });
   const [category, setCategory] = useState<DrawType | "all">("all");
 
-  const { quizStats, recordQuizResult } = useProgressStore();
+  const { quizStats, recordQuizResult } = useQuizProgressStore();
   const { user } = useAuthStore();
   const cumulativeStats = quizStats.outs;
 

@@ -13,7 +13,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { RefreshCw, CheckCircle2, XCircle, Trophy, Lightbulb } from "lucide-react";
-import { useProgressStore } from "@/stores/progressStore";
+import { useQuizProgressStore } from "@/stores/quizProgressStore";
 import { useAuthStore } from "@/stores/authStore";
 
 // GTO Logic Questions
@@ -201,7 +201,7 @@ export default function LogicQuizPage() {
   const [category, setCategory] = useState<Category | "all">("all");
   const [usedQuestions, setUsedQuestions] = useState<Set<string>>(new Set());
 
-  const { quizStats, recordQuizResult } = useProgressStore();
+  const { quizStats, recordQuizResult } = useQuizProgressStore();
   const { user } = useAuthStore();
   const cumulativeStats = quizStats.logic;
 

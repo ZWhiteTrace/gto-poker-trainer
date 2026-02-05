@@ -15,24 +15,26 @@ export function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const { user, isLoading, signInWithGoogle, signOut } = useAuthStore();
 
+  // Organized drill items by category
   const drillItems = [
+    // Featured
     { href: "/drill/endless", label: t("nav.endlessDrill") || "無限練習" },
-    { href: "/drill/multistreet", label: t("nav.multistreetDrill") || "多街道練習" },
+    // Preflop
     { href: "/drill/rfi", label: t("nav.rfiDrill") },
     { href: "/drill/vs-rfi", label: t("nav.vsRfiDrill") },
     { href: "/drill/vs-3bet", label: t("nav.vs3betDrill") },
     { href: "/drill/vs-4bet", label: t("nav.vs4betDrill") },
+    // Postflop
+    { href: "/drill/table-trainer", label: t("nav.tableTrainer") || "牌桌訓練" },
+    { href: "/drill/multistreet", label: t("nav.multistreetDrill") || "多街道練習" },
     { href: "/drill/postflop", label: t("nav.postflopDrill") },
     { href: "/drill/flop-texture", label: t("nav.flopTexture") || "翻牌質地" },
-    { href: "/drill/texture-training", label: t("nav.textureTraining") || "質地訓練" },
-    { href: "/drill/table-trainer", label: t("nav.tableTrainer") || "GTO 牌桌" },
-    { href: "/drill/gto-practice", label: t("nav.gtoPractice") },
   ];
 
   const mttItems = [
-    { href: "/drill/push-fold", label: t("drill.pushFold.title") || "Push/Fold Drill" },
-    { href: "/mtt/push-fold", label: t("nav.pushFold") },
-    { href: "/mtt/icm", label: t("nav.icm") },
+    { href: "/drill/push-fold", label: t("drill.pushFold.title") || "Push/Fold 練習" },
+    { href: "/mtt/push-fold", label: t("nav.pushFold") || "Push/Fold 圖表" },
+    { href: "/mtt/icm", label: t("nav.icm") || "ICM 計算器" },
   ];
 
   const navItems = [

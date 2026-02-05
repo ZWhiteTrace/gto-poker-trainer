@@ -13,7 +13,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { RefreshCw, CheckCircle2, XCircle, Trophy } from "lucide-react";
-import { useProgressStore } from "@/stores/progressStore";
+import { useQuizProgressStore } from "@/stores/quizProgressStore";
 import { useAuthStore } from "@/stores/authStore";
 
 // Equity matchup data (subset for MVP)
@@ -177,7 +177,7 @@ export default function EquityQuizPage() {
   const [score, setScore] = useState({ correct: 0, total: 0 });
   const [category, setCategory] = useState<Category | undefined>(undefined);
 
-  const { quizStats, recordQuizResult } = useProgressStore();
+  const { quizStats, recordQuizResult } = useQuizProgressStore();
   const { user } = useAuthStore();
   const cumulativeStats = quizStats.equity;
 
