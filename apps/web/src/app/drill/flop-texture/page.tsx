@@ -25,7 +25,7 @@ import { SUIT_SYMBOLS, SUIT_CARD_COLORS } from "@/lib/poker/types";
 // Types
 // ============================================
 
-type DrillMode = "classify" | "cbet" | "quick" | "threelayer" | "mustcheck";
+type DrillMode = "classify" | "cbet" | "quick" | "threelayer" | "mustcheck" | "checkfirst";
 
 interface ClassifyScenario {
   flop: Rank[];
@@ -399,6 +399,29 @@ function generateMustCheckScenario(): MustCheckScenario {
     heroHand: template.heroHand,
     heroHandType: template.heroHandType,
     shouldCheck: template.shouldCheck,
+    reasonZh: template.reason,
+    category: category?.name || "",
+  };
+}
+
+// Check First Challenge: only scenarios where the correct answer is CHECK
+const CHECK_FIRST_SCENARIOS = MUST_CHECK_SCENARIOS_DATA.filter(s => s.shouldCheck);
+
+function generateCheckFirstScenario(): MustCheckScenario {
+  const template = CHECK_FIRST_SCENARIOS[Math.floor(Math.random() * CHECK_FIRST_SCENARIOS.length)];
+  const targetTexture = template.textureHint[Math.floor(Math.random() * template.textureHint.length)];
+  const { ranks, suits } = generateFlopOfTexture(targetTexture);
+
+  const category = MUST_CHECK_CATEGORIES.find(c => c.id === template.categoryId);
+
+  return {
+    flop: ranks,
+    suits,
+    texture: targetTexture,
+    position: template.position,
+    heroHand: template.heroHand,
+    heroHandType: template.heroHandType,
+    shouldCheck: true, // Always true in this mode
     reasonZh: template.reason,
     category: category?.name || "",
   };
@@ -1260,6 +1283,226 @@ function MustCheckDrill() {
 }
 
 // ============================================
+// Check First Challenge Drill
+// ============================================
+
+const CHECK_FIRST_TARGET = 10; // Need 10 consecutive correct to win
+
+function CheckFirstDrill() {
+  const [scenario, setScenario] = useState<MustCheckScenario | null>(null);
+  const [selectedAnswer, setSelectedAnswer] = useState<boolean | null>(null);
+  const [showResult, setShowResult] = useState(false);
+  const [streak, setStreak] = useState(0);
+  const [isComplete, setIsComplete] = useState(false);
+  const [totalAttempts, setTotalAttempts] = useState(0);
+
+  const loadScenario = useCallback(() => {
+    setScenario(generateCheckFirstScenario());
+    setSelectedAnswer(null);
+    setShowResult(false);
+  }, []);
+
+  useEffect(() => {
+    loadScenario();
+  }, [loadScenario]);
+
+  const handleAnswer = (answer: boolean) => {
+    if (showResult || isComplete) return;
+    setSelectedAnswer(answer);
+    setShowResult(true);
+    setTotalAttempts((prev) => prev + 1);
+
+    // In this mode, the correct answer is always "Check" (true)
+    const isCorrect = answer === true;
+
+    if (isCorrect) {
+      const newStreak = streak + 1;
+      setStreak(newStreak);
+      if (newStreak >= CHECK_FIRST_TARGET) {
+        setIsComplete(true);
+      }
+    } else {
+      // Wrong answer resets streak
+      setStreak(0);
+    }
+  };
+
+  const handleReset = () => {
+    setStreak(0);
+    setIsComplete(false);
+    setTotalAttempts(0);
+    loadScenario();
+  };
+
+  const isCorrect = selectedAnswer === true;
+  const category = scenario ? FLOP_TEXTURE_CATEGORIES[scenario.texture] : null;
+
+  // Celebration screen
+  if (isComplete) {
+    return (
+      <div className="space-y-6 text-center">
+        <div className="py-8">
+          <div className="text-6xl mb-4">🎉</div>
+          <h2 className="text-2xl font-bold text-green-400 mb-2">挑戰成功！</h2>
+          <p className="text-gray-400">
+            連續 {CHECK_FIRST_TARGET} 題全部正確辨識「應該 Check」的情況
+          </p>
+          <p className="text-sm text-gray-500 mt-2">
+            總嘗試次數: {totalAttempts} 題
+          </p>
+        </div>
+        <div className="bg-gradient-to-r from-green-900/30 to-emerald-900/30 rounded-lg p-4 border border-green-700/50">
+          <p className="text-sm text-green-300">
+            你已經建立了「Check First」的肌肉記憶！<br />
+            記住：說不出下注理由 = 不該下注
+          </p>
+        </div>
+        <Button onClick={handleReset} className="w-full">
+          <RotateCcw className="h-4 w-4 mr-2" />
+          再挑戰一次
+        </Button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="bg-gradient-to-r from-purple-900/30 to-pink-900/30 rounded-lg p-4 border border-purple-700/50">
+        <h3 className="text-sm font-semibold text-purple-300 mb-2">Check First 挑戰</h3>
+        <p className="text-xs text-gray-400">
+          連續答對 <span className="text-purple-300 font-bold">{CHECK_FIRST_TARGET}</span> 題才算過關。
+          答錯歸零重來！
+        </p>
+        <p className="text-xs text-purple-400 mt-1">
+          提示：這裡的每一題，正確答案都是 Check
+        </p>
+      </div>
+
+      {/* Streak Progress */}
+      <div className="space-y-2">
+        <div className="flex items-center justify-between text-sm">
+          <span className="text-gray-400">連勝進度</span>
+          <span className={cn(
+            "font-bold",
+            streak >= 7 ? "text-green-400" : streak >= 4 ? "text-yellow-400" : "text-gray-300"
+          )}>
+            {streak} / {CHECK_FIRST_TARGET}
+          </span>
+        </div>
+        <div className="flex gap-1">
+          {Array.from({ length: CHECK_FIRST_TARGET }).map((_, i) => (
+            <div
+              key={i}
+              className={cn(
+                "h-3 flex-1 rounded-sm transition-all",
+                i < streak
+                  ? "bg-gradient-to-r from-purple-500 to-pink-500"
+                  : "bg-gray-700"
+              )}
+            />
+          ))}
+        </div>
+      </div>
+
+      {/* Stats */}
+      <div className="flex items-center justify-between text-sm">
+        <span className="text-gray-400">
+          總嘗試: {totalAttempts} 題
+        </span>
+        <Button variant="outline" size="sm" onClick={handleReset}>
+          <RotateCcw className="h-4 w-4 mr-1" />
+          重置
+        </Button>
+      </div>
+
+      {scenario && (
+        <div className="space-y-4">
+          <FlopDisplay flop={scenario.flop} suits={scenario.suits} />
+
+          {/* Context Info */}
+          <div className="flex flex-wrap items-center justify-center gap-2 text-sm">
+            <Badge variant="outline" className={scenario.position === "IP" ? "bg-green-600/20 text-green-400" : "bg-orange-600/20 text-orange-400"}>
+              {scenario.position}
+            </Badge>
+            <Badge variant="secondary">{category?.nameZh}</Badge>
+          </div>
+
+          {/* Hero Hand */}
+          <div className="text-center">
+            <div className="text-sm text-gray-400 mb-1">你的手牌</div>
+            <div className="text-2xl font-bold text-white">{scenario.heroHand}</div>
+            <div className="text-sm text-gray-400">({scenario.heroHandType})</div>
+          </div>
+
+          {/* Question */}
+          <div className="text-center text-lg font-medium">
+            這手牌應該？
+          </div>
+
+          {/* Options */}
+          <div className="grid grid-cols-2 gap-4">
+            <Button
+              variant="outline"
+              className={cn(
+                "h-auto py-6 text-lg",
+                showResult && isCorrect && "bg-green-600 hover:bg-green-600 text-white border-green-600",
+                showResult && selectedAnswer === true && !isCorrect && "bg-red-600 hover:bg-red-600 text-white border-red-600",
+                !showResult && "hover:bg-purple-900/50 border-purple-500/50"
+              )}
+              onClick={() => handleAnswer(true)}
+              disabled={showResult}
+            >
+              ✓ Check
+            </Button>
+            <Button
+              variant="outline"
+              className={cn(
+                "h-auto py-6 text-lg",
+                showResult && !isCorrect && selectedAnswer === false && "bg-red-600 hover:bg-red-600 text-white border-red-600",
+                !showResult && "hover:bg-gray-700"
+              )}
+              onClick={() => handleAnswer(false)}
+              disabled={showResult}
+            >
+              ✗ 下注
+            </Button>
+          </div>
+
+          {/* Result */}
+          {showResult && (
+            <Card className={cn(
+              "border",
+              isCorrect ? "bg-green-900/20 border-green-700" : "bg-red-900/20 border-red-700"
+            )}>
+              <CardContent className="pt-4">
+                <div className={cn(
+                  "text-lg font-semibold mb-2",
+                  isCorrect ? "text-green-400" : "text-red-400"
+                )}>
+                  {isCorrect ? `正確！連勝 ${streak} 🔥` : "錯誤！連勝歸零 💔"}
+                </div>
+                <Badge variant="outline" className="mb-2">{scenario.category}</Badge>
+                <p className="text-gray-300 text-sm">
+                  {scenario.reasonZh}
+                </p>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Next Button */}
+          {showResult && !isComplete && (
+            <Button onClick={loadScenario} className="w-full">
+              下一題 <ArrowRight className="h-4 w-4 ml-2" />
+            </Button>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ============================================
 // Main Page
 // ============================================
 
@@ -1279,13 +1522,26 @@ export default function FlopTextureDrillPage() {
 
         {/* Mode Tabs */}
         <Tabs value={mode} onValueChange={(v) => setMode(v as DrillMode)} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-5 bg-gray-800">
+          <TabsList className="grid w-full grid-cols-3 sm:grid-cols-6 bg-gray-800 h-auto">
+            <TabsTrigger value="checkfirst" className="text-[10px] sm:text-sm data-[state=active]:bg-purple-600">🔥挑戰</TabsTrigger>
             <TabsTrigger value="threelayer" className="text-[10px] sm:text-sm">三層判斷</TabsTrigger>
             <TabsTrigger value="mustcheck" className="text-[10px] sm:text-sm">必Check</TabsTrigger>
             <TabsTrigger value="classify" className="text-[10px] sm:text-sm">質地分類</TabsTrigger>
             <TabsTrigger value="cbet" className="text-[10px] sm:text-sm">C-bet</TabsTrigger>
             <TabsTrigger value="quick" className="text-[10px] sm:text-sm">快速辨識</TabsTrigger>
           </TabsList>
+
+          <TabsContent value="checkfirst">
+            <Card className="bg-gray-800/50 border-purple-700/50">
+              <CardHeader>
+                <CardTitle className="text-lg">🔥 Check First 挑戰</CardTitle>
+                <p className="text-sm text-gray-400">連續答對 10 題「應該 Check」的場景，養成 Check First 習慣</p>
+              </CardHeader>
+              <CardContent>
+                <CheckFirstDrill />
+              </CardContent>
+            </Card>
+          </TabsContent>
 
           <TabsContent value="classify">
             <Card className="bg-gray-800/50 border-gray-700">
