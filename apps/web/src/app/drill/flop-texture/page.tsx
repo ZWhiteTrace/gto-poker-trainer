@@ -17,6 +17,8 @@ import {
   getAdvantageColor,
   type FlopTextureType,
   type AdvantageTier,
+  type FrequencyAdjust,
+  type SizingAdjust,
 } from "@/lib/poker/flopTexture";
 import type { Rank, Suit } from "@/lib/poker/types";
 import { SUIT_SYMBOLS, SUIT_CARD_COLORS } from "@/lib/poker/types";
@@ -25,7 +27,7 @@ import { SUIT_SYMBOLS, SUIT_CARD_COLORS } from "@/lib/poker/types";
 // Types
 // ============================================
 
-type DrillMode = "classify" | "cbet" | "quick" | "threelayer" | "mustcheck" | "checkfirst";
+type DrillMode = "classify" | "cbet" | "quick" | "threelayer" | "mustcheck" | "checkfirst" | "liveexploit";
 
 interface ClassifyScenario {
   flop: Rank[];
@@ -1503,6 +1505,328 @@ function CheckFirstDrill() {
 }
 
 // ============================================
+// Live Exploit Drill
+// ============================================
+
+type LiveExploitSubMode = "notes" | "quiz";
+
+// Helper to display frequency adjustment
+function getFreqAdjustLabel(adj: FrequencyAdjust): { label: string; color: string } {
+  switch (adj) {
+    case "much_higher": return { label: "大幅提高", color: "text-green-400" };
+    case "higher": return { label: "略提高", color: "text-green-300" };
+    case "same": return { label: "維持", color: "text-gray-400" };
+    case "lower": return { label: "略降低", color: "text-orange-300" };
+    case "much_lower": return { label: "大幅降低", color: "text-red-400" };
+  }
+}
+
+function getSizingAdjustLabel(adj: SizingAdjust): { label: string; color: string } {
+  switch (adj) {
+    case "much_larger": return { label: "大幅放大", color: "text-green-400" };
+    case "larger": return { label: "略放大", color: "text-green-300" };
+    case "same": return { label: "維持", color: "text-gray-400" };
+    case "smaller": return { label: "縮小", color: "text-orange-300" };
+  }
+}
+
+function LiveExploitDrill() {
+  const [subMode, setSubMode] = useState<LiveExploitSubMode>("notes");
+  const [selectedTexture, setSelectedTexture] = useState<FlopTextureType | null>(null);
+  const [quizScenario, setQuizScenario] = useState<{ texture: FlopTextureType; flop: Rank[]; suits: Suit[] } | null>(null);
+  const [quizAnswer, setQuizAnswer] = useState<{ freq: FrequencyAdjust | null; sizing: SizingAdjust | null }>({ freq: null, sizing: null });
+  const [showQuizResult, setShowQuizResult] = useState(false);
+  const [quizScore, setQuizScore] = useState({ correct: 0, total: 0 });
+
+  const allTextures = Object.values(FLOP_TEXTURE_CATEGORIES);
+
+  const loadQuizScenario = useCallback(() => {
+    const textures = Object.keys(FLOP_TEXTURE_CATEGORIES) as FlopTextureType[];
+    const randomTexture = textures[Math.floor(Math.random() * textures.length)];
+    const { ranks, suits } = generateFlopOfTexture(randomTexture);
+    setQuizScenario({ texture: randomTexture, flop: ranks, suits });
+    setQuizAnswer({ freq: null, sizing: null });
+    setShowQuizResult(false);
+  }, []);
+
+  useEffect(() => {
+    if (subMode === "quiz" && !quizScenario) {
+      loadQuizScenario();
+    }
+  }, [subMode, quizScenario, loadQuizScenario]);
+
+  const handleQuizSubmit = () => {
+    if (!quizScenario || !quizAnswer.freq || !quizAnswer.sizing) return;
+    const category = FLOP_TEXTURE_CATEGORIES[quizScenario.texture];
+    const isFreqCorrect = quizAnswer.freq === category.liveExploit.frequencyAdjust;
+    const isSizingCorrect = quizAnswer.sizing === category.liveExploit.sizingAdjust;
+    setShowQuizResult(true);
+    setQuizScore(prev => ({
+      correct: prev.correct + (isFreqCorrect && isSizingCorrect ? 1 : 0),
+      total: prev.total + 1,
+    }));
+  };
+
+  // Notes Mode
+  if (subMode === "notes") {
+    const selected = selectedTexture ? FLOP_TEXTURE_CATEGORIES[selectedTexture] : null;
+
+    return (
+      <div className="space-y-4">
+        {/* Sub-mode toggle */}
+        <div className="flex gap-2">
+          <Button size="sm" variant="default" onClick={() => setSubMode("notes")}>
+            📋 筆記速查
+          </Button>
+          <Button size="sm" variant="outline" onClick={() => setSubMode("quiz")}>
+            🎯 GTO vs Live 測驗
+          </Button>
+        </div>
+
+        {/* Texture selector */}
+        <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
+          {allTextures.map((cat) => (
+            <Button
+              key={cat.id}
+              variant={selectedTexture === cat.id ? "default" : "outline"}
+              size="sm"
+              className="text-xs h-auto py-2"
+              onClick={() => setSelectedTexture(cat.id)}
+            >
+              {cat.nameZh}
+            </Button>
+          ))}
+        </div>
+
+        {/* Selected texture details */}
+        {selected && (
+          <Card className="bg-gray-900/50 border-amber-700/50">
+            <CardHeader className="pb-2">
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-lg text-amber-400">{selected.nameZh}</CardTitle>
+                <Badge className={getAdvantageColor(selected.advantageTier)}>{selected.advantageTier}</Badge>
+              </div>
+              <p className="text-xs text-gray-400">{selected.nameEn}</p>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {/* GTO vs Live comparison */}
+              <div className="grid grid-cols-2 gap-4 text-sm">
+                <div className="bg-gray-800/50 rounded p-3">
+                  <div className="text-gray-500 text-xs mb-1">GTO 頻率</div>
+                  <div className="text-cyan-400">{selected.ip.cbetFreqMin}-{selected.ip.cbetFreqMax}%</div>
+                </div>
+                <div className="bg-gray-800/50 rounded p-3">
+                  <div className="text-gray-500 text-xs mb-1">線下調整</div>
+                  <div className={getFreqAdjustLabel(selected.liveExploit.frequencyAdjust).color}>
+                    {getFreqAdjustLabel(selected.liveExploit.frequencyAdjust).label}
+                  </div>
+                </div>
+                <div className="bg-gray-800/50 rounded p-3">
+                  <div className="text-gray-500 text-xs mb-1">GTO 尺寸</div>
+                  <div className="text-yellow-400">{selected.ip.sizing}</div>
+                </div>
+                <div className="bg-gray-800/50 rounded p-3">
+                  <div className="text-gray-500 text-xs mb-1">線下調整</div>
+                  <div className={getSizingAdjustLabel(selected.liveExploit.sizingAdjust).color}>
+                    {getSizingAdjustLabel(selected.liveExploit.sizingAdjust).label}
+                  </div>
+                </div>
+              </div>
+
+              {/* Multi-way note */}
+              <div className="bg-orange-900/20 border border-orange-700/30 rounded p-3">
+                <div className="text-orange-400 text-xs font-semibold mb-1">🎯 多路底池</div>
+                <p className="text-sm text-gray-300">{selected.liveExploit.multiWayNote}</p>
+              </div>
+
+              {/* Exploit tip */}
+              <div className="bg-green-900/20 border border-green-700/30 rounded p-3">
+                <div className="text-green-400 text-xs font-semibold mb-1">💡 剝削重點</div>
+                <p className="text-sm text-gray-300">{selected.liveExploit.exploitTip}</p>
+              </div>
+
+              {/* Common leaks */}
+              <div>
+                <div className="text-gray-500 text-xs mb-2">對手常見漏洞</div>
+                <div className="flex flex-wrap gap-2">
+                  {selected.liveExploit.commonLeaks.map((leak, i) => (
+                    <Badge key={i} variant="outline" className="text-xs">{leak}</Badge>
+                  ))}
+                </div>
+              </div>
+
+              {/* Danger signs */}
+              <div className="bg-red-900/20 border border-red-700/30 rounded p-3">
+                <div className="text-red-400 text-xs font-semibold mb-1">⚠️ 警告信號</div>
+                <ul className="text-sm text-gray-300 space-y-1">
+                  {selected.liveExploit.dangerSigns.map((sign, i) => (
+                    <li key={i}>• {sign}</li>
+                  ))}
+                </ul>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {!selected && (
+          <div className="text-center text-gray-500 py-8">
+            👆 選擇一種質地查看線下剝削筆記
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  // Quiz Mode
+  const quizCategory = quizScenario ? FLOP_TEXTURE_CATEGORIES[quizScenario.texture] : null;
+  const isFreqCorrect = quizAnswer.freq === quizCategory?.liveExploit.frequencyAdjust;
+  const isSizingCorrect = quizAnswer.sizing === quizCategory?.liveExploit.sizingAdjust;
+
+  return (
+    <div className="space-y-4">
+      {/* Sub-mode toggle */}
+      <div className="flex gap-2">
+        <Button size="sm" variant="outline" onClick={() => setSubMode("notes")}>
+          📋 筆記速查
+        </Button>
+        <Button size="sm" variant="default" onClick={() => setSubMode("quiz")}>
+          🎯 GTO vs Live 測驗
+        </Button>
+      </div>
+
+      {/* Score */}
+      <div className="flex items-center justify-between text-sm">
+        <span className="text-gray-400">
+          正確率: {quizScore.total > 0 ? Math.round((quizScore.correct / quizScore.total) * 100) : 0}%
+          ({quizScore.correct}/{quizScore.total})
+        </span>
+        <Button variant="outline" size="sm" onClick={() => setQuizScore({ correct: 0, total: 0 })}>
+          <RotateCcw className="h-4 w-4 mr-1" />
+          重置
+        </Button>
+      </div>
+
+      {quizScenario && quizCategory && (
+        <div className="space-y-4">
+          <FlopDisplay flop={quizScenario.flop} suits={quizScenario.suits} />
+
+          {/* Texture info */}
+          <div className="flex items-center justify-center gap-2">
+            <Badge variant="secondary">{quizCategory.nameZh}</Badge>
+            <Badge className={getAdvantageColor(quizCategory.advantageTier)}>{quizCategory.advantageTier}</Badge>
+          </div>
+
+          {/* GTO baseline */}
+          <div className="bg-gray-800/50 rounded p-3 text-center text-sm">
+            <span className="text-gray-400">GTO 基準: </span>
+            <span className="text-cyan-400">{quizCategory.ip.cbetFreqMin}-{quizCategory.ip.cbetFreqMax}%</span>
+            <span className="text-gray-400"> / </span>
+            <span className="text-yellow-400">{quizCategory.ip.sizing}</span>
+          </div>
+
+          {/* Question */}
+          <div className="text-center text-lg font-medium">
+            線下應該怎麼調整？
+          </div>
+
+          {/* Frequency options */}
+          <div className="space-y-2">
+            <p className="text-sm text-gray-400">頻率調整:</p>
+            <div className="grid grid-cols-3 sm:grid-cols-5 gap-2">
+              {(["much_higher", "higher", "same", "lower", "much_lower"] as FrequencyAdjust[]).map((opt) => {
+                const { label, color } = getFreqAdjustLabel(opt);
+                return (
+                  <Button
+                    key={opt}
+                    variant={quizAnswer.freq === opt ? "default" : "outline"}
+                    size="sm"
+                    className={cn(
+                      "text-xs h-auto py-2",
+                      showQuizResult && opt === quizCategory.liveExploit.frequencyAdjust && "ring-2 ring-green-400",
+                      showQuizResult && quizAnswer.freq === opt && opt !== quizCategory.liveExploit.frequencyAdjust && "ring-2 ring-red-400"
+                    )}
+                    onClick={() => !showQuizResult && setQuizAnswer(prev => ({ ...prev, freq: opt }))}
+                    disabled={showQuizResult}
+                  >
+                    {label}
+                  </Button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Sizing options */}
+          <div className="space-y-2">
+            <p className="text-sm text-gray-400">尺寸調整:</p>
+            <div className="grid grid-cols-4 gap-2">
+              {(["much_larger", "larger", "same", "smaller"] as SizingAdjust[]).map((opt) => {
+                const { label, color } = getSizingAdjustLabel(opt);
+                return (
+                  <Button
+                    key={opt}
+                    variant={quizAnswer.sizing === opt ? "default" : "outline"}
+                    size="sm"
+                    className={cn(
+                      "text-xs h-auto py-2",
+                      showQuizResult && opt === quizCategory.liveExploit.sizingAdjust && "ring-2 ring-green-400",
+                      showQuizResult && quizAnswer.sizing === opt && opt !== quizCategory.liveExploit.sizingAdjust && "ring-2 ring-red-400"
+                    )}
+                    onClick={() => !showQuizResult && setQuizAnswer(prev => ({ ...prev, sizing: opt }))}
+                    disabled={showQuizResult}
+                  >
+                    {label}
+                  </Button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Submit */}
+          {!showQuizResult && (
+            <Button
+              onClick={handleQuizSubmit}
+              disabled={!quizAnswer.freq || !quizAnswer.sizing}
+              className="w-full"
+            >
+              確認答案
+            </Button>
+          )}
+
+          {/* Result */}
+          {showQuizResult && (
+            <Card className="bg-gray-800/50 border-gray-700">
+              <CardContent className="pt-4">
+                <div className={cn(
+                  "text-lg font-semibold mb-2",
+                  isFreqCorrect && isSizingCorrect ? "text-green-400" : "text-orange-400"
+                )}>
+                  {isFreqCorrect && isSizingCorrect ? "完全正確！" : isFreqCorrect || isSizingCorrect ? "部分正確" : "需要改進"}
+                </div>
+                <p className="text-sm text-gray-300 mb-2">
+                  {quizCategory.nameZh}：頻率 <span className={getFreqAdjustLabel(quizCategory.liveExploit.frequencyAdjust).color}>
+                    {getFreqAdjustLabel(quizCategory.liveExploit.frequencyAdjust).label}
+                  </span>，尺寸 <span className={getSizingAdjustLabel(quizCategory.liveExploit.sizingAdjust).color}>
+                    {getSizingAdjustLabel(quizCategory.liveExploit.sizingAdjust).label}
+                  </span>
+                </p>
+                <p className="text-sm text-gray-400">{quizCategory.liveExploit.exploitTip}</p>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Next */}
+          {showQuizResult && (
+            <Button onClick={loadQuizScenario} className="w-full">
+              下一題 <ArrowRight className="h-4 w-4 ml-2" />
+            </Button>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ============================================
 // Main Page
 // ============================================
 
@@ -1522,10 +1846,11 @@ export default function FlopTextureDrillPage() {
 
         {/* Mode Tabs */}
         <Tabs value={mode} onValueChange={(v) => setMode(v as DrillMode)} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-3 sm:grid-cols-6 bg-gray-800 h-auto">
+          <TabsList className="grid w-full grid-cols-4 sm:grid-cols-7 bg-gray-800 h-auto">
             <TabsTrigger value="checkfirst" className="text-[10px] sm:text-sm data-[state=active]:bg-purple-600">🔥挑戰</TabsTrigger>
             <TabsTrigger value="threelayer" className="text-[10px] sm:text-sm">三層判斷</TabsTrigger>
             <TabsTrigger value="mustcheck" className="text-[10px] sm:text-sm">必Check</TabsTrigger>
+            <TabsTrigger value="liveexploit" className="text-[10px] sm:text-sm data-[state=active]:bg-amber-600">📍線下</TabsTrigger>
             <TabsTrigger value="classify" className="text-[10px] sm:text-sm">質地分類</TabsTrigger>
             <TabsTrigger value="cbet" className="text-[10px] sm:text-sm">C-bet</TabsTrigger>
             <TabsTrigger value="quick" className="text-[10px] sm:text-sm">快速辨識</TabsTrigger>
@@ -1539,6 +1864,18 @@ export default function FlopTextureDrillPage() {
               </CardHeader>
               <CardContent>
                 <CheckFirstDrill />
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="liveexploit">
+            <Card className="bg-gray-800/50 border-amber-700/50">
+              <CardHeader>
+                <CardTitle className="text-lg">📍 線下剝削筆記</CardTitle>
+                <p className="text-sm text-gray-400">GTO vs 線下調整對照，多路底池策略</p>
+              </CardHeader>
+              <CardContent>
+                <LiveExploitDrill />
               </CardContent>
             </Card>
           </TabsContent>
