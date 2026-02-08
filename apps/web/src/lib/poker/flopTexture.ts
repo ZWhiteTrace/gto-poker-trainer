@@ -33,6 +33,21 @@ export type FlopTextureType =
 export type SuitDistribution = "rainbow" | "twotone" | "monotone";
 export type SizingProfile = "small" | "large" | "mixed" | "polarized";
 export type AdvantageTier = "high" | "medium" | "low" | "special";
+export type FrequencyAdjust = "much_higher" | "higher" | "same" | "lower" | "much_lower";
+export type SizingAdjust = "much_larger" | "larger" | "same" | "smaller";
+
+/**
+ * Live game exploit adjustments vs GTO baseline.
+ * Applicable to most live cash games worldwide.
+ */
+export interface LiveExploitData {
+  frequencyAdjust: FrequencyAdjust;   // Frequency vs GTO baseline
+  sizingAdjust: SizingAdjust;         // Sizing vs GTO baseline
+  multiWayNote: string;               // Multi-way pot strategy (zh)
+  commonLeaks: string[];              // Opponent tendencies to exploit (zh)
+  exploitTip: string;                 // Key exploit note (zh)
+  dangerSigns: string[];              // When to stop / warning signs (zh)
+}
 
 export interface FlopTextureCategory {
   id: FlopTextureType;
@@ -57,6 +72,7 @@ export interface FlopTextureCategory {
   strategyNotesZh: string;
   monotoneModifier: string;
   twotoneModifier: string;
+  liveExploit: LiveExploitData;
 }
 
 export interface FlopAnalysis {
@@ -112,6 +128,14 @@ export const FLOP_TEXTURE_CATEGORIES: Record<FlopTextureType, FlopTextureCategor
     strategyNotesZh: "幾乎 100% c-bet。PFR 有壓倒性 nut advantage（set、兩對、順子）。大尺寸下注。",
     monotoneModifier: "頻率降至 60-70%，無同花 draw 的 Ax 考慮 check",
     twotoneModifier: "影響極小，仍 90%+ c-bet",
+    liveExploit: {
+      frequencyAdjust: "same",
+      sizingAdjust: "larger",
+      multiWayNote: "多路仍可打，但只用強 Ax，空氣放棄",
+      commonLeaks: ["小注=詐唬迷思，愛 call 一張看看", "不願棄掉任何 Ax"],
+      exploitTip: "價值尺寸放大到 60-75%，Turn 繼續壓。對手不會相信你有 AK/AQ。",
+      dangerSigns: ["被 raise = 兩對或 set，別硬拼", "River 被 check-raise 幾乎都是真貨"],
+    },
   },
   ABx: {
     id: "ABx",
@@ -126,6 +150,14 @@ export const FLOP_TEXTURE_CATEGORIES: Record<FlopTextureType, FlopTextureCategor
     strategyNotesZh: "高頻率混合尺寸。33% 做全 range bet，66% 做價值/聽牌。",
     monotoneModifier: "頻率降至 50-60%",
     twotoneModifier: "略降至 75-85%",
+    liveExploit: {
+      frequencyAdjust: "same",
+      sizingAdjust: "larger",
+      multiWayNote: "多路收縮，只打 Ax 或強聽牌",
+      commonLeaks: ["會用任何 Ax call 到底", "低牌部分容易被忽略"],
+      exploitTip: "AK/AQ 價值三條街。弱 Ax 可大尺寸逼對手犯錯。",
+      dangerSigns: ["River 被加注 = 兩對+", "多人底池被 call 要警覺"],
+    },
   },
   Axx: {
     id: "Axx",
@@ -140,6 +172,14 @@ export const FLOP_TEXTURE_CATEGORIES: Record<FlopTextureType, FlopTextureCategor
     strategyNotesZh: "中高頻率。小尺寸全 range 或 66% 選擇性下注。BB 有更多低牌組合。",
     monotoneModifier: "頻率降至 40-50%",
     twotoneModifier: "略降至 60-75%",
+    liveExploit: {
+      frequencyAdjust: "lower",
+      sizingAdjust: "larger",
+      multiWayNote: "多路大幅降頻，無真 A 不碰",
+      commonLeaks: ["「你不一定有 A」的懷疑", "call station 愛看 Turn"],
+      exploitTip: "翻牌可小注，Turn 被 call 後要放大尺寸收割。",
+      dangerSigns: ["低牌連接被 call = 對手可能有 set 或兩對", "Turn 大張改變要謹慎"],
+    },
   },
   BBB: {
     id: "BBB",
@@ -154,6 +194,14 @@ export const FLOP_TEXTURE_CATEGORIES: Record<FlopTextureType, FlopTextureCategor
     strategyNotesZh: "接近 100% c-bet。PFR 有 AA/KK/QQ 等超對優勢，BB 的強牌（如 KQs）多已 3-bet。",
     monotoneModifier: "頻率降至 55-65%",
     twotoneModifier: "仍 85%+ c-bet",
+    liveExploit: {
+      frequencyAdjust: "same",
+      sizingAdjust: "much_larger",
+      multiWayNote: "多路極危險！只打 nuts 或強 draw",
+      commonLeaks: ["愛用頂對纏鬥到底", "低估順子完成可能"],
+      exploitTip: "超額下注效果極好，對手常 overfold。持有 nuts 時榨到底。",
+      dangerSigns: ["被 call 兩條街 = 對手 range 很強", "River 加注幾乎都是順子"],
+    },
   },
   BBx: {
     id: "BBx",
@@ -168,6 +216,14 @@ export const FLOP_TEXTURE_CATEGORIES: Record<FlopTextureType, FlopTextureCategor
     strategyNotesZh: "高頻率。混合小尺寸全 range 和大尺寸選擇性下注。",
     monotoneModifier: "頻率降至 45-55%",
     twotoneModifier: "略降至 70-80%",
+    liveExploit: {
+      frequencyAdjust: "same",
+      sizingAdjust: "larger",
+      multiWayNote: "多路收縮至強頂對+，弱對子直接放棄",
+      commonLeaks: ["頂對會 call 到底", "低估後門聽牌"],
+      exploitTip: "價值牌放大尺寸。Turn 出高牌或完成 draw 時果斷開火。",
+      dangerSigns: ["被 check-raise = 兩對或 set", "連接牌完成時要減速"],
+    },
   },
   KQx: {
     id: "KQx",
@@ -182,6 +238,14 @@ export const FLOP_TEXTURE_CATEGORIES: Record<FlopTextureType, FlopTextureCategor
     strategyNotesZh: "Range 優勢仍在。小尺寸為預設。K 高比 Q 高更適合 c-bet。",
     monotoneModifier: "頻率降至 40-50%",
     twotoneModifier: "略降至 65-75%",
+    liveExploit: {
+      frequencyAdjust: "lower",
+      sizingAdjust: "same",
+      multiWayNote: "多路幾乎全 check，除非有 overpair",
+      commonLeaks: ["「你一定有 K」的恐懼很強", "中對愛 call 一條街"],
+      exploitTip: "小注效果好。Turn 沒改善直接停手，別浪費籌碼。",
+      dangerSigns: ["Turn 被 call = 對手 range 不弱", "River 大注幾乎只能 fold"],
+    },
   },
   JTx: {
     id: "JTx",
@@ -196,6 +260,14 @@ export const FLOP_TEXTURE_CATEGORIES: Record<FlopTextureType, FlopTextureCategor
     strategyNotesZh: "中等優勢。BB 有更多低對子和中牌。混合尺寸策略。",
     monotoneModifier: "頻率降至 35-45%",
     twotoneModifier: "略降至 60-70%",
+    liveExploit: {
+      frequencyAdjust: "lower",
+      sizingAdjust: "same",
+      multiWayNote: "多路幾乎不打，對手低對太多",
+      commonLeaks: ["Jx/Tx 不會輕易放棄", "高估自己的中對"],
+      exploitTip: "只在持有 overpair 或強 draw 時價值下注。空氣少打。",
+      dangerSigns: ["被 call = 有對子", "Turn 連接牌要立刻減速"],
+    },
   },
   JT_conn: {
     id: "JT_conn",
@@ -210,6 +282,14 @@ export const FLOP_TEXTURE_CATEGORIES: Record<FlopTextureType, FlopTextureCategor
     strategyNotesZh: "極端化策略：強牌/combo draw 下大注，其他過牌。BB 可能有順子、兩對、set。",
     monotoneModifier: "頻率降至 30-40%",
     twotoneModifier: "略降至 45-55%",
+    liveExploit: {
+      frequencyAdjust: "much_lower",
+      sizingAdjust: "larger",
+      multiWayNote: "多路完全不 bluff，只打 nuts",
+      commonLeaks: ["追順子不看賠率", "中對不願放棄"],
+      exploitTip: "持有兩對或 set 時大尺寸收割。Bluff 幾乎無意義。",
+      dangerSigns: ["翻牌被 raise = 已經中了", "這種牌面 bluff 成本極高"],
+    },
   },
   Low_conn: {
     id: "Low_conn",
@@ -224,6 +304,14 @@ export const FLOP_TEXTURE_CATEGORIES: Record<FlopTextureType, FlopTextureCategor
     strategyNotesZh: "BB 優勢牌面。只用強牌（set、兩對、combo draw）下注。其他全部過牌。",
     monotoneModifier: "頻率降至 20-30%",
     twotoneModifier: "略降至 35-45%",
+    liveExploit: {
+      frequencyAdjust: "much_lower",
+      sizingAdjust: "larger",
+      multiWayNote: "多路完全不碰，除非有 set",
+      commonLeaks: ["業餘 AA/KK 不願 check", "低估 976 這類牌面的危險"],
+      exploitTip: "在 BB 位可用 check-raise 剝削那些硬打 overpair 的人。",
+      dangerSigns: ["這是 BB 優勢牌面", "持 AA 也要考慮 check/fold"],
+    },
   },
   Low_unconn: {
     id: "Low_unconn",
@@ -238,6 +326,14 @@ export const FLOP_TEXTURE_CATEGORIES: Record<FlopTextureType, FlopTextureCategor
     strategyNotesZh: "極端化或小尺寸。比連接低牌好（無順子），但 BB 仍有暗三、兩對。",
     monotoneModifier: "頻率降至 25-35%",
     twotoneModifier: "略降至 40-55%",
+    liveExploit: {
+      frequencyAdjust: "lower",
+      sizingAdjust: "same",
+      multiWayNote: "多路高頻 check",
+      commonLeaks: ["「誰都沒中」心態愛 call", "高張迷信"],
+      exploitTip: "翻牌可小注。Turn 出高牌是絕佳第二槍機會。",
+      dangerSigns: ["被 call = 多半真的有對子", "Turn 繼續被 call 要減速"],
+    },
   },
   Paired: {
     id: "Paired",
@@ -252,6 +348,14 @@ export const FLOP_TEXTURE_CATEGORIES: Record<FlopTextureType, FlopTextureCategor
     strategyNotesZh: "高頻率小注。牌面穩定，廉價否認 equity。雙方都不太可能有三條。",
     monotoneModifier: "頻率降至 50-60%",
     twotoneModifier: "略降至 70-80%",
+    liveExploit: {
+      frequencyAdjust: "same",
+      sizingAdjust: "larger",
+      multiWayNote: "多路仍可小注，對手很難有三條",
+      commonLeaks: ["「公對=沒人中」迷思", "高牌配對愛 call 到底"],
+      exploitTip: "有三條時慢打誘導。對手常懷疑你是詐唬。",
+      dangerSigns: ["被 raise = 真的有三條或 full house", "小心對手的慢打"],
+    },
   },
   Trips: {
     id: "Trips",
@@ -266,6 +370,14 @@ export const FLOP_TEXTURE_CATEGORIES: Record<FlopTextureType, FlopTextureCategor
     strategyNotesZh: "極小注高頻率。雙方都不太可能有四條，高牌踢腳很重要。",
     monotoneModifier: "N/A（三條牌面花色無意義）",
     twotoneModifier: "影響極小",
+    liveExploit: {
+      frequencyAdjust: "same",
+      sizingAdjust: "same",
+      multiWayNote: "多路可打，誰都不太可能有四條",
+      commonLeaks: ["認為「不可能有」所以愛 call", "高踢腳高估自己"],
+      exploitTip: "有 A/K 踢腳就大膽 value。Bluff 可信度極高。",
+      dangerSigns: ["被 raise = 真的有四條或 full house", "極稀有場景，保持冷靜"],
+    },
   },
 };
 
