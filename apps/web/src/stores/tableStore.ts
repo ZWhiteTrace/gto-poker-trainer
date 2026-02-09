@@ -58,6 +58,29 @@ function shuffleDeck(deck: Card[]): Card[] {
 // Store AI profiles for each seat
 const aiProfileAssignments: Map<number, AIPlayerProfile> = new Map();
 
+// Selected AI opponent style (module-level for simplicity)
+let selectedAIStyle: string = "mixed";
+
+export function setAIOpponentStyle(style: string) {
+  selectedAIStyle = style;
+}
+
+export function getAIOpponentStyle(): string {
+  return selectedAIStyle;
+}
+
+function getAIProfilesForStyle(style: string): AIPlayerProfile[] {
+  if (style === "mixed") {
+    return AI_PROFILES;
+  }
+  const profile = AI_PROFILES.find(p => p.id === style);
+  if (profile) {
+    // Return array of same profile for all opponents
+    return [profile];
+  }
+  return AI_PROFILES;
+}
+
 function createPlayers(
   config: GameConfig,
   heroPosition: Position,
@@ -65,7 +88,7 @@ function createPlayers(
   aiProfiles?: AIPlayerProfile[]
 ): Player[] {
   // Assign AI profiles (cycle through available profiles or use provided ones)
-  const profiles = aiProfiles || AI_PROFILES;
+  const profiles = aiProfiles || getAIProfilesForStyle(selectedAIStyle);
 
   return POSITIONS.map((position, index) => {
     const isHero = position === heroPosition;

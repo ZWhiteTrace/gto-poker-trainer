@@ -514,8 +514,8 @@ function ClassifyDrill() {
             這個翻牌面的質地是？
           </div>
 
-          {/* Options */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+          {/* Options - 3 cols on mobile, 4 cols on tablet+ */}
+          <div className="grid grid-cols-3 sm:grid-cols-4 gap-1.5 sm:gap-2">
             {allTextures.map((cat) => {
               const isSelected = selectedAnswer === cat.id;
               const isCorrectAnswer = scenario.correctTexture === cat.id;
@@ -525,17 +525,17 @@ function ClassifyDrill() {
                   key={cat.id}
                   variant="outline"
                   className={cn(
-                    "h-auto py-3 text-left justify-start",
+                    "h-11 sm:h-auto sm:py-3 text-left justify-start text-xs sm:text-sm px-2 sm:px-3",
                     showResult && isCorrectAnswer && "bg-green-600 hover:bg-green-600 text-white border-green-600",
                     showResult && isSelected && !isCorrectAnswer && "bg-red-600 hover:bg-red-600 text-white border-red-600",
-                    !showResult && "hover:bg-gray-700"
+                    !showResult && "hover:bg-gray-700 active:bg-gray-600"
                   )}
                   onClick={() => handleAnswer(cat.id)}
                   disabled={showResult}
                 >
-                  <span>{cat.nameZh}</span>
-                  {showResult && isCorrectAnswer && <CheckCircle2 className="h-4 w-4 ml-auto" />}
-                  {showResult && isSelected && !isCorrectAnswer && <XCircle className="h-4 w-4 ml-auto" />}
+                  <span className="truncate">{cat.nameZh}</span>
+                  {showResult && isCorrectAnswer && <CheckCircle2 className="h-3 w-3 sm:h-4 sm:w-4 ml-auto shrink-0" />}
+                  {showResult && isSelected && !isCorrectAnswer && <XCircle className="h-3 w-3 sm:h-4 sm:w-4 ml-auto shrink-0" />}
                 </Button>
               );
             })}

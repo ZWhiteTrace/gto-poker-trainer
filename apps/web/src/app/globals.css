@@ -170,3 +170,52 @@ body.table-trainer-active main {
   padding: 0 !important;
   margin: 0 !important;
 }
+
+/* Mobile utilities */
+@media (max-width: 640px) {
+  /* Larger touch targets */
+  .touch-target-lg {
+    min-height: 48px;
+    min-width: 48px;
+  }
+
+  /* Range grid mobile scroll wrapper */
+  .range-grid-mobile-scroll {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scroll-snap-type: x mandatory;
+    padding-bottom: 8px;
+  }
+
+  .range-grid-mobile-scroll > * {
+    scroll-snap-align: center;
+  }
+
+  /* Fixed bottom action bar */
+  .mobile-action-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(0, 0, 0, 0.95);
+    backdrop-filter: blur(8px);
+    padding: 12px 16px calc(12px + env(safe-area-inset-bottom, 0px));
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    z-index: 40;
+  }
+
+  /* Prevent content from being hidden behind fixed bar */
+  .has-mobile-action-bar {
+    padding-bottom: calc(80px + env(safe-area-inset-bottom, 0px));
+  }
+}
+
+/* Swipe hint animation */
+@keyframes swipe-hint {
+  0%, 100% { transform: translateX(0); opacity: 0.6; }
+  50% { transform: translateX(10px); opacity: 1; }
+}
+
+.animate-swipe-hint {
+  animation: swipe-hint 1.5s ease-in-out 2;
+}

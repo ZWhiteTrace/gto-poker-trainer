@@ -295,43 +295,43 @@ export default function SqueezeDrillPage() {
     : 0;
 
   return (
-    <div className="container max-w-4xl py-8">
+    <div className="container max-w-4xl py-4 sm:py-8 has-mobile-action-bar sm:has-mobile-action-bar-[none]">
       {/* Header */}
-      <div className="mb-8 flex items-center justify-between">
+      <div className="mb-4 sm:mb-8 flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold">Squeeze 訓練</h1>
-          <p className="text-muted-foreground">練習多人底池的 3-Bet 決策</p>
+          <h1 className="text-2xl sm:text-3xl font-bold">Squeeze 訓練</h1>
+          <p className="text-sm text-muted-foreground">練習多人底池的 3-Bet 決策</p>
         </div>
-        <Button variant="outline" onClick={resetSession}>
+        <Button variant="outline" size="sm" onClick={resetSession} className="hidden sm:flex">
           <RotateCcw className="mr-2 h-4 w-4" />
           重置
         </Button>
       </div>
 
-      {/* Stats Bar */}
-      <div className="mb-6 grid grid-cols-4 gap-2">
+      {/* Stats Bar - compact on mobile */}
+      <div className="mb-4 sm:mb-6 grid grid-cols-4 gap-1 sm:gap-2">
         <Card>
-          <CardContent className="p-3 text-center">
-            <div className="text-xl font-bold">{stats.total}</div>
-            <div className="text-xs text-muted-foreground">總題數</div>
+          <CardContent className="p-2 sm:p-3 text-center">
+            <div className="text-lg sm:text-xl font-bold">{stats.total}</div>
+            <div className="text-[10px] sm:text-xs text-muted-foreground">總題數</div>
           </CardContent>
         </Card>
         <Card>
-          <CardContent className="p-3 text-center">
-            <div className="text-xl font-bold text-green-500">{stats.correct}</div>
-            <div className="text-xs text-muted-foreground">正確</div>
+          <CardContent className="p-2 sm:p-3 text-center">
+            <div className="text-lg sm:text-xl font-bold text-green-500">{stats.correct}</div>
+            <div className="text-[10px] sm:text-xs text-muted-foreground">正確</div>
           </CardContent>
         </Card>
         <Card>
-          <CardContent className="p-3 text-center">
-            <div className="text-xl font-bold">{accuracy}%</div>
-            <div className="text-xs text-muted-foreground">準確率</div>
+          <CardContent className="p-2 sm:p-3 text-center">
+            <div className="text-lg sm:text-xl font-bold">{accuracy}%</div>
+            <div className="text-[10px] sm:text-xs text-muted-foreground">準確率</div>
           </CardContent>
         </Card>
         <Card>
-          <CardContent className="p-3 text-center">
-            <div className="text-xl font-bold text-primary">{stats.streak}</div>
-            <div className="text-xs text-muted-foreground">連續</div>
+          <CardContent className="p-2 sm:p-3 text-center">
+            <div className="text-lg sm:text-xl font-bold text-primary">{stats.streak}</div>
+            <div className="text-[10px] sm:text-xs text-muted-foreground">連續</div>
           </CardContent>
         </Card>
       </div>
@@ -454,48 +454,50 @@ export default function SqueezeDrillPage() {
             </div>
           )}
 
-          {/* Action Buttons */}
-          {!showResult ? (
-            <div className="space-y-3">
-              <div className="grid grid-cols-3 gap-3">
-                <Button
-                  size="lg"
-                  variant="default"
-                  onClick={() => handleAction("squeeze")}
-                  className="h-14"
-                >
-                  Squeeze
-                  <kbd className="ml-2 hidden sm:inline text-xs opacity-50">S</kbd>
-                </Button>
-                <Button
-                  size="lg"
-                  variant="outline"
-                  onClick={() => handleAction("call")}
-                  className="h-14"
-                >
-                  Call
-                  <kbd className="ml-2 hidden sm:inline text-xs opacity-50">C</kbd>
-                </Button>
-                <Button
-                  size="lg"
-                  variant="outline"
-                  onClick={() => handleAction("fold")}
-                  className="h-14"
-                >
-                  Fold
-                  <kbd className="ml-2 hidden sm:inline text-xs opacity-50">F</kbd>
-                </Button>
+          {/* Action Buttons - Desktop inline, Mobile fixed bottom */}
+          <div className="hidden sm:block">
+            {!showResult ? (
+              <div className="space-y-3">
+                <div className="grid grid-cols-3 gap-3">
+                  <Button
+                    size="lg"
+                    variant="default"
+                    onClick={() => handleAction("squeeze")}
+                    className="h-14"
+                  >
+                    Squeeze
+                    <kbd className="ml-2 text-xs opacity-50">S</kbd>
+                  </Button>
+                  <Button
+                    size="lg"
+                    variant="outline"
+                    onClick={() => handleAction("call")}
+                    className="h-14"
+                  >
+                    Call
+                    <kbd className="ml-2 text-xs opacity-50">C</kbd>
+                  </Button>
+                  <Button
+                    size="lg"
+                    variant="outline"
+                    onClick={() => handleAction("fold")}
+                    className="h-14"
+                  >
+                    Fold
+                    <kbd className="ml-2 text-xs opacity-50">F</kbd>
+                  </Button>
+                </div>
+                <p className="text-xs text-center text-muted-foreground">
+                  快捷鍵：S = Squeeze, C = Call, F = Fold
+                </p>
               </div>
-              <p className="text-xs text-center text-muted-foreground">
-                快捷鍵：S = Squeeze, C = Call, F = Fold
-              </p>
-            </div>
-          ) : (
-            <Button size="lg" onClick={generateNewSpot} className="w-full h-14">
-              下一題
-              <kbd className="ml-2 hidden sm:inline text-xs opacity-50">Space</kbd>
-            </Button>
-          )}
+            ) : (
+              <Button size="lg" onClick={generateNewSpot} className="w-full h-14">
+                下一題
+                <kbd className="ml-2 text-xs opacity-50">Space</kbd>
+              </Button>
+            )}
+          </div>
         </CardContent>
       </Card>
 
@@ -527,6 +529,42 @@ export default function SqueezeDrillPage() {
           </div>
         </CardContent>
       </Card>
+
+      {/* Mobile Fixed Action Bar */}
+      <div className="sm:hidden mobile-action-bar">
+        {!showResult ? (
+          <div className="grid grid-cols-3 gap-2">
+            <Button
+              size="lg"
+              variant="default"
+              onClick={() => handleAction("squeeze")}
+              className="h-12 text-sm font-semibold"
+            >
+              Squeeze
+            </Button>
+            <Button
+              size="lg"
+              variant="outline"
+              onClick={() => handleAction("call")}
+              className="h-12 text-sm font-semibold"
+            >
+              Call
+            </Button>
+            <Button
+              size="lg"
+              variant="outline"
+              onClick={() => handleAction("fold")}
+              className="h-12 text-sm font-semibold"
+            >
+              Fold
+            </Button>
+          </div>
+        ) : (
+          <Button size="lg" onClick={generateNewSpot} className="w-full h-12 font-semibold">
+            下一題 →
+          </Button>
+        )}
+      </div>
     </div>
   );
 }

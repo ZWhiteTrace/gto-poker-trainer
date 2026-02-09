@@ -22,11 +22,15 @@ import {
   AlertCircle,
   RotateCcw,
   Settings,
+  Eye,
+  EyeOff,
 } from "lucide-react";
 import { useProgressStore } from "@/stores/progressStore";
 import { useAuthStore } from "@/stores/authStore";
 import { HoleCards } from "@/components/poker/cards/PlayingCard";
+import { RangeGrid } from "@/components/poker/RangeGrid";
 import type { Card as PokerCard, Suit, Rank } from "@/lib/poker/types";
+import type { RangeResponse } from "@/lib/api";
 
 type DrillType = "rfi" | "vs_rfi" | "vs_3bet" | "vs_4bet";
 
@@ -106,6 +110,9 @@ export function DrillSession({
       : positions
   );
   const [showSettings, setShowSettings] = useState(false);
+  const [showRange, setShowRange] = useState(false);
+  const [rangeData, setRangeData] = useState<RangeResponse | null>(null);
+  const [rangeLoading, setRangeLoading] = useState(false);
 
   // Progress persistence
   const { stats, recordResult } = useProgressStore();
@@ -116,6 +123,8 @@ export function DrillSession({
     setIsLoading(true);
     setError(null);
     setLastResult(null);
+    setRangeData(null);
+    setShowRange(false);
 
     try {
       const spot = await api.generateSpot({
@@ -127,6 +136,57 @@ export function DrillSession({
       setError(getErrorMessage(err, t("common.error")));
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const toggleRangeView = async () => {
+    if (showRange) {
+      setShowRange(false);
+      return;
+    }
+
+    if (!currentSpot) return;
+
+    // If we already have range data for this spot, just show it
+    if (rangeData) {
+      setShowRange(true);
+      return;
+    }
+
+    setRangeLoading(true);
+    try {
+      let data: RangeResponse;
+      switch (drillType) {
+        case "rfi":
+          data = await api.getRfiRange(currentSpot.hero_position);
+          break;
+        case "vs_rfi":
+          data = await api.getVsRfiRange(
+            currentSpot.hero_position,
+            currentSpot.villain_position || "UTG"
+          );
+          break;
+        case "vs_3bet":
+          data = await api.getVs3betRange(
+            currentSpot.hero_position,
+            currentSpot.villain_position || "BB"
+          );
+          break;
+        case "vs_4bet":
+          data = await api.getVs4betRange(
+            currentSpot.hero_position,
+            currentSpot.villain_position || "BB"
+          );
+          break;
+        default:
+          return;
+      }
+      setRangeData(data);
+      setShowRange(true);
+    } catch (err) {
+      console.error("Failed to fetch range:", err);
+    } finally {
+      setRangeLoading(false);
     }
   };
 
@@ -311,6 +371,21 @@ export function DrillSession({
           <Button
             variant="outline"
             size="icon"
+            onClick={toggleRangeView}
+            disabled={rangeLoading || !currentSpot}
+            title={t("drill.showRange") || "Show Range"}
+          >
+            {rangeLoading ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : showRange ? (
+              <EyeOff className="h-4 w-4" />
+            ) : (
+              <Eye className="h-4 w-4" />
+            )}
+          </Button>
+          <Button
+            variant="outline"
+            size="icon"
             onClick={() => setShowSettings(!showSettings)}
           >
             <Settings className="h-4 w-4" />
@@ -321,6 +396,32 @@ export function DrillSession({
           </Button>
         </div>
       </div>
+
+      {/* Range Panel */}
+      {showRange && rangeData && (
+        <Card className="mb-6">
+          <CardHeader>
+            <CardTitle className="text-lg">
+              {currentSpot?.hero_position} {drillType === "rfi" ? "RFI Range" :
+               drillType === "vs_rfi" ? `vs ${currentSpot?.villain_position} Open` :
+               drillType === "vs_3bet" ? `vs ${currentSpot?.villain_position} 3-Bet` :
+               `vs ${currentSpot?.villain_position} 4-Bet`}
+            </CardTitle>
+            <CardDescription>
+              {t("drill.rangeDescription") || "GTO range for this scenario"}
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <RangeGrid
+              hands={rangeData.hands}
+              drillableHands={rangeData.drillable}
+              compact={false}
+              showFilters={true}
+              showStats={true}
+            />
+          </CardContent>
+        </Card>
+      )}
 
       {/* Settings Panel */}
       {showSettings && (

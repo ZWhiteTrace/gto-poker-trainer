@@ -137,6 +137,7 @@ export function RangeGrid({
   const t = useTranslations();
   const [hoveredHand, setHoveredHand] = useState<string | null>(null);
   const [filter, setFilter] = useState<ActionFilter>("all");
+  const [showMobileHint, setShowMobileHint] = useState(true);
 
   // Calculate statistics
   const stats = useMemo(() => {
@@ -212,14 +213,26 @@ export function RangeGrid({
         </div>
       )}
 
-      {/* Range Grid */}
-      <div
-        className={cn(
-          "grid gap-[1px] bg-border rounded-lg overflow-hidden",
-          "grid-cols-13"
-        )}
-        style={{ gridTemplateColumns: "repeat(13, 1fr)" }}
-      >
+      {/* Mobile scroll hint */}
+      {!compact && showMobileHint && (
+        <div
+          className="sm:hidden flex items-center justify-center gap-2 text-xs text-muted-foreground mb-2 animate-swipe-hint"
+          onClick={() => setShowMobileHint(false)}
+        >
+          <span>← 左右滑動查看 →</span>
+        </div>
+      )}
+
+      {/* Range Grid - with mobile scroll wrapper */}
+      <div className={cn("sm:block", !compact && "range-grid-mobile-scroll")}>
+        <div
+          className={cn(
+            "grid gap-[1px] bg-border rounded-lg overflow-hidden",
+            "grid-cols-13",
+            !compact && "min-w-[320px] sm:min-w-0"
+          )}
+          style={{ gridTemplateColumns: "repeat(13, 1fr)" }}
+        >
         {RANKS.map((_, rowIndex) =>
           RANKS.map((_, colIndex) => {
             const hand = getHandKey(rowIndex, colIndex);
@@ -255,6 +268,7 @@ export function RangeGrid({
             );
           })
         )}
+        </div>
       </div>
 
       {/* Legend */}

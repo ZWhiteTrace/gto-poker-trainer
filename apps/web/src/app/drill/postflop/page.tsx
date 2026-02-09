@@ -20,6 +20,7 @@ import { useProgressStore } from "@/stores/progressStore";
 import { useAuthStore } from "@/stores/authStore";
 
 type Street = "flop" | "turn" | "river";
+type DrillMode = "ip_bet" | "oop_defense" | "sizing_only";
 
 interface BaseScenario {
   id: string;
@@ -163,7 +164,37 @@ const RIVER_ACTIONS = [
   { key: "raise", label: "Raise", labelZh: "加注" },
 ];
 
-function getActionsForStreet(street: Street) {
+// Defense actions (facing bet)
+const DEFENSE_ACTIONS = [
+  { key: "call", label: "Call", labelZh: "跟注" },
+  { key: "raise", label: "Raise", labelZh: "加注" },
+  { key: "fold", label: "Fold", labelZh: "棄牌" },
+];
+
+// Sizing only actions
+const SIZING_ACTIONS = [
+  { key: "bet_25", label: "25%", labelZh: "25%" },
+  { key: "bet_33", label: "33%", labelZh: "33%" },
+  { key: "bet_50", label: "50%", labelZh: "50%" },
+  { key: "bet_66", label: "66%", labelZh: "66%" },
+  { key: "bet_75", label: "75%", labelZh: "75%" },
+  { key: "bet_100", label: "100%", labelZh: "100%" },
+  { key: "bet_150", label: "150%", labelZh: "150%" },
+];
+
+const DRILL_MODE_OPTIONS = [
+  { key: "ip_bet" as DrillMode, label: "IP Betting", labelZh: "有位置下注" },
+  { key: "oop_defense" as DrillMode, label: "OOP Defense", labelZh: "無位置防守" },
+  { key: "sizing_only" as DrillMode, label: "Sizing Quiz", labelZh: "尺寸選擇" },
+];
+
+function getActionsForStreet(street: Street, mode: DrillMode) {
+  if (mode === "oop_defense") {
+    return DEFENSE_ACTIONS;
+  }
+  if (mode === "sizing_only") {
+    return SIZING_ACTIONS;
+  }
   switch (street) {
     case "flop":
       return FLOP_ACTIONS;
@@ -174,7 +205,13 @@ function getActionsForStreet(street: Street) {
   }
 }
 
-function getStreetTitle(street: Street): string {
+function getStreetTitle(street: Street, mode: DrillMode): string {
+  if (mode === "oop_defense") {
+    return `${street.charAt(0).toUpperCase() + street.slice(1)} Defense`;
+  }
+  if (mode === "sizing_only") {
+    return `${street.charAt(0).toUpperCase() + street.slice(1)} Sizing`;
+  }
   switch (street) {
     case "flop":
       return "Flop C-Bet";
@@ -188,6 +225,7 @@ function getStreetTitle(street: Street): string {
 export default function PostflopDrillPage() {
   const t = useTranslations();
   const [street, setStreet] = useState<Street>("flop");
+  const [drillMode, setDrillMode] = useState<DrillMode>("ip_bet");
   const [scenario, setScenario] = useState<Scenario | null>(null);
   const [selectedAction, setSelectedAction] = useState<string | null>(null);
   const [result, setResult] = useState<{
@@ -409,27 +447,45 @@ export default function PostflopDrillPage() {
     );
   }
 
-  const actionOptions = getActionsForStreet(street);
+  const actionOptions = getActionsForStreet(street, drillMode);
 
   return (
-    <div className="container max-w-2xl py-8">
+    <div className="container max-w-2xl py-4 sm:py-8 pb-24 sm:pb-8">
       {/* Header */}
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold">{t("postflop.title")}</h1>
-        <p className="text-muted-foreground">{t("postflop.description")}</p>
+      <div className="mb-4 sm:mb-6">
+        <h1 className="text-xl sm:text-2xl font-bold">{t("postflop.title")}</h1>
+        <p className="text-sm text-muted-foreground">{t("postflop.description")}</p>
+      </div>
+
+      {/* Drill Mode Selector - horizontal scroll on mobile */}
+      <div className="flex gap-2 mb-4 overflow-x-auto pb-2 -mx-4 px-4 sm:mx-0 sm:px-0 sm:overflow-visible sm:flex-wrap">
+        {DRILL_MODE_OPTIONS.map((mode) => (
+          <Button
+            key={mode.key}
+            variant={drillMode === mode.key ? "default" : "outline"}
+            size="sm"
+            className="shrink-0"
+            onClick={() => {
+              setDrillMode(mode.key);
+              setScore({ correct: 0, total: 0 });
+            }}
+          >
+            {mode.labelZh}
+          </Button>
+        ))}
       </div>
 
       {/* Street Tabs */}
-      <Tabs value={street} onValueChange={(v) => handleStreetChange(v as Street)} className="mb-6">
+      <Tabs value={street} onValueChange={(v) => handleStreetChange(v as Street)} className="mb-4 sm:mb-6">
         <TabsList className="grid w-full grid-cols-3">
-          <TabsTrigger value="flop">Flop C-Bet</TabsTrigger>
-          <TabsTrigger value="turn">Turn Barrel</TabsTrigger>
-          <TabsTrigger value="river">River Decision</TabsTrigger>
+          <TabsTrigger value="flop" className="text-sm sm:text-base">Flop</TabsTrigger>
+          <TabsTrigger value="turn" className="text-sm sm:text-base">Turn</TabsTrigger>
+          <TabsTrigger value="river" className="text-sm sm:text-base">River</TabsTrigger>
         </TabsList>
       </Tabs>
 
-      {/* Score */}
-      <div className="flex items-center justify-between mb-6">
+      {/* Score - compact on mobile */}
+      <div className="flex items-center justify-between mb-4 sm:mb-6">
         <div className="flex items-center gap-4">
           <Badge variant="outline" className="text-lg px-3 py-1">
             <Trophy className="h-4 w-4 mr-1" />
@@ -474,13 +530,25 @@ export default function PostflopDrillPage() {
                 {scenario.hero_position} vs {scenario.villain_position}
               </Badge>
             </div>
-            <CardTitle className="text-lg mt-2">{getStreetTitle(street)}</CardTitle>
+            <CardTitle className="text-lg mt-2">{getStreetTitle(street, drillMode)}</CardTitle>
           </CardHeader>
           <CardContent>
             {/* Preflop Action */}
             <div className="text-sm text-muted-foreground mb-2 text-center">
               {scenario.preflop}
             </div>
+
+            {/* Mode-specific context */}
+            {drillMode === "sizing_only" && (
+              <div className="text-sm text-center mb-2 p-2 bg-primary/10 rounded-lg">
+                <span className="font-medium">你決定下注</span> — 選擇正確的尺寸
+              </div>
+            )}
+            {drillMode === "oop_defense" && (
+              <div className="text-sm text-center mb-2 p-2 bg-amber-500/10 rounded-lg">
+                <span className="font-medium">對手下注 75%</span> — 你的行動？
+              </div>
+            )}
 
             {/* Previous Action (for turn/river) */}
             {renderPreviousAction()}
@@ -521,7 +589,7 @@ export default function PostflopDrillPage() {
                         : "outline"
                     }
                     className={cn(
-                      "h-auto py-3",
+                      "h-12 sm:h-auto sm:py-3 touch-target-lg",
                       showResult && isCorrect && "bg-green-600 hover:bg-green-600",
                       showResult && isSelected && !isCorrect && "bg-red-600"
                     )}

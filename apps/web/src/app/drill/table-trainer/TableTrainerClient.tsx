@@ -1,10 +1,11 @@
 "use client";
 
 import { useEffect, useState, useRef, useMemo } from "react";
-import { useTableStore } from "@/stores/tableStore";
+import { useTableStore, setAIOpponentStyle } from "@/stores/tableStore";
 import { useProgressStore } from "@/stores/progressStore";
 import { useAuthStore } from "@/stores/authStore";
 import { PokerTable, CompactPokerTable, ActionButtons, ScenarioSelector, ScenarioButton } from "@/components/poker/table";
+import { AI_PROFILES, type AIPlayerProfile } from "@/lib/poker/aiDecisionEngine";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
@@ -77,6 +78,8 @@ export default function TableTrainerClient() {
 
   const [showScenarioSelector, setShowScenarioSelector] = useState(false);
   const [devMode, setDevMode] = useState(false);
+  const [showOpponentSelector, setShowOpponentSelector] = useState(false);
+  const [selectedOpponentStyle, setSelectedOpponentStyle] = useState<string>("mixed");
   const [showMobileSidebar, setShowMobileSidebar] = useState(false);
   const [showStatsPanel, setShowStatsPanel] = useState(false);
   const [showHandHistory, setShowHandHistory] = useState(false);
@@ -369,6 +372,30 @@ export default function TableTrainerClient() {
             {phase === "setup" && (
               <ScenarioButton onClick={() => setShowScenarioSelector(true)} />
             )}
+
+            {/* AI Opponent Style Selector */}
+            <select
+              value={selectedOpponentStyle}
+              onChange={(e) => {
+                const newStyle = e.target.value;
+                setSelectedOpponentStyle(newStyle);
+                setAIOpponentStyle(newStyle);
+                // Reinitialize table with new AI profiles
+                if (phase === "setup" || phase === "showdown") {
+                  initializeTable();
+                }
+              }}
+              className="h-10 px-2 rounded-md bg-gray-800 border border-gray-700 text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+              title="AI 對手風格"
+            >
+              <option value="mixed">🎲 混合對手</option>
+              <option value="gto-bot">🤖 GTO Bot</option>
+              <option value="lag-larry">🔥 LAG 激進</option>
+              <option value="tag-tony">🦈 TAG 緊凶</option>
+              <option value="passive-pete">🐟 跟注站</option>
+              <option value="nit-nancy">🐢 緊被</option>
+              <option value="maniac-mike">🃏 瘋狂</option>
+            </select>
 
             {/* Auto Rotate Toggle */}
             <Button
