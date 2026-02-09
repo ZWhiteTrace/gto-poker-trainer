@@ -33,11 +33,12 @@ import {
 } from "@/lib/supabase/leaderboard";
 import { useAuthStore } from "@/stores/authStore";
 
-const LEADERBOARD_TABS: { value: LeaderboardType; label: string; icon: React.ReactNode }[] = [
-  { value: "total", label: "All Time", icon: <Trophy className="h-4 w-4" /> },
-  { value: "weekly", label: "Weekly", icon: <Calendar className="h-4 w-4" /> },
-  { value: "streak", label: "Streak", icon: <Flame className="h-4 w-4" /> },
-  { value: "accuracy", label: "Accuracy", icon: <Target className="h-4 w-4" /> },
+const LEADERBOARD_TABS: { value: LeaderboardType; label: string; labelZh: string; icon: React.ReactNode }[] = [
+  { value: "total", label: "All Time", labelZh: "總榜", icon: <Trophy className="h-4 w-4" /> },
+  { value: "weekly", label: "Weekly", labelZh: "週榜", icon: <Calendar className="h-4 w-4" /> },
+  { value: "monthly", label: "Monthly", labelZh: "月榜", icon: <TrendingUp className="h-4 w-4" /> },
+  { value: "streak", label: "Streak", labelZh: "連勝", icon: <Flame className="h-4 w-4" /> },
+  { value: "accuracy", label: "Accuracy", labelZh: "準確率", icon: <Target className="h-4 w-4" /> },
 ];
 
 function getRankIcon(rank: number) {
@@ -87,6 +88,8 @@ export default function LeaderboardPage() {
     switch (activeTab) {
       case "weekly":
         return `${entry.weekly_hands} hands`;
+      case "monthly":
+        return `${entry.monthly_hands} hands`;
       case "streak":
         return `${entry.best_streak} streak`;
       case "accuracy":
@@ -133,9 +136,9 @@ export default function LeaderboardPage() {
 
       {/* Leaderboard Tabs */}
       <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as LeaderboardType)}>
-        <TabsList className="grid w-full grid-cols-4 mb-6">
+        <TabsList className="grid w-full grid-cols-5 mb-6">
           {LEADERBOARD_TABS.map((tab) => (
-            <TabsTrigger key={tab.value} value={tab.value} className="flex items-center gap-1">
+            <TabsTrigger key={tab.value} value={tab.value} className="flex items-center gap-1 text-xs sm:text-sm">
               {tab.icon}
               <span className="hidden sm:inline">{tab.label}</span>
             </TabsTrigger>
@@ -153,6 +156,7 @@ export default function LeaderboardPage() {
                 <CardDescription>
                   {tab.value === "total" && (t("leaderboard.totalDesc") || "Top players by total hands practiced")}
                   {tab.value === "weekly" && (t("leaderboard.weeklyDesc") || "This week's most active players")}
+                  {tab.value === "monthly" && (t("leaderboard.monthlyDesc") || "This month's most active players")}
                   {tab.value === "streak" && (t("leaderboard.streakDesc") || "Players with the longest winning streaks")}
                   {tab.value === "accuracy" && (t("leaderboard.accuracyDesc") || "Highest accuracy (min 100 hands)")}
                 </CardDescription>

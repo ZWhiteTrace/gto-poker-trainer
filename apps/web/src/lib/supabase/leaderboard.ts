@@ -288,10 +288,10 @@ export async function checkAchievements(userId: string): Promise<Achievement[]> 
   const newlyUnlocked: Achievement[] = [];
 
   try {
-    // 1. Get user's current stats
+    // 1. Get user's current stats (extended fields)
     const { data: stats, error: statsError } = await supabase
       .from("leaderboard_stats")
-      .select("total_hands, correct_hands, current_streak, best_streak")
+      .select("total_hands, correct_hands, current_streak, best_streak, weekly_hands, monthly_hands")
       .eq("user_id", userId)
       .single();
 
@@ -349,6 +349,16 @@ export async function checkAchievements(userId: string): Promise<Achievement[]> 
           const minHands = req.min_hands || 50;
           isUnlocked = stats.total_hands >= minHands && accuracy >= req.value;
           break;
+        case "weekly_hands":
+          isUnlocked = (stats.weekly_hands || 0) >= req.value;
+          break;
+        case "daily_hands":
+          // This would need daily tracking - for now, check if weekly >= value
+          // (approximation: if weekly hands >= value, they had at least one good day)
+          isUnlocked = (stats.weekly_hands || 0) >= req.value;
+          break;
+        // Note: accuracy_improvement and all_positions require more complex tracking
+        // These are future implementations that need additional data structures
       }
 
       if (isUnlocked) {

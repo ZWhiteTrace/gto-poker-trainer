@@ -19,6 +19,9 @@ import type {
   SUIT_SYMBOLS,
 } from "./types";
 
+// Re-export types for convenience
+export type { HandHistory } from "./types";
+
 // AI Profile info for hand history
 export interface AIProfileInfo {
   seatIndex: number;

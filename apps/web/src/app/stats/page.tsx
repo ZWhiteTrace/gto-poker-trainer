@@ -27,9 +27,14 @@ import {
   PieChart as PieChartIcon,
   BookOpen,
   Award,
+  Lightbulb,
+  ArrowRight,
+  Flame,
+  Zap,
 } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { WeaknessHeatmap } from "@/components/stats/WeaknessHeatmap";
+import { ShareCard } from "@/components/stats/ShareCard";
 import Link from "next/link";
 import {
   TrackedDrillType,
@@ -195,10 +200,20 @@ export default function StatsPage() {
             {t("stats.description") || "Track your progress and identify weak spots"}
           </p>
         </div>
-        <Button variant="outline" onClick={resetStats}>
-          <RotateCcw className="mr-2 h-4 w-4" />
-          {t("common.reset")}
-        </Button>
+        <div className="flex gap-2">
+          <ShareCard
+            stats={{
+              totalHands,
+              accuracy: overallAccuracy,
+              bestStreak,
+              weeklyHands: trendStats.totalHands,
+            }}
+          />
+          <Button variant="outline" onClick={resetStats}>
+            <RotateCcw className="mr-2 h-4 w-4" />
+            {t("common.reset")}
+          </Button>
+        </div>
       </div>
 
       {/* Overview Cards */}
@@ -249,6 +264,155 @@ export default function StatsPage() {
       <div className="mb-8">
         <WeaknessHeatmap stats={stats} />
       </div>
+
+      {/* Personalized Recommendations */}
+      {(() => {
+        // Generate personalized recommendations based on data
+        const recommendations: Array<{
+          priority: "high" | "medium" | "low";
+          icon: React.ReactNode;
+          title: string;
+          description: string;
+          action: string;
+          href: string;
+        }> = [];
+
+        // 1. Weak positions (< 70% accuracy with at least 5 hands)
+        weakAreas.forEach(({ drill, positions }) => {
+          positions.slice(0, 2).forEach((pos) => {
+            const posStats = stats[drill].byPosition[pos];
+            const accuracy = posStats
+              ? ((posStats.correct + posStats.acceptable) / posStats.total) * 100
+              : 0;
+            recommendations.push({
+              priority: accuracy < 50 ? "high" : "medium",
+              icon: <AlertTriangle className="h-5 w-5 text-amber-500" />,
+              title: `${pos} 在 ${DRILL_LABELS[drill].zh || DRILL_LABELS[drill].en} 表現偏弱`,
+              description: `準確率 ${accuracy.toFixed(0)}%（${posStats?.total || 0} 手）需要加強練習`,
+              action: "立即練習",
+              href: `${DRILL_LABELS[drill].href}?position=${pos}`,
+            });
+          });
+        });
+
+        // 2. Drills with < 20 hands (need more practice volume)
+        (Object.keys(stats) as DrillType[]).forEach((drill) => {
+          if (stats[drill].total > 0 && stats[drill].total < 20) {
+            recommendations.push({
+              priority: "low",
+              icon: <Zap className="h-5 w-5 text-blue-500" />,
+              title: `${DRILL_LABELS[drill].zh || DRILL_LABELS[drill].en} 練習量不足`,
+              description: `只有 ${stats[drill].total} 手，建議至少練習 50 手以建立穩定數據`,
+              action: "增加練習",
+              href: DRILL_LABELS[drill].href,
+            });
+          }
+        });
+
+        // 3. Suggest quiz if not attempted many questions
+        const quizStats = getQuizCompletionStats();
+        if (quizStats.completionRate < 50) {
+          recommendations.push({
+            priority: "medium",
+            icon: <BookOpen className="h-5 w-5 text-purple-500" />,
+            title: "完成更多考題",
+            description: `題庫完成度 ${quizStats.completionRate}%，繼續作答可強化概念理解`,
+            action: "前往考題",
+            href: "/exam",
+          });
+        }
+
+        // 4. If needs review questions exist
+        if (quizStats.needsReview > 0) {
+          recommendations.push({
+            priority: "high",
+            icon: <Flame className="h-5 w-5 text-red-500" />,
+            title: `${quizStats.needsReview} 題需要複習`,
+            description: "這些題目上次答錯，建議重新練習",
+            action: "複習錯題",
+            href: "/exam?mode=review",
+          });
+        }
+
+        // 5. If no practice in last 3 days
+        const recentDays = getDailyHistory(3);
+        const recentTotal = recentDays.reduce((sum, d) => sum + d.total, 0);
+        if (recentTotal === 0 && totalHands > 0) {
+          recommendations.push({
+            priority: "high",
+            icon: <Activity className="h-5 w-5 text-green-500" />,
+            title: "保持練習習慣！",
+            description: "已經 3 天沒有練習了，每天 10-20 手可維持手感",
+            action: "開始練習",
+            href: "/drill/rfi",
+          });
+        }
+
+        // Sort by priority
+        const priorityOrder = { high: 0, medium: 1, low: 2 };
+        recommendations.sort((a, b) => priorityOrder[a.priority] - priorityOrder[b.priority]);
+
+        // Only show top 4 recommendations
+        const topRecommendations = recommendations.slice(0, 4);
+
+        if (topRecommendations.length === 0 && totalHands > 50) {
+          return (
+            <Card className="mb-8 border-green-500/30 bg-green-500/5">
+              <CardContent className="p-6 text-center">
+                <Trophy className="h-12 w-12 mx-auto text-green-500 mb-3" />
+                <h3 className="text-lg font-semibold mb-2">表現優異！</h3>
+                <p className="text-muted-foreground">
+                  目前沒有明顯弱點，繼續保持練習以維持水準
+                </p>
+              </CardContent>
+            </Card>
+          );
+        }
+
+        if (topRecommendations.length === 0) return null;
+
+        return (
+          <Card className="mb-8">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Lightbulb className="h-5 w-5 text-amber-500" />
+                {t("stats.recommendations") || "Personalized Recommendations"}
+              </CardTitle>
+              <CardDescription>
+                {t("stats.recommendationsDesc") || "Based on your practice data, here's what to focus on"}
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid gap-3 sm:grid-cols-2">
+                {topRecommendations.map((rec, idx) => (
+                  <Link
+                    key={idx}
+                    href={rec.href}
+                    className={cn(
+                      "flex items-start gap-3 p-4 rounded-lg border transition-all hover:shadow-md",
+                      rec.priority === "high"
+                        ? "border-red-500/30 bg-red-500/5 hover:bg-red-500/10"
+                        : rec.priority === "medium"
+                        ? "border-amber-500/30 bg-amber-500/5 hover:bg-amber-500/10"
+                        : "border-blue-500/30 bg-blue-500/5 hover:bg-blue-500/10"
+                    )}
+                  >
+                    <div className="shrink-0 mt-0.5">{rec.icon}</div>
+                    <div className="flex-1 min-w-0">
+                      <h4 className="font-medium text-sm mb-1">{rec.title}</h4>
+                      <p className="text-xs text-muted-foreground mb-2">{rec.description}</p>
+                      <span className="inline-flex items-center gap-1 text-xs font-medium text-primary">
+                        {rec.action}
+                        <ArrowRight className="h-3 w-3" />
+                      </span>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        );
+      })()}
 
       {/* Learning Curve - Full Width */}
       <Card className="mb-8">
