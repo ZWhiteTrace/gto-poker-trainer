@@ -39,24 +39,29 @@ CREATE INDEX IF NOT EXISTS idx_drill_results_created_at ON drill_results(created
 ALTER TABLE user_stats ENABLE ROW LEVEL SECURITY;
 ALTER TABLE drill_results ENABLE ROW LEVEL SECURITY;
 
--- Users can only see their own stats
+-- Users can only see their own stats (idempotent)
+DROP POLICY IF EXISTS "Users can view own stats" ON user_stats;
 CREATE POLICY "Users can view own stats"
   ON user_stats FOR SELECT
   USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can insert own stats" ON user_stats;
 CREATE POLICY "Users can insert own stats"
   ON user_stats FOR INSERT
   WITH CHECK (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can update own stats" ON user_stats;
 CREATE POLICY "Users can update own stats"
   ON user_stats FOR UPDATE
   USING (auth.uid() = user_id);
 
--- Users can only see their own drill results
+-- Users can only see their own drill results (idempotent)
+DROP POLICY IF EXISTS "Users can view own drill results" ON drill_results;
 CREATE POLICY "Users can view own drill results"
   ON drill_results FOR SELECT
   USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can insert own drill results" ON drill_results;
 CREATE POLICY "Users can insert own drill results"
   ON drill_results FOR INSERT
   WITH CHECK (auth.uid() = user_id);
@@ -70,7 +75,8 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
--- Trigger to auto-update updated_at
+-- Trigger to auto-update updated_at (idempotent)
+DROP TRIGGER IF EXISTS update_user_stats_updated_at ON user_stats;
 CREATE TRIGGER update_user_stats_updated_at
   BEFORE UPDATE ON user_stats
   FOR EACH ROW
