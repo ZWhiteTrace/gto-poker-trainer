@@ -9,6 +9,7 @@ import { Footer } from "@/components/layout/Footer";
 import { AuthProvider } from "@/components/providers/AuthProvider";
 import { ServiceWorkerProvider } from "@/components/providers/ServiceWorkerProvider";
 import { AchievementToast } from "@/components/AchievementToast";
+import { OfflineIndicator } from "@/components/providers/OfflineIndicator";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -221,6 +222,7 @@ export default async function RootLayout({
       <body className={`${inter.variable} font-sans antialiased`}>
         <NextIntlClientProvider messages={messages}>
           <AuthProvider>
+            <OfflineIndicator />
             <div className="relative flex min-h-screen flex-col">
               <Navbar />
               <main className="flex-1">{children}</main>
