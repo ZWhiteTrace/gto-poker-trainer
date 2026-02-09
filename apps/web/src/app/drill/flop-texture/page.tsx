@@ -1509,6 +1509,7 @@ function CheckFirstDrill() {
 // ============================================
 
 type LiveExploitSubMode = "notes" | "quiz";
+type LiveQuizType = "adjustment" | "multiway" | "dangerSign" | "leakExploit";
 
 // Helper to display frequency adjustment
 function getFreqAdjustLabel(adj: FrequencyAdjust): { label: string; color: string } {
@@ -1530,39 +1531,155 @@ function getSizingAdjustLabel(adj: SizingAdjust): { label: string; color: string
   }
 }
 
+// Multiway decision scenarios
+const MULTIWAY_SCENARIOS = [
+  { texture: "ABB" as FlopTextureType, hand: "A♠K♥ (頂對頂踢)", correctAction: "bet_large", explanation: "強 Ax 多路仍可大注取值" },
+  { texture: "ABB" as FlopTextureType, hand: "K♣Q♦ (空氣)", correctAction: "check", explanation: "多路無法詐唬，放棄空氣" },
+  { texture: "Axx" as FlopTextureType, hand: "A♠9♥ (頂對弱踢)", correctAction: "bet_small", explanation: "頂對可小注試探，但不要膨脹底池" },
+  { texture: "Axx" as FlopTextureType, hand: "K♣K♦ (第二對)", correctAction: "check", explanation: "多路中對太弱，check 控池" },
+  { texture: "BBB" as FlopTextureType, hand: "Q♠Q♥ (暗三)", correctAction: "bet_large", explanation: "堅果多路可以大注建池" },
+  { texture: "BBB" as FlopTextureType, hand: "A♣K♦ (聽牌)", correctAction: "check", explanation: "多路聽牌 check 是更好選擇" },
+  { texture: "Low_conn" as FlopTextureType, hand: "A♠A♥ (Overpair)", correctAction: "bet_small", explanation: "連接低牌面 overpair 小注保護" },
+  { texture: "Low_conn" as FlopTextureType, hand: "K♣Q♦ (空氣)", correctAction: "check", explanation: "多路不 bluff，直接放棄" },
+  { texture: "JT_conn" as FlopTextureType, hand: "9♠8♥ (順子)", correctAction: "bet_large", explanation: "堅果慢打沒意義，直接取值" },
+  { texture: "JT_conn" as FlopTextureType, hand: "A♣A♦ (Overpair)", correctAction: "check", explanation: "多路濕牌 AA 很危險，check 控池" },
+  { texture: "Paired" as FlopTextureType, hand: "K♠K♥ (葫蘆)", correctAction: "bet_small", explanation: "Full house 小注引誘" },
+  { texture: "Paired" as FlopTextureType, hand: "A♣Q♦ (高牌)", correctAction: "check", explanation: "配對牌面多路不碰" },
+];
+
+// Danger sign scenarios
+const DANGER_SIGN_SCENARIOS = [
+  { texture: "ABB" as FlopTextureType, action: "對手 Flop check-raise 你的 C-bet", correctMeaning: "strong", explanation: "ABB 牌面 check-raise = 兩對或 set，別硬拼" },
+  { texture: "ABB" as FlopTextureType, action: "對手 River 對你的三條街 check-raise", correctMeaning: "nuts", explanation: "River 被 check-raise 幾乎都是真貨" },
+  { texture: "Axx" as FlopTextureType, action: "緊凶玩家突然 donk bet", correctMeaning: "strong", explanation: "緊凶 donk = Ax 或更強" },
+  { texture: "BBx" as FlopTextureType, action: "對手 Turn 突然加大下注尺寸", correctMeaning: "strong", explanation: "突然大注 = 有牌想取值" },
+  { texture: "Low_conn" as FlopTextureType, action: "魚玩家 River 小注", correctMeaning: "weak_value", explanation: "小注 = 詐唬迷思或弱價值，可以 raise" },
+  { texture: "Low_conn" as FlopTextureType, action: "對手全程 check-call 後 River bet pot", correctMeaning: "nuts", explanation: "這個 line 幾乎只有堅果" },
+  { texture: "JTx" as FlopTextureType, action: "被動玩家突然 3-bet 你的 Turn bet", correctMeaning: "nuts", explanation: "被動玩家主動出擊 = 極強牌" },
+  { texture: "Paired" as FlopTextureType, action: "對手 Flop check，Turn donk pot", correctMeaning: "strong", explanation: "配對牌面 delayed donk = 通常是三條" },
+  { texture: "Trips" as FlopTextureType, action: "對手快速 call 你的 Flop bet", correctMeaning: "drawing", explanation: "快速 call = 聽牌或弱對子" },
+  { texture: "BBB" as FlopTextureType, action: "對手長考後 all-in", correctMeaning: "polarized", explanation: "長考 all-in = 極化，堅果或詐唬" },
+];
+
+// Leak exploit scenarios
+const LEAK_EXPLOIT_SCENARIOS = [
+  { texture: "ABB" as FlopTextureType, leak: "對手用 1/3 pot 小注 C-bet", correctExploit: "raise", explanation: "小注 C-bet = 弱牌試探，raise 把他趕走" },
+  { texture: "Axx" as FlopTextureType, leak: "對手 Turn check 後 River 大注", correctExploit: "fold_marginal", explanation: "這個 line 幾乎沒有詐唬，棄掉邊緣牌" },
+  { texture: "Low_conn" as FlopTextureType, leak: "對手從不 check-raise", correctExploit: "bet_thin", explanation: "可以更薄價值下注，他不會 check-raise 你" },
+  { texture: "BBx" as FlopTextureType, leak: "對手 River 總是 check 中等牌", correctExploit: "value_bet", explanation: "他 check = 邊緣牌，你可以薄價值下注" },
+  { texture: "JT_conn" as FlopTextureType, leak: "對手過度保護聽牌，不願棄牌", correctExploit: "value_only", explanation: "對不棄牌的人只打價值，不詐唬" },
+  { texture: "Paired" as FlopTextureType, leak: "對手配對牌面過度 bluff", correctExploit: "call_light", explanation: "他詐唬太多，用更寬範圍跟注" },
+  { texture: "Trips" as FlopTextureType, leak: "對手有 Ax 不棄牌", correctExploit: "overbet_value", explanation: "他們 call 太多，用堅果 overbet 取值" },
+  { texture: "ABx" as FlopTextureType, leak: "對手面對 check-raise 過度棄牌", correctExploit: "cr_bluff", explanation: "用更多聽牌 check-raise 詐唬" },
+];
+
+interface LiveQuizState {
+  type: LiveQuizType;
+  texture: FlopTextureType;
+  flop: Rank[];
+  suits: Suit[];
+  // For adjustment quiz
+  adjustmentAnswer?: { freq: FrequencyAdjust | null; sizing: SizingAdjust | null };
+  // For multiway quiz
+  multiwayScenario?: typeof MULTIWAY_SCENARIOS[0];
+  multiwayAnswer?: string | null;
+  // For danger sign quiz
+  dangerScenario?: typeof DANGER_SIGN_SCENARIOS[0];
+  dangerAnswer?: string | null;
+  // For leak exploit quiz
+  leakScenario?: typeof LEAK_EXPLOIT_SCENARIOS[0];
+  leakAnswer?: string | null;
+}
+
 function LiveExploitDrill() {
   const [subMode, setSubMode] = useState<LiveExploitSubMode>("notes");
   const [selectedTexture, setSelectedTexture] = useState<FlopTextureType | null>(null);
-  const [quizScenario, setQuizScenario] = useState<{ texture: FlopTextureType; flop: Rank[]; suits: Suit[] } | null>(null);
-  const [quizAnswer, setQuizAnswer] = useState<{ freq: FrequencyAdjust | null; sizing: SizingAdjust | null }>({ freq: null, sizing: null });
+  const [quiz, setQuiz] = useState<LiveQuizState | null>(null);
   const [showQuizResult, setShowQuizResult] = useState(false);
   const [quizScore, setQuizScore] = useState({ correct: 0, total: 0 });
 
   const allTextures = Object.values(FLOP_TEXTURE_CATEGORIES);
 
   const loadQuizScenario = useCallback(() => {
-    const textures = Object.keys(FLOP_TEXTURE_CATEGORIES) as FlopTextureType[];
-    const randomTexture = textures[Math.floor(Math.random() * textures.length)];
-    const { ranks, suits } = generateFlopOfTexture(randomTexture);
-    setQuizScenario({ texture: randomTexture, flop: ranks, suits });
-    setQuizAnswer({ freq: null, sizing: null });
+    // Randomly pick a quiz type
+    const quizTypes: LiveQuizType[] = ["adjustment", "multiway", "dangerSign", "leakExploit"];
+    const randomType = quizTypes[Math.floor(Math.random() * quizTypes.length)];
+
+    if (randomType === "adjustment") {
+      const textures = Object.keys(FLOP_TEXTURE_CATEGORIES) as FlopTextureType[];
+      const randomTexture = textures[Math.floor(Math.random() * textures.length)];
+      const { ranks, suits } = generateFlopOfTexture(randomTexture);
+      setQuiz({
+        type: "adjustment",
+        texture: randomTexture,
+        flop: ranks,
+        suits,
+        adjustmentAnswer: { freq: null, sizing: null },
+      });
+    } else if (randomType === "multiway") {
+      const scenario = MULTIWAY_SCENARIOS[Math.floor(Math.random() * MULTIWAY_SCENARIOS.length)];
+      const { ranks, suits } = generateFlopOfTexture(scenario.texture);
+      setQuiz({
+        type: "multiway",
+        texture: scenario.texture,
+        flop: ranks,
+        suits,
+        multiwayScenario: scenario,
+        multiwayAnswer: null,
+      });
+    } else if (randomType === "dangerSign") {
+      const scenario = DANGER_SIGN_SCENARIOS[Math.floor(Math.random() * DANGER_SIGN_SCENARIOS.length)];
+      const { ranks, suits } = generateFlopOfTexture(scenario.texture);
+      setQuiz({
+        type: "dangerSign",
+        texture: scenario.texture,
+        flop: ranks,
+        suits,
+        dangerScenario: scenario,
+        dangerAnswer: null,
+      });
+    } else {
+      const scenario = LEAK_EXPLOIT_SCENARIOS[Math.floor(Math.random() * LEAK_EXPLOIT_SCENARIOS.length)];
+      const { ranks, suits } = generateFlopOfTexture(scenario.texture);
+      setQuiz({
+        type: "leakExploit",
+        texture: scenario.texture,
+        flop: ranks,
+        suits,
+        leakScenario: scenario,
+        leakAnswer: null,
+      });
+    }
     setShowQuizResult(false);
   }, []);
 
   useEffect(() => {
-    if (subMode === "quiz" && !quizScenario) {
+    if (subMode === "quiz" && !quiz) {
       loadQuizScenario();
     }
-  }, [subMode, quizScenario, loadQuizScenario]);
+  }, [subMode, quiz, loadQuizScenario]);
 
   const handleQuizSubmit = () => {
-    if (!quizScenario || !quizAnswer.freq || !quizAnswer.sizing) return;
-    const category = FLOP_TEXTURE_CATEGORIES[quizScenario.texture];
-    const isFreqCorrect = quizAnswer.freq === category.liveExploit.frequencyAdjust;
-    const isSizingCorrect = quizAnswer.sizing === category.liveExploit.sizingAdjust;
+    if (!quiz) return;
+
+    let isCorrect = false;
+
+    if (quiz.type === "adjustment" && quiz.adjustmentAnswer) {
+      const category = FLOP_TEXTURE_CATEGORIES[quiz.texture];
+      const isFreqCorrect = quiz.adjustmentAnswer.freq === category.liveExploit.frequencyAdjust;
+      const isSizingCorrect = quiz.adjustmentAnswer.sizing === category.liveExploit.sizingAdjust;
+      isCorrect = isFreqCorrect && isSizingCorrect;
+    } else if (quiz.type === "multiway" && quiz.multiwayScenario) {
+      isCorrect = quiz.multiwayAnswer === quiz.multiwayScenario.correctAction;
+    } else if (quiz.type === "dangerSign" && quiz.dangerScenario) {
+      isCorrect = quiz.dangerAnswer === quiz.dangerScenario.correctMeaning;
+    } else if (quiz.type === "leakExploit" && quiz.leakScenario) {
+      isCorrect = quiz.leakAnswer === quiz.leakScenario.correctExploit;
+    }
+
     setShowQuizResult(true);
     setQuizScore(prev => ({
-      correct: prev.correct + (isFreqCorrect && isSizingCorrect ? 1 : 0),
+      correct: prev.correct + (isCorrect ? 1 : 0),
       total: prev.total + 1,
     }));
   };
@@ -1579,7 +1696,7 @@ function LiveExploitDrill() {
             📋 筆記速查
           </Button>
           <Button size="sm" variant="outline" onClick={() => setSubMode("quiz")}>
-            🎯 GTO vs Live 測驗
+            🎯 綜合測驗
           </Button>
         </div>
 
@@ -1678,9 +1795,15 @@ function LiveExploitDrill() {
   }
 
   // Quiz Mode
-  const quizCategory = quizScenario ? FLOP_TEXTURE_CATEGORIES[quizScenario.texture] : null;
-  const isFreqCorrect = quizAnswer.freq === quizCategory?.liveExploit.frequencyAdjust;
-  const isSizingCorrect = quizAnswer.sizing === quizCategory?.liveExploit.sizingAdjust;
+  const quizCategory = quiz ? FLOP_TEXTURE_CATEGORIES[quiz.texture] : null;
+
+  // Quiz type labels
+  const quizTypeLabels: Record<LiveQuizType, { icon: string; title: string }> = {
+    adjustment: { icon: "📊", title: "頻率/尺寸調整" },
+    multiway: { icon: "👥", title: "多路底池決策" },
+    dangerSign: { icon: "⚠️", title: "危險信號識別" },
+    leakExploit: { icon: "🎯", title: "漏洞剝削" },
+  };
 
   return (
     <div className="space-y-4">
@@ -1690,7 +1813,7 @@ function LiveExploitDrill() {
           📋 筆記速查
         </Button>
         <Button size="sm" variant="default" onClick={() => setSubMode("quiz")}>
-          🎯 GTO vs Live 測驗
+          🎯 綜合測驗
         </Button>
       </div>
 
@@ -1706,115 +1829,303 @@ function LiveExploitDrill() {
         </Button>
       </div>
 
-      {quizScenario && quizCategory && (
+      {quiz && quizCategory && (
         <div className="space-y-4">
-          <FlopDisplay flop={quizScenario.flop} suits={quizScenario.suits} />
+          {/* Quiz type badge */}
+          <div className="flex justify-center">
+            <Badge variant="secondary" className="text-sm">
+              {quizTypeLabels[quiz.type].icon} {quizTypeLabels[quiz.type].title}
+            </Badge>
+          </div>
+
+          <FlopDisplay flop={quiz.flop} suits={quiz.suits} />
 
           {/* Texture info */}
           <div className="flex items-center justify-center gap-2">
-            <Badge variant="secondary">{quizCategory.nameZh}</Badge>
-            <Badge className={getAdvantageColor(quizCategory.advantageTier)}>{quizCategory.advantageTier}</Badge>
+            <Badge variant="outline">{quizCategory.nameZh}</Badge>
           </div>
 
-          {/* GTO baseline */}
-          <div className="bg-gray-800/50 rounded p-3 text-center text-sm">
-            <span className="text-gray-400">GTO 基準: </span>
-            <span className="text-cyan-400">{quizCategory.ip.cbetFreqMin}-{quizCategory.ip.cbetFreqMax}%</span>
-            <span className="text-gray-400"> / </span>
-            <span className="text-yellow-400">{quizCategory.ip.sizing}</span>
-          </div>
+          {/* ========== Adjustment Quiz ========== */}
+          {quiz.type === "adjustment" && (
+            <>
+              <div className="bg-gray-800/50 rounded p-3 text-center text-sm">
+                <span className="text-gray-400">GTO 基準: </span>
+                <span className="text-cyan-400">{quizCategory.ip.cbetFreqMin}-{quizCategory.ip.cbetFreqMax}%</span>
+                <span className="text-gray-400"> / </span>
+                <span className="text-yellow-400">{quizCategory.ip.sizing}</span>
+              </div>
 
-          {/* Question */}
-          <div className="text-center text-lg font-medium">
-            線下應該怎麼調整？
-          </div>
+              <div className="text-center text-lg font-medium">
+                線下應該怎麼調整？
+              </div>
 
-          {/* Frequency options */}
-          <div className="space-y-2">
-            <p className="text-sm text-gray-400">頻率調整:</p>
-            <div className="grid grid-cols-3 sm:grid-cols-5 gap-2">
-              {(["much_higher", "higher", "same", "lower", "much_lower"] as FrequencyAdjust[]).map((opt) => {
-                const { label, color } = getFreqAdjustLabel(opt);
-                return (
-                  <Button
-                    key={opt}
-                    variant={quizAnswer.freq === opt ? "default" : "outline"}
-                    size="sm"
-                    className={cn(
-                      "text-xs h-auto py-2",
-                      showQuizResult && opt === quizCategory.liveExploit.frequencyAdjust && "ring-2 ring-green-400",
-                      showQuizResult && quizAnswer.freq === opt && opt !== quizCategory.liveExploit.frequencyAdjust && "ring-2 ring-red-400"
-                    )}
-                    onClick={() => !showQuizResult && setQuizAnswer(prev => ({ ...prev, freq: opt }))}
-                    disabled={showQuizResult}
-                  >
-                    {label}
-                  </Button>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* Sizing options */}
-          <div className="space-y-2">
-            <p className="text-sm text-gray-400">尺寸調整:</p>
-            <div className="grid grid-cols-4 gap-2">
-              {(["much_larger", "larger", "same", "smaller"] as SizingAdjust[]).map((opt) => {
-                const { label, color } = getSizingAdjustLabel(opt);
-                return (
-                  <Button
-                    key={opt}
-                    variant={quizAnswer.sizing === opt ? "default" : "outline"}
-                    size="sm"
-                    className={cn(
-                      "text-xs h-auto py-2",
-                      showQuizResult && opt === quizCategory.liveExploit.sizingAdjust && "ring-2 ring-green-400",
-                      showQuizResult && quizAnswer.sizing === opt && opt !== quizCategory.liveExploit.sizingAdjust && "ring-2 ring-red-400"
-                    )}
-                    onClick={() => !showQuizResult && setQuizAnswer(prev => ({ ...prev, sizing: opt }))}
-                    disabled={showQuizResult}
-                  >
-                    {label}
-                  </Button>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* Submit */}
-          {!showQuizResult && (
-            <Button
-              onClick={handleQuizSubmit}
-              disabled={!quizAnswer.freq || !quizAnswer.sizing}
-              className="w-full"
-            >
-              確認答案
-            </Button>
-          )}
-
-          {/* Result */}
-          {showQuizResult && (
-            <Card className="bg-gray-800/50 border-gray-700">
-              <CardContent className="pt-4">
-                <div className={cn(
-                  "text-lg font-semibold mb-2",
-                  isFreqCorrect && isSizingCorrect ? "text-green-400" : "text-orange-400"
-                )}>
-                  {isFreqCorrect && isSizingCorrect ? "完全正確！" : isFreqCorrect || isSizingCorrect ? "部分正確" : "需要改進"}
+              <div className="space-y-2">
+                <p className="text-sm text-gray-400">頻率調整:</p>
+                <div className="grid grid-cols-3 sm:grid-cols-5 gap-2">
+                  {(["much_higher", "higher", "same", "lower", "much_lower"] as FrequencyAdjust[]).map((opt) => {
+                    const { label } = getFreqAdjustLabel(opt);
+                    return (
+                      <Button
+                        key={opt}
+                        variant={quiz.adjustmentAnswer?.freq === opt ? "default" : "outline"}
+                        size="sm"
+                        className={cn(
+                          "text-xs h-auto py-2",
+                          showQuizResult && opt === quizCategory.liveExploit.frequencyAdjust && "ring-2 ring-green-400",
+                          showQuizResult && quiz.adjustmentAnswer?.freq === opt && opt !== quizCategory.liveExploit.frequencyAdjust && "ring-2 ring-red-400"
+                        )}
+                        onClick={() => !showQuizResult && setQuiz(prev => prev ? { ...prev, adjustmentAnswer: { ...prev.adjustmentAnswer!, freq: opt } } : null)}
+                        disabled={showQuizResult}
+                      >
+                        {label}
+                      </Button>
+                    );
+                  })}
                 </div>
-                <p className="text-sm text-gray-300 mb-2">
-                  {quizCategory.nameZh}：頻率 <span className={getFreqAdjustLabel(quizCategory.liveExploit.frequencyAdjust).color}>
-                    {getFreqAdjustLabel(quizCategory.liveExploit.frequencyAdjust).label}
-                  </span>，尺寸 <span className={getSizingAdjustLabel(quizCategory.liveExploit.sizingAdjust).color}>
-                    {getSizingAdjustLabel(quizCategory.liveExploit.sizingAdjust).label}
-                  </span>
-                </p>
-                <p className="text-sm text-gray-400">{quizCategory.liveExploit.exploitTip}</p>
-              </CardContent>
-            </Card>
+              </div>
+
+              <div className="space-y-2">
+                <p className="text-sm text-gray-400">尺寸調整:</p>
+                <div className="grid grid-cols-4 gap-2">
+                  {(["much_larger", "larger", "same", "smaller"] as SizingAdjust[]).map((opt) => {
+                    const { label } = getSizingAdjustLabel(opt);
+                    return (
+                      <Button
+                        key={opt}
+                        variant={quiz.adjustmentAnswer?.sizing === opt ? "default" : "outline"}
+                        size="sm"
+                        className={cn(
+                          "text-xs h-auto py-2",
+                          showQuizResult && opt === quizCategory.liveExploit.sizingAdjust && "ring-2 ring-green-400",
+                          showQuizResult && quiz.adjustmentAnswer?.sizing === opt && opt !== quizCategory.liveExploit.sizingAdjust && "ring-2 ring-red-400"
+                        )}
+                        onClick={() => !showQuizResult && setQuiz(prev => prev ? { ...prev, adjustmentAnswer: { ...prev.adjustmentAnswer!, sizing: opt } } : null)}
+                        disabled={showQuizResult}
+                      >
+                        {label}
+                      </Button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {!showQuizResult && (
+                <Button
+                  onClick={handleQuizSubmit}
+                  disabled={!quiz.adjustmentAnswer?.freq || !quiz.adjustmentAnswer?.sizing}
+                  className="w-full"
+                >
+                  確認答案
+                </Button>
+              )}
+
+              {showQuizResult && (
+                <Card className="bg-gray-800/50 border-gray-700">
+                  <CardContent className="pt-4">
+                    <div className={cn(
+                      "text-lg font-semibold mb-2",
+                      quiz.adjustmentAnswer?.freq === quizCategory.liveExploit.frequencyAdjust &&
+                      quiz.adjustmentAnswer?.sizing === quizCategory.liveExploit.sizingAdjust
+                        ? "text-green-400" : "text-orange-400"
+                    )}>
+                      {quiz.adjustmentAnswer?.freq === quizCategory.liveExploit.frequencyAdjust &&
+                       quiz.adjustmentAnswer?.sizing === quizCategory.liveExploit.sizingAdjust
+                        ? "完全正確！" : "需要調整"}
+                    </div>
+                    <p className="text-sm text-gray-300 mb-2">
+                      正確答案：頻率 <span className={getFreqAdjustLabel(quizCategory.liveExploit.frequencyAdjust).color}>
+                        {getFreqAdjustLabel(quizCategory.liveExploit.frequencyAdjust).label}
+                      </span>，尺寸 <span className={getSizingAdjustLabel(quizCategory.liveExploit.sizingAdjust).color}>
+                        {getSizingAdjustLabel(quizCategory.liveExploit.sizingAdjust).label}
+                      </span>
+                    </p>
+                    <p className="text-sm text-gray-400">{quizCategory.liveExploit.exploitTip}</p>
+                  </CardContent>
+                </Card>
+              )}
+            </>
           )}
 
-          {/* Next */}
+          {/* ========== Multiway Quiz ========== */}
+          {quiz.type === "multiway" && quiz.multiwayScenario && (
+            <>
+              <div className="bg-orange-900/20 border border-orange-700/30 rounded p-3 text-center">
+                <p className="text-orange-400 text-sm font-medium mb-1">多路底池 (3+ 人)</p>
+                <p className="text-white">你的手牌：{quiz.multiwayScenario.hand}</p>
+              </div>
+
+              <div className="text-center text-lg font-medium">
+                你應該？
+              </div>
+
+              <div className="grid grid-cols-2 gap-2">
+                {[
+                  { value: "check", label: "Check", icon: "✋" },
+                  { value: "bet_small", label: "小注 (1/3)", icon: "💰" },
+                  { value: "bet_large", label: "大注 (2/3+)", icon: "💎" },
+                  { value: "fold", label: "Fold", icon: "🏳️" },
+                ].map((opt) => (
+                  <Button
+                    key={opt.value}
+                    variant={quiz.multiwayAnswer === opt.value ? "default" : "outline"}
+                    size="sm"
+                    className={cn(
+                      "h-auto py-3",
+                      showQuizResult && opt.value === quiz.multiwayScenario?.correctAction && "ring-2 ring-green-400",
+                      showQuizResult && quiz.multiwayAnswer === opt.value && opt.value !== quiz.multiwayScenario?.correctAction && "ring-2 ring-red-400"
+                    )}
+                    onClick={() => !showQuizResult && setQuiz(prev => prev ? { ...prev, multiwayAnswer: opt.value } : null)}
+                    disabled={showQuizResult}
+                  >
+                    {opt.icon} {opt.label}
+                  </Button>
+                ))}
+              </div>
+
+              {!showQuizResult && (
+                <Button onClick={handleQuizSubmit} disabled={!quiz.multiwayAnswer} className="w-full">
+                  確認答案
+                </Button>
+              )}
+
+              {showQuizResult && (
+                <Card className="bg-gray-800/50 border-gray-700">
+                  <CardContent className="pt-4">
+                    <div className={cn(
+                      "text-lg font-semibold mb-2",
+                      quiz.multiwayAnswer === quiz.multiwayScenario.correctAction ? "text-green-400" : "text-orange-400"
+                    )}>
+                      {quiz.multiwayAnswer === quiz.multiwayScenario.correctAction ? "正確！" : "不太對"}
+                    </div>
+                    <p className="text-sm text-gray-300">{quiz.multiwayScenario.explanation}</p>
+                  </CardContent>
+                </Card>
+              )}
+            </>
+          )}
+
+          {/* ========== Danger Sign Quiz ========== */}
+          {quiz.type === "dangerSign" && quiz.dangerScenario && (
+            <>
+              <div className="bg-red-900/20 border border-red-700/30 rounded p-3 text-center">
+                <p className="text-red-400 text-sm font-medium mb-1">對手動作</p>
+                <p className="text-white text-sm">{quiz.dangerScenario.action}</p>
+              </div>
+
+              <div className="text-center text-lg font-medium">
+                這代表什麼？
+              </div>
+
+              <div className="grid grid-cols-2 gap-2">
+                {[
+                  { value: "weak_value", label: "弱價值/試探", color: "text-yellow-400" },
+                  { value: "drawing", label: "聽牌/弱對", color: "text-blue-400" },
+                  { value: "strong", label: "強牌取值", color: "text-orange-400" },
+                  { value: "nuts", label: "堅果/極強", color: "text-red-400" },
+                  { value: "polarized", label: "極化 (堅果或詐唬)", color: "text-purple-400" },
+                ].map((opt) => (
+                  <Button
+                    key={opt.value}
+                    variant={quiz.dangerAnswer === opt.value ? "default" : "outline"}
+                    size="sm"
+                    className={cn(
+                      "h-auto py-3 text-sm",
+                      showQuizResult && opt.value === quiz.dangerScenario?.correctMeaning && "ring-2 ring-green-400",
+                      showQuizResult && quiz.dangerAnswer === opt.value && opt.value !== quiz.dangerScenario?.correctMeaning && "ring-2 ring-red-400"
+                    )}
+                    onClick={() => !showQuizResult && setQuiz(prev => prev ? { ...prev, dangerAnswer: opt.value } : null)}
+                    disabled={showQuizResult}
+                  >
+                    {opt.label}
+                  </Button>
+                ))}
+              </div>
+
+              {!showQuizResult && (
+                <Button onClick={handleQuizSubmit} disabled={!quiz.dangerAnswer} className="w-full">
+                  確認答案
+                </Button>
+              )}
+
+              {showQuizResult && (
+                <Card className="bg-gray-800/50 border-gray-700">
+                  <CardContent className="pt-4">
+                    <div className={cn(
+                      "text-lg font-semibold mb-2",
+                      quiz.dangerAnswer === quiz.dangerScenario.correctMeaning ? "text-green-400" : "text-orange-400"
+                    )}>
+                      {quiz.dangerAnswer === quiz.dangerScenario.correctMeaning ? "正確！" : "需要調整"}
+                    </div>
+                    <p className="text-sm text-gray-300">{quiz.dangerScenario.explanation}</p>
+                  </CardContent>
+                </Card>
+              )}
+            </>
+          )}
+
+          {/* ========== Leak Exploit Quiz ========== */}
+          {quiz.type === "leakExploit" && quiz.leakScenario && (
+            <>
+              <div className="bg-green-900/20 border border-green-700/30 rounded p-3 text-center">
+                <p className="text-green-400 text-sm font-medium mb-1">對手漏洞</p>
+                <p className="text-white text-sm">{quiz.leakScenario.leak}</p>
+              </div>
+
+              <div className="text-center text-lg font-medium">
+                最佳剝削方式？
+              </div>
+
+              <div className="grid grid-cols-2 gap-2">
+                {[
+                  { value: "raise", label: "加注/Raise", icon: "⬆️" },
+                  { value: "call_light", label: "輕鬆跟注", icon: "📞" },
+                  { value: "value_bet", label: "薄價值下注", icon: "💵" },
+                  { value: "value_only", label: "只打價值", icon: "✅" },
+                  { value: "overbet_value", label: "超池取值", icon: "💰" },
+                  { value: "cr_bluff", label: "Check-Raise 詐唬", icon: "🃏" },
+                  { value: "fold_marginal", label: "棄掉邊緣牌", icon: "🏳️" },
+                  { value: "bet_thin", label: "更薄下注", icon: "📉" },
+                ].map((opt) => (
+                  <Button
+                    key={opt.value}
+                    variant={quiz.leakAnswer === opt.value ? "default" : "outline"}
+                    size="sm"
+                    className={cn(
+                      "h-auto py-2 text-xs",
+                      showQuizResult && opt.value === quiz.leakScenario?.correctExploit && "ring-2 ring-green-400",
+                      showQuizResult && quiz.leakAnswer === opt.value && opt.value !== quiz.leakScenario?.correctExploit && "ring-2 ring-red-400"
+                    )}
+                    onClick={() => !showQuizResult && setQuiz(prev => prev ? { ...prev, leakAnswer: opt.value } : null)}
+                    disabled={showQuizResult}
+                  >
+                    {opt.icon} {opt.label}
+                  </Button>
+                ))}
+              </div>
+
+              {!showQuizResult && (
+                <Button onClick={handleQuizSubmit} disabled={!quiz.leakAnswer} className="w-full">
+                  確認答案
+                </Button>
+              )}
+
+              {showQuizResult && (
+                <Card className="bg-gray-800/50 border-gray-700">
+                  <CardContent className="pt-4">
+                    <div className={cn(
+                      "text-lg font-semibold mb-2",
+                      quiz.leakAnswer === quiz.leakScenario.correctExploit ? "text-green-400" : "text-orange-400"
+                    )}>
+                      {quiz.leakAnswer === quiz.leakScenario.correctExploit ? "正確！" : "不太對"}
+                    </div>
+                    <p className="text-sm text-gray-300">{quiz.leakScenario.explanation}</p>
+                  </CardContent>
+                </Card>
+              )}
+            </>
+          )}
+
+          {/* Next button */}
           {showQuizResult && (
             <Button onClick={loadQuizScenario} className="w-full">
               下一題 <ArrowRight className="h-4 w-4 ml-2" />
