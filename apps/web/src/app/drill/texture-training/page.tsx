@@ -83,6 +83,7 @@ const CATEGORY_COLORS: Record<string, string> = {
   paired: "bg-purple-100 text-purple-800 border-purple-200 dark:bg-purple-900 dark:text-purple-200 dark:border-purple-700",
   wet: "bg-blue-100 text-blue-800 border-blue-200 dark:bg-blue-900 dark:text-blue-200 dark:border-blue-700",
   connected: "bg-green-100 text-green-800 border-green-200 dark:bg-green-900 dark:text-green-200 dark:border-green-700",
+  broadway: "bg-rose-100 text-rose-800 border-rose-200 dark:bg-rose-900 dark:text-rose-200 dark:border-rose-700",
 };
 
 const CATEGORY_NAMES: Record<string, string> = {
@@ -90,6 +91,7 @@ const CATEGORY_NAMES: Record<string, string> = {
   paired: "對子牌面",
   wet: "濕潤牌面",
   connected: "連接牌面",
+  broadway: "大牌牌面",
 };
 
 const DIFFICULTY_LABELS: Record<number, { label: string; color: string }> = {

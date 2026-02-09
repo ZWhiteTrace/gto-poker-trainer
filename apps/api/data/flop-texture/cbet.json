@@ -7,435 +7,759 @@
   "scenarios": [
     {
       "id": "cbet_001",
-      "flop": ["A", "7", "2"],
-      "suits": ["s", "d", "c"],
-      "texture": "dry_ace_high",
+      "flop": [
+        "A",
+        "7",
+        "2"
+      ],
+      "suits": [
+        "s",
+        "d",
+        "c"
+      ],
+      "texture": "Axx",
       "pot_type": "srp",
       "position": "IP",
       "correct_frequency": "very_high",
       "correct_sizing": "small",
       "explanation_zh": "乾燥A高牌面，IP 位置應高頻率小尺寸 C-bet（約75%頻率，33% pot）",
-      "explanation_en": "Dry ace-high board, IP should c-bet at high frequency with small sizing (~75%, 33% pot)"
+      "explanation_en": "Dry ace-high board, IP should c-bet at high frequency with small sizing (~75%, 33% pot)",
+      "texture_zh": "A + 兩張低牌"
     },
     {
       "id": "cbet_002",
-      "flop": ["K", "8", "3"],
-      "suits": ["h", "d", "c"],
-      "texture": "dry_king_high",
+      "flop": [
+        "K",
+        "8",
+        "3"
+      ],
+      "suits": [
+        "h",
+        "d",
+        "c"
+      ],
+      "texture": "KQx",
       "pot_type": "srp",
       "position": "IP",
       "correct_frequency": "medium_high",
       "correct_sizing": "medium",
       "explanation_zh": "乾燥K高牌面，IP 位置應中高頻率中等尺寸 C-bet（約60%頻率，50% pot）",
-      "explanation_en": "Dry king-high board, IP should c-bet at medium-high frequency with medium sizing (~60%, 50% pot)"
+      "explanation_en": "Dry king-high board, IP should c-bet at medium-high frequency with medium sizing (~60%, 50% pot)",
+      "texture_zh": "K/Q 高 + 兩低牌"
     },
     {
       "id": "cbet_003",
-      "flop": ["Q", "7", "2"],
-      "suits": ["d", "c", "h"],
-      "texture": "dry_queen_high",
+      "flop": [
+        "Q",
+        "7",
+        "2"
+      ],
+      "suits": [
+        "d",
+        "c",
+        "h"
+      ],
+      "texture": "KQx",
       "pot_type": "srp",
       "position": "IP",
       "correct_frequency": "medium_high",
       "correct_sizing": "medium",
       "explanation_zh": "乾燥Q高牌面，IP 位置應中高頻率中等尺寸 C-bet（約55%頻率，50% pot）",
-      "explanation_en": "Dry queen-high board, IP should c-bet at medium-high frequency (~55%, 50% pot)"
+      "explanation_en": "Dry queen-high board, IP should c-bet at medium-high frequency (~55%, 50% pot)",
+      "texture_zh": "K/Q 高 + 兩低牌"
     },
     {
       "id": "cbet_004",
-      "flop": ["8", "5", "2"],
-      "suits": ["s", "h", "d"],
-      "texture": "dry_low_rainbow",
+      "flop": [
+        "8",
+        "5",
+        "2"
+      ],
+      "suits": [
+        "s",
+        "h",
+        "d"
+      ],
+      "texture": "Low_unconn",
       "pot_type": "srp",
       "position": "IP",
       "correct_frequency": "low",
       "correct_sizing": "large",
       "explanation_zh": "乾燥低牌彩虹，有利於跟注者範圍，應低頻率大尺寸 C-bet（約35%頻率，66% pot）",
-      "explanation_en": "Dry low rainbow favors caller's range, use low frequency large sizing (~35%, 66% pot)"
+      "explanation_en": "Dry low rainbow favors caller's range, use low frequency large sizing (~35%, 66% pot)",
+      "texture_zh": "低牌不連接"
     },
     {
       "id": "cbet_005",
-      "flop": ["A", "A", "7"],
-      "suits": ["s", "h", "d"],
-      "texture": "paired_high",
+      "flop": [
+        "A",
+        "A",
+        "7"
+      ],
+      "suits": [
+        "s",
+        "h",
+        "d"
+      ],
+      "texture": "Paired",
       "pot_type": "srp",
       "position": "IP",
       "correct_frequency": "very_high",
       "correct_sizing": "small",
       "explanation_zh": "高對子牌面，極高頻率小尺寸 C-bet（約70%頻率，25% pot）",
-      "explanation_en": "High paired board, very high frequency small sizing c-bet (~70%, 25% pot)"
+      "explanation_en": "High paired board, very high frequency small sizing c-bet (~70%, 25% pot)",
+      "texture_zh": "配對牌面"
     },
     {
       "id": "cbet_006",
-      "flop": ["5", "5", "9"],
-      "suits": ["h", "d", "c"],
-      "texture": "paired_low",
+      "flop": [
+        "5",
+        "5",
+        "9"
+      ],
+      "suits": [
+        "h",
+        "d",
+        "c"
+      ],
+      "texture": "Paired",
       "pot_type": "srp",
       "position": "IP",
       "correct_frequency": "medium_high",
       "correct_sizing": "small",
       "explanation_zh": "低對子牌面，中高頻率小尺寸 C-bet（約65%頻率，33% pot）",
-      "explanation_en": "Low paired board, medium-high frequency small sizing (~65%, 33% pot)"
+      "explanation_en": "Low paired board, medium-high frequency small sizing (~65%, 33% pot)",
+      "texture_zh": "配對牌面"
     },
     {
       "id": "cbet_007",
-      "flop": ["K", "Q", "J"],
-      "suits": ["s", "h", "d"],
-      "texture": "wet_broadway",
+      "flop": [
+        "K",
+        "Q",
+        "J"
+      ],
+      "suits": [
+        "s",
+        "h",
+        "d"
+      ],
+      "texture": "BBB",
       "pot_type": "srp",
       "position": "IP",
       "correct_frequency": "medium",
       "correct_sizing": "large",
       "explanation_zh": "濕潤大牌連接，中等頻率大尺寸 C-bet（約45%頻率，66% pot）",
-      "explanation_en": "Wet broadway connected, medium frequency large sizing (~45%, 66% pot)"
+      "explanation_en": "Wet broadway connected, medium frequency large sizing (~45%, 66% pot)",
+      "texture_zh": "三張大牌 (無 A)"
     },
     {
       "id": "cbet_008",
-      "flop": ["J", "T", "9"],
-      "suits": ["h", "d", "c"],
-      "texture": "wet_middle_connected",
+      "flop": [
+        "J",
+        "T",
+        "9"
+      ],
+      "suits": [
+        "h",
+        "d",
+        "c"
+      ],
+      "texture": "BBx",
       "pot_type": "srp",
       "position": "IP",
       "correct_frequency": "medium",
       "correct_sizing": "large",
       "explanation_zh": "濕潤中間連接，中等頻率大尺寸 C-bet（約40%頻率，75% pot）",
-      "explanation_en": "Wet middle connected, medium frequency large sizing (~40%, 75% pot)"
+      "explanation_en": "Wet middle connected, medium frequency large sizing (~40%, 75% pot)",
+      "texture_zh": "兩張大牌 + 低牌"
     },
     {
       "id": "cbet_009",
-      "flop": ["6", "5", "4"],
-      "suits": ["s", "h", "d"],
-      "texture": "wet_low_connected",
+      "flop": [
+        "6",
+        "5",
+        "4"
+      ],
+      "suits": [
+        "s",
+        "h",
+        "d"
+      ],
+      "texture": "Low_conn",
       "pot_type": "srp",
       "position": "IP",
       "correct_frequency": "low",
       "correct_sizing": "medium",
       "explanation_zh": "濕潤低牌連接，低頻率中等尺寸 C-bet（約30%頻率，50% pot）",
-      "explanation_en": "Wet low connected, low frequency medium sizing (~30%, 50% pot)"
+      "explanation_en": "Wet low connected, low frequency medium sizing (~30%, 50% pot)",
+      "texture_zh": "低牌連接"
     },
     {
       "id": "cbet_010",
-      "flop": ["T", "7", "3"],
-      "suits": ["h", "h", "h"],
-      "texture": "monotone",
+      "flop": [
+        "T",
+        "7",
+        "3"
+      ],
+      "suits": [
+        "h",
+        "h",
+        "h"
+      ],
+      "texture": "JTx",
       "pot_type": "srp",
       "position": "IP",
       "correct_frequency": "medium",
       "correct_sizing": "medium",
       "explanation_zh": "單花牌面，中等頻率中等尺寸 C-bet（約50%頻率，50% pot）",
-      "explanation_en": "Monotone board, medium frequency medium sizing (~50%, 50% pot)"
+      "explanation_en": "Monotone board, medium frequency medium sizing (~50%, 50% pot)",
+      "texture_zh": "J/T 高 + 不連接"
     },
     {
       "id": "cbet_011",
-      "flop": ["A", "8", "3"],
-      "suits": ["s", "s", "h"],
-      "texture": "twotone_dry",
+      "flop": [
+        "A",
+        "8",
+        "3"
+      ],
+      "suits": [
+        "s",
+        "s",
+        "h"
+      ],
+      "texture": "Axx",
       "pot_type": "srp",
       "position": "IP",
       "correct_frequency": "medium_high",
       "correct_sizing": "medium",
       "explanation_zh": "雙花乾燥，中高頻率中等尺寸 C-bet（約55%頻率，50% pot）",
-      "explanation_en": "Two-tone dry, medium-high frequency medium sizing (~55%, 50% pot)"
+      "explanation_en": "Two-tone dry, medium-high frequency medium sizing (~55%, 50% pot)",
+      "texture_zh": "A + 兩張低牌"
     },
     {
       "id": "cbet_012",
-      "flop": ["J", "T", "8"],
-      "suits": ["s", "s", "h"],
-      "texture": "twotone_wet",
+      "flop": [
+        "J",
+        "T",
+        "8"
+      ],
+      "suits": [
+        "s",
+        "s",
+        "h"
+      ],
+      "texture": "BBx",
       "pot_type": "srp",
       "position": "IP",
       "correct_frequency": "low",
       "correct_sizing": "large",
       "explanation_zh": "雙花濕潤，低頻率大尺寸 C-bet（約35%頻率，66% pot）",
-      "explanation_en": "Two-tone wet, low frequency large sizing (~35%, 66% pot)"
+      "explanation_en": "Two-tone wet, low frequency large sizing (~35%, 66% pot)",
+      "texture_zh": "兩張大牌 + 低牌"
     },
     {
       "id": "cbet_013",
-      "flop": ["A", "9", "4"],
-      "suits": ["d", "c", "h"],
-      "texture": "dry_ace_high",
+      "flop": [
+        "A",
+        "9",
+        "4"
+      ],
+      "suits": [
+        "d",
+        "c",
+        "h"
+      ],
+      "texture": "Axx",
       "pot_type": "3bp",
       "position": "IP",
       "correct_frequency": "very_high",
       "correct_sizing": "small",
       "explanation_zh": "3-bet 底池乾燥A高，更高頻率更小尺寸（約80%頻率，25% pot）",
-      "explanation_en": "3-bet pot dry ace-high, even higher frequency smaller sizing (~80%, 25% pot)"
+      "explanation_en": "3-bet pot dry ace-high, even higher frequency smaller sizing (~80%, 25% pot)",
+      "texture_zh": "A + 兩張低牌"
     },
     {
       "id": "cbet_014",
-      "flop": ["K", "6", "2"],
-      "suits": ["h", "s", "d"],
-      "texture": "dry_king_high",
+      "flop": [
+        "K",
+        "6",
+        "2"
+      ],
+      "suits": [
+        "h",
+        "s",
+        "d"
+      ],
+      "texture": "KQx",
       "pot_type": "3bp",
       "position": "IP",
       "correct_frequency": "very_high",
       "correct_sizing": "small",
       "explanation_zh": "3-bet 底池乾燥K高，高頻率小尺寸（約70%頻率，33% pot）",
-      "explanation_en": "3-bet pot dry king-high, high frequency small sizing (~70%, 33% pot)"
+      "explanation_en": "3-bet pot dry king-high, high frequency small sizing (~70%, 33% pot)",
+      "texture_zh": "K/Q 高 + 兩低牌"
     },
     {
       "id": "cbet_015",
-      "flop": ["9", "8", "7"],
-      "suits": ["s", "h", "d"],
-      "texture": "wet_middle_connected",
+      "flop": [
+        "9",
+        "8",
+        "7"
+      ],
+      "suits": [
+        "s",
+        "h",
+        "d"
+      ],
+      "texture": "Low_conn",
       "pot_type": "3bp",
       "position": "IP",
       "correct_frequency": "medium",
       "correct_sizing": "medium",
       "explanation_zh": "3-bet 底池濕潤中間連接，中等頻率中等尺寸（約50%頻率，50% pot）",
-      "explanation_en": "3-bet pot wet middle connected, medium frequency medium sizing (~50%, 50% pot)"
+      "explanation_en": "3-bet pot wet middle connected, medium frequency medium sizing (~50%, 50% pot)",
+      "texture_zh": "低牌連接"
     },
     {
       "id": "cbet_016",
-      "flop": ["A", "5", "2"],
-      "suits": ["h", "d", "c"],
-      "texture": "dry_ace_high",
+      "flop": [
+        "A",
+        "5",
+        "2"
+      ],
+      "suits": [
+        "h",
+        "d",
+        "c"
+      ],
+      "texture": "Axx",
       "pot_type": "srp",
       "position": "OOP",
       "correct_frequency": "medium_high",
       "correct_sizing": "small",
       "explanation_zh": "OOP 乾燥A高，稍低頻率但仍使用小尺寸（約60%頻率，33% pot）",
-      "explanation_en": "OOP dry ace-high, slightly lower frequency but still small sizing (~60%, 33% pot)"
+      "explanation_en": "OOP dry ace-high, slightly lower frequency but still small sizing (~60%, 33% pot)",
+      "texture_zh": "A + 兩張低牌"
     },
     {
       "id": "cbet_017",
-      "flop": ["T", "9", "8"],
-      "suits": ["d", "c", "h"],
-      "texture": "wet_middle_connected",
+      "flop": [
+        "T",
+        "9",
+        "8"
+      ],
+      "suits": [
+        "d",
+        "c",
+        "h"
+      ],
+      "texture": "JT_conn",
       "pot_type": "srp",
       "position": "OOP",
       "correct_frequency": "low",
       "correct_sizing": "large",
       "explanation_zh": "OOP 濕潤中間連接，更需要保護，低頻率大尺寸（約30%頻率，75% pot）",
-      "explanation_en": "OOP wet middle connected, need more protection, low frequency large sizing (~30%, 75% pot)"
+      "explanation_en": "OOP wet middle connected, need more protection, low frequency large sizing (~30%, 75% pot)",
+      "texture_zh": "J/T 高 + 連接"
     },
     {
       "id": "cbet_018",
-      "flop": ["K", "K", "7"],
-      "suits": ["s", "h", "d"],
-      "texture": "paired_high",
+      "flop": [
+        "K",
+        "K",
+        "7"
+      ],
+      "suits": [
+        "s",
+        "h",
+        "d"
+      ],
+      "texture": "Paired",
       "pot_type": "srp",
       "position": "OOP",
       "correct_frequency": "very_high",
       "correct_sizing": "small",
       "explanation_zh": "OOP 高對子牌面，仍然高頻率小尺寸（約65%頻率，25% pot）",
-      "explanation_en": "OOP high paired board, still high frequency small sizing (~65%, 25% pot)"
+      "explanation_en": "OOP high paired board, still high frequency small sizing (~65%, 25% pot)",
+      "texture_zh": "配對牌面"
     },
     {
       "id": "cbet_019",
-      "flop": ["Q", "J", "T"],
-      "suits": ["h", "d", "c"],
-      "texture": "wet_broadway",
+      "flop": [
+        "Q",
+        "J",
+        "T"
+      ],
+      "suits": [
+        "h",
+        "d",
+        "c"
+      ],
+      "texture": "BBB",
       "pot_type": "srp",
       "position": "IP",
       "correct_frequency": "medium",
       "correct_sizing": "large",
       "explanation_zh": "濕潤大牌三連張，中等頻率大尺寸（約45%頻率，66% pot）",
-      "explanation_en": "Wet broadway three connectors, medium frequency large sizing (~45%, 66% pot)"
+      "explanation_en": "Wet broadway three connectors, medium frequency large sizing (~45%, 66% pot)",
+      "texture_zh": "三張大牌 (無 A)"
     },
     {
       "id": "cbet_020",
-      "flop": ["7", "6", "5"],
-      "suits": ["s", "d", "h"],
-      "texture": "wet_low_connected",
+      "flop": [
+        "7",
+        "6",
+        "5"
+      ],
+      "suits": [
+        "s",
+        "d",
+        "h"
+      ],
+      "texture": "Low_conn",
       "pot_type": "srp",
       "position": "IP",
       "correct_frequency": "low",
       "correct_sizing": "medium",
       "explanation_zh": "濕潤低牌三連張，低頻率中等尺寸（約30%頻率，50% pot）",
-      "explanation_en": "Wet low three connectors, low frequency medium sizing (~30%, 50% pot)"
+      "explanation_en": "Wet low three connectors, low frequency medium sizing (~30%, 50% pot)",
+      "texture_zh": "低牌連接"
     },
     {
       "id": "cbet_021",
-      "flop": ["K", "9", "5"],
-      "suits": ["h", "h", "d"],
-      "texture": "twotone_dry",
+      "flop": [
+        "K",
+        "9",
+        "5"
+      ],
+      "suits": [
+        "h",
+        "h",
+        "d"
+      ],
+      "texture": "KQx",
       "pot_type": "srp",
       "position": "IP",
       "correct_frequency": "medium_high",
       "correct_sizing": "medium",
       "explanation_zh": "雙花乾燥K高，中高頻率中等尺寸（約55%頻率，50% pot）",
-      "explanation_en": "Two-tone dry king-high, medium-high frequency medium sizing (~55%, 50% pot)"
+      "explanation_en": "Two-tone dry king-high, medium-high frequency medium sizing (~55%, 50% pot)",
+      "texture_zh": "K/Q 高 + 兩低牌"
     },
     {
       "id": "cbet_022",
-      "flop": ["A", "K", "Q"],
-      "suits": ["s", "h", "d"],
-      "texture": "wet_broadway",
+      "flop": [
+        "A",
+        "K",
+        "Q"
+      ],
+      "suits": [
+        "s",
+        "h",
+        "d"
+      ],
+      "texture": "ABB",
       "pot_type": "srp",
       "position": "IP",
       "correct_frequency": "medium",
       "correct_sizing": "large",
       "explanation_zh": "AKQ 大牌三連張，中等頻率大尺寸（約50%頻率，66% pot）",
-      "explanation_en": "AKQ top broadway, medium frequency large sizing (~50%, 66% pot)"
+      "explanation_en": "AKQ top broadway, medium frequency large sizing (~50%, 66% pot)",
+      "texture_zh": "A + 兩張大牌"
     },
     {
       "id": "cbet_023",
-      "flop": ["8", "8", "3"],
-      "suits": ["d", "h", "c"],
-      "texture": "paired_low",
+      "flop": [
+        "8",
+        "8",
+        "3"
+      ],
+      "suits": [
+        "d",
+        "h",
+        "c"
+      ],
+      "texture": "Paired",
       "pot_type": "srp",
       "position": "IP",
       "correct_frequency": "medium_high",
       "correct_sizing": "small",
       "explanation_zh": "低對子牌面，中高頻率小尺寸（約65%頻率，33% pot）",
-      "explanation_en": "Low paired board, medium-high frequency small sizing (~65%, 33% pot)"
+      "explanation_en": "Low paired board, medium-high frequency small sizing (~65%, 33% pot)",
+      "texture_zh": "配對牌面"
     },
     {
       "id": "cbet_024",
-      "flop": ["Q", "8", "4"],
-      "suits": ["s", "s", "s"],
-      "texture": "monotone",
+      "flop": [
+        "Q",
+        "8",
+        "4"
+      ],
+      "suits": [
+        "s",
+        "s",
+        "s"
+      ],
+      "texture": "KQx",
       "pot_type": "srp",
       "position": "IP",
       "correct_frequency": "medium",
       "correct_sizing": "medium",
       "explanation_zh": "單花Q高，中等頻率中等尺寸（約50%頻率，50% pot）",
-      "explanation_en": "Monotone queen-high, medium frequency medium sizing (~50%, 50% pot)"
+      "explanation_en": "Monotone queen-high, medium frequency medium sizing (~50%, 50% pot)",
+      "texture_zh": "K/Q 高 + 兩低牌"
     },
     {
       "id": "cbet_025",
-      "flop": ["J", "7", "3"],
-      "suits": ["c", "h", "d"],
-      "texture": "dry_low_rainbow",
+      "flop": [
+        "J",
+        "7",
+        "3"
+      ],
+      "suits": [
+        "c",
+        "h",
+        "d"
+      ],
+      "texture": "JTx",
       "pot_type": "srp",
       "position": "IP",
       "correct_frequency": "low",
       "correct_sizing": "large",
       "explanation_zh": "J高彩虹斷開，屬於乾燥低牌，低頻率大尺寸（約35%頻率，66% pot）",
-      "explanation_en": "J-high rainbow disconnected, low frequency large sizing (~35%, 66% pot)"
+      "explanation_en": "J-high rainbow disconnected, low frequency large sizing (~35%, 66% pot)",
+      "texture_zh": "J/T 高 + 不連接"
     },
     {
       "id": "cbet_026",
-      "flop": ["A", "J", "9"],
-      "suits": ["h", "d", "c"],
-      "texture": "dry_ace_high",
+      "flop": [
+        "A",
+        "J",
+        "9"
+      ],
+      "suits": [
+        "h",
+        "d",
+        "c"
+      ],
+      "texture": "ABx",
       "pot_type": "srp",
       "position": "IP",
       "correct_frequency": "very_high",
       "correct_sizing": "small",
       "explanation_zh": "A高半連接彩虹，仍屬乾燥A高，高頻率小尺寸（約70%頻率，33% pot）",
-      "explanation_en": "Ace-high semi-connected rainbow, still dry ace-high, high frequency small sizing (~70%, 33% pot)"
+      "explanation_en": "Ace-high semi-connected rainbow, still dry ace-high, high frequency small sizing (~70%, 33% pot)",
+      "texture_zh": "A + 一張大牌 + 低牌"
     },
     {
       "id": "cbet_027",
-      "flop": ["K", "J", "8"],
-      "suits": ["s", "s", "h"],
-      "texture": "twotone_wet",
+      "flop": [
+        "K",
+        "J",
+        "8"
+      ],
+      "suits": [
+        "s",
+        "s",
+        "h"
+      ],
+      "texture": "BBx",
       "pot_type": "srp",
       "position": "IP",
       "correct_frequency": "low",
       "correct_sizing": "large",
       "explanation_zh": "雙花半連接大牌，雙花濕潤，低頻率大尺寸（約40%頻率，66% pot）",
-      "explanation_en": "Two-tone semi-connected broadway, two-tone wet, low frequency large sizing (~40%, 66% pot)"
+      "explanation_en": "Two-tone semi-connected broadway, two-tone wet, low frequency large sizing (~40%, 66% pot)",
+      "texture_zh": "兩張大牌 + 低牌"
     },
     {
       "id": "cbet_028",
-      "flop": ["9", "4", "2"],
-      "suits": ["d", "c", "h"],
-      "texture": "dry_low_rainbow",
+      "flop": [
+        "9",
+        "4",
+        "2"
+      ],
+      "suits": [
+        "d",
+        "c",
+        "h"
+      ],
+      "texture": "Low_unconn",
       "pot_type": "3bp",
       "position": "IP",
       "correct_frequency": "medium",
       "correct_sizing": "medium",
       "explanation_zh": "3-bet 底池乾燥低牌，中等頻率中等尺寸（約45%頻率，50% pot）",
-      "explanation_en": "3-bet pot dry low rainbow, medium frequency medium sizing (~45%, 50% pot)"
+      "explanation_en": "3-bet pot dry low rainbow, medium frequency medium sizing (~45%, 50% pot)",
+      "texture_zh": "低牌不連接"
     },
     {
       "id": "cbet_029",
-      "flop": ["Q", "Q", "5"],
-      "suits": ["h", "d", "c"],
-      "texture": "paired_high",
+      "flop": [
+        "Q",
+        "Q",
+        "5"
+      ],
+      "suits": [
+        "h",
+        "d",
+        "c"
+      ],
+      "texture": "Paired",
       "pot_type": "3bp",
       "position": "IP",
       "correct_frequency": "very_high",
       "correct_sizing": "small",
       "explanation_zh": "3-bet 底池高對子，極高頻率小尺寸（約75%頻率，25% pot）",
-      "explanation_en": "3-bet pot high paired, very high frequency small sizing (~75%, 25% pot)"
+      "explanation_en": "3-bet pot high paired, very high frequency small sizing (~75%, 25% pot)",
+      "texture_zh": "配對牌面"
     },
     {
       "id": "cbet_030",
-      "flop": ["T", "8", "6"],
-      "suits": ["s", "h", "d"],
-      "texture": "wet_middle_connected",
+      "flop": [
+        "T",
+        "8",
+        "6"
+      ],
+      "suits": [
+        "s",
+        "h",
+        "d"
+      ],
+      "texture": "JT_conn",
       "pot_type": "srp",
       "position": "IP",
       "correct_frequency": "medium",
       "correct_sizing": "large",
       "explanation_zh": "中間半連接，濕潤中間，中等頻率大尺寸（約45%頻率，75% pot）",
-      "explanation_en": "Middle semi-connected, wet middle, medium frequency large sizing (~45%, 75% pot)"
+      "explanation_en": "Middle semi-connected, wet middle, medium frequency large sizing (~45%, 75% pot)",
+      "texture_zh": "J/T 高 + 連接"
     },
     {
       "id": "cbet_031",
-      "flop": ["A", "T", "5"],
-      "suits": ["d", "d", "h"],
-      "texture": "twotone_dry",
+      "flop": [
+        "A",
+        "T",
+        "5"
+      ],
+      "suits": [
+        "d",
+        "d",
+        "h"
+      ],
+      "texture": "ABx",
       "pot_type": "srp",
       "position": "IP",
       "correct_frequency": "medium_high",
       "correct_sizing": "medium",
       "explanation_zh": "雙花A高斷開，雙花乾燥，中高頻率中等尺寸（約60%頻率，50% pot）",
-      "explanation_en": "Two-tone ace-high disconnected, two-tone dry, medium-high frequency medium sizing (~60%, 50% pot)"
+      "explanation_en": "Two-tone ace-high disconnected, two-tone dry, medium-high frequency medium sizing (~60%, 50% pot)",
+      "texture_zh": "A + 一張大牌 + 低牌"
     },
     {
       "id": "cbet_032",
-      "flop": ["J", "9", "7"],
-      "suits": ["h", "h", "d"],
-      "texture": "twotone_wet",
+      "flop": [
+        "J",
+        "9",
+        "7"
+      ],
+      "suits": [
+        "h",
+        "h",
+        "d"
+      ],
+      "texture": "JT_conn",
       "pot_type": "srp",
       "position": "IP",
       "correct_frequency": "low",
       "correct_sizing": "large",
       "explanation_zh": "雙花半連接中間牌，雙花濕潤，低頻率大尺寸（約35%頻率，66% pot）",
-      "explanation_en": "Two-tone semi-connected middle cards, two-tone wet, low frequency large sizing (~35%, 66% pot)"
+      "explanation_en": "Two-tone semi-connected middle cards, two-tone wet, low frequency large sizing (~35%, 66% pot)",
+      "texture_zh": "J/T 高 + 連接"
     },
     {
       "id": "cbet_033",
-      "flop": ["5", "4", "3"],
-      "suits": ["s", "h", "d"],
-      "texture": "wet_low_connected",
+      "flop": [
+        "5",
+        "4",
+        "3"
+      ],
+      "suits": [
+        "s",
+        "h",
+        "d"
+      ],
+      "texture": "Low_conn",
       "pot_type": "3bp",
       "position": "IP",
       "correct_frequency": "medium",
       "correct_sizing": "medium",
       "explanation_zh": "3-bet 底池低牌三連張，中等頻率中等尺寸（約40%頻率，50% pot）",
-      "explanation_en": "3-bet pot low three connectors, medium frequency medium sizing (~40%, 50% pot)"
+      "explanation_en": "3-bet pot low three connectors, medium frequency medium sizing (~40%, 50% pot)",
+      "texture_zh": "低牌連接"
     },
     {
       "id": "cbet_034",
-      "flop": ["K", "4", "2"],
-      "suits": ["c", "h", "d"],
-      "texture": "dry_king_high",
+      "flop": [
+        "K",
+        "4",
+        "2"
+      ],
+      "suits": [
+        "c",
+        "h",
+        "d"
+      ],
+      "texture": "KQx",
       "pot_type": "srp",
       "position": "OOP",
       "correct_frequency": "medium",
       "correct_sizing": "medium",
       "explanation_zh": "OOP 乾燥K高，中等頻率中等尺寸（約50%頻率，50% pot）",
-      "explanation_en": "OOP dry king-high, medium frequency medium sizing (~50%, 50% pot)"
+      "explanation_en": "OOP dry king-high, medium frequency medium sizing (~50%, 50% pot)",
+      "texture_zh": "K/Q 高 + 兩低牌"
     },
     {
       "id": "cbet_035",
-      "flop": ["6", "6", "K"],
-      "suits": ["h", "d", "c"],
-      "texture": "paired_low",
+      "flop": [
+        "6",
+        "6",
+        "K"
+      ],
+      "suits": [
+        "h",
+        "d",
+        "c"
+      ],
+      "texture": "Paired",
       "pot_type": "srp",
       "position": "OOP",
       "correct_frequency": "medium_high",
       "correct_sizing": "small",
       "explanation_zh": "OOP 低對子牌面，中高頻率小尺寸（約60%頻率，33% pot）",
-      "explanation_en": "OOP low paired board, medium-high frequency small sizing (~60%, 33% pot)"
+      "explanation_en": "OOP low paired board, medium-high frequency small sizing (~60%, 33% pot)",
+      "texture_zh": "配對牌面"
     },
     {
       "id": "cbet_036",
-      "flop": ["A", "6", "3"],
-      "suits": ["s", "s", "s"],
-      "texture": "monotone",
+      "flop": [
+        "A",
+        "6",
+        "3"
+      ],
+      "suits": [
+        "s",
+        "s",
+        "s"
+      ],
+      "texture": "Axx",
       "pot_type": "srp",
       "position": "OOP",
       "correct_frequency": "medium",
       "correct_sizing": "medium",
       "explanation_zh": "OOP 單花A高，中等頻率中等尺寸（約45%頻率，50% pot）",
-      "explanation_en": "OOP monotone ace-high, medium frequency medium sizing (~45%, 50% pot)"
+      "explanation_en": "OOP monotone ace-high, medium frequency medium sizing (~45%, 50% pot)",
+      "texture_zh": "A + 兩張低牌"
     }
   ]
 }

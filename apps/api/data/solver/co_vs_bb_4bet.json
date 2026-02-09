@@ -20,8 +20,8 @@
         "Ks",
         "5d"
       ],
-      "texture": "dry_ace_high",
-      "texture_zh": "乾燥 A 高牌面",
+      "texture": "ABx",
+      "texture_zh": "A + 一張大牌 + 低牌",
       "strategies": {
         "AA": {
           "bet_33": 30,
@@ -95,8 +95,8 @@
         "Qs",
         "7d"
       ],
-      "texture": "dry_ace_high",
-      "texture_zh": "乾燥 A 高牌面",
+      "texture": "ABx",
+      "texture_zh": "A + 一張大牌 + 低牌",
       "strategies": {
         "AA": {
           "bet_33": 30,
@@ -170,8 +170,8 @@
         "Js",
         "3d"
       ],
-      "texture": "dry_ace_high",
-      "texture_zh": "乾燥 A 高牌面",
+      "texture": "ABx",
+      "texture_zh": "A + 一張大牌 + 低牌",
       "strategies": {
         "AA": {
           "bet_33": 30,
@@ -245,8 +245,8 @@
         "9s",
         "4d"
       ],
-      "texture": "dry_ace_high",
-      "texture_zh": "乾燥 A 高牌面",
+      "texture": "Axx",
+      "texture_zh": "A + 兩張低牌",
       "strategies": {
         "AA": {
           "bet_33": 30,
@@ -320,8 +320,8 @@
         "7s",
         "2d"
       ],
-      "texture": "dry_ace_high",
-      "texture_zh": "乾燥 A 高牌面",
+      "texture": "Axx",
+      "texture_zh": "A + 兩張低牌",
       "strategies": {
         "AA": {
           "bet_33": 30,
@@ -395,8 +395,8 @@
         "Qs",
         "7d"
       ],
-      "texture": "dry_king_high",
-      "texture_zh": "乾燥 K 高牌面",
+      "texture": "BBx",
+      "texture_zh": "兩張大牌 + 低牌",
       "strategies": {
         "AA": {
           "bet_33": 30,
@@ -470,8 +470,8 @@
         "Js",
         "5d"
       ],
-      "texture": "dry_king_high",
-      "texture_zh": "乾燥 K 高牌面",
+      "texture": "BBx",
+      "texture_zh": "兩張大牌 + 低牌",
       "strategies": {
         "AA": {
           "bet_33": 30,
@@ -545,8 +545,8 @@
         "Ts",
         "4d"
       ],
-      "texture": "dry_king_high",
-      "texture_zh": "乾燥 K 高牌面",
+      "texture": "BBx",
+      "texture_zh": "兩張大牌 + 低牌",
       "strategies": {
         "AA": {
           "bet_33": 30,
@@ -620,8 +620,8 @@
         "9s",
         "3d"
       ],
-      "texture": "dry_king_high",
-      "texture_zh": "乾燥 K 高牌面",
+      "texture": "KQx",
+      "texture_zh": "K/Q 高 + 兩低牌",
       "strategies": {
         "AA": {
           "bet_33": 30,
@@ -695,8 +695,8 @@
         "7s",
         "2d"
       ],
-      "texture": "dry_king_high",
-      "texture_zh": "乾燥 K 高牌面",
+      "texture": "KQx",
+      "texture_zh": "K/Q 高 + 兩低牌",
       "strategies": {
         "AA": {
           "bet_33": 30,
@@ -770,8 +770,8 @@
         "9s",
         "4d"
       ],
-      "texture": "dry_queen_high",
-      "texture_zh": "乾燥 Q 高牌面",
+      "texture": "KQx",
+      "texture_zh": "K/Q 高 + 兩低牌",
       "strategies": {
         "AA": {
           "bet_33": 30,
@@ -845,8 +845,8 @@
         "8s",
         "3d"
       ],
-      "texture": "dry_queen_high",
-      "texture_zh": "乾燥 Q 高牌面",
+      "texture": "KQx",
+      "texture_zh": "K/Q 高 + 兩低牌",
       "strategies": {
         "AA": {
           "bet_33": 30,
@@ -920,8 +920,8 @@
         "7s",
         "2d"
       ],
-      "texture": "dry_queen_high",
-      "texture_zh": "乾燥 Q 高牌面",
+      "texture": "KQx",
+      "texture_zh": "K/Q 高 + 兩低牌",
       "strategies": {
         "AA": {
           "bet_33": 30,
@@ -995,8 +995,8 @@
         "Js",
         "5d"
       ],
-      "texture": "dry_queen_high",
-      "texture_zh": "乾燥 Q 高牌面",
+      "texture": "BBx",
+      "texture_zh": "兩張大牌 + 低牌",
       "strategies": {
         "AA": {
           "bet_33": 30,
@@ -1070,8 +1070,8 @@
         "7s",
         "3d"
       ],
-      "texture": "dry_queen_high",
-      "texture_zh": "乾燥 Q 高牌面",
+      "texture": "KQx",
+      "texture_zh": "K/Q 高 + 兩低牌",
       "strategies": {
         "AA": {
           "bet_33": 30,
@@ -1145,8 +1145,8 @@
         "7s",
         "2d"
       ],
-      "texture": "dry_low",
-      "texture_zh": "乾燥低牌面",
+      "texture": "JTx",
+      "texture_zh": "J/T 高 + 不連接",
       "strategies": {
         "AA": {
           "bet_33": 30,
@@ -1220,8 +1220,8 @@
         "6s",
         "2d"
       ],
-      "texture": "dry_low",
-      "texture_zh": "乾燥低牌面",
+      "texture": "Low_unconn",
+      "texture_zh": "低牌不連接",
       "strategies": {
         "AA": {
           "bet_33": 30,
@@ -1295,8 +1295,8 @@
         "5s",
         "2d"
       ],
-      "texture": "dry_low",
-      "texture_zh": "乾燥低牌面",
+      "texture": "Low_unconn",
+      "texture_zh": "低牌不連接",
       "strategies": {
         "AA": {
           "bet_33": 30,
@@ -1370,8 +1370,8 @@
         "4s",
         "2d"
       ],
-      "texture": "dry_low",
-      "texture_zh": "乾燥低牌面",
+      "texture": "Low_unconn",
+      "texture_zh": "低牌不連接",
       "strategies": {
         "AA": {
           "bet_33": 30,
@@ -1445,8 +1445,8 @@
         "6s",
         "3d"
       ],
-      "texture": "dry_low",
-      "texture_zh": "乾燥低牌面",
+      "texture": "JTx",
+      "texture_zh": "J/T 高 + 不連接",
       "strategies": {
         "AA": {
           "bet_33": 30,
@@ -1520,8 +1520,8 @@
         "As",
         "7d"
       ],
-      "texture": "paired_high",
-      "texture_zh": "高對子牌面",
+      "texture": "Paired",
+      "texture_zh": "配對牌面",
       "strategies": {
         "AA": {
           "bet_33": 30,
@@ -1595,8 +1595,8 @@
         "Ks",
         "5d"
       ],
-      "texture": "paired_high",
-      "texture_zh": "高對子牌面",
+      "texture": "Paired",
+      "texture_zh": "配對牌面",
       "strategies": {
         "AA": {
           "bet_33": 30,
@@ -1670,8 +1670,8 @@
         "Qs",
         "4d"
       ],
-      "texture": "paired_high",
-      "texture_zh": "高對子牌面",
+      "texture": "Paired",
+      "texture_zh": "配對牌面",
       "strategies": {
         "AA": {
           "bet_33": 30,
@@ -1745,8 +1745,8 @@
         "Js",
         "3d"
       ],
-      "texture": "paired_high",
-      "texture_zh": "高對子牌面",
+      "texture": "Paired",
+      "texture_zh": "配對牌面",
       "strategies": {
         "AA": {
           "bet_33": 30,
@@ -1820,8 +1820,8 @@
         "Ks",
         "7d"
       ],
-      "texture": "paired_high",
-      "texture_zh": "高對子牌面",
+      "texture": "Paired",
+      "texture_zh": "配對牌面",
       "strategies": {
         "AA": {
           "bet_33": 30,
@@ -1895,8 +1895,8 @@
         "8s",
         "2d"
       ],
-      "texture": "paired_low",
-      "texture_zh": "低對子牌面",
+      "texture": "Paired",
+      "texture_zh": "配對牌面",
       "strategies": {
         "AA": {
           "bet_33": 30,
@@ -1970,8 +1970,8 @@
         "7s",
         "3d"
       ],
-      "texture": "paired_low",
-      "texture_zh": "低對子牌面",
+      "texture": "Paired",
+      "texture_zh": "配對牌面",
       "strategies": {
         "AA": {
           "bet_33": 30,
@@ -2045,8 +2045,8 @@
         "6s",
         "2d"
       ],
-      "texture": "paired_low",
-      "texture_zh": "低對子牌面",
+      "texture": "Paired",
+      "texture_zh": "配對牌面",
       "strategies": {
         "AA": {
           "bet_33": 30,
@@ -2120,8 +2120,8 @@
         "5s",
         "2d"
       ],
-      "texture": "paired_low",
-      "texture_zh": "低對子牌面",
+      "texture": "Paired",
+      "texture_zh": "配對牌面",
       "strategies": {
         "AA": {
           "bet_33": 30,
@@ -2195,8 +2195,8 @@
         "4s",
         "2d"
       ],
-      "texture": "paired_low",
-      "texture_zh": "低對子牌面",
+      "texture": "Paired",
+      "texture_zh": "配對牌面",
       "strategies": {
         "AA": {
           "bet_33": 30,
@@ -2270,8 +2270,8 @@
         "9h",
         "4h"
       ],
-      "texture": "monotone",
-      "texture_zh": "同花牌面",
+      "texture": "Axx",
+      "texture_zh": "A + 兩張低牌",
       "strategies": {
         "AA": {
           "bet_33": 30,
@@ -2345,8 +2345,8 @@
         "8h",
         "3h"
       ],
-      "texture": "monotone",
-      "texture_zh": "同花牌面",
+      "texture": "KQx",
+      "texture_zh": "K/Q 高 + 兩低牌",
       "strategies": {
         "AA": {
           "bet_33": 30,
@@ -2420,8 +2420,8 @@
         "7h",
         "2h"
       ],
-      "texture": "monotone",
-      "texture_zh": "同花牌面",
+      "texture": "KQx",
+      "texture_zh": "K/Q 高 + 兩低牌",
       "strategies": {
         "AA": {
           "bet_33": 30,
@@ -2495,8 +2495,8 @@
         "7h",
         "3h"
       ],
-      "texture": "monotone",
-      "texture_zh": "同花牌面",
+      "texture": "JTx",
+      "texture_zh": "J/T 高 + 不連接",
       "strategies": {
         "AA": {
           "bet_33": 30,
@@ -2570,8 +2570,8 @@
         "5h",
         "2h"
       ],
-      "texture": "monotone",
-      "texture_zh": "同花牌面",
+      "texture": "JTx",
+      "texture_zh": "J/T 高 + 不連接",
       "strategies": {
         "AA": {
           "bet_33": 30,
@@ -2645,8 +2645,8 @@
         "Kh",
         "5d"
       ],
-      "texture": "two_tone_high",
-      "texture_zh": "雙色高牌面",
+      "texture": "ABx",
+      "texture_zh": "A + 一張大牌 + 低牌",
       "strategies": {
         "AA": {
           "bet_33": 30,
@@ -2720,8 +2720,8 @@
         "Qh",
         "4d"
       ],
-      "texture": "two_tone_high",
-      "texture_zh": "雙色高牌面",
+      "texture": "BBx",
+      "texture_zh": "兩張大牌 + 低牌",
       "strategies": {
         "AA": {
           "bet_33": 30,
@@ -2795,8 +2795,8 @@
         "Jh",
         "3d"
       ],
-      "texture": "two_tone_high",
-      "texture_zh": "雙色高牌面",
+      "texture": "ABx",
+      "texture_zh": "A + 一張大牌 + 低牌",
       "strategies": {
         "AA": {
           "bet_33": 30,
@@ -2870,8 +2870,8 @@
         "Kh",
         "7d"
       ],
-      "texture": "two_tone_high",
-      "texture_zh": "雙色高牌面",
+      "texture": "ABx",
+      "texture_zh": "A + 一張大牌 + 低牌",
       "strategies": {
         "AA": {
           "bet_33": 30,
@@ -2945,8 +2945,8 @@
         "Jh",
         "4d"
       ],
-      "texture": "two_tone_high",
-      "texture_zh": "雙色高牌面",
+      "texture": "BBx",
+      "texture_zh": "兩張大牌 + 低牌",
       "strategies": {
         "AA": {
           "bet_33": 30,
@@ -3020,8 +3020,8 @@
         "6h",
         "2d"
       ],
-      "texture": "two_tone_low",
-      "texture_zh": "雙色低牌面",
+      "texture": "Low_unconn",
+      "texture_zh": "低牌不連接",
       "strategies": {
         "AA": {
           "bet_33": 30,
@@ -3095,8 +3095,8 @@
         "7h",
         "3d"
       ],
-      "texture": "two_tone_low",
-      "texture_zh": "雙色低牌面",
+      "texture": "Low_unconn",
+      "texture_zh": "低牌不連接",
       "strategies": {
         "AA": {
           "bet_33": 30,
@@ -3170,8 +3170,8 @@
         "5h",
         "2d"
       ],
-      "texture": "two_tone_low",
-      "texture_zh": "雙色低牌面",
+      "texture": "Low_unconn",
+      "texture_zh": "低牌不連接",
       "strategies": {
         "AA": {
           "bet_33": 30,
@@ -3245,8 +3245,8 @@
         "8h",
         "4d"
       ],
-      "texture": "two_tone_low",
-      "texture_zh": "雙色低牌面",
+      "texture": "JTx",
+      "texture_zh": "J/T 高 + 不連接",
       "strategies": {
         "AA": {
           "bet_33": 30,
@@ -3320,8 +3320,8 @@
         "4h",
         "2d"
       ],
-      "texture": "two_tone_low",
-      "texture_zh": "雙色低牌面",
+      "texture": "Low_conn",
+      "texture_zh": "低牌連接",
       "strategies": {
         "AA": {
           "bet_33": 30,
@@ -3395,8 +3395,8 @@
         "Jd",
         "Tc"
       ],
-      "texture": "connected_high",
-      "texture_zh": "高連接牌面",
+      "texture": "BBB",
+      "texture_zh": "三張大牌 (無 A)",
       "strategies": {
         "AA": {
           "bet_33": 30,
@@ -3470,8 +3470,8 @@
         "Qd",
         "Js"
       ],
-      "texture": "connected_high",
-      "texture_zh": "高連接牌面",
+      "texture": "BBB",
+      "texture_zh": "三張大牌 (無 A)",
       "strategies": {
         "AA": {
           "bet_33": 30,
@@ -3545,8 +3545,8 @@
         "Td",
         "9c"
       ],
-      "texture": "connected_high",
-      "texture_zh": "高連接牌面",
+      "texture": "BBx",
+      "texture_zh": "兩張大牌 + 低牌",
       "strategies": {
         "AA": {
           "bet_33": 30,
@@ -3620,8 +3620,8 @@
         "Kd",
         "Qs"
       ],
-      "texture": "connected_high",
-      "texture_zh": "高連接牌面",
+      "texture": "ABB",
+      "texture_zh": "A + 兩張大牌",
       "strategies": {
         "AA": {
           "bet_33": 30,
@@ -3695,8 +3695,8 @@
         "Js",
         "Td"
       ],
-      "texture": "connected_high",
-      "texture_zh": "高連接牌面",
+      "texture": "BBB",
+      "texture_zh": "三張大牌 (無 A)",
       "strategies": {
         "AA": {
           "bet_33": 30,
@@ -3770,8 +3770,8 @@
         "8d",
         "7c"
       ],
-      "texture": "connected_middle",
-      "texture_zh": "中連接牌面",
+      "texture": "Low_conn",
+      "texture_zh": "低牌連接",
       "strategies": {
         "AA": {
           "bet_33": 30,
@@ -3845,8 +3845,8 @@
         "9d",
         "8c"
       ],
-      "texture": "connected_middle",
-      "texture_zh": "中連接牌面",
+      "texture": "JT_conn",
+      "texture_zh": "J/T 高 + 連接",
       "strategies": {
         "AA": {
           "bet_33": 30,
@@ -3920,8 +3920,8 @@
         "7d",
         "6c"
       ],
-      "texture": "connected_middle",
-      "texture_zh": "中連接牌面",
+      "texture": "Low_conn",
+      "texture_zh": "低牌連接",
       "strategies": {
         "AA": {
           "bet_33": 30,
@@ -3995,8 +3995,8 @@
         "8s",
         "7d"
       ],
-      "texture": "connected_middle",
-      "texture_zh": "中連接牌面",
+      "texture": "Low_conn",
+      "texture_zh": "低牌連接",
       "strategies": {
         "AA": {
           "bet_33": 30,
@@ -4070,8 +4070,8 @@
         "9s",
         "8d"
       ],
-      "texture": "connected_middle",
-      "texture_zh": "中連接牌面",
+      "texture": "JT_conn",
+      "texture_zh": "J/T 高 + 連接",
       "strategies": {
         "AA": {
           "bet_33": 30,
@@ -4145,8 +4145,8 @@
         "5d",
         "4c"
       ],
-      "texture": "connected_low",
-      "texture_zh": "低連接牌面",
+      "texture": "Low_conn",
+      "texture_zh": "低牌連接",
       "strategies": {
         "AA": {
           "bet_33": 30,
@@ -4220,8 +4220,8 @@
         "6d",
         "5c"
       ],
-      "texture": "connected_low",
-      "texture_zh": "低連接牌面",
+      "texture": "Low_conn",
+      "texture_zh": "低牌連接",
       "strategies": {
         "AA": {
           "bet_33": 30,
@@ -4295,8 +4295,8 @@
         "4d",
         "3c"
       ],
-      "texture": "connected_low",
-      "texture_zh": "低連接牌面",
+      "texture": "Low_conn",
+      "texture_zh": "低牌連接",
       "strategies": {
         "AA": {
           "bet_33": 30,
@@ -4370,8 +4370,8 @@
         "5s",
         "4d"
       ],
-      "texture": "connected_low",
-      "texture_zh": "低連接牌面",
+      "texture": "Low_conn",
+      "texture_zh": "低牌連接",
       "strategies": {
         "AA": {
           "bet_33": 30,
@@ -4445,8 +4445,8 @@
         "6s",
         "5d"
       ],
-      "texture": "connected_low",
-      "texture_zh": "低連接牌面",
+      "texture": "Low_conn",
+      "texture_zh": "低牌連接",
       "strategies": {
         "AA": {
           "bet_33": 30,

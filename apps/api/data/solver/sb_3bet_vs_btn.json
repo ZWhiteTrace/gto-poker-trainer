@@ -16,19 +16,68 @@
       "position": "SB",
       "villain": "BTN",
       "pot_type": "3bet",
-      "board": ["Ah", "Ks", "5d"],
-      "texture": "dry_ace_high",
-      "texture_zh": "乾燥 A 高牌面",
+      "board": [
+        "Ah",
+        "Ks",
+        "5d"
+      ],
+      "texture": "ABx",
+      "texture_zh": "A + 一張大牌 + 低牌",
       "strategies": {
-        "AA": {"bet_33": 40, "bet_75": 35, "check": 25, "note": "OOP 堅果牌取值"},
-        "KK": {"bet_33": 35, "bet_75": 25, "check": 40, "note": "OOP 需保護"},
-        "QQ": {"bet_33": 30, "bet_75": 20, "check": 50, "note": "underpair OOP 更多 check"},
-        "JJ": {"bet_33": 25, "bet_75": 15, "check": 60, "note": "OOP underpair 保守"},
-        "AKs": {"bet_33": 45, "bet_75": 25, "check": 30, "note": "頂兩對/頂對強 kicker"},
-        "AKo": {"bet_33": 40, "bet_75": 20, "check": 40, "note": "頂對強 kicker"},
-        "AQs": {"bet_33": 35, "bet_75": 15, "check": 50, "note": "第二強頂對 OOP"},
-        "KQs": {"bet_33": 30, "bet_75": 10, "check": 60, "note": "第二對"},
-        "JTs": {"bet_33": 15, "bet_75": 10, "check": 75, "note": "聽牌 OOP check"}
+        "AA": {
+          "bet_33": 40,
+          "bet_75": 35,
+          "check": 25,
+          "note": "OOP 堅果牌取值"
+        },
+        "KK": {
+          "bet_33": 35,
+          "bet_75": 25,
+          "check": 40,
+          "note": "OOP 需保護"
+        },
+        "QQ": {
+          "bet_33": 30,
+          "bet_75": 20,
+          "check": 50,
+          "note": "underpair OOP 更多 check"
+        },
+        "JJ": {
+          "bet_33": 25,
+          "bet_75": 15,
+          "check": 60,
+          "note": "OOP underpair 保守"
+        },
+        "AKs": {
+          "bet_33": 45,
+          "bet_75": 25,
+          "check": 30,
+          "note": "頂兩對/頂對強 kicker"
+        },
+        "AKo": {
+          "bet_33": 40,
+          "bet_75": 20,
+          "check": 40,
+          "note": "頂對強 kicker"
+        },
+        "AQs": {
+          "bet_33": 35,
+          "bet_75": 15,
+          "check": 50,
+          "note": "第二強頂對 OOP"
+        },
+        "KQs": {
+          "bet_33": 30,
+          "bet_75": 10,
+          "check": 60,
+          "note": "第二對"
+        },
+        "JTs": {
+          "bet_33": 15,
+          "bet_75": 10,
+          "check": 75,
+          "note": "聽牌 OOP check"
+        }
       }
     },
     {
@@ -36,19 +85,68 @@
       "position": "SB",
       "villain": "BTN",
       "pot_type": "3bet",
-      "board": ["Ah", "7s", "2d"],
-      "texture": "dry_ace_high",
-      "texture_zh": "乾燥 A 高牌面",
+      "board": [
+        "Ah",
+        "7s",
+        "2d"
+      ],
+      "texture": "Axx",
+      "texture_zh": "A + 兩張低牌",
       "strategies": {
-        "AA": {"bet_33": 35, "bet_75": 40, "check": 25, "note": "Set 取大值"},
-        "KK": {"bet_33": 30, "bet_75": 20, "check": 50, "note": "Ace 在 board OOP check 多"},
-        "QQ": {"bet_33": 25, "bet_75": 15, "check": 60, "note": "Ace 威脅"},
-        "AKs": {"bet_33": 45, "bet_75": 30, "check": 25, "note": "TPTK 取值"},
-        "AKo": {"bet_33": 40, "bet_75": 25, "check": 35, "note": "TPTK"},
-        "AQs": {"bet_33": 40, "bet_75": 20, "check": 40, "note": "頂對強 kicker"},
-        "AJs": {"bet_33": 35, "bet_75": 15, "check": 50, "note": "頂對中等 kicker"},
-        "77": {"bet_33": 25, "bet_75": 35, "check": 40, "note": "中 set 混合策略"},
-        "22": {"bet_33": 20, "bet_75": 40, "check": 40, "note": "底 set 取大值"}
+        "22": {
+          "bet_33": 20,
+          "bet_75": 40,
+          "check": 40,
+          "note": "底 set 取大值"
+        },
+        "77": {
+          "bet_33": 25,
+          "bet_75": 35,
+          "check": 40,
+          "note": "中 set 混合策略"
+        },
+        "AA": {
+          "bet_33": 35,
+          "bet_75": 40,
+          "check": 25,
+          "note": "Set 取大值"
+        },
+        "KK": {
+          "bet_33": 30,
+          "bet_75": 20,
+          "check": 50,
+          "note": "Ace 在 board OOP check 多"
+        },
+        "QQ": {
+          "bet_33": 25,
+          "bet_75": 15,
+          "check": 60,
+          "note": "Ace 威脅"
+        },
+        "AKs": {
+          "bet_33": 45,
+          "bet_75": 30,
+          "check": 25,
+          "note": "TPTK 取值"
+        },
+        "AKo": {
+          "bet_33": 40,
+          "bet_75": 25,
+          "check": 35,
+          "note": "TPTK"
+        },
+        "AQs": {
+          "bet_33": 40,
+          "bet_75": 20,
+          "check": 40,
+          "note": "頂對強 kicker"
+        },
+        "AJs": {
+          "bet_33": 35,
+          "bet_75": 15,
+          "check": 50,
+          "note": "頂對中等 kicker"
+        }
       }
     },
     {
@@ -56,20 +154,74 @@
       "position": "SB",
       "villain": "BTN",
       "pot_type": "3bet",
-      "board": ["Kh", "Qh", "7d"],
-      "texture": "wet_board",
-      "texture_zh": "濕潤牌面",
+      "board": [
+        "Kh",
+        "Qh",
+        "7d"
+      ],
+      "texture": "BBx",
+      "texture_zh": "兩張大牌 + 低牌",
       "strategies": {
-        "AA": {"bet_33": 45, "bet_75": 30, "check": 25, "note": "Overpair + blocker"},
-        "KK": {"bet_33": 35, "bet_75": 40, "check": 25, "note": "Set 取值"},
-        "QQ": {"bet_33": 35, "bet_75": 35, "check": 30, "note": "第二大 set"},
-        "KQs": {"bet_33": 45, "bet_75": 30, "check": 25, "note": "兩對取值"},
-        "KQo": {"bet_33": 40, "bet_75": 25, "check": 35, "note": "兩對"},
-        "AKs": {"bet_33": 50, "bet_75": 25, "check": 25, "note": "TPTK 濕潤牌面"},
-        "AKo": {"bet_33": 45, "bet_75": 20, "check": 35, "note": "TPTK"},
-        "AQs": {"bet_33": 45, "bet_75": 20, "check": 35, "note": "第二對強 kicker"},
-        "JTs": {"bet_33": 35, "bet_75": 15, "check": 50, "note": "順子聽牌 + bdfd"},
-        "AhJh": {"bet_33": 35, "bet_75": 25, "check": 40, "note": "堅果同花聽牌"}
+        "AA": {
+          "bet_33": 45,
+          "bet_75": 30,
+          "check": 25,
+          "note": "Overpair + blocker"
+        },
+        "KK": {
+          "bet_33": 35,
+          "bet_75": 40,
+          "check": 25,
+          "note": "Set 取值"
+        },
+        "QQ": {
+          "bet_33": 35,
+          "bet_75": 35,
+          "check": 30,
+          "note": "第二大 set"
+        },
+        "KQs": {
+          "bet_33": 45,
+          "bet_75": 30,
+          "check": 25,
+          "note": "兩對取值"
+        },
+        "KQo": {
+          "bet_33": 40,
+          "bet_75": 25,
+          "check": 35,
+          "note": "兩對"
+        },
+        "AKs": {
+          "bet_33": 50,
+          "bet_75": 25,
+          "check": 25,
+          "note": "TPTK 濕潤牌面"
+        },
+        "AKo": {
+          "bet_33": 45,
+          "bet_75": 20,
+          "check": 35,
+          "note": "TPTK"
+        },
+        "AQs": {
+          "bet_33": 45,
+          "bet_75": 20,
+          "check": 35,
+          "note": "第二對強 kicker"
+        },
+        "JTs": {
+          "bet_33": 35,
+          "bet_75": 15,
+          "check": 50,
+          "note": "順子聽牌 + bdfd"
+        },
+        "AhJh": {
+          "bet_33": 35,
+          "bet_75": 25,
+          "check": 40,
+          "note": "堅果同花聽牌"
+        }
       }
     },
     {
@@ -77,19 +229,68 @@
       "position": "SB",
       "villain": "BTN",
       "pot_type": "3bet",
-      "board": ["Th", "9s", "8d"],
-      "texture": "connected_high",
-      "texture_zh": "高連接牌面",
+      "board": [
+        "Th",
+        "9s",
+        "8d"
+      ],
+      "texture": "JT_conn",
+      "texture_zh": "J/T 高 + 連接",
       "strategies": {
-        "AA": {"bet_33": 30, "bet_75": 25, "check": 45, "note": "Overpair 但連接威脅"},
-        "KK": {"bet_33": 25, "bet_75": 20, "check": 55, "note": "Overpair 危險牌面"},
-        "QQ": {"bet_33": 25, "bet_75": 15, "check": 60, "note": "順子威脅大"},
-        "JJ": {"bet_33": 35, "bet_75": 25, "check": 40, "note": "OESD + overpair"},
-        "TT": {"bet_33": 30, "bet_75": 35, "check": 35, "note": "Set"},
-        "99": {"bet_33": 30, "bet_75": 35, "check": 35, "note": "中 set"},
-        "88": {"bet_33": 25, "bet_75": 35, "check": 40, "note": "底 set"},
-        "QJs": {"bet_33": 40, "bet_75": 20, "check": 40, "note": "OESD + overcards"},
-        "JTs": {"bet_33": 35, "bet_75": 40, "check": 25, "note": "順子！"}
+        "88": {
+          "bet_33": 25,
+          "bet_75": 35,
+          "check": 40,
+          "note": "底 set"
+        },
+        "99": {
+          "bet_33": 30,
+          "bet_75": 35,
+          "check": 35,
+          "note": "中 set"
+        },
+        "AA": {
+          "bet_33": 30,
+          "bet_75": 25,
+          "check": 45,
+          "note": "Overpair 但連接威脅"
+        },
+        "KK": {
+          "bet_33": 25,
+          "bet_75": 20,
+          "check": 55,
+          "note": "Overpair 危險牌面"
+        },
+        "QQ": {
+          "bet_33": 25,
+          "bet_75": 15,
+          "check": 60,
+          "note": "順子威脅大"
+        },
+        "JJ": {
+          "bet_33": 35,
+          "bet_75": 25,
+          "check": 40,
+          "note": "OESD + overpair"
+        },
+        "TT": {
+          "bet_33": 30,
+          "bet_75": 35,
+          "check": 35,
+          "note": "Set"
+        },
+        "QJs": {
+          "bet_33": 40,
+          "bet_75": 20,
+          "check": 40,
+          "note": "OESD + overcards"
+        },
+        "JTs": {
+          "bet_33": 35,
+          "bet_75": 40,
+          "check": 25,
+          "note": "順子！"
+        }
       }
     },
     {
@@ -97,19 +298,68 @@
       "position": "SB",
       "villain": "BTN",
       "pot_type": "3bet",
-      "board": ["Qh", "Jh", "Td"],
-      "texture": "broadway_heavy",
-      "texture_zh": "高牌連接",
+      "board": [
+        "Qh",
+        "Jh",
+        "Td"
+      ],
+      "texture": "BBB",
+      "texture_zh": "三張大牌 (無 A)",
       "strategies": {
-        "AA": {"bet_33": 30, "bet_75": 20, "check": 50, "note": "Overpair 但順子完成"},
-        "KK": {"bet_33": 25, "bet_75": 15, "check": 60, "note": "順子已完成"},
-        "QQ": {"bet_33": 30, "bet_75": 35, "check": 35, "note": "頂 set"},
-        "JJ": {"bet_33": 30, "bet_75": 35, "check": 35, "note": "中 set"},
-        "TT": {"bet_33": 25, "bet_75": 35, "check": 40, "note": "底 set"},
-        "AKs": {"bet_33": 45, "bet_75": 30, "check": 25, "note": "堅果順子！"},
-        "AKo": {"bet_33": 40, "bet_75": 30, "check": 30, "note": "堅果順子"},
-        "K9s": {"bet_33": 35, "bet_75": 25, "check": 40, "note": "第二順子"},
-        "AQs": {"bet_33": 40, "bet_75": 15, "check": 45, "note": "頂對 + 順子聽牌"}
+        "AA": {
+          "bet_33": 30,
+          "bet_75": 20,
+          "check": 50,
+          "note": "Overpair 但順子完成"
+        },
+        "KK": {
+          "bet_33": 25,
+          "bet_75": 15,
+          "check": 60,
+          "note": "順子已完成"
+        },
+        "QQ": {
+          "bet_33": 30,
+          "bet_75": 35,
+          "check": 35,
+          "note": "頂 set"
+        },
+        "JJ": {
+          "bet_33": 30,
+          "bet_75": 35,
+          "check": 35,
+          "note": "中 set"
+        },
+        "TT": {
+          "bet_33": 25,
+          "bet_75": 35,
+          "check": 40,
+          "note": "底 set"
+        },
+        "AKs": {
+          "bet_33": 45,
+          "bet_75": 30,
+          "check": 25,
+          "note": "堅果順子！"
+        },
+        "AKo": {
+          "bet_33": 40,
+          "bet_75": 30,
+          "check": 30,
+          "note": "堅果順子"
+        },
+        "K9s": {
+          "bet_33": 35,
+          "bet_75": 25,
+          "check": 40,
+          "note": "第二順子"
+        },
+        "AQs": {
+          "bet_33": 40,
+          "bet_75": 15,
+          "check": 45,
+          "note": "頂對 + 順子聽牌"
+        }
       }
     },
     {
@@ -117,17 +367,56 @@
       "position": "SB",
       "villain": "BTN",
       "pot_type": "3bet",
-      "board": ["8h", "8s", "2d"],
-      "texture": "paired_board",
+      "board": [
+        "8h",
+        "8s",
+        "2d"
+      ],
+      "texture": "Paired",
       "texture_zh": "配對牌面",
       "strategies": {
-        "AA": {"bet_33": 45, "bet_75": 30, "check": 25, "note": "Overpair 配對牌面取值"},
-        "KK": {"bet_33": 40, "bet_75": 25, "check": 35, "note": "強 overpair"},
-        "QQ": {"bet_33": 35, "bet_75": 20, "check": 45, "note": "中等 overpair"},
-        "88": {"bet_33": 25, "bet_75": 45, "check": 30, "note": "四條！慢打混合"},
-        "AKs": {"bet_33": 35, "bet_75": 15, "check": 50, "note": "高牌 check 多"},
-        "AKo": {"bet_33": 30, "bet_75": 10, "check": 60, "note": "高牌"},
-        "22": {"bet_33": 20, "bet_75": 40, "check": 40, "note": "葫蘆！"}
+        "22": {
+          "bet_33": 20,
+          "bet_75": 40,
+          "check": 40,
+          "note": "葫蘆！"
+        },
+        "88": {
+          "bet_33": 25,
+          "bet_75": 45,
+          "check": 30,
+          "note": "四條！慢打混合"
+        },
+        "AA": {
+          "bet_33": 45,
+          "bet_75": 30,
+          "check": 25,
+          "note": "Overpair 配對牌面取值"
+        },
+        "KK": {
+          "bet_33": 40,
+          "bet_75": 25,
+          "check": 35,
+          "note": "強 overpair"
+        },
+        "QQ": {
+          "bet_33": 35,
+          "bet_75": 20,
+          "check": 45,
+          "note": "中等 overpair"
+        },
+        "AKs": {
+          "bet_33": 35,
+          "bet_75": 15,
+          "check": 50,
+          "note": "高牌 check 多"
+        },
+        "AKo": {
+          "bet_33": 30,
+          "bet_75": 10,
+          "check": 60,
+          "note": "高牌"
+        }
       }
     },
     {
@@ -135,20 +424,74 @@
       "position": "SB",
       "villain": "BTN",
       "pot_type": "3bet",
-      "board": ["7h", "6s", "5c"],
-      "texture": "low_connected",
-      "texture_zh": "低連接牌面",
+      "board": [
+        "7h",
+        "6s",
+        "5c"
+      ],
+      "texture": "Low_conn",
+      "texture_zh": "低牌連接",
       "strategies": {
-        "AA": {"bet_33": 35, "bet_75": 25, "check": 40, "note": "Overpair 低連接牌面"},
-        "KK": {"bet_33": 30, "bet_75": 20, "check": 50, "note": "順子威脅"},
-        "QQ": {"bet_33": 30, "bet_75": 15, "check": 55, "note": "順子威脅大"},
-        "JJ": {"bet_33": 25, "bet_75": 15, "check": 60, "note": "underpair"},
-        "77": {"bet_33": 30, "bet_75": 35, "check": 35, "note": "頂 set"},
-        "66": {"bet_33": 30, "bet_75": 35, "check": 35, "note": "中 set"},
-        "55": {"bet_33": 25, "bet_75": 35, "check": 40, "note": "底 set"},
-        "98s": {"bet_33": 40, "bet_75": 25, "check": 35, "note": "OESD"},
-        "89s": {"bet_33": 35, "bet_75": 30, "check": 35, "note": "堅果順子！"},
-        "43s": {"bet_33": 30, "bet_75": 25, "check": 45, "note": "小順子"}
+        "55": {
+          "bet_33": 25,
+          "bet_75": 35,
+          "check": 40,
+          "note": "底 set"
+        },
+        "66": {
+          "bet_33": 30,
+          "bet_75": 35,
+          "check": 35,
+          "note": "中 set"
+        },
+        "77": {
+          "bet_33": 30,
+          "bet_75": 35,
+          "check": 35,
+          "note": "頂 set"
+        },
+        "AA": {
+          "bet_33": 35,
+          "bet_75": 25,
+          "check": 40,
+          "note": "Overpair 低連接牌面"
+        },
+        "KK": {
+          "bet_33": 30,
+          "bet_75": 20,
+          "check": 50,
+          "note": "順子威脅"
+        },
+        "QQ": {
+          "bet_33": 30,
+          "bet_75": 15,
+          "check": 55,
+          "note": "順子威脅大"
+        },
+        "JJ": {
+          "bet_33": 25,
+          "bet_75": 15,
+          "check": 60,
+          "note": "underpair"
+        },
+        "98s": {
+          "bet_33": 40,
+          "bet_75": 25,
+          "check": 35,
+          "note": "OESD"
+        },
+        "89s": {
+          "bet_33": 35,
+          "bet_75": 30,
+          "check": 35,
+          "note": "堅果順子！"
+        },
+        "43s": {
+          "bet_33": 30,
+          "bet_75": 25,
+          "check": 45,
+          "note": "小順子"
+        }
       }
     },
     {
@@ -156,18 +499,62 @@
       "position": "SB",
       "villain": "BTN",
       "pot_type": "3bet",
-      "board": ["Ah", "5h", "3h"],
-      "texture": "monotone",
-      "texture_zh": "單色牌面",
+      "board": [
+        "Ah",
+        "5h",
+        "3h"
+      ],
+      "texture": "Axx",
+      "texture_zh": "A + 兩張低牌",
       "strategies": {
-        "AA": {"bet_33": 35, "bet_75": 30, "check": 35, "note": "Set 但同花威脅"},
-        "KhKx": {"bet_33": 30, "bet_75": 25, "check": 45, "note": "Overpair + 堅果同花聽牌"},
-        "AKs": {"bet_33": 40, "bet_75": 20, "check": 40, "note": "TPTK 非同花"},
-        "AhKh": {"bet_33": 50, "bet_75": 30, "check": 20, "note": "堅果同花 + TPTK"},
-        "KhQh": {"bet_33": 40, "bet_75": 25, "check": 35, "note": "第二大同花聽牌"},
-        "QhJh": {"bet_33": 35, "bet_75": 20, "check": 45, "note": "同花聽牌"},
-        "AQs": {"bet_33": 35, "bet_75": 15, "check": 50, "note": "頂對非同花"},
-        "55": {"bet_33": 25, "bet_75": 30, "check": 45, "note": "中 set 同花威脅"}
+        "55": {
+          "bet_33": 25,
+          "bet_75": 30,
+          "check": 45,
+          "note": "中 set 同花威脅"
+        },
+        "AA": {
+          "bet_33": 35,
+          "bet_75": 30,
+          "check": 35,
+          "note": "Set 但同花威脅"
+        },
+        "KhKx": {
+          "bet_33": 30,
+          "bet_75": 25,
+          "check": 45,
+          "note": "Overpair + 堅果同花聽牌"
+        },
+        "AKs": {
+          "bet_33": 40,
+          "bet_75": 20,
+          "check": 40,
+          "note": "TPTK 非同花"
+        },
+        "AhKh": {
+          "bet_33": 50,
+          "bet_75": 30,
+          "check": 20,
+          "note": "堅果同花 + TPTK"
+        },
+        "KhQh": {
+          "bet_33": 40,
+          "bet_75": 25,
+          "check": 35,
+          "note": "第二大同花聽牌"
+        },
+        "QhJh": {
+          "bet_33": 35,
+          "bet_75": 20,
+          "check": 45,
+          "note": "同花聽牌"
+        },
+        "AQs": {
+          "bet_33": 35,
+          "bet_75": 15,
+          "check": 50,
+          "note": "頂對非同花"
+        }
       }
     }
   ]
