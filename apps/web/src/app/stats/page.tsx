@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useTranslations } from "next-intl";
 import dynamic from "next/dynamic";
 import { useProgressStore } from "@/stores/progressStore";
+import { useQuizProgressStore } from "@/stores/quizProgressStore";
 import {
   Card,
   CardContent,
@@ -24,7 +25,10 @@ import {
   BarChart3,
   Clock,
   PieChart as PieChartIcon,
+  BookOpen,
+  Award,
 } from "lucide-react";
+import { Progress } from "@/components/ui/progress";
 import { WeaknessHeatmap } from "@/components/stats/WeaknessHeatmap";
 import Link from "next/link";
 import {
@@ -80,6 +84,7 @@ export default function StatsPage() {
   const t = useTranslations();
   const { stats, recentResults, lastSyncedAt, resetStats, getWeakPositions, getDailyHistory } =
     useProgressStore();
+  const { getQuizCompletionStats } = useQuizProgressStore();
 
   // Trend range state
   const [trendRange, setTrendRange] = useState<TrendRange>(7);
@@ -424,6 +429,64 @@ export default function StatsPage() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Exam Progress Section */}
+      {(() => {
+        const quizStats = getQuizCompletionStats();
+        return (
+          <Card className="mb-8">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <BookOpen className="h-5 w-5" />
+                {t("stats.examProgress") || "Exam Progress"}
+              </CardTitle>
+              <CardDescription>
+                {t("stats.examProgressDesc") || "Your question bank mastery status"}
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div className="text-center p-4 bg-muted/50 rounded-lg">
+                  <div className="text-2xl font-bold">{quizStats.total}</div>
+                  <div className="text-xs text-muted-foreground">{t("stats.totalQuestions") || "Total Questions"}</div>
+                </div>
+                <div className="text-center p-4 bg-blue-500/10 rounded-lg">
+                  <div className="text-2xl font-bold text-blue-500">{quizStats.attempted}</div>
+                  <div className="text-xs text-muted-foreground">{t("stats.attempted") || "Attempted"}</div>
+                </div>
+                <div className="text-center p-4 bg-green-500/10 rounded-lg">
+                  <div className="text-2xl font-bold text-green-500">{quizStats.mastered}</div>
+                  <div className="text-xs text-muted-foreground">{t("stats.mastered") || "Mastered"}</div>
+                </div>
+                <div className="text-center p-4 bg-amber-500/10 rounded-lg">
+                  <div className="text-2xl font-bold text-amber-500">{quizStats.needsReview}</div>
+                  <div className="text-xs text-muted-foreground">{t("stats.needsReview") || "Needs Review"}</div>
+                </div>
+              </div>
+              <div className="mt-4 space-y-2">
+                <div className="flex justify-between text-sm">
+                  <span>{t("stats.completionRate") || "Completion Rate"}</span>
+                  <span className="font-medium">{quizStats.completionRate}%</span>
+                </div>
+                <Progress value={quizStats.completionRate} className="h-2" />
+              </div>
+              <div className="mt-3 space-y-2">
+                <div className="flex justify-between text-sm">
+                  <span>{t("stats.masteryRate") || "Mastery Rate"}</span>
+                  <span className="font-medium text-green-500">{quizStats.masteryRate}%</span>
+                </div>
+                <Progress value={quizStats.masteryRate} className="h-2 [&>div]:bg-green-500" />
+              </div>
+              <Link href="/exam">
+                <Button className="w-full mt-4">
+                  <Award className="mr-2 h-4 w-4" />
+                  {t("stats.takeExam") || "Take Exam"}
+                </Button>
+              </Link>
+            </CardContent>
+          </Card>
+        );
+      })()}
 
       <div className="grid gap-6 md:grid-cols-2">
         {/* Drill Type Breakdown */}
