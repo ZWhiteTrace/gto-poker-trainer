@@ -5,7 +5,15 @@ export default function robots(): MetadataRoute.Robots {
     rules: {
       userAgent: "*",
       allow: "/",
-      disallow: ["/api/", "/auth/", "/progress", "/profile"],
+      disallow: [
+        "/api/",
+        "/auth/",
+        // User-specific pages (require login or personal data)
+        "/progress",
+        "/profile",
+        "/stats",
+        "/achievements",
+      ],
     },
     sitemap: "https://grindgto.com/sitemap.xml",
   };
