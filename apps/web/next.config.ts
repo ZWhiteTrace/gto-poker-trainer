@@ -29,7 +29,22 @@ const nextConfig: NextConfig = {
   // Experimental features for better performance
   experimental: {
     optimizeCss: true,
-    optimizePackageImports: ["lucide-react", "@radix-ui/react-icons"],
+    optimizePackageImports: [
+      "lucide-react",
+      "@radix-ui/react-icons",
+      "@radix-ui/react-dialog",
+      "@radix-ui/react-tabs",
+      "@radix-ui/react-progress",
+      "@radix-ui/react-switch",
+      "@radix-ui/react-label",
+      "@radix-ui/react-slot",
+      "framer-motion",
+      "recharts",
+      "react-markdown",
+      "remark-gfm",
+      "@supabase/supabase-js",
+      "zustand",
+    ],
   },
 
   // Enable compression
