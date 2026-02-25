@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useCallback, useEffect, useRef } from "react";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -198,6 +199,8 @@ interface SessionStats {
 }
 
 export default function SqueezeDrillPage() {
+  const t = useTranslations("drill");
+  const tCommon = useTranslations("common");
   const [currentScenario, setCurrentScenario] = useState<SqueezeScenario | null>(null);
   const [currentHand, setCurrentHand] = useState<{ hand: string; data: HandAction } | null>(null);
   const [selectedAction, setSelectedAction] = useState<Action | null>(null);
@@ -278,7 +281,7 @@ export default function SqueezeDrillPage() {
   }, [showResult, currentHand]);
 
   if (!currentScenario || !currentHand) {
-    return <div className="container py-8">Loading...</div>;
+    return <div className="container py-8">{tCommon("loading")}</div>;
   }
 
   const data = currentHand.data;
@@ -299,12 +302,12 @@ export default function SqueezeDrillPage() {
       {/* Header */}
       <div className="mb-4 sm:mb-8 flex items-center justify-between">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-bold">Squeeze 訓練</h1>
-          <p className="text-sm text-muted-foreground">練習多人底池的 3-Bet 決策</p>
+          <h1 className="text-2xl sm:text-3xl font-bold">{t("squeeze.title")}</h1>
+          <p className="text-sm text-muted-foreground">{t("squeeze.description")}</p>
         </div>
         <Button variant="outline" size="sm" onClick={resetSession} className="hidden sm:flex">
           <RotateCcw className="mr-2 h-4 w-4" />
-          重置
+          {tCommon("reset")}
         </Button>
       </div>
 
@@ -313,25 +316,25 @@ export default function SqueezeDrillPage() {
         <Card>
           <CardContent className="p-2 sm:p-3 text-center">
             <div className="text-lg sm:text-xl font-bold">{stats.total}</div>
-            <div className="text-[10px] sm:text-xs text-muted-foreground">總題數</div>
+            <div className="text-[10px] sm:text-xs text-muted-foreground">{t("squeeze.totalQuestions")}</div>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="p-2 sm:p-3 text-center">
             <div className="text-lg sm:text-xl font-bold text-green-500">{stats.correct}</div>
-            <div className="text-[10px] sm:text-xs text-muted-foreground">正確</div>
+            <div className="text-[10px] sm:text-xs text-muted-foreground">{tCommon("correct")}</div>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="p-2 sm:p-3 text-center">
             <div className="text-lg sm:text-xl font-bold">{accuracy}%</div>
-            <div className="text-[10px] sm:text-xs text-muted-foreground">準確率</div>
+            <div className="text-[10px] sm:text-xs text-muted-foreground">{tCommon("accuracy")}</div>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="p-2 sm:p-3 text-center">
             <div className="text-lg sm:text-xl font-bold text-primary">{stats.streak}</div>
-            <div className="text-[10px] sm:text-xs text-muted-foreground">連續</div>
+            <div className="text-[10px] sm:text-xs text-muted-foreground">{tCommon("streak")}</div>
           </CardContent>
         </Card>
       </div>
@@ -341,9 +344,9 @@ export default function SqueezeDrillPage() {
         <CardHeader>
           <div className="flex items-center justify-between">
             <div>
-              <CardTitle>你的決定？</CardTitle>
+              <CardTitle>{t("squeeze.yourDecision")}</CardTitle>
               <CardDescription>
-                {currentScenario.description}，你在 {currentScenario.heroPosition}
+                {t("squeeze.scenarioYouAt", { desc: currentScenario.description, position: currentScenario.heroPosition })}
               </CardDescription>
             </div>
             <Button
@@ -352,7 +355,7 @@ export default function SqueezeDrillPage() {
               onClick={() => setShowTip(!showTip)}
             >
               <Lightbulb className="h-4 w-4 mr-1" />
-              提示
+              {t("squeeze.hint")}
             </Button>
           </div>
         </CardHeader>
@@ -386,12 +389,12 @@ export default function SqueezeDrillPage() {
           {/* Tip */}
           {showTip && (
             <div className="p-3 bg-amber-500/10 border border-amber-500/20 rounded-lg text-sm">
-              <p className="font-medium text-amber-600 dark:text-amber-400 mb-1">Squeeze 考量因素：</p>
+              <p className="font-medium text-amber-600 dark:text-amber-400 mb-1">{t("squeeze.factors")}</p>
               <ul className="list-disc list-inside text-muted-foreground space-y-1">
-                <li>開牌者位置越早 → 他的範圍越強 → squeeze 需更緊</li>
-                <li>跟注者的存在 = 更多 fold equity（死錢）</li>
-                <li>你的位置：SB 比 BB 更需要拿下底池（OOP 翻後劣勢大）</li>
-                <li>有 A blocker 的牌更適合 squeeze（阻擋 AA/AK）</li>
+                <li>{t("squeeze.tip1")}</li>
+                <li>{t("squeeze.tip2")}</li>
+                <li>{t("squeeze.tip3")}</li>
+                <li>{t("squeeze.tip4")}</li>
               </ul>
             </div>
           )}
@@ -410,17 +413,17 @@ export default function SqueezeDrillPage() {
                 {isCorrect ? (
                   <>
                     <CheckCircle2 className="h-5 w-5 text-green-500" />
-                    <span className="font-semibold text-green-500">正確！</span>
+                    <span className="font-semibold text-green-500">{t("result.correct")}</span>
                   </>
                 ) : isAcceptable ? (
                   <>
                     <AlertCircle className="h-5 w-5 text-yellow-500" />
-                    <span className="font-semibold text-yellow-500">可接受</span>
+                    <span className="font-semibold text-yellow-500">{t("result.acceptable")}</span>
                   </>
                 ) : (
                   <>
                     <XCircle className="h-5 w-5 text-red-500" />
-                    <span className="font-semibold text-red-500">錯誤</span>
+                    <span className="font-semibold text-red-500">{t("result.incorrect")}</span>
                   </>
                 )}
               </div>
@@ -449,7 +452,7 @@ export default function SqueezeDrillPage() {
               </div>
 
               <p className="mt-3 text-sm text-muted-foreground">
-                GTO 最佳行動：<strong>{correctAction === "squeeze" ? "Squeeze" : correctAction === "call" ? "Call" : "Fold"}</strong>（{frequencies[correctAction]}%）
+                {t("squeeze.gtoOptimal", { action: correctAction === "squeeze" ? "Squeeze" : correctAction === "call" ? "Call" : "Fold", frequency: String(frequencies[correctAction]) })}
               </p>
             </div>
           )}
@@ -488,12 +491,12 @@ export default function SqueezeDrillPage() {
                   </Button>
                 </div>
                 <p className="text-xs text-center text-muted-foreground">
-                  快捷鍵：S = Squeeze, C = Call, F = Fold
+                  {t("squeeze.shortcuts")}
                 </p>
               </div>
             ) : (
               <Button size="lg" onClick={generateNewSpot} className="w-full h-14">
-                下一題
+                {t("squeeze.nextQuestion")}
                 <kbd className="ml-2 text-xs opacity-50">Space</kbd>
               </Button>
             )}
@@ -504,27 +507,27 @@ export default function SqueezeDrillPage() {
       {/* Reference Card */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-lg">Squeeze 策略參考</CardTitle>
+          <CardTitle className="text-lg">{t("squeeze.reference.title")}</CardTitle>
         </CardHeader>
         <CardContent className="text-sm space-y-3">
           <div>
-            <p className="font-medium">什麼是 Squeeze？</p>
+            <p className="font-medium">{t("squeeze.reference.whatIs")}</p>
             <p className="text-muted-foreground">
-              當有玩家開牌且有人跟注後，你用 3-bet 施壓，迫使雙方棄牌。這利用了「死錢」（跟注者的籌碼）增加 fold equity。
+              {t("squeeze.reference.explanation")}
             </p>
           </div>
           <div>
-            <p className="font-medium">適合 Squeeze 的手牌：</p>
+            <p className="font-medium">{t("squeeze.reference.suitableHands")}</p>
             <ul className="list-disc list-inside text-muted-foreground">
-              <li>Premium 手牌（AA-TT, AK, AQ）— 總是 squeeze</li>
-              <li>A-blocker hands（A5s-A2s）— 阻擋對手強牌組合</li>
-              <li>強同花連張（KQs, QJs, JTs）— 有後路可退</li>
+              <li>{t("squeeze.reference.hand1")}</li>
+              <li>{t("squeeze.reference.hand2")}</li>
+              <li>{t("squeeze.reference.hand3")}</li>
             </ul>
           </div>
           <div>
-            <p className="font-medium">Sizing 建議：</p>
+            <p className="font-medium">{t("squeeze.reference.sizingTitle")}</p>
             <p className="text-muted-foreground">
-              標準 Squeeze size = 開牌 × 3 + 1 × 每位跟注者。例如：CO 開 2.5BB，BTN call → Squeeze 到 10-11BB。
+              {t("squeeze.reference.sizingDesc")}
             </p>
           </div>
         </CardContent>
@@ -561,7 +564,7 @@ export default function SqueezeDrillPage() {
           </div>
         ) : (
           <Button size="lg" onClick={generateNewSpot} className="w-full h-12 font-semibold">
-            下一題 →
+            {t("squeeze.nextQuestion")} →
           </Button>
         )}
       </div>

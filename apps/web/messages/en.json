@@ -248,6 +248,389 @@
         "limp": "Limp",
         "squeeze": "Squeeze"
       }
+    },
+    "squeeze": {
+      "title": "Squeeze Training",
+      "description": "Practice 3-Bet decisions in multiway pots",
+      "totalQuestions": "Total",
+      "yourDecision": "Your Decision?",
+      "scenarioYouAt": "{desc}, you are at {position}",
+      "hint": "Hint",
+      "factors": "Squeeze Considerations:",
+      "tip1": "Earlier opener position → stronger range → tighter squeeze needed",
+      "tip2": "Caller presence = more fold equity (dead money)",
+      "tip3": "Your position: SB needs to win pot more than BB (OOP disadvantage postflop)",
+      "tip4": "Hands with A blocker are better for squeeze (blocks AA/AK)",
+      "gtoOptimal": "GTO optimal: {action} ({frequency}%)",
+      "shortcuts": "Shortcuts: S = Squeeze, C = Call, F = Fold",
+      "nextQuestion": "Next Question",
+      "reference": {
+        "title": "Squeeze Strategy Reference",
+        "whatIs": "What is Squeeze?",
+        "explanation": "When a player opens and someone calls, you 3-bet to pressure both into folding. This leverages \"dead money\" (caller's chips) to increase fold equity.",
+        "suitableHands": "Hands suitable for Squeeze:",
+        "hand1": "Premium hands (AA-TT, AK, AQ) — always squeeze",
+        "hand2": "A-blocker hands (A5s-A2s) — block opponent's strong combos",
+        "hand3": "Strong suited connectors (KQs, QJs, JTs) — have fallback equity",
+        "sizingTitle": "Sizing Advice:",
+        "sizingDesc": "Standard squeeze size = open × 3 + 1 × each caller. Example: CO opens 2.5BB, BTN calls → Squeeze to 10-11BB."
+      }
+    },
+    "flopTexture": {
+      "title": "Flop Texture Training",
+      "description": "Learn to identify flop textures and master C-bet frequency and sizing",
+      "next": "Next",
+      "confirmAnswer": "Confirm Answer",
+      "srpBadge": "Single Raised Pot",
+      "threeBpBadge": "3-Bet Pot",
+      "ipBadge": "In Position",
+      "oopBadge": "Out of Position",
+      "yourHand": "Your Hand",
+      "frequency": {
+        "veryHigh": "Very High (80%+)",
+        "mediumHigh": "Medium-High (65-79%)",
+        "medium": "Medium (50-64%)",
+        "low": "Low (35-49%)",
+        "veryLow": "Very Low (<35%)"
+      },
+      "sizing": {
+        "small": "Small (25-33%)",
+        "mixed": "Mixed (33/66%)",
+        "large": "Large (66-100%)",
+        "polarized": "Polarized (check/big bet)"
+      },
+      "classify": {
+        "cardTitle": "Texture Classification Training",
+        "cardDesc": "Identify which of 12 texture types the flop belongs to",
+        "question": "What is this flop's texture?"
+      },
+      "cbet": {
+        "cardTitle": "C-bet Strategy Training",
+        "cardDesc": "Learn C-bet frequency and sizing for different textures",
+        "question": "What frequency and sizing for C-bet?",
+        "freqLabel": "C-bet Frequency:",
+        "sizingLabel": "Bet Sizing:",
+        "allCorrect": "All Correct!",
+        "partialCorrect": "Partially Correct",
+        "needsImprovement": "Needs Improvement",
+        "explanation": "{texture} board ({position}), recommended C-bet frequency ~{freqRange}, using {sizing} sizing."
+      },
+      "quick": {
+        "cardTitle": "Quick Recognition Training",
+        "cardDesc": "Identify board features within 10 seconds",
+        "timeUp": "Time's up!",
+        "connectivity": "Board connectivity?",
+        "suitDistribution": "Suit distribution?",
+        "textureCategory": "Board texture type?",
+        "advantageTier": "PFR's range advantage tier?",
+        "connected": "Connected (gapSum≤4)",
+        "disconnected": "Disconnected",
+        "rainbow": "Rainbow",
+        "twotone": "Two-tone",
+        "monotone": "Monotone",
+        "highAdv": "High (PFR big advantage)",
+        "mediumAdv": "Medium (partial advantage)",
+        "lowAdv": "Low (opponent favorable)",
+        "specialAdv": "Special"
+      },
+      "threeLayer": {
+        "cardTitle": "Three-Layer Decision Training",
+        "cardDesc": "Post-flop decision OS: Initiative → Volatility → Purpose",
+        "frameworkTitle": "Three-Layer Decision Process",
+        "layer1": "Is range advantage still intact?",
+        "layer2": "Will the board change dramatically?",
+        "layer3": "What is the purpose of betting?",
+        "initiative": {
+          "question": "Do you have initiative?",
+          "subtext": "Does this flop still represent your preflop story?",
+          "yes": "Have initiative",
+          "partial": "Partial/Fragile",
+          "no": "No initiative",
+          "depends": "Depends on hand"
+        },
+        "volatility": {
+          "question": "Will the board change?",
+          "subtext": "Could one turn card flip the dynamic?",
+          "low": "Low (Stable)",
+          "medium": "Medium",
+          "high": "High (Will flip)",
+          "explosive": "Explosive"
+        },
+        "purpose": {
+          "question": "What is the bet purpose?",
+          "subtext": "Value / Deny equity / Bluff - pick one",
+          "deny": "Deny Equity",
+          "valueProtect": "Value + Protect",
+          "thinValue": "Thin Value",
+          "unclear": "Unclear = Check",
+          "rarelyBet": "Rarely Bet",
+          "polarized": "Polarized"
+        },
+        "s0": {
+          "initiative": "High card board represents your preflop story, clear range advantage",
+          "volatility": "Board is stable, most turns are blanks",
+          "purpose": "Small bet to deny opponent backdoor equity, collect toll",
+          "action": "High frequency small sizing (25-33%), almost entire range can bet"
+        },
+        "s1": {
+          "initiative": "Overwhelming range advantage, BB's strong hands mostly 3-bet preflop",
+          "volatility": "Straights possible, but PFR still dominates",
+          "purpose": "Large sizing for value + protection, BB can't fight back",
+          "action": "Nearly 100% c-bet, large sizing (66-100%)"
+        },
+        "s2": {
+          "initiative": "Range advantage exists but low card gives BB some connections",
+          "volatility": "Any high or connecting turn card can change dynamics",
+          "purpose": "Bet with made hands, mix sizings",
+          "action": "High frequency mixed sizing (33% range bet or selective 66%)"
+        },
+        "s3": {
+          "initiative": "Low board favors BB's calling range",
+          "volatility": "Medium volatility, overcards will affect",
+          "purpose": "Unclear betting purpose = should not bet",
+          "action": "High frequency check, only bet with overpair or backdoor high cards"
+        },
+        "s4": {
+          "initiative": "Range advantage with opponent, they have more sets and two pair",
+          "volatility": "Explosive — many turn cards complete straights or flushes",
+          "purpose": "Almost only bluffs, but risky",
+          "action": "High frequency check on flop, only bet with strong made hands or combo draws"
+        },
+        "s5": {
+          "initiative": "Usually the preflop aggressor, opponent unlikely to have trips",
+          "volatility": "Board is stable, turn almost never changes things",
+          "purpose": "Thin value + deny, bluffing cost is low",
+          "action": "Small sizing high frequency, medium hands can extract over three streets"
+        }
+      },
+      "mustCheck": {
+        "cardTitle": "Must-Check Situations Training",
+        "cardDesc": "Learn when to check instead of betting",
+        "selfCheckTitle": "One-Line Self-Check",
+        "selfCheck": "\"I'm betting now because ___, and after being called I plan ___.\"",
+        "selfCheckTip": "If you can't explain → Check = closest to GTO",
+        "question": "Should this hand check?",
+        "checkBtn": "Check",
+        "betBtn": "Can Bet",
+        "cat": {
+          "midWetAir": "Mid-connected wet board air",
+          "midWetAirDesc": "On 987/865 boards, air with no backdoors or blockers",
+          "lowBoardNoOverpair": "Low board no overpair",
+          "lowBoardNoOverpairDesc": "On 952r boards, high cards without overpair",
+          "connectedWeakMade": "Connected board weak made hand",
+          "connectedWeakMadeDesc": "On JT9 boards, small pairs should check-fold",
+          "monotoneNoFlush": "Monotone no flush",
+          "monotoneNoFlushDesc": "On monotone boards without a flush",
+          "broadwayNoBackdoor": "Broadway no backdoor",
+          "broadwayNoBackdoorDesc": "On AJT boards, weak hands without backdoor draws",
+          "villainRangeAdv": "Opponent range advantage",
+          "villainRangeAdvDesc": "When the board clearly favors opponent",
+          "oopWetBoard": "OOP wet board",
+          "oopWetBoardDesc": "Out of position on wet boards, many hands should check",
+          "protectCheckRange": "Protect check range",
+          "protectCheckRangeDesc": "Some strong hands should check to protect your check range",
+          "turnWillChange": "Turn will flip",
+          "turnWillChangeDesc": "When turn is expected to dramatically change dynamics",
+          "noClearPurpose": "No clear purpose",
+          "noClearPurposeDesc": "Can't explain why betting = shouldn't bet"
+        },
+        "sc": {
+          "0": { "handType": "AK high cards air", "reason": "On 987 boards, AK has no backdoors or blockers, should check directly" },
+          "1": { "handType": "QJ suited with backdoor", "reason": "Has backdoor flush draw, can be a bluff candidate" },
+          "2": { "handType": "AQ high cards", "reason": "On 952r board, AQ has no pair, unclear betting purpose" },
+          "3": { "handType": "TT Overpair", "reason": "TT is overpair, can bet for value" },
+          "4": { "handType": "99 mid pair", "reason": "On JT9 board, 99 is mid pair, almost always loses when called, should check" },
+          "5": { "handType": "JJ top set", "reason": "JJ is top set, strong hand can bet" },
+          "6": { "handType": "AK no flush", "reason": "On monotone board without flush, betting easily gets raised by flush hands" },
+          "7": { "handType": "AK with nut flush draw", "reason": "Has nut flush draw, can bet as semi-bluff" },
+          "8": { "handType": "AA Overpair", "reason": "OOP on dynamic board, even AA should consider checking to protect range" },
+          "9": { "handType": "AA top set", "reason": "Dry A-high board, AA is top set, can bet" },
+          "10": { "handType": "KQ two high cards", "reason": "Can't explain 'I'm betting because ___, after called I plan ___' = shouldn't bet" },
+          "11": { "handType": "KQ second pair", "reason": "On A-K-x board, KQ is second pair, can thin value bet" }
+        }
+      },
+      "checkFirst": {
+        "cardTitle": "Check First Challenge",
+        "cardDesc": "Get 10 consecutive 'should check' scenarios correct, build Check First habit",
+        "title": "Check First Challenge",
+        "desc": "Get {target} consecutive correct to pass. Wrong answer resets to zero!",
+        "hintAllCheck": "Hint: Every question here, the correct answer is Check",
+        "streakProgress": "Streak Progress",
+        "totalAttempts": "Total attempts: {count}",
+        "challengeSuccess": "Challenge Complete!",
+        "consecutiveCorrect": "Consecutively identified {count} 'should check' situations correctly",
+        "muscleMemory": "You've built Check First muscle memory!",
+        "rememberRule": "Remember: Can't explain betting reason = shouldn't bet",
+        "tryAgain": "Challenge Again",
+        "correctStreak": "Correct! Streak {count}",
+        "wrongReset": "Wrong! Streak reset",
+        "question": "Should this hand?",
+        "betBtn": "Bet"
+      },
+      "liveExploit": {
+        "cardTitle": "Live Exploit Notes",
+        "cardDesc": "GTO vs live adjustment comparison, multiway pot strategy",
+        "notesTab": "Quick Notes",
+        "quizTab": "Comprehensive Quiz",
+        "selectTexture": "Select a texture to view live exploit notes",
+        "gtoFreq": "GTO Frequency",
+        "liveAdjust": "Live Adjustment",
+        "gtoSizing": "GTO Sizing",
+        "multiwayNote": "Multiway Pot",
+        "exploitTip": "Exploit Focus",
+        "opponentLeaks": "Common Opponent Leaks",
+        "dangerSigns": "Warning Signs",
+        "gtoBasis": "GTO Basis: ",
+        "liveAdjustQ": "How should you adjust for live play?",
+        "freqAdjLabel": "Frequency Adjustment:",
+        "sizingAdjLabel": "Sizing Adjustment:",
+        "correctAns": "Correct answer: Frequency {freq}, Sizing {sizing}",
+        "needsAdjust": "Needs Adjustment",
+        "notCorrect": "Not quite right",
+        "freqAdj": {
+          "muchHigher": "Much Higher",
+          "higher": "Slightly Higher",
+          "same": "Same",
+          "lower": "Slightly Lower",
+          "muchLower": "Much Lower"
+        },
+        "sizingAdj": {
+          "muchLarger": "Much Larger",
+          "larger": "Slightly Larger",
+          "same": "Same",
+          "smaller": "Smaller"
+        },
+        "quizType": {
+          "adjustment": "Freq/Sizing Adjust",
+          "multiway": "Multiway Decision",
+          "dangerSign": "Danger Sign ID",
+          "leakExploit": "Leak Exploit"
+        },
+        "multiway": {
+          "title": "Multiway Pot (3+ players)",
+          "yourHand": "Your hand: {hand}",
+          "question": "What should you do?",
+          "check": "Check",
+          "betSmall": "Small Bet (1/3)",
+          "betLarge": "Large Bet (2/3+)",
+          "fold": "Fold"
+        },
+        "dangerSign": {
+          "opponentAction": "Opponent Action",
+          "question": "What does this mean?",
+          "weakValue": "Weak value/probe",
+          "drawing": "Drawing/weak pair",
+          "strong": "Strong hand value",
+          "nuts": "Nuts/very strong",
+          "polarized": "Polarized (nuts or bluff)"
+        },
+        "leakExploitQ": {
+          "opponentLeak": "Opponent Leak",
+          "question": "Best exploit method?",
+          "raise": "Raise",
+          "callLight": "Light Call",
+          "valueBet": "Thin Value Bet",
+          "valueOnly": "Value Only",
+          "overbetValue": "Overbet Value",
+          "crBluff": "Check-Raise Bluff",
+          "foldMarginal": "Fold Marginals",
+          "betThin": "Thinner Bets"
+        },
+        "mwSc": {
+          "0": { "hand": "A♠K♥ (Top Pair Top Kicker)", "explanation": "Strong Ax can still value bet large in multiway" },
+          "1": { "hand": "K♣Q♦ (Air)", "explanation": "Cannot bluff multiway, give up air" },
+          "2": { "hand": "A♠9♥ (Top Pair Weak Kicker)", "explanation": "Top pair can probe small, but don't bloat the pot" },
+          "3": { "hand": "K♣K♦ (Second Pair)", "explanation": "Mid pair too weak multiway, check for pot control" },
+          "4": { "hand": "Q♠Q♥ (Set)", "explanation": "Nuts can bet large to build pot multiway" },
+          "5": { "hand": "A♣K♦ (Draw)", "explanation": "Multiway draws check is the better option" },
+          "6": { "hand": "A♠A♥ (Overpair)", "explanation": "Connected low board overpair bets small for protection" },
+          "7": { "hand": "K♣Q♦ (Air)", "explanation": "Don't bluff multiway, just give up" },
+          "8": { "hand": "9♠8♥ (Straight)", "explanation": "Slow-playing nuts is pointless, bet for value directly" },
+          "9": { "hand": "A♣A♦ (Overpair)", "explanation": "Multiway wet board AA is dangerous, check for pot control" },
+          "10": { "hand": "K♠K♥ (Full House)", "explanation": "Full house bets small to induce" },
+          "11": { "hand": "A♣Q♦ (High Card)", "explanation": "Paired board multiway don't touch" }
+        },
+        "dsSc": {
+          "0": { "action": "Opponent flop check-raises your C-bet", "explanation": "Check-raise on ABB board = two pair or set, don't fight" },
+          "1": { "action": "Opponent river check-raises your triple barrel", "explanation": "River check-raise is almost always the real deal" },
+          "2": { "action": "Tight-aggressive player suddenly donk bets", "explanation": "TAG donk = Ax or stronger" },
+          "3": { "action": "Opponent suddenly increases bet size on turn", "explanation": "Sudden large bet = has a hand wants value" },
+          "4": { "action": "Fish player makes small river bet", "explanation": "Small bet = bluff myth or weak value, can raise" },
+          "5": { "action": "Opponent check-calls throughout then bets pot on river", "explanation": "This line is almost exclusively the nuts" },
+          "6": { "action": "Passive player suddenly 3-bets your turn bet", "explanation": "Passive player initiating aggression = very strong hand" },
+          "7": { "action": "Opponent checks flop, donk-bets pot on turn", "explanation": "Paired board delayed donk = usually trips" },
+          "8": { "action": "Opponent snap-calls your flop bet", "explanation": "Quick call = draw or weak pair" },
+          "9": { "action": "Opponent tanks then goes all-in", "explanation": "Tank all-in = polarized, nuts or bluff" }
+        },
+        "leSc": {
+          "0": { "leak": "Opponent uses 1/3 pot small C-bet", "explanation": "Small C-bet = weak hand probing, raise to push them out" },
+          "1": { "leak": "Opponent checks turn then bets big on river", "explanation": "This line has almost no bluffs, fold marginal hands" },
+          "2": { "leak": "Opponent never check-raises", "explanation": "Can thin value bet more, they won't check-raise you" },
+          "3": { "leak": "Opponent always checks medium hands on river", "explanation": "Their check = marginal hand, you can thin value bet" },
+          "4": { "leak": "Opponent overprotects draws, never folds", "explanation": "Against non-folders only play for value, no bluffs" },
+          "5": { "leak": "Opponent over-bluffs on paired boards", "explanation": "They bluff too much, call with wider range" },
+          "6": { "leak": "Opponent has Ax and never folds", "explanation": "They call too much, overbet value with nuts" },
+          "7": { "leak": "Opponent overfolds to check-raises", "explanation": "Check-raise bluff more with draws" }
+        }
+      },
+      "referenceTable": "Texture Reference Table",
+      "tabs": {
+        "checkFirst": "Challenge",
+        "threeLayer": "3-Layer",
+        "mustCheck": "Must Check",
+        "liveExploit": "Live",
+        "classify": "Classify",
+        "cbet": "C-bet",
+        "quick": "Quick ID"
+      }
+    },
+    "textureTraining": {
+      "title": "Board Texture Training",
+      "description": "Learn GTO C-bet strategy for 12 board textures",
+      "mastered": "Mastered",
+      "accuracy": "Accuracy: {pct}%",
+      "backToList": "← Back to List",
+      "keyPoints": "Key Points",
+      "commonMistakes": "Common Mistakes",
+      "startDrill": "Start Drill for This Texture",
+      "back": "← Back",
+      "correctCount": "{count} correct",
+      "srpQuestion": "BTN vs BB (SRP) - What should you do?",
+      "evaluating": "Evaluating...",
+      "confirmAnswer": "Confirm Answer",
+      "bestChoice": "Best choice: {action} ({frequency}%)",
+      "fullStrategy": "Full Strategy Distribution",
+      "conceptReminder": "Concept Reminder",
+      "finishDrill": "Finish Drill",
+      "nextQuestion": "Next Question",
+      "congratsPassed": "Congratulations, Passed!",
+      "keepGoing": "Keep Going!",
+      "masteredText": "You've mastered the basic concepts of this texture!",
+      "need80": "Need 80% accuracy to unlock the next stage",
+      "backToListBtn": "Back to List",
+      "continuePractice": "Continue Practice",
+      "tryAgain": "Try Again",
+      "randomDrill": "Random Drill All Textures",
+      "masteredCount": "Mastered: {mastered} / {total}",
+      "categoryNames": {
+        "dry": "Dry Board",
+        "paired": "Paired Board",
+        "wet": "Wet Board",
+        "connected": "Connected Board",
+        "broadway": "Broadway Board"
+      },
+      "difficulty": {
+        "1": "Beginner",
+        "2": "Intermediate",
+        "3": "Hard"
+      },
+      "tabs": {
+        "all": "All",
+        "dry": "Dry",
+        "paired": "Paired",
+        "wet": "Wet",
+        "connected": "Connected"
+      }
     }
   },
   "range": {

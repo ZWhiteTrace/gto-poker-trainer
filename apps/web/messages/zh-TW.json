@@ -247,6 +247,389 @@
         "limp": "Limp",
         "squeeze": "Squeeze"
       }
+    },
+    "squeeze": {
+      "title": "Squeeze 訓練",
+      "description": "練習多人底池的 3-Bet 決策",
+      "totalQuestions": "總題數",
+      "yourDecision": "你的決定？",
+      "scenarioYouAt": "{desc}，你在 {position}",
+      "hint": "提示",
+      "factors": "Squeeze 考量因素：",
+      "tip1": "開牌者位置越早 → 他的範圍越強 → squeeze 需更緊",
+      "tip2": "跟注者的存在 = 更多 fold equity（死錢）",
+      "tip3": "你的位置：SB 比 BB 更需要拿下底池（OOP 翻後劣勢大）",
+      "tip4": "有 A blocker 的牌更適合 squeeze（阻擋 AA/AK）",
+      "gtoOptimal": "GTO 最佳行動：{action}（{frequency}%）",
+      "shortcuts": "快捷鍵：S = Squeeze, C = Call, F = Fold",
+      "nextQuestion": "下一題",
+      "reference": {
+        "title": "Squeeze 策略參考",
+        "whatIs": "什麼是 Squeeze？",
+        "explanation": "當有玩家開牌且有人跟注後，你用 3-bet 施壓，迫使雙方棄牌。這利用了「死錢」（跟注者的籌碼）增加 fold equity。",
+        "suitableHands": "適合 Squeeze 的手牌：",
+        "hand1": "Premium 手牌（AA-TT, AK, AQ）— 總是 squeeze",
+        "hand2": "A-blocker hands（A5s-A2s）— 阻擋對手強牌組合",
+        "hand3": "強同花連張（KQs, QJs, JTs）— 有後路可退",
+        "sizingTitle": "Sizing 建議：",
+        "sizingDesc": "標準 Squeeze size = 開牌 × 3 + 1 × 每位跟注者。例如：CO 開 2.5BB，BTN call → Squeeze 到 10-11BB。"
+      }
+    },
+    "flopTexture": {
+      "title": "翻牌質地訓練",
+      "description": "學習辨識翻牌質地，掌握 C-bet 頻率與尺寸",
+      "next": "下一題",
+      "confirmAnswer": "確認答案",
+      "srpBadge": "單次加注底池",
+      "threeBpBadge": "3-Bet 底池",
+      "ipBadge": "有位置",
+      "oopBadge": "無位置",
+      "yourHand": "你的手牌",
+      "frequency": {
+        "veryHigh": "很高 (80%+)",
+        "mediumHigh": "中高 (65-79%)",
+        "medium": "中等 (50-64%)",
+        "low": "低 (35-49%)",
+        "veryLow": "很低 (<35%)"
+      },
+      "sizing": {
+        "small": "小 (25-33%)",
+        "mixed": "混合 (33/66%)",
+        "large": "大 (66-100%)",
+        "polarized": "極端化 (check/大注)"
+      },
+      "classify": {
+        "cardTitle": "質地分類訓練",
+        "cardDesc": "辨識翻牌屬於 12 種質地類型中的哪一種",
+        "question": "這個翻牌面的質地是？"
+      },
+      "cbet": {
+        "cardTitle": "C-bet 策略訓練",
+        "cardDesc": "學習不同質地的 C-bet 頻率與尺寸",
+        "question": "應該用什麼頻率和尺寸 C-bet？",
+        "freqLabel": "C-bet 頻率:",
+        "sizingLabel": "下注尺寸:",
+        "allCorrect": "完全正確！",
+        "partialCorrect": "部分正確",
+        "needsImprovement": "需要改進",
+        "explanation": "{texture} 牌面（{position}），建議 C-bet 頻率約 {freqRange}，使用 {sizing} 尺寸。"
+      },
+      "quick": {
+        "cardTitle": "快速辨識訓練",
+        "cardDesc": "10 秒內快速判斷牌面特徵",
+        "timeUp": "時間到！",
+        "connectivity": "這個牌面的連接性？",
+        "suitDistribution": "這個牌面的花色分佈？",
+        "textureCategory": "這個牌面的質地類型？",
+        "advantageTier": "PFR 的 Range 優勢等級？",
+        "connected": "連接 (gapSum≤4)",
+        "disconnected": "不連接",
+        "rainbow": "彩虹",
+        "twotone": "雙花",
+        "monotone": "單花",
+        "highAdv": "高 (PFR 大優勢)",
+        "mediumAdv": "中 (部分優勢)",
+        "lowAdv": "低 (對手有利)",
+        "specialAdv": "特殊"
+      },
+      "threeLayer": {
+        "cardTitle": "三層判斷訓練",
+        "cardDesc": "翻牌後即時決策 OS：主動權 → 變臉 → 目的",
+        "frameworkTitle": "三層判斷流程",
+        "layer1": "Range 優勢還在不在？",
+        "layer2": "牌面會不會「變臉」？",
+        "layer3": "下注的目的是什麼？",
+        "initiative": {
+          "question": "你有主動權嗎？",
+          "subtext": "這張翻牌，還能代表你翻前的故事嗎？",
+          "yes": "有主動權",
+          "partial": "部分/脆弱",
+          "no": "沒有主動權",
+          "depends": "看手牌"
+        },
+        "volatility": {
+          "question": "牌面會變臉嗎？",
+          "subtext": "Turn 會不會一張牌就讓局勢翻掉？",
+          "low": "低 (穩定)",
+          "medium": "中等",
+          "high": "高 (會翻天)",
+          "explosive": "爆炸快"
+        },
+        "purpose": {
+          "question": "下注目的是什麼？",
+          "subtext": "Value / Deny equity / Bluff - 選一個",
+          "deny": "Deny Equity",
+          "valueProtect": "Value + 保護",
+          "thinValue": "薄價值",
+          "unclear": "不明 = Check",
+          "rarelyBet": "很少下注",
+          "polarized": "極端化"
+        },
+        "s0": {
+          "initiative": "高牌面代表你翻前的故事，Range 優勢明顯在你",
+          "volatility": "牌面穩定，Turn 大多是空白牌",
+          "purpose": "用小注否認對手後門聽牌權益，收過路費",
+          "action": "高頻小尺寸 (25-33%)，幾乎整個 range 都可以碰"
+        },
+        "s1": {
+          "initiative": "壓倒性 range 優勢，BB 的強牌多已 3-bet",
+          "volatility": "已有順子可能，但 PFR 仍主導",
+          "purpose": "大尺寸取值 + 保護，BB 很難反擊",
+          "action": "幾乎 100% c-bet，大尺寸 (66-100%)"
+        },
+        "s2": {
+          "initiative": "Range 優勢在但低牌給 BB 一些連接",
+          "volatility": "Turn 任何高牌或連接牌都可能改變局面",
+          "purpose": "有牌才打，混合尺寸",
+          "action": "高頻混合尺寸 (33% range bet 或 66% 選擇性)"
+        },
+        "s3": {
+          "initiative": "低牌面對 BB 的 call range 更有利",
+          "volatility": "變化中低，但 overcard 會影響",
+          "purpose": "下注目的模糊 = 不該下注",
+          "action": "高頻 check，只用 Overpair 或有後門的高張下注"
+        },
+        "s4": {
+          "initiative": "Range 優勢在對手，他們有更多 set 和兩對",
+          "volatility": "Turn 爆炸快，很多牌完成順子或同花",
+          "purpose": "幾乎只有 bluff，但風險大",
+          "action": "翻牌高頻 check，只用 strong made hand 或 combo draw 才打"
+        },
+        "s5": {
+          "initiative": "通常在翻前 aggressor，對手很難有三條",
+          "volatility": "牌面穩定，Turn 幾乎不會改變",
+          "purpose": "薄 value + deny，Bluff 成本低",
+          "action": "小尺寸高頻，中等牌力可以三街慢慢榨"
+        }
+      },
+      "mustCheck": {
+        "cardTitle": "必 Check 情況訓練",
+        "cardDesc": "學習何時應該 Check 而非下注",
+        "selfCheckTitle": "一句話自檢法",
+        "selfCheck": "「我現在下注，是因為___，被跟注後我打算___。」",
+        "selfCheckTip": "如果講不出來 → Check = 最接近 GTO 的選擇",
+        "question": "這手牌應該 Check 嗎？",
+        "checkBtn": "Check",
+        "betBtn": "可以下注",
+        "cat": {
+          "midWetAir": "中張濕牌面空氣牌",
+          "midWetAirDesc": "在 987/865 這類牌面，沒後門沒 blocking 的空氣牌",
+          "lowBoardNoOverpair": "低牌面無 Overpair",
+          "lowBoardNoOverpairDesc": "952r 這類牌面，沒有 Overpair 的高張",
+          "connectedWeakMade": "連接牌面弱成牌",
+          "connectedWeakMadeDesc": "JT9 這類牌面，中小 pair 要 check-fold",
+          "monotoneNoFlush": "單花面無同花",
+          "monotoneNoFlushDesc": "單花牌面沒有同花的牌",
+          "broadwayNoBackdoor": "大牌連接無後門",
+          "broadwayNoBackdoorDesc": "AJT 這類牌面，沒後門聽牌的弱牌",
+          "villainRangeAdv": "對手 Range 優勢",
+          "villainRangeAdvDesc": "牌面明顯對對手有利時",
+          "oopWetBoard": "OOP 濕潤牌面",
+          "oopWetBoardDesc": "無位置在濕潤牌面，很多牌要 check",
+          "protectCheckRange": "保護 Check Range",
+          "protectCheckRangeDesc": "有些強牌要 check 來保護你的 check range",
+          "turnWillChange": "Turn 會翻天",
+          "turnWillChangeDesc": "預期 Turn 會大幅改變局面時",
+          "noClearPurpose": "下注目的不明",
+          "noClearPurposeDesc": "說不出為什麼下注 = 不該下注"
+        },
+        "sc": {
+          "0": { "handType": "AK 高張空氣", "reason": "987 這類牌面，AK 沒有後門沒有 blocking，應該直接 check" },
+          "1": { "handType": "QJ 同花有後門", "reason": "有後門同花聽牌，可以作為 bluff 候選" },
+          "2": { "handType": "AQ 高張", "reason": "952r 牌面，AQ 沒有 pair，下注目的不明確" },
+          "3": { "handType": "TT Overpair", "reason": "TT 是 Overpair，可以下注獲取價值" },
+          "4": { "handType": "99 中對", "reason": "JT9 牌面 99 是中對，被 call 幾乎都是輸，應該 check" },
+          "5": { "handType": "JJ 頂對", "reason": "JJ 是頂 set，強牌可以下注" },
+          "6": { "handType": "AK 無同花", "reason": "單花牌面沒有同花，下注容易被有同花的牌 raise" },
+          "7": { "handType": "AK 帶堅果同花聽牌", "reason": "有堅果同花聽牌，可以下注作為半詐唬" },
+          "8": { "handType": "AA Overpair", "reason": "OOP 在動態牌面，即使是 AA 也要考慮 check 保護 range" },
+          "9": { "handType": "AA 頂 set", "reason": "乾燥 A 高牌面，AA 是頂 set，可以下注" },
+          "10": { "handType": "KQ 兩高張", "reason": "說不出「我下注是因為___，被 call 後我打算___」= 不該下注" },
+          "11": { "handType": "KQ 第二對", "reason": "A-K-x 牌面 KQ 是第二對，可以薄價值" }
+        }
+      },
+      "checkFirst": {
+        "cardTitle": "🔥 Check First 挑戰",
+        "cardDesc": "連續答對 10 題「應該 Check」的場景，養成 Check First 習慣",
+        "title": "Check First 挑戰",
+        "desc": "連續答對 {target} 題才算過關。答錯歸零重來！",
+        "hintAllCheck": "提示：這裡的每一題，正確答案都是 Check",
+        "streakProgress": "連勝進度",
+        "totalAttempts": "總嘗試次數: {count}",
+        "challengeSuccess": "挑戰成功！",
+        "consecutiveCorrect": "連續 {count} 題全部正確辨識「應該 Check」的情況",
+        "muscleMemory": "你已經建立了「Check First」的肌肉記憶！",
+        "rememberRule": "記住：說不出下注理由 = 不該下注",
+        "tryAgain": "再挑戰一次",
+        "correctStreak": "正確！連勝 {count} 🔥",
+        "wrongReset": "錯誤！連勝歸零 💔",
+        "question": "這手牌應該？",
+        "betBtn": "下注"
+      },
+      "liveExploit": {
+        "cardTitle": "📍 線下剝削筆記",
+        "cardDesc": "GTO vs 線下調整對照，多路底池策略",
+        "notesTab": "📋 筆記速查",
+        "quizTab": "🎯 綜合測驗",
+        "selectTexture": "👆 選擇一種質地查看線下剝削筆記",
+        "gtoFreq": "GTO 頻率",
+        "liveAdjust": "線下調整",
+        "gtoSizing": "GTO 尺寸",
+        "multiwayNote": "🎯 多路底池",
+        "exploitTip": "💡 剝削重點",
+        "opponentLeaks": "對手常見漏洞",
+        "dangerSigns": "⚠️ 警告信號",
+        "gtoBasis": "GTO 基準: ",
+        "liveAdjustQ": "線下應該怎麼調整？",
+        "freqAdjLabel": "頻率調整:",
+        "sizingAdjLabel": "尺寸調整:",
+        "correctAns": "正確答案：頻率 {freq}，尺寸 {sizing}",
+        "needsAdjust": "需要調整",
+        "notCorrect": "不太對",
+        "freqAdj": {
+          "muchHigher": "大幅提高",
+          "higher": "略提高",
+          "same": "維持",
+          "lower": "略降低",
+          "muchLower": "大幅降低"
+        },
+        "sizingAdj": {
+          "muchLarger": "大幅放大",
+          "larger": "略放大",
+          "same": "維持",
+          "smaller": "縮小"
+        },
+        "quizType": {
+          "adjustment": "📊 頻率/尺寸調整",
+          "multiway": "👥 多路底池決策",
+          "dangerSign": "⚠️ 危險信號識別",
+          "leakExploit": "🎯 漏洞剝削"
+        },
+        "multiway": {
+          "title": "多路底池 (3+ 人)",
+          "yourHand": "你的手牌：{hand}",
+          "question": "你應該？",
+          "check": "Check",
+          "betSmall": "小注 (1/3)",
+          "betLarge": "大注 (2/3+)",
+          "fold": "Fold"
+        },
+        "dangerSign": {
+          "opponentAction": "對手動作",
+          "question": "這代表什麼？",
+          "weakValue": "弱價值/試探",
+          "drawing": "聽牌/弱對",
+          "strong": "強牌取值",
+          "nuts": "堅果/極強",
+          "polarized": "極化 (堅果或詐唬)"
+        },
+        "leakExploitQ": {
+          "opponentLeak": "對手漏洞",
+          "question": "最佳剝削方式？",
+          "raise": "加注/Raise",
+          "callLight": "輕鬆跟注",
+          "valueBet": "薄價值下注",
+          "valueOnly": "只打價值",
+          "overbetValue": "超池取值",
+          "crBluff": "Check-Raise 詐唬",
+          "foldMarginal": "棄掉邊緣牌",
+          "betThin": "更薄下注"
+        },
+        "mwSc": {
+          "0": { "hand": "A♠K♥ (頂對頂踢)", "explanation": "強 Ax 多路仍可大注取值" },
+          "1": { "hand": "K♣Q♦ (空氣)", "explanation": "多路無法詐唬，放棄空氣" },
+          "2": { "hand": "A♠9♥ (頂對弱踢)", "explanation": "頂對可小注試探，但不要膨脹底池" },
+          "3": { "hand": "K♣K♦ (第二對)", "explanation": "多路中對太弱，check 控池" },
+          "4": { "hand": "Q♠Q♥ (暗三)", "explanation": "堅果多路可以大注建池" },
+          "5": { "hand": "A♣K♦ (聽牌)", "explanation": "多路聽牌 check 是更好選擇" },
+          "6": { "hand": "A♠A♥ (Overpair)", "explanation": "連接低牌面 overpair 小注保護" },
+          "7": { "hand": "K♣Q♦ (空氣)", "explanation": "多路不 bluff，直接放棄" },
+          "8": { "hand": "9♠8♥ (順子)", "explanation": "堅果慢打沒意義，直接取值" },
+          "9": { "hand": "A♣A♦ (Overpair)", "explanation": "多路濕牌 AA 很危險，check 控池" },
+          "10": { "hand": "K♠K♥ (葫蘆)", "explanation": "Full house 小注引誘" },
+          "11": { "hand": "A♣Q♦ (高牌)", "explanation": "配對牌面多路不碰" }
+        },
+        "dsSc": {
+          "0": { "action": "對手 Flop check-raise 你的 C-bet", "explanation": "ABB 牌面 check-raise = 兩對或 set，別硬拼" },
+          "1": { "action": "對手 River 對你的三條街 check-raise", "explanation": "River 被 check-raise 幾乎都是真貨" },
+          "2": { "action": "緊凶玩家突然 donk bet", "explanation": "緊凶 donk = Ax 或更強" },
+          "3": { "action": "對手 Turn 突然加大下注尺寸", "explanation": "突然大注 = 有牌想取值" },
+          "4": { "action": "魚玩家 River 小注", "explanation": "小注 = 詐唬迷思或弱價值，可以 raise" },
+          "5": { "action": "對手全程 check-call 後 River bet pot", "explanation": "這個 line 幾乎只有堅果" },
+          "6": { "action": "被動玩家突然 3-bet 你的 Turn bet", "explanation": "被動玩家主動出擊 = 極強牌" },
+          "7": { "action": "對手 Flop check，Turn donk pot", "explanation": "配對牌面 delayed donk = 通常是三條" },
+          "8": { "action": "對手快速 call 你的 Flop bet", "explanation": "快速 call = 聽牌或弱對子" },
+          "9": { "action": "對手長考後 all-in", "explanation": "長考 all-in = 極化，堅果或詐唬" }
+        },
+        "leSc": {
+          "0": { "leak": "對手用 1/3 pot 小注 C-bet", "explanation": "小注 C-bet = 弱牌試探，raise 把他趕走" },
+          "1": { "leak": "對手 Turn check 後 River 大注", "explanation": "這個 line 幾乎沒有詐唬，棄掉邊緣牌" },
+          "2": { "leak": "對手從不 check-raise", "explanation": "可以更薄價值下注，他不會 check-raise 你" },
+          "3": { "leak": "對手 River 總是 check 中等牌", "explanation": "他 check = 邊緣牌，你可以薄價值下注" },
+          "4": { "leak": "對手過度保護聽牌，不願棄牌", "explanation": "對不棄牌的人只打價值，不詐唬" },
+          "5": { "leak": "對手配對牌面過度 bluff", "explanation": "他詐唬太多，用更寬範圍跟注" },
+          "6": { "leak": "對手有 Ax 不棄牌", "explanation": "他們 call 太多，用堅果 overbet 取值" },
+          "7": { "leak": "對手面對 check-raise 過度棄牌", "explanation": "用更多聽牌 check-raise 詐唬" }
+        }
+      },
+      "referenceTable": "質地參考表",
+      "tabs": {
+        "checkFirst": "🔥挑戰",
+        "threeLayer": "三層判斷",
+        "mustCheck": "必Check",
+        "liveExploit": "📍線下",
+        "classify": "質地分類",
+        "cbet": "C-bet",
+        "quick": "快速辨識"
+      }
+    },
+    "textureTraining": {
+      "title": "牌面質地訓練",
+      "description": "學習 12 種牌面質地的 GTO C-bet 策略",
+      "mastered": "已掌握",
+      "accuracy": "正確率: {pct}%",
+      "backToList": "← 返回列表",
+      "keyPoints": "關鍵要點",
+      "commonMistakes": "常見錯誤",
+      "startDrill": "開始練習此質地",
+      "back": "← 返回",
+      "correctCount": "{count} 正確",
+      "srpQuestion": "BTN vs BB (SRP) - 你應該怎麼做？",
+      "evaluating": "評估中...",
+      "confirmAnswer": "確認答案",
+      "bestChoice": "最佳選擇: {action} ({frequency}%)",
+      "fullStrategy": "完整策略分布",
+      "conceptReminder": "概念提醒",
+      "finishDrill": "完成練習",
+      "nextQuestion": "下一題",
+      "congratsPassed": "恭喜通過！",
+      "keepGoing": "繼續加油！",
+      "masteredText": "你已經掌握了這個質地的基本概念！",
+      "need80": "需要達到 80% 正確率才能解鎖下一階段",
+      "backToListBtn": "返回列表",
+      "continuePractice": "繼續練習",
+      "tryAgain": "再試一次",
+      "randomDrill": "隨機練習所有質地",
+      "masteredCount": "已掌握: {mastered} / {total}",
+      "categoryNames": {
+        "dry": "乾燥牌面",
+        "paired": "對子牌面",
+        "wet": "濕潤牌面",
+        "connected": "連接牌面",
+        "broadway": "大牌牌面"
+      },
+      "difficulty": {
+        "1": "入門",
+        "2": "進階",
+        "3": "困難"
+      },
+      "tabs": {
+        "all": "全部",
+        "dry": "乾燥",
+        "paired": "對子",
+        "wet": "濕潤",
+        "connected": "連接"
+      }
     }
   },
   "range": {

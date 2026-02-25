@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useCallback } from "react";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -86,18 +87,10 @@ const CATEGORY_COLORS: Record<string, string> = {
   broadway: "bg-rose-100 text-rose-800 border-rose-200 dark:bg-rose-900 dark:text-rose-200 dark:border-rose-700",
 };
 
-const CATEGORY_NAMES: Record<string, string> = {
-  dry: "乾燥牌面",
-  paired: "對子牌面",
-  wet: "濕潤牌面",
-  connected: "連接牌面",
-  broadway: "大牌牌面",
-};
-
-const DIFFICULTY_LABELS: Record<number, { label: string; color: string }> = {
-  1: { label: "入門", color: "bg-green-500" },
-  2: { label: "進階", color: "bg-yellow-500" },
-  3: { label: "困難", color: "bg-red-500" },
+const DIFFICULTY_COLORS: Record<number, string> = {
+  1: "bg-green-500",
+  2: "bg-yellow-500",
+  3: "bg-red-500",
 };
 
 const ACTION_LABELS: Record<string, string> = {
@@ -154,6 +147,7 @@ function TextureCard({
   progress?: TextureProgress;
   onClick: () => void;
 }) {
+  const t = useTranslations("drill");
   const accuracy = progress && progress.attempts > 0
     ? Math.round((progress.correct / progress.attempts) * 100)
     : 0;
@@ -169,7 +163,7 @@ function TextureCard({
       <CardHeader className="pb-2">
         <div className="flex items-center justify-between">
           <Badge className={cn("border", CATEGORY_COLORS[texture.category])}>
-            {CATEGORY_NAMES[texture.category]}
+            {t("textureTraining.categoryNames." + texture.category)}
           </Badge>
           <div className="flex items-center gap-1">
             {[1, 2, 3].map((d) => (
@@ -178,7 +172,7 @@ function TextureCard({
                 className={cn(
                   "w-2 h-2 rounded-full",
                   d <= texture.difficulty
-                    ? DIFFICULTY_LABELS[texture.difficulty].color
+                    ? DIFFICULTY_COLORS[texture.difficulty]
                     : "bg-slate-200"
                 )}
               />
@@ -197,7 +191,7 @@ function TextureCard({
         {progress && progress.attempts > 0 && (
           <div className="space-y-1">
             <div className="flex justify-between text-xs">
-              <span>正確率: {accuracy}%</span>
+              <span>{t("textureTraining.accuracy", { pct: String(accuracy) })}</span>
               <span>{progress.correct}/{progress.attempts}</span>
             </div>
             <Progress value={accuracy} className="h-1" />
@@ -206,7 +200,7 @@ function TextureCard({
         {progress?.mastered && (
           <div className="flex items-center gap-1 text-green-600 text-sm mt-2">
             <Trophy className="w-4 h-4" />
-            <span>已掌握</span>
+            <span>{t("textureTraining.mastered")}</span>
           </div>
         )}
       </CardContent>
@@ -223,20 +217,21 @@ function TextureDetail({
   onStartDrill: () => void;
   onBack: () => void;
 }) {
+  const t = useTranslations("drill");
   return (
     <div className="space-y-6">
       <Button variant="ghost" onClick={onBack} className="mb-4">
-        ← 返回列表
+        {t("textureTraining.backToList")}
       </Button>
 
       <Card>
         <CardHeader>
           <div className="flex items-center gap-3">
             <Badge className={cn("border", CATEGORY_COLORS[texture.category])}>
-              {CATEGORY_NAMES[texture.category]}
+              {t("textureTraining.categoryNames." + texture.category)}
             </Badge>
             <Badge variant="outline">
-              {DIFFICULTY_LABELS[texture.difficulty].label}
+              {t("textureTraining.difficulty." + texture.difficulty)}
             </Badge>
           </div>
           <CardTitle className="text-2xl">{texture.texture_zh}</CardTitle>
@@ -259,7 +254,7 @@ function TextureDetail({
             <div>
               <h3 className="flex items-center gap-2 font-semibold mb-3">
                 <Lightbulb className="w-5 h-5 text-yellow-500" />
-                關鍵要點
+                {t("textureTraining.keyPoints")}
               </h3>
               <ul className="space-y-2">
                 {texture.concept.key_points.map((point, i) => (
@@ -276,7 +271,7 @@ function TextureDetail({
             <div>
               <h3 className="flex items-center gap-2 font-semibold mb-3">
                 <AlertTriangle className="w-5 h-5 text-orange-500" />
-                常見錯誤
+                {t("textureTraining.commonMistakes")}
               </h3>
               <ul className="space-y-2">
                 {texture.concept.common_mistakes.map((mistake, i) => (
@@ -291,7 +286,7 @@ function TextureDetail({
 
           <Button onClick={onStartDrill} className="w-full" size="lg">
             <Target className="w-5 h-5 mr-2" />
-            開始練習此質地
+            {t("textureTraining.startDrill")}
           </Button>
         </CardContent>
       </Card>
@@ -308,6 +303,7 @@ function DrillMode({
   onComplete: (results: { correct: number; total: number }) => void;
   onBack: () => void;
 }) {
+  const t = useTranslations("drill");
   const [question, setQuestion] = useState<DrillQuestion | null>(null);
   const [selectedAction, setSelectedAction] = useState<string | null>(null);
   const [result, setResult] = useState<EvaluationResult | null>(null);
@@ -388,7 +384,7 @@ function DrillMode({
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <Button variant="ghost" onClick={onBack}>
-          ← 返回
+          {t("textureTraining.back")}
         </Button>
         <div className="flex items-center gap-4">
           <Badge variant="outline">
@@ -403,7 +399,7 @@ function DrillMode({
                 : "bg-slate-500"
             )}
           >
-            {stats.correct}/{stats.total} 正確
+            {t("textureTraining.correctCount", { count: `${stats.correct}/${stats.total}` })}
           </Badge>
         </div>
       </div>
@@ -416,7 +412,7 @@ function DrillMode({
                 {question.texture_zh}
               </Badge>
               <Badge variant="outline">
-                {DIFFICULTY_LABELS[question.difficulty]?.label}
+                {t("textureTraining.difficulty." + question.difficulty)}
               </Badge>
             </div>
             <CardDescription className="mt-2">
@@ -437,7 +433,7 @@ function DrillMode({
             </div>
 
             <div className="text-center text-lg font-medium">
-              BTN vs BB (SRP) - 你應該怎麼做？
+              {t("textureTraining.srpQuestion")}
             </div>
 
             {!result ? (
@@ -466,7 +462,7 @@ function DrillMode({
                   disabled={!selectedAction || loading}
                   onClick={handleSubmit}
                 >
-                  {loading ? "評估中..." : "確認答案"}
+                  {loading ? t("textureTraining.evaluating") : t("textureTraining.confirmAnswer")}
                 </Button>
               </>
             ) : (
@@ -486,16 +482,16 @@ function DrillMode({
                   )}
                   <div>
                     <div className="font-semibold">
-                      {result.correct ? "正確！" : "錯誤"}
+                      {result.correct ? t("result.correct") : t("result.incorrect")}
                     </div>
                     <div className="text-sm text-muted-foreground">
-                      最佳選擇: {ACTION_LABELS[result.best_action]} ({result.best_frequency}%)
+                      {t("textureTraining.bestChoice", { action: ACTION_LABELS[result.best_action], frequency: String(result.best_frequency) })}
                     </div>
                   </div>
                 </div>
 
                 <div className="bg-slate-50 dark:bg-slate-800 rounded-lg p-4">
-                  <div className="text-sm font-medium mb-2">完整策略分布</div>
+                  <div className="text-sm font-medium mb-2">{t("textureTraining.fullStrategy")}</div>
                   <div className="space-y-2">
                     {Object.entries(result.full_strategy)
                       .sort(([, a], [, b]) => b - a)
@@ -520,12 +516,12 @@ function DrillMode({
                 )}
 
                 <div className="bg-blue-50 dark:bg-blue-950 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
-                  <div className="font-medium mb-2">概念提醒</div>
+                  <div className="font-medium mb-2">{t("textureTraining.conceptReminder")}</div>
                   <p className="text-sm">{result.concept_summary}</p>
                 </div>
 
                 <Button className="w-full" size="lg" onClick={handleNext}>
-                  {questionCount >= maxQuestions ? "完成練習" : "下一題"}
+                  {questionCount >= maxQuestions ? t("textureTraining.finishDrill") : t("textureTraining.nextQuestion")}
                   <ChevronRight className="w-5 h-5 ml-2" />
                 </Button>
               </div>
@@ -553,6 +549,7 @@ function ResultsSummary({
   onRetry: () => void;
   onBack: () => void;
 }) {
+  const t = useTranslations("drill");
   const accuracy = Math.round((results.correct / results.total) * 100);
   const passed = accuracy >= 80;
 
@@ -560,7 +557,7 @@ function ResultsSummary({
     <Card className="text-center">
       <CardHeader>
         <CardTitle className="text-2xl">
-          {passed ? "恭喜通過！" : "繼續加油！"}
+          {passed ? t("textureTraining.congratsPassed") : t("textureTraining.keepGoing")}
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-6">
@@ -579,25 +576,25 @@ function ResultsSummary({
 
         <div className="text-4xl font-bold">{accuracy}%</div>
         <div className="text-muted-foreground">
-          {results.correct} / {results.total} 正確
+          {t("textureTraining.correctCount", { count: `${results.correct} / ${results.total}` })}
         </div>
 
         {passed ? (
           <p className="text-green-600">
-            你已經掌握了這個質地的基本概念！
+            {t("textureTraining.masteredText")}
           </p>
         ) : (
           <p className="text-muted-foreground">
-            需要達到 80% 正確率才能解鎖下一階段
+            {t("textureTraining.need80")}
           </p>
         )}
 
         <div className="flex gap-3">
           <Button variant="outline" onClick={onBack} className="flex-1">
-            返回列表
+            {t("textureTraining.backToListBtn")}
           </Button>
           <Button onClick={onRetry} className="flex-1">
-            {passed ? "繼續練習" : "再試一次"}
+            {passed ? t("textureTraining.continuePractice") : t("textureTraining.tryAgain")}
           </Button>
         </div>
       </CardContent>
@@ -610,6 +607,7 @@ function ResultsSummary({
 // ============================================
 
 export default function TextureTrainingPage() {
+  const t = useTranslations("drill");
   const [textures, setTextures] = useState<TextureData[]>([]);
   const [loading, setLoading] = useState(true);
   const [view, setView] = useState<"list" | "detail" | "drill" | "results">("list");
@@ -686,7 +684,7 @@ export default function TextureTrainingPage() {
 
   const filteredTextures = activeTab === "all"
     ? textures
-    : textures.filter((t) => t.category === activeTab);
+    : textures.filter((tex) => tex.category === activeTab);
 
   const masteredCount = Object.values(progress).filter((p) => p.mastered).length;
 
@@ -705,16 +703,16 @@ export default function TextureTrainingPage() {
       {view === "list" && (
         <>
           <div className="mb-8">
-            <h1 className="text-3xl font-bold mb-2">牌面質地訓練</h1>
+            <h1 className="text-3xl font-bold mb-2">{t("textureTraining.title")}</h1>
             <p className="text-muted-foreground">
-              學習 12 種牌面質地的 GTO C-bet 策略
+              {t("textureTraining.description")}
             </p>
 
             <div className="mt-4 flex items-center gap-4">
               <div className="flex items-center gap-2">
                 <Trophy className="w-5 h-5 text-yellow-500" />
                 <span>
-                  已掌握: {masteredCount} / {textures.length}
+                  {t("textureTraining.masteredCount", { mastered: String(masteredCount), total: String(textures.length) })}
                 </span>
               </div>
               <Progress
@@ -726,11 +724,11 @@ export default function TextureTrainingPage() {
 
           <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-6">
             <TabsList>
-              <TabsTrigger value="all">全部</TabsTrigger>
-              <TabsTrigger value="dry">乾燥</TabsTrigger>
-              <TabsTrigger value="paired">對子</TabsTrigger>
-              <TabsTrigger value="wet">濕潤</TabsTrigger>
-              <TabsTrigger value="connected">連接</TabsTrigger>
+              <TabsTrigger value="all">{t("textureTraining.tabs.all")}</TabsTrigger>
+              <TabsTrigger value="dry">{t("textureTraining.tabs.dry")}</TabsTrigger>
+              <TabsTrigger value="paired">{t("textureTraining.tabs.paired")}</TabsTrigger>
+              <TabsTrigger value="wet">{t("textureTraining.tabs.wet")}</TabsTrigger>
+              <TabsTrigger value="connected">{t("textureTraining.tabs.connected")}</TabsTrigger>
             </TabsList>
           </Tabs>
 
@@ -754,7 +752,7 @@ export default function TextureTrainingPage() {
               }}
             >
               <Target className="w-5 h-5 mr-2" />
-              隨機練習所有質地
+              {t("textureTraining.randomDrill")}
             </Button>
           </div>
         </>

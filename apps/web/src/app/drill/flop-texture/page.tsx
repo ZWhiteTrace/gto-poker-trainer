@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -65,7 +66,7 @@ interface ThreeLayerScenario {
   villainRange: string;
   currentLayer: ThreeLayerType;
   correctAnswer: string;
-  explanationZh: string;
+  explanationKey: string;
   // For complete decision flow
   layerAnswers?: {
     initiative: string;
@@ -81,10 +82,10 @@ interface MustCheckScenario {
   texture: FlopTextureType;
   position: "IP" | "OOP";
   heroHand: string; // e.g., "AhKc", "7s6s"
-  heroHandType: string; // e.g., "空氣牌", "中對", "頂對弱踢"
+  heroHandTypeKey: string; // i18n key for hand type
   shouldCheck: boolean;
-  reasonZh: string;
-  category: string; // Which of the 10 must-check categories
+  reasonKey: string; // i18n key for reason
+  categoryNameKey: string; // i18n key for category name
 }
 
 // ============================================
@@ -92,18 +93,18 @@ interface MustCheckScenario {
 // ============================================
 
 const FREQUENCY_OPTIONS = [
-  { key: "very_high", label: "很高 (80%+)" },
-  { key: "medium_high", label: "中高 (65-79%)" },
-  { key: "medium", label: "中等 (50-64%)" },
-  { key: "low", label: "低 (35-49%)" },
-  { key: "very_low", label: "很低 (<35%)" },
+  { key: "very_high", labelKey: "flopTexture.frequency.veryHigh" },
+  { key: "medium_high", labelKey: "flopTexture.frequency.mediumHigh" },
+  { key: "medium", labelKey: "flopTexture.frequency.medium" },
+  { key: "low", labelKey: "flopTexture.frequency.low" },
+  { key: "very_low", labelKey: "flopTexture.frequency.veryLow" },
 ];
 
 const SIZING_OPTIONS = [
-  { key: "small", label: "小 (25-33%)" },
-  { key: "mixed", label: "混合 (33/66%)" },
-  { key: "large", label: "大 (66-100%)" },
-  { key: "polarized", label: "極端化 (check/大注)" },
+  { key: "small", labelKey: "flopTexture.sizing.small" },
+  { key: "mixed", labelKey: "flopTexture.sizing.mixed" },
+  { key: "large", labelKey: "flopTexture.sizing.large" },
+  { key: "polarized", labelKey: "flopTexture.sizing.polarized" },
 ];
 
 // ============================================
@@ -207,11 +208,11 @@ const THREE_LAYER_SCENARIOS: Array<{
   villainRange: string;
   boardExample: string;
   layers: {
-    initiative: { answer: string; explanation: string };
-    volatility: { answer: string; explanation: string };
-    purpose: { answer: string; explanation: string };
+    initiative: { answer: string; explanationKey: string };
+    volatility: { answer: string; explanationKey: string };
+    purpose: { answer: string; explanationKey: string };
   };
-  actionSummary: string;
+  actionSummaryKey: string;
 }> = [
   // ① A高乾燥（A72r / A83r）— Axx
   {
@@ -222,11 +223,11 @@ const THREE_LAYER_SCENARIOS: Array<{
     villainRange: "BB call",
     boardExample: "A72r / K83r",
     layers: {
-      initiative: { answer: "yes", explanation: "高牌面代表你翻前的故事，Range 優勢明顯在你" },
-      volatility: { answer: "low", explanation: "牌面穩定，Turn 大多是空白牌" },
-      purpose: { answer: "deny", explanation: "用小注否認對手後門聽牌權益，收過路費" },
+      initiative: { answer: "yes", explanationKey: "flopTexture.threeLayer.s0.initiative" },
+      volatility: { answer: "low", explanationKey: "flopTexture.threeLayer.s0.volatility" },
+      purpose: { answer: "deny", explanationKey: "flopTexture.threeLayer.s0.purpose" },
     },
-    actionSummary: "高頻小尺寸 (25-33%)，幾乎整個 range 都可以碰",
+    actionSummaryKey: "flopTexture.threeLayer.s0.action",
   },
   // ② A+大牌連接（AKQ / AJT）— ABB
   {
@@ -237,11 +238,11 @@ const THREE_LAYER_SCENARIOS: Array<{
     villainRange: "BB call",
     boardExample: "AKQ / KQJ",
     layers: {
-      initiative: { answer: "yes", explanation: "壓倒性 range 優勢，BB 的強牌多已 3-bet" },
-      volatility: { answer: "medium", explanation: "已有順子可能，但 PFR 仍主導" },
-      purpose: { answer: "value_protect", explanation: "大尺寸取值 + 保護，BB 很難反擊" },
+      initiative: { answer: "yes", explanationKey: "flopTexture.threeLayer.s1.initiative" },
+      volatility: { answer: "medium", explanationKey: "flopTexture.threeLayer.s1.volatility" },
+      purpose: { answer: "value_protect", explanationKey: "flopTexture.threeLayer.s1.purpose" },
     },
-    actionSummary: "幾乎 100% c-bet，大尺寸 (66-100%)",
+    actionSummaryKey: "flopTexture.threeLayer.s1.action",
   },
   // ③ 雙大牌+低牌（KQ5 / JT3）— BBx
   {
@@ -252,11 +253,11 @@ const THREE_LAYER_SCENARIOS: Array<{
     villainRange: "BB call",
     boardExample: "KQ5 / AJ3",
     layers: {
-      initiative: { answer: "partial", explanation: "Range 優勢在但低牌給 BB 一些連接" },
-      volatility: { answer: "high", explanation: "Turn 任何高牌或連接牌都可能改變局面" },
-      purpose: { answer: "value_protect", explanation: "有牌才打，混合尺寸" },
+      initiative: { answer: "partial", explanationKey: "flopTexture.threeLayer.s2.initiative" },
+      volatility: { answer: "high", explanationKey: "flopTexture.threeLayer.s2.volatility" },
+      purpose: { answer: "value_protect", explanationKey: "flopTexture.threeLayer.s2.purpose" },
     },
-    actionSummary: "高頻混合尺寸 (33% range bet 或 66% 選擇性)",
+    actionSummaryKey: "flopTexture.threeLayer.s2.action",
   },
   // ④ 低牌不連接（952r / 742r）— Low_unconn / JTx
   {
@@ -267,11 +268,11 @@ const THREE_LAYER_SCENARIOS: Array<{
     villainRange: "BB call",
     boardExample: "952r / J83r",
     layers: {
-      initiative: { answer: "no", explanation: "低牌面對 BB 的 call range 更有利" },
-      volatility: { answer: "medium", explanation: "變化中低，但 overcard 會影響" },
-      purpose: { answer: "unclear", explanation: "下注目的模糊 = 不該下注" },
+      initiative: { answer: "no", explanationKey: "flopTexture.threeLayer.s3.initiative" },
+      volatility: { answer: "medium", explanationKey: "flopTexture.threeLayer.s3.volatility" },
+      purpose: { answer: "unclear", explanationKey: "flopTexture.threeLayer.s3.purpose" },
     },
-    actionSummary: "高頻 check，只用 Overpair 或有後門的高張下注",
+    actionSummaryKey: "flopTexture.threeLayer.s3.action",
   },
   // ⑤ 連接低/中牌（987 / 865 / T87）— Low_conn / JT_conn
   {
@@ -282,11 +283,11 @@ const THREE_LAYER_SCENARIOS: Array<{
     villainRange: "BB call",
     boardExample: "987 / T87",
     layers: {
-      initiative: { answer: "no", explanation: "Range 優勢在對手，他們有更多 set 和兩對" },
-      volatility: { answer: "explosive", explanation: "Turn 爆炸快，很多牌完成順子或同花" },
-      purpose: { answer: "rarely_bet", explanation: "幾乎只有 bluff，但風險大" },
+      initiative: { answer: "no", explanationKey: "flopTexture.threeLayer.s4.initiative" },
+      volatility: { answer: "explosive", explanationKey: "flopTexture.threeLayer.s4.volatility" },
+      purpose: { answer: "rarely_bet", explanationKey: "flopTexture.threeLayer.s4.purpose" },
     },
-    actionSummary: "翻牌高頻 check，只用 strong made hand 或 combo draw 才打",
+    actionSummaryKey: "flopTexture.threeLayer.s4.action",
   },
   // ⑥ Paired 牌面（KK5 / 772）
   {
@@ -297,11 +298,11 @@ const THREE_LAYER_SCENARIOS: Array<{
     villainRange: "BB call",
     boardExample: "KK5 / 772",
     layers: {
-      initiative: { answer: "yes", explanation: "通常在翻前 aggressor，對手很難有三條" },
-      volatility: { answer: "low", explanation: "牌面穩定，Turn 幾乎不會改變" },
-      purpose: { answer: "thin_value", explanation: "薄 value + deny，Bluff 成本低" },
+      initiative: { answer: "yes", explanationKey: "flopTexture.threeLayer.s5.initiative" },
+      volatility: { answer: "low", explanationKey: "flopTexture.threeLayer.s5.volatility" },
+      purpose: { answer: "thin_value", explanationKey: "flopTexture.threeLayer.s5.purpose" },
     },
-    actionSummary: "小尺寸高頻，中等牌力可以三街慢慢榨",
+    actionSummaryKey: "flopTexture.threeLayer.s5.action",
   },
 ];
 
@@ -326,7 +327,7 @@ function generateThreeLayerScenario(): ThreeLayerScenario {
     villainRange: template.villainRange,
     currentLayer,
     correctAnswer: layerData.answer,
-    explanationZh: layerData.explanation,
+    explanationKey: layerData.explanationKey,
     layerAnswers: {
       initiative: template.layers.initiative.answer,
       volatility: template.layers.volatility.answer,
@@ -340,50 +341,50 @@ function generateThreeLayerScenario(): ThreeLayerScenario {
 // ============================================
 
 const MUST_CHECK_CATEGORIES = [
-  { id: "mid_wet_air", name: "中張濕牌面空氣牌", description: "在 987/865 這類牌面，沒後門沒 blocking 的空氣牌" },
-  { id: "low_board_no_overpair", name: "低牌面無 Overpair", description: "952r 這類牌面，沒有 Overpair 的高張" },
-  { id: "connected_weak_made", name: "連接牌面弱成牌", description: "JT9 這類牌面，中小 pair 要 check-fold" },
-  { id: "monotone_no_flush", name: "單花面無同花", description: "單花牌面沒有同花的牌" },
-  { id: "broadway_no_backdoor", name: "大牌連接無後門", description: "AJT 這類牌面，沒後門聽牌的弱牌" },
-  { id: "villain_range_advantage", name: "對手 Range 優勢", description: "牌面明顯對對手有利時" },
-  { id: "oop_wet_board", name: "OOP 濕潤牌面", description: "無位置在濕潤牌面，很多牌要 check" },
-  { id: "protect_check_range", name: "保護 Check Range", description: "有些強牌要 check 來保護你的 check range" },
-  { id: "turn_will_change", name: "Turn 會翻天", description: "預期 Turn 會大幅改變局面時" },
-  { id: "no_clear_purpose", name: "下注目的不明", description: "說不出為什麼下注 = 不該下注" },
+  { id: "mid_wet_air", nameKey: "flopTexture.mustCheck.cat.midWetAir", descKey: "flopTexture.mustCheck.cat.midWetAirDesc" },
+  { id: "low_board_no_overpair", nameKey: "flopTexture.mustCheck.cat.lowBoardNoOverpair", descKey: "flopTexture.mustCheck.cat.lowBoardNoOverpairDesc" },
+  { id: "connected_weak_made", nameKey: "flopTexture.mustCheck.cat.connectedWeakMade", descKey: "flopTexture.mustCheck.cat.connectedWeakMadeDesc" },
+  { id: "monotone_no_flush", nameKey: "flopTexture.mustCheck.cat.monotoneNoFlush", descKey: "flopTexture.mustCheck.cat.monotoneNoFlushDesc" },
+  { id: "broadway_no_backdoor", nameKey: "flopTexture.mustCheck.cat.broadwayNoBackdoor", descKey: "flopTexture.mustCheck.cat.broadwayNoBackdoorDesc" },
+  { id: "villain_range_advantage", nameKey: "flopTexture.mustCheck.cat.villainRangeAdv", descKey: "flopTexture.mustCheck.cat.villainRangeAdvDesc" },
+  { id: "oop_wet_board", nameKey: "flopTexture.mustCheck.cat.oopWetBoard", descKey: "flopTexture.mustCheck.cat.oopWetBoardDesc" },
+  { id: "protect_check_range", nameKey: "flopTexture.mustCheck.cat.protectCheckRange", descKey: "flopTexture.mustCheck.cat.protectCheckRangeDesc" },
+  { id: "turn_will_change", nameKey: "flopTexture.mustCheck.cat.turnWillChange", descKey: "flopTexture.mustCheck.cat.turnWillChangeDesc" },
+  { id: "no_clear_purpose", nameKey: "flopTexture.mustCheck.cat.noClearPurpose", descKey: "flopTexture.mustCheck.cat.noClearPurposeDesc" },
 ];
 
 const MUST_CHECK_SCENARIOS_DATA: Array<{
   textureHint: FlopTextureType[];
   position: "IP" | "OOP";
   heroHand: string;
-  heroHandType: string;
+  heroHandTypeKey: string;
   shouldCheck: boolean;
   categoryId: string;
-  reason: string;
+  reasonKey: string;
 }> = [
   // 中張濕牌面空氣牌
-  { textureHint: ["JT_conn", "Low_conn"], position: "IP", heroHand: "AhKc", heroHandType: "AK 高張空氣", shouldCheck: true, categoryId: "mid_wet_air", reason: "987 這類牌面，AK 沒有後門沒有 blocking，應該直接 check" },
-  { textureHint: ["JT_conn", "Low_conn"], position: "IP", heroHand: "QcJc", heroHandType: "QJ 同花有後門", shouldCheck: false, categoryId: "mid_wet_air", reason: "有後門同花聽牌，可以作為 bluff 候選" },
+  { textureHint: ["JT_conn", "Low_conn"], position: "IP", heroHand: "AhKc", heroHandTypeKey: "flopTexture.mustCheck.sc.0.handType", shouldCheck: true, categoryId: "mid_wet_air", reasonKey: "flopTexture.mustCheck.sc.0.reason" },
+  { textureHint: ["JT_conn", "Low_conn"], position: "IP", heroHand: "QcJc", heroHandTypeKey: "flopTexture.mustCheck.sc.1.handType", shouldCheck: false, categoryId: "mid_wet_air", reasonKey: "flopTexture.mustCheck.sc.1.reason" },
 
   // 低牌面無 Overpair
-  { textureHint: ["Low_unconn"], position: "IP", heroHand: "AhQc", heroHandType: "AQ 高張", shouldCheck: true, categoryId: "low_board_no_overpair", reason: "952r 牌面，AQ 沒有 pair，下注目的不明確" },
-  { textureHint: ["Low_unconn"], position: "IP", heroHand: "TsTc", heroHandType: "TT Overpair", shouldCheck: false, categoryId: "low_board_no_overpair", reason: "TT 是 Overpair，可以下注獲取價值" },
+  { textureHint: ["Low_unconn"], position: "IP", heroHand: "AhQc", heroHandTypeKey: "flopTexture.mustCheck.sc.2.handType", shouldCheck: true, categoryId: "low_board_no_overpair", reasonKey: "flopTexture.mustCheck.sc.2.reason" },
+  { textureHint: ["Low_unconn"], position: "IP", heroHand: "TsTc", heroHandTypeKey: "flopTexture.mustCheck.sc.3.handType", shouldCheck: false, categoryId: "low_board_no_overpair", reasonKey: "flopTexture.mustCheck.sc.3.reason" },
 
   // 連接牌面弱成牌
-  { textureHint: ["BBx", "JT_conn"], position: "IP", heroHand: "9h9c", heroHandType: "99 中對", shouldCheck: true, categoryId: "connected_weak_made", reason: "JT9 牌面 99 是中對，被 call 幾乎都是輸，應該 check" },
-  { textureHint: ["BBx", "JT_conn"], position: "IP", heroHand: "JsJc", heroHandType: "JJ 頂對", shouldCheck: false, categoryId: "connected_weak_made", reason: "JJ 是頂 set，強牌可以下注" },
+  { textureHint: ["BBx", "JT_conn"], position: "IP", heroHand: "9h9c", heroHandTypeKey: "flopTexture.mustCheck.sc.4.handType", shouldCheck: true, categoryId: "connected_weak_made", reasonKey: "flopTexture.mustCheck.sc.4.reason" },
+  { textureHint: ["BBx", "JT_conn"], position: "IP", heroHand: "JsJc", heroHandTypeKey: "flopTexture.mustCheck.sc.5.handType", shouldCheck: false, categoryId: "connected_weak_made", reasonKey: "flopTexture.mustCheck.sc.5.reason" },
 
-  // 單花面無同花（概念：全同花牌面你沒有同花時應 check）
-  { textureHint: ["ABx", "BBx"], position: "IP", heroHand: "AhKh", heroHandType: "AK 無同花", shouldCheck: true, categoryId: "monotone_no_flush", reason: "單花牌面沒有同花，下注容易被有同花的牌 raise" },
-  { textureHint: ["ABx", "BBx"], position: "IP", heroHand: "AsKs", heroHandType: "AK 帶堅果同花聽牌", shouldCheck: false, categoryId: "monotone_no_flush", reason: "有堅果同花聽牌，可以下注作為半詐唬" },
+  // 單花面無同花
+  { textureHint: ["ABx", "BBx"], position: "IP", heroHand: "AhKh", heroHandTypeKey: "flopTexture.mustCheck.sc.6.handType", shouldCheck: true, categoryId: "monotone_no_flush", reasonKey: "flopTexture.mustCheck.sc.6.reason" },
+  { textureHint: ["ABx", "BBx"], position: "IP", heroHand: "AsKs", heroHandTypeKey: "flopTexture.mustCheck.sc.7.handType", shouldCheck: false, categoryId: "monotone_no_flush", reasonKey: "flopTexture.mustCheck.sc.7.reason" },
 
   // OOP 濕潤牌面
-  { textureHint: ["JT_conn", "Low_conn"], position: "OOP", heroHand: "AhAc", heroHandType: "AA Overpair", shouldCheck: true, categoryId: "oop_wet_board", reason: "OOP 在動態牌面，即使是 AA 也要考慮 check 保護 range" },
-  { textureHint: ["Axx"], position: "OOP", heroHand: "AhAc", heroHandType: "AA 頂 set", shouldCheck: false, categoryId: "oop_wet_board", reason: "乾燥 A 高牌面，AA 是頂 set，可以下注" },
+  { textureHint: ["JT_conn", "Low_conn"], position: "OOP", heroHand: "AhAc", heroHandTypeKey: "flopTexture.mustCheck.sc.8.handType", shouldCheck: true, categoryId: "oop_wet_board", reasonKey: "flopTexture.mustCheck.sc.8.reason" },
+  { textureHint: ["Axx"], position: "OOP", heroHand: "AhAc", heroHandTypeKey: "flopTexture.mustCheck.sc.9.handType", shouldCheck: false, categoryId: "oop_wet_board", reasonKey: "flopTexture.mustCheck.sc.9.reason" },
 
   // 下注目的不明
-  { textureHint: ["Low_unconn"], position: "IP", heroHand: "KhQc", heroHandType: "KQ 兩高張", shouldCheck: true, categoryId: "no_clear_purpose", reason: "說不出「我下注是因為___，被 call 後我打算___」= 不該下注" },
-  { textureHint: ["ABx"], position: "IP", heroHand: "KhQc", heroHandType: "KQ 第二對", shouldCheck: false, categoryId: "no_clear_purpose", reason: "A-K-x 牌面 KQ 是第二對，可以薄價值" },
+  { textureHint: ["Low_unconn"], position: "IP", heroHand: "KhQc", heroHandTypeKey: "flopTexture.mustCheck.sc.10.handType", shouldCheck: true, categoryId: "no_clear_purpose", reasonKey: "flopTexture.mustCheck.sc.10.reason" },
+  { textureHint: ["ABx"], position: "IP", heroHand: "KhQc", heroHandTypeKey: "flopTexture.mustCheck.sc.11.handType", shouldCheck: false, categoryId: "no_clear_purpose", reasonKey: "flopTexture.mustCheck.sc.11.reason" },
 ];
 
 function generateMustCheckScenario(): MustCheckScenario {
@@ -399,10 +400,10 @@ function generateMustCheckScenario(): MustCheckScenario {
     texture: targetTexture,
     position: template.position,
     heroHand: template.heroHand,
-    heroHandType: template.heroHandType,
+    heroHandTypeKey: template.heroHandTypeKey,
     shouldCheck: template.shouldCheck,
-    reasonZh: template.reason,
-    category: category?.name || "",
+    reasonKey: template.reasonKey,
+    categoryNameKey: category?.nameKey || "",
   };
 }
 
@@ -422,10 +423,10 @@ function generateCheckFirstScenario(): MustCheckScenario {
     texture: targetTexture,
     position: template.position,
     heroHand: template.heroHand,
-    heroHandType: template.heroHandType,
+    heroHandTypeKey: template.heroHandTypeKey,
     shouldCheck: true, // Always true in this mode
-    reasonZh: template.reason,
-    category: category?.name || "",
+    reasonKey: template.reasonKey,
+    categoryNameKey: category?.nameKey || "",
   };
 }
 
@@ -461,6 +462,8 @@ function FlopDisplay({ flop, suits }: { flop: Rank[]; suits: Suit[] }) {
 // ============================================
 
 function ClassifyDrill() {
+  const t = useTranslations("drill");
+  const tCommon = useTranslations("common");
   const [scenario, setScenario] = useState<ClassifyScenario | null>(null);
   const [selectedAnswer, setSelectedAnswer] = useState<FlopTextureType | null>(null);
   const [showResult, setShowResult] = useState(false);
@@ -495,12 +498,12 @@ function ClassifyDrill() {
       {/* Score */}
       <div className="flex items-center justify-between">
         <div className="text-sm text-gray-400">
-          正確率: {score.total > 0 ? Math.round((score.correct / score.total) * 100) : 0}%
+          {tCommon("accuracy")}: {score.total > 0 ? Math.round((score.correct / score.total) * 100) : 0}%
           ({score.correct}/{score.total})
         </div>
         <Button variant="outline" size="sm" onClick={() => setScore({ correct: 0, total: 0 })}>
           <RotateCcw className="h-4 w-4 mr-1" />
-          重置
+          {tCommon("reset")}
         </Button>
       </div>
 
@@ -511,7 +514,7 @@ function ClassifyDrill() {
 
           {/* Question */}
           <div className="text-center text-lg font-medium">
-            這個翻牌面的質地是？
+            {t("flopTexture.classify.question")}
           </div>
 
           {/* Options - 3 cols on mobile, 4 cols on tablet+ */}
@@ -549,10 +552,10 @@ function ClassifyDrill() {
                   "text-lg font-semibold mb-2",
                   isCorrect ? "text-green-400" : "text-red-400"
                 )}>
-                  {isCorrect ? "正確！" : "錯誤"}
+                  {isCorrect ? t("result.correct") : t("result.incorrect")}
                 </div>
                 <p className="text-gray-300 text-sm mb-2">
-                  正確答案: <span className="font-semibold text-white">{correctCategory.nameZh}</span>
+                  {tCommon("correct")}: <span className="font-semibold text-white">{correctCategory.nameZh}</span>
                 </p>
                 <p className="text-gray-400 text-sm">
                   {correctCategory.descriptionZh}
@@ -575,7 +578,7 @@ function ClassifyDrill() {
           {/* Next Button */}
           {showResult && (
             <Button onClick={loadScenario} className="w-full">
-              下一題 <ArrowRight className="h-4 w-4 ml-2" />
+              {t("flopTexture.next")} <ArrowRight className="h-4 w-4 ml-2" />
             </Button>
           )}
         </div>
@@ -589,6 +592,8 @@ function ClassifyDrill() {
 // ============================================
 
 function CbetDrill() {
+  const t = useTranslations("drill");
+  const tCommon = useTranslations("common");
   const [scenario, setScenario] = useState<CbetScenario | null>(null);
   const [selectedFreq, setSelectedFreq] = useState<string | null>(null);
   const [selectedSizing, setSelectedSizing] = useState<string | null>(null);
@@ -626,12 +631,12 @@ function CbetDrill() {
       {/* Score */}
       <div className="flex items-center justify-between">
         <div className="text-sm text-gray-400">
-          正確率: {score.total > 0 ? Math.round((score.correct / score.total) * 100) : 0}%
+          {tCommon("accuracy")}: {score.total > 0 ? Math.round((score.correct / score.total) * 100) : 0}%
           ({score.correct}/{score.total})
         </div>
         <Button variant="outline" size="sm" onClick={() => setScore({ correct: 0, total: 0 })}>
           <RotateCcw className="h-4 w-4 mr-1" />
-          重置
+          {tCommon("reset")}
         </Button>
       </div>
 
@@ -641,21 +646,21 @@ function CbetDrill() {
 
           {/* Context */}
           <div className="flex items-center justify-center gap-4 text-sm">
-            <Badge variant="outline">{scenario.potType === "srp" ? "單次加注底池" : "3-Bet 底池"}</Badge>
+            <Badge variant="outline">{scenario.potType === "srp" ? t("flopTexture.srpBadge") : t("flopTexture.threeBpBadge")}</Badge>
             <Badge variant="outline" className={scenario.position === "IP" ? "bg-green-600/20 text-green-400" : "bg-orange-600/20 text-orange-400"}>
-              {scenario.position === "IP" ? "有位置" : "無位置"}
+              {scenario.position === "IP" ? t("flopTexture.ipBadge") : t("flopTexture.oopBadge")}
             </Badge>
             <Badge variant="secondary">{category.nameZh}</Badge>
           </div>
 
           {/* Question */}
           <div className="text-center text-lg font-medium">
-            應該用什麼頻率和尺寸 C-bet？
+            {t("flopTexture.cbet.question")}
           </div>
 
           {/* Frequency Selection */}
           <div className="space-y-2">
-            <p className="text-sm text-gray-400">C-bet 頻率:</p>
+            <p className="text-sm text-gray-400">{t("flopTexture.cbet.freqLabel")}</p>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
               {FREQUENCY_OPTIONS.map((opt) => (
                 <Button
@@ -669,7 +674,7 @@ function CbetDrill() {
                   onClick={() => !showResult && setSelectedFreq(opt.key)}
                   disabled={showResult}
                 >
-                  {opt.label}
+                  {t(opt.labelKey)}
                 </Button>
               ))}
             </div>
@@ -677,7 +682,7 @@ function CbetDrill() {
 
           {/* Sizing Selection */}
           <div className="space-y-2">
-            <p className="text-sm text-gray-400">下注尺寸:</p>
+            <p className="text-sm text-gray-400">{t("flopTexture.cbet.sizingLabel")}</p>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
               {SIZING_OPTIONS.map((opt) => (
                 <Button
@@ -691,7 +696,7 @@ function CbetDrill() {
                   onClick={() => !showResult && setSelectedSizing(opt.key)}
                   disabled={showResult}
                 >
-                  {opt.label}
+                  {t(opt.labelKey)}
                 </Button>
               ))}
             </div>
@@ -704,7 +709,7 @@ function CbetDrill() {
               disabled={!selectedFreq || !selectedSizing}
               className="w-full"
             >
-              確認答案
+              {t("flopTexture.confirmAnswer")}
             </Button>
           )}
 
@@ -716,18 +721,17 @@ function CbetDrill() {
                   "text-lg font-semibold mb-2",
                   isFreqCorrect && isSizingCorrect ? "text-green-400" : "text-orange-400"
                 )}>
-                  {isFreqCorrect && isSizingCorrect ? "完全正確！" : isFreqCorrect || isSizingCorrect ? "部分正確" : "需要改進"}
+                  {isFreqCorrect && isSizingCorrect ? t("flopTexture.cbet.allCorrect") : isFreqCorrect || isSizingCorrect ? t("flopTexture.cbet.partialCorrect") : t("flopTexture.cbet.needsImprovement")}
                 </div>
                 <p className="text-gray-300 text-sm">
-                  {category.nameZh} 牌面（{scenario.position}），建議 C-bet 頻率約{" "}
-                  <span className="text-cyan-400">
-                    {scenario.position === "IP"
+                  {t("flopTexture.cbet.explanation", {
+                    texture: category.nameZh,
+                    position: scenario.position,
+                    freqRange: scenario.position === "IP"
                       ? `${category.ip.cbetFreqMin}-${category.ip.cbetFreqMax}%`
-                      : `${category.oop.cbetFreqMin}-${category.oop.cbetFreqMax}%`}
-                  </span>，
-                  使用 <span className="text-yellow-400">
-                    {scenario.position === "IP" ? category.ip.sizing : category.oop.sizing}
-                  </span> 尺寸。
+                      : `${category.oop.cbetFreqMin}-${category.oop.cbetFreqMax}%`,
+                    sizing: scenario.position === "IP" ? category.ip.sizing : category.oop.sizing,
+                  })}
                 </p>
                 <p className="text-gray-400 text-sm mt-2">
                   {category.descriptionZh}
@@ -739,7 +743,7 @@ function CbetDrill() {
           {/* Next Button */}
           {showResult && (
             <Button onClick={loadScenario} className="w-full">
-              下一題 <ArrowRight className="h-4 w-4 ml-2" />
+              {t("flopTexture.next")} <ArrowRight className="h-4 w-4 ml-2" />
             </Button>
           )}
         </div>
@@ -753,6 +757,8 @@ function CbetDrill() {
 // ============================================
 
 function QuickDrill() {
+  const t = useTranslations("drill");
+  const tCommon = useTranslations("common");
   const [scenario, setScenario] = useState<QuickScenario | null>(null);
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
   const [showResult, setShowResult] = useState(false);
@@ -805,10 +811,10 @@ function QuickDrill() {
 
   const getQuestionText = () => {
     switch (scenario?.questionType) {
-      case "connectivity": return "這個牌面的連接性？";
-      case "suit_distribution": return "這個牌面的花色分佈？";
-      case "texture_category": return "這個牌面的質地類型？";
-      case "advantage_tier": return "PFR 的 Range 優勢等級？";
+      case "connectivity": return t("flopTexture.quick.connectivity");
+      case "suit_distribution": return t("flopTexture.quick.suitDistribution");
+      case "texture_category": return t("flopTexture.quick.textureCategory");
+      case "advantage_tier": return t("flopTexture.quick.advantageTier");
       default: return "";
     }
   };
@@ -817,14 +823,14 @@ function QuickDrill() {
     switch (scenario?.questionType) {
       case "connectivity":
         return [
-          { key: "connected", label: "連接 (gapSum≤4)" },
-          { key: "disconnected", label: "不連接" },
+          { key: "connected", label: t("flopTexture.quick.connected") },
+          { key: "disconnected", label: t("flopTexture.quick.disconnected") },
         ];
       case "suit_distribution":
         return [
-          { key: "rainbow", label: "彩虹" },
-          { key: "twotone", label: "雙花" },
-          { key: "monotone", label: "單花" },
+          { key: "rainbow", label: t("flopTexture.quick.rainbow") },
+          { key: "twotone", label: t("flopTexture.quick.twotone") },
+          { key: "monotone", label: t("flopTexture.quick.monotone") },
         ];
       case "texture_category": {
         const allTypes = Object.values(FLOP_TEXTURE_CATEGORIES);
@@ -832,10 +838,10 @@ function QuickDrill() {
       }
       case "advantage_tier":
         return [
-          { key: "high", label: "高 (PFR 大優勢)" },
-          { key: "medium", label: "中 (部分優勢)" },
-          { key: "low", label: "低 (對手有利)" },
-          { key: "special", label: "特殊" },
+          { key: "high", label: t("flopTexture.quick.highAdv") },
+          { key: "medium", label: t("flopTexture.quick.mediumAdv") },
+          { key: "low", label: t("flopTexture.quick.lowAdv") },
+          { key: "special", label: t("flopTexture.quick.specialAdv") },
         ];
       default:
         return [];
@@ -849,7 +855,7 @@ function QuickDrill() {
       {/* Score & Timer */}
       <div className="flex items-center justify-between">
         <div className="text-sm text-gray-400">
-          正確率: {score.total > 0 ? Math.round((score.correct / score.total) * 100) : 0}%
+          {tCommon("accuracy")}: {score.total > 0 ? Math.round((score.correct / score.total) * 100) : 0}%
           ({score.correct}/{score.total})
         </div>
         <div className="flex items-center gap-4">
@@ -862,7 +868,7 @@ function QuickDrill() {
           </div>
           <Button variant="outline" size="sm" onClick={() => setScore({ correct: 0, total: 0 })}>
             <RotateCcw className="h-4 w-4 mr-1" />
-            重置
+            {tCommon("reset")}
           </Button>
         </div>
       </div>
@@ -918,14 +924,14 @@ function QuickDrill() {
               "text-center text-lg font-semibold",
               isCorrect ? "text-green-400" : timeLeft === 0 ? "text-orange-400" : "text-red-400"
             )}>
-              {isCorrect ? "正確！" : timeLeft === 0 ? "時間到！" : "錯誤"}
+              {isCorrect ? t("result.correct") : timeLeft === 0 ? t("flopTexture.quick.timeUp") : t("result.incorrect")}
             </div>
           )}
 
           {/* Next Button */}
           {showResult && (
             <Button onClick={loadScenario} className="w-full">
-              下一題 <ArrowRight className="h-4 w-4 ml-2" />
+              {t("flopTexture.next")} <ArrowRight className="h-4 w-4 ml-2" />
             </Button>
           )}
         </div>
@@ -940,48 +946,50 @@ function QuickDrill() {
 // Three Layer Decision Drill
 // ============================================
 
-const THREE_LAYER_LABELS: Record<ThreeLayerType, { question: string; subtext: string; icon: string }> = {
+const THREE_LAYER_LABELS: Record<ThreeLayerType, { questionKey: string; subtextKey: string; icon: string }> = {
   initiative: {
-    question: "你有主動權嗎？",
-    subtext: "這張翻牌，還能代表你翻前的故事嗎？",
+    questionKey: "flopTexture.threeLayer.initiative.question",
+    subtextKey: "flopTexture.threeLayer.initiative.subtext",
     icon: "1",
   },
   volatility: {
-    question: "牌面會變臉嗎？",
-    subtext: "Turn 會不會一張牌就讓局勢翻掉？",
+    questionKey: "flopTexture.threeLayer.volatility.question",
+    subtextKey: "flopTexture.threeLayer.volatility.subtext",
     icon: "2",
   },
   purpose: {
-    question: "下注目的是什麼？",
-    subtext: "Value / Deny equity / Bluff - 選一個",
+    questionKey: "flopTexture.threeLayer.purpose.question",
+    subtextKey: "flopTexture.threeLayer.purpose.subtext",
     icon: "3",
   },
 };
 
-const THREE_LAYER_OPTIONS: Record<ThreeLayerType, Array<{ key: string; label: string; emoji: string }>> = {
+const THREE_LAYER_OPTIONS: Record<ThreeLayerType, Array<{ key: string; labelKey: string; emoji: string }>> = {
   initiative: [
-    { key: "yes", label: "有主動權", emoji: "✓" },
-    { key: "partial", label: "部分/脆弱", emoji: "~" },
-    { key: "no", label: "沒有主動權", emoji: "✗" },
-    { key: "depends", label: "看手牌", emoji: "?" },
+    { key: "yes", labelKey: "flopTexture.threeLayer.initiative.yes", emoji: "✓" },
+    { key: "partial", labelKey: "flopTexture.threeLayer.initiative.partial", emoji: "~" },
+    { key: "no", labelKey: "flopTexture.threeLayer.initiative.no", emoji: "?" },
+    { key: "depends", labelKey: "flopTexture.threeLayer.initiative.depends", emoji: "?" },
   ],
   volatility: [
-    { key: "low", label: "低 (穩定)", emoji: "🟢" },
-    { key: "medium", label: "中等", emoji: "🟡" },
-    { key: "high", label: "高 (會翻天)", emoji: "🔴" },
-    { key: "explosive", label: "爆炸快", emoji: "💥" },
+    { key: "low", labelKey: "flopTexture.threeLayer.volatility.low", emoji: "🟢" },
+    { key: "medium", labelKey: "flopTexture.threeLayer.volatility.medium", emoji: "🟡" },
+    { key: "high", labelKey: "flopTexture.threeLayer.volatility.high", emoji: "🔴" },
+    { key: "explosive", labelKey: "flopTexture.threeLayer.volatility.explosive", emoji: "💥" },
   ],
   purpose: [
-    { key: "deny", label: "Deny Equity", emoji: "🚫" },
-    { key: "value_protect", label: "Value + 保護", emoji: "💰" },
-    { key: "thin_value", label: "薄價值", emoji: "📉" },
-    { key: "unclear", label: "不明 = Check", emoji: "❌" },
-    { key: "rarely_bet", label: "很少下注", emoji: "⏸" },
-    { key: "polarized", label: "極端化", emoji: "⚡" },
+    { key: "deny", labelKey: "flopTexture.threeLayer.purpose.deny", emoji: "🚫" },
+    { key: "value_protect", labelKey: "flopTexture.threeLayer.purpose.valueProtect", emoji: "💰" },
+    { key: "thin_value", labelKey: "flopTexture.threeLayer.purpose.thinValue", emoji: "📉" },
+    { key: "unclear", labelKey: "flopTexture.threeLayer.purpose.unclear", emoji: "❌" },
+    { key: "rarely_bet", labelKey: "flopTexture.threeLayer.purpose.rarelyBet", emoji: "⏸" },
+    { key: "polarized", labelKey: "flopTexture.threeLayer.purpose.polarized", emoji: "⚡" },
   ],
 };
 
 function ThreeLayerDrill() {
+  const t = useTranslations("drill");
+  const tCommon = useTranslations("common");
   const [scenario, setScenario] = useState<ThreeLayerScenario | null>(null);
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
   const [showResult, setShowResult] = useState(false);
@@ -1018,28 +1026,28 @@ function ThreeLayerDrill() {
     <div className="space-y-6">
       {/* Header with 3-Layer Framework */}
       <div className="bg-gradient-to-r from-cyan-900/30 to-blue-900/30 rounded-lg p-4 border border-cyan-700/50">
-        <h3 className="text-sm font-semibold text-cyan-300 mb-2">三層判斷流程</h3>
+        <h3 className="text-sm font-semibold text-cyan-300 mb-2">{t("flopTexture.threeLayer.frameworkTitle")}</h3>
         <div className="space-y-1 text-xs">
           <div className={cn(
             "flex items-center gap-2",
             layerType === "initiative" ? "text-cyan-300 font-semibold" : "text-gray-400"
           )}>
             <span className="w-5 h-5 rounded-full bg-gray-700 flex items-center justify-center text-[10px]">1</span>
-            Range 優勢還在不在？
+            {t("flopTexture.threeLayer.layer1")}
           </div>
           <div className={cn(
             "flex items-center gap-2",
             layerType === "volatility" ? "text-cyan-300 font-semibold" : "text-gray-400"
           )}>
             <span className="w-5 h-5 rounded-full bg-gray-700 flex items-center justify-center text-[10px]">2</span>
-            牌面會不會「變臉」？
+            {t("flopTexture.threeLayer.layer2")}
           </div>
           <div className={cn(
             "flex items-center gap-2",
             layerType === "purpose" ? "text-cyan-300 font-semibold" : "text-gray-400"
           )}>
             <span className="w-5 h-5 rounded-full bg-gray-700 flex items-center justify-center text-[10px]">3</span>
-            下注的目的是什麼？
+            {t("flopTexture.threeLayer.layer3")}
           </div>
         </div>
       </div>
@@ -1047,12 +1055,12 @@ function ThreeLayerDrill() {
       {/* Score */}
       <div className="flex items-center justify-between">
         <div className="text-sm text-gray-400">
-          正確率: {score.total > 0 ? Math.round((score.correct / score.total) * 100) : 0}%
+          {tCommon("accuracy")}: {score.total > 0 ? Math.round((score.correct / score.total) * 100) : 0}%
           ({score.correct}/{score.total})
         </div>
         <Button variant="outline" size="sm" onClick={() => setScore({ correct: 0, total: 0 })}>
           <RotateCcw className="h-4 w-4 mr-1" />
-          重置
+          {tCommon("reset")}
         </Button>
       </div>
 
@@ -1078,8 +1086,8 @@ function ThreeLayerDrill() {
           {/* Question */}
           <div className="text-center">
             <Badge className="bg-cyan-600 mb-2">Layer {layerLabel.icon}</Badge>
-            <div className="text-lg font-medium">{layerLabel.question}</div>
-            <div className="text-sm text-gray-400 mt-1">{layerLabel.subtext}</div>
+            <div className="text-lg font-medium">{t(layerLabel.questionKey)}</div>
+            <div className="text-sm text-gray-400 mt-1">{t(layerLabel.subtextKey)}</div>
           </div>
 
           {/* Options */}
@@ -1104,7 +1112,7 @@ function ThreeLayerDrill() {
                   onClick={() => handleAnswer(opt.key)}
                   disabled={showResult}
                 >
-                  <span className="mr-1">{opt.emoji}</span> {opt.label}
+                  <span className="mr-1">{opt.emoji}</span> {t(opt.labelKey)}
                   {showResult && isCorrectAnswer && <CheckCircle2 className="h-4 w-4 ml-1" />}
                   {showResult && isSelected && !isCorrectAnswer && <XCircle className="h-4 w-4 ml-1" />}
                 </Button>
@@ -1120,10 +1128,10 @@ function ThreeLayerDrill() {
                   "text-lg font-semibold mb-2",
                   isCorrect ? "text-green-400" : "text-red-400"
                 )}>
-                  {isCorrect ? "正確！" : "錯誤"}
+                  {isCorrect ? t("result.correct") : t("result.incorrect")}
                 </div>
                 <p className="text-gray-300 text-sm">
-                  {scenario.explanationZh}
+                  {t(scenario.explanationKey)}
                 </p>
               </CardContent>
             </Card>
@@ -1132,7 +1140,7 @@ function ThreeLayerDrill() {
           {/* Next Button */}
           {showResult && (
             <Button onClick={loadScenario} className="w-full">
-              下一題 <ArrowRight className="h-4 w-4 ml-2" />
+              {t("flopTexture.next")} <ArrowRight className="h-4 w-4 ml-2" />
             </Button>
           )}
         </div>
@@ -1146,6 +1154,8 @@ function ThreeLayerDrill() {
 // ============================================
 
 function MustCheckDrill() {
+  const t = useTranslations("drill");
+  const tCommon = useTranslations("common");
   const [scenario, setScenario] = useState<MustCheckScenario | null>(null);
   const [selectedAnswer, setSelectedAnswer] = useState<boolean | null>(null);
   const [showResult, setShowResult] = useState(false);
@@ -1179,24 +1189,24 @@ function MustCheckDrill() {
     <div className="space-y-6">
       {/* Header */}
       <div className="bg-gradient-to-r from-orange-900/30 to-red-900/30 rounded-lg p-4 border border-orange-700/50">
-        <h3 className="text-sm font-semibold text-orange-300 mb-2">一句話自檢法</h3>
+        <h3 className="text-sm font-semibold text-orange-300 mb-2">{t("flopTexture.mustCheck.selfCheckTitle")}</h3>
         <p className="text-xs text-gray-400">
-          「我現在下注，是因為___，被跟注後我打算___。」
+          {t("flopTexture.mustCheck.selfCheck")}
         </p>
         <p className="text-xs text-orange-400 mt-1">
-          如果講不出來 → Check = 最接近 GTO 的選擇
+          {t("flopTexture.mustCheck.selfCheckTip")}
         </p>
       </div>
 
       {/* Score */}
       <div className="flex items-center justify-between">
         <div className="text-sm text-gray-400">
-          正確率: {score.total > 0 ? Math.round((score.correct / score.total) * 100) : 0}%
+          {tCommon("accuracy")}: {score.total > 0 ? Math.round((score.correct / score.total) * 100) : 0}%
           ({score.correct}/{score.total})
         </div>
         <Button variant="outline" size="sm" onClick={() => setScore({ correct: 0, total: 0 })}>
           <RotateCcw className="h-4 w-4 mr-1" />
-          重置
+          {tCommon("reset")}
         </Button>
       </div>
 
@@ -1214,14 +1224,14 @@ function MustCheckDrill() {
 
           {/* Hero Hand */}
           <div className="text-center">
-            <div className="text-sm text-gray-400 mb-1">你的手牌</div>
+            <div className="text-sm text-gray-400 mb-1">{t("flopTexture.yourHand")}</div>
             <div className="text-2xl font-bold text-white">{scenario.heroHand}</div>
-            <div className="text-sm text-gray-400">({scenario.heroHandType})</div>
+            <div className="text-sm text-gray-400">({t(scenario.heroHandTypeKey)})</div>
           </div>
 
           {/* Question */}
           <div className="text-center text-lg font-medium">
-            這手牌應該 Check 嗎？
+            {t("flopTexture.mustCheck.question")}
           </div>
 
           {/* Options */}
@@ -1237,7 +1247,7 @@ function MustCheckDrill() {
               onClick={() => handleAnswer(true)}
               disabled={showResult}
             >
-              ✓ Check
+              ✓ {t("flopTexture.mustCheck.checkBtn")}
             </Button>
             <Button
               variant="outline"
@@ -1250,7 +1260,7 @@ function MustCheckDrill() {
               onClick={() => handleAnswer(false)}
               disabled={showResult}
             >
-              ✗ 可以下注
+              ✗ {t("flopTexture.mustCheck.betBtn")}
             </Button>
           </div>
 
@@ -1262,11 +1272,11 @@ function MustCheckDrill() {
                   "text-lg font-semibold mb-2",
                   isCorrect ? "text-green-400" : "text-red-400"
                 )}>
-                  {isCorrect ? "正確！" : "錯誤"}
+                  {isCorrect ? t("result.correct") : t("result.incorrect")}
                 </div>
-                <Badge variant="outline" className="mb-2">{scenario.category}</Badge>
+                <Badge variant="outline" className="mb-2">{t(scenario.categoryNameKey)}</Badge>
                 <p className="text-gray-300 text-sm">
-                  {scenario.reasonZh}
+                  {t(scenario.reasonKey)}
                 </p>
               </CardContent>
             </Card>
@@ -1275,7 +1285,7 @@ function MustCheckDrill() {
           {/* Next Button */}
           {showResult && (
             <Button onClick={loadScenario} className="w-full">
-              下一題 <ArrowRight className="h-4 w-4 ml-2" />
+              {t("flopTexture.next")} <ArrowRight className="h-4 w-4 ml-2" />
             </Button>
           )}
         </div>
@@ -1291,6 +1301,8 @@ function MustCheckDrill() {
 const CHECK_FIRST_TARGET = 10; // Need 10 consecutive correct to win
 
 function CheckFirstDrill() {
+  const t = useTranslations("drill");
+  const tCommon = useTranslations("common");
   const [scenario, setScenario] = useState<MustCheckScenario | null>(null);
   const [selectedAnswer, setSelectedAnswer] = useState<boolean | null>(null);
   const [showResult, setShowResult] = useState(false);
@@ -1345,23 +1357,23 @@ function CheckFirstDrill() {
       <div className="space-y-6 text-center">
         <div className="py-8">
           <div className="text-6xl mb-4">🎉</div>
-          <h2 className="text-2xl font-bold text-green-400 mb-2">挑戰成功！</h2>
+          <h2 className="text-2xl font-bold text-green-400 mb-2">{t("flopTexture.checkFirst.challengeSuccess")}</h2>
           <p className="text-gray-400">
-            連續 {CHECK_FIRST_TARGET} 題全部正確辨識「應該 Check」的情況
+            {t("flopTexture.checkFirst.consecutiveCorrect", { count: CHECK_FIRST_TARGET })}
           </p>
           <p className="text-sm text-gray-500 mt-2">
-            總嘗試次數: {totalAttempts} 題
+            {t("flopTexture.checkFirst.totalAttempts", { count: totalAttempts })}
           </p>
         </div>
         <div className="bg-gradient-to-r from-green-900/30 to-emerald-900/30 rounded-lg p-4 border border-green-700/50">
           <p className="text-sm text-green-300">
-            你已經建立了「Check First」的肌肉記憶！<br />
-            記住：說不出下注理由 = 不該下注
+            {t("flopTexture.checkFirst.muscleMemory")}<br />
+            {t("flopTexture.checkFirst.rememberRule")}
           </p>
         </div>
         <Button onClick={handleReset} className="w-full">
           <RotateCcw className="h-4 w-4 mr-2" />
-          再挑戰一次
+          {t("flopTexture.checkFirst.tryAgain")}
         </Button>
       </div>
     );
@@ -1371,20 +1383,19 @@ function CheckFirstDrill() {
     <div className="space-y-6">
       {/* Header */}
       <div className="bg-gradient-to-r from-purple-900/30 to-pink-900/30 rounded-lg p-4 border border-purple-700/50">
-        <h3 className="text-sm font-semibold text-purple-300 mb-2">Check First 挑戰</h3>
+        <h3 className="text-sm font-semibold text-purple-300 mb-2">{t("flopTexture.checkFirst.title")}</h3>
         <p className="text-xs text-gray-400">
-          連續答對 <span className="text-purple-300 font-bold">{CHECK_FIRST_TARGET}</span> 題才算過關。
-          答錯歸零重來！
+          {t("flopTexture.checkFirst.desc", { target: CHECK_FIRST_TARGET })}
         </p>
         <p className="text-xs text-purple-400 mt-1">
-          提示：這裡的每一題，正確答案都是 Check
+          {t("flopTexture.checkFirst.hintAllCheck")}
         </p>
       </div>
 
       {/* Streak Progress */}
       <div className="space-y-2">
         <div className="flex items-center justify-between text-sm">
-          <span className="text-gray-400">連勝進度</span>
+          <span className="text-gray-400">{t("flopTexture.checkFirst.streakProgress")}</span>
           <span className={cn(
             "font-bold",
             streak >= 7 ? "text-green-400" : streak >= 4 ? "text-yellow-400" : "text-gray-300"
@@ -1410,11 +1421,11 @@ function CheckFirstDrill() {
       {/* Stats */}
       <div className="flex items-center justify-between text-sm">
         <span className="text-gray-400">
-          總嘗試: {totalAttempts} 題
+          {t("flopTexture.checkFirst.totalAttempts", { count: totalAttempts })}
         </span>
         <Button variant="outline" size="sm" onClick={handleReset}>
           <RotateCcw className="h-4 w-4 mr-1" />
-          重置
+          {tCommon("reset")}
         </Button>
       </div>
 
@@ -1432,14 +1443,14 @@ function CheckFirstDrill() {
 
           {/* Hero Hand */}
           <div className="text-center">
-            <div className="text-sm text-gray-400 mb-1">你的手牌</div>
+            <div className="text-sm text-gray-400 mb-1">{t("flopTexture.yourHand")}</div>
             <div className="text-2xl font-bold text-white">{scenario.heroHand}</div>
-            <div className="text-sm text-gray-400">({scenario.heroHandType})</div>
+            <div className="text-sm text-gray-400">({t(scenario.heroHandTypeKey)})</div>
           </div>
 
           {/* Question */}
           <div className="text-center text-lg font-medium">
-            這手牌應該？
+            {t("flopTexture.checkFirst.question")}
           </div>
 
           {/* Options */}
@@ -1467,7 +1478,7 @@ function CheckFirstDrill() {
               onClick={() => handleAnswer(false)}
               disabled={showResult}
             >
-              ✗ 下注
+              ✗ {t("flopTexture.checkFirst.betBtn")}
             </Button>
           </div>
 
@@ -1482,11 +1493,11 @@ function CheckFirstDrill() {
                   "text-lg font-semibold mb-2",
                   isCorrect ? "text-green-400" : "text-red-400"
                 )}>
-                  {isCorrect ? `正確！連勝 ${streak} 🔥` : "錯誤！連勝歸零 💔"}
+                  {isCorrect ? t("flopTexture.checkFirst.correctStreak", { count: streak }) : t("flopTexture.checkFirst.wrongReset")}
                 </div>
-                <Badge variant="outline" className="mb-2">{scenario.category}</Badge>
+                <Badge variant="outline" className="mb-2">{t(scenario.categoryNameKey)}</Badge>
                 <p className="text-gray-300 text-sm">
-                  {scenario.reasonZh}
+                  {t(scenario.reasonKey)}
                 </p>
               </CardContent>
             </Card>
@@ -1495,7 +1506,7 @@ function CheckFirstDrill() {
           {/* Next Button */}
           {showResult && !isComplete && (
             <Button onClick={loadScenario} className="w-full">
-              下一題 <ArrowRight className="h-4 w-4 ml-2" />
+              {t("flopTexture.next")} <ArrowRight className="h-4 w-4 ml-2" />
             </Button>
           )}
         </div>
@@ -1511,66 +1522,66 @@ function CheckFirstDrill() {
 type LiveExploitSubMode = "notes" | "quiz";
 type LiveQuizType = "adjustment" | "multiway" | "dangerSign" | "leakExploit";
 
-// Helper to display frequency adjustment
-function getFreqAdjustLabel(adj: FrequencyAdjust): { label: string; color: string } {
+// Helper to display frequency adjustment - now returns labelKey for i18n
+function getFreqAdjustLabelKey(adj: FrequencyAdjust): { labelKey: string; color: string } {
   switch (adj) {
-    case "much_higher": return { label: "大幅提高", color: "text-green-400" };
-    case "higher": return { label: "略提高", color: "text-green-300" };
-    case "same": return { label: "維持", color: "text-gray-400" };
-    case "lower": return { label: "略降低", color: "text-orange-300" };
-    case "much_lower": return { label: "大幅降低", color: "text-red-400" };
+    case "much_higher": return { labelKey: "flopTexture.liveExploit.freqAdj.muchHigher", color: "text-green-400" };
+    case "higher": return { labelKey: "flopTexture.liveExploit.freqAdj.higher", color: "text-green-300" };
+    case "same": return { labelKey: "flopTexture.liveExploit.freqAdj.same", color: "text-gray-400" };
+    case "lower": return { labelKey: "flopTexture.liveExploit.freqAdj.lower", color: "text-orange-300" };
+    case "much_lower": return { labelKey: "flopTexture.liveExploit.freqAdj.muchLower", color: "text-red-400" };
   }
 }
 
-function getSizingAdjustLabel(adj: SizingAdjust): { label: string; color: string } {
+function getSizingAdjustLabelKey(adj: SizingAdjust): { labelKey: string; color: string } {
   switch (adj) {
-    case "much_larger": return { label: "大幅放大", color: "text-green-400" };
-    case "larger": return { label: "略放大", color: "text-green-300" };
-    case "same": return { label: "維持", color: "text-gray-400" };
-    case "smaller": return { label: "縮小", color: "text-orange-300" };
+    case "much_larger": return { labelKey: "flopTexture.liveExploit.sizingAdj.muchLarger", color: "text-green-400" };
+    case "larger": return { labelKey: "flopTexture.liveExploit.sizingAdj.larger", color: "text-green-300" };
+    case "same": return { labelKey: "flopTexture.liveExploit.sizingAdj.same", color: "text-gray-400" };
+    case "smaller": return { labelKey: "flopTexture.liveExploit.sizingAdj.smaller", color: "text-orange-300" };
   }
 }
 
 // Multiway decision scenarios
 const MULTIWAY_SCENARIOS = [
-  { texture: "ABB" as FlopTextureType, hand: "A♠K♥ (頂對頂踢)", correctAction: "bet_large", explanation: "強 Ax 多路仍可大注取值" },
-  { texture: "ABB" as FlopTextureType, hand: "K♣Q♦ (空氣)", correctAction: "check", explanation: "多路無法詐唬，放棄空氣" },
-  { texture: "Axx" as FlopTextureType, hand: "A♠9♥ (頂對弱踢)", correctAction: "bet_small", explanation: "頂對可小注試探，但不要膨脹底池" },
-  { texture: "Axx" as FlopTextureType, hand: "K♣K♦ (第二對)", correctAction: "check", explanation: "多路中對太弱，check 控池" },
-  { texture: "BBB" as FlopTextureType, hand: "Q♠Q♥ (暗三)", correctAction: "bet_large", explanation: "堅果多路可以大注建池" },
-  { texture: "BBB" as FlopTextureType, hand: "A♣K♦ (聽牌)", correctAction: "check", explanation: "多路聽牌 check 是更好選擇" },
-  { texture: "Low_conn" as FlopTextureType, hand: "A♠A♥ (Overpair)", correctAction: "bet_small", explanation: "連接低牌面 overpair 小注保護" },
-  { texture: "Low_conn" as FlopTextureType, hand: "K♣Q♦ (空氣)", correctAction: "check", explanation: "多路不 bluff，直接放棄" },
-  { texture: "JT_conn" as FlopTextureType, hand: "9♠8♥ (順子)", correctAction: "bet_large", explanation: "堅果慢打沒意義，直接取值" },
-  { texture: "JT_conn" as FlopTextureType, hand: "A♣A♦ (Overpair)", correctAction: "check", explanation: "多路濕牌 AA 很危險，check 控池" },
-  { texture: "Paired" as FlopTextureType, hand: "K♠K♥ (葫蘆)", correctAction: "bet_small", explanation: "Full house 小注引誘" },
-  { texture: "Paired" as FlopTextureType, hand: "A♣Q♦ (高牌)", correctAction: "check", explanation: "配對牌面多路不碰" },
+  { texture: "ABB" as FlopTextureType, handKey: "flopTexture.liveExploit.mwSc.0.hand", correctAction: "bet_large", explanationKey: "flopTexture.liveExploit.mwSc.0.explanation" },
+  { texture: "ABB" as FlopTextureType, handKey: "flopTexture.liveExploit.mwSc.1.hand", correctAction: "check", explanationKey: "flopTexture.liveExploit.mwSc.1.explanation" },
+  { texture: "Axx" as FlopTextureType, handKey: "flopTexture.liveExploit.mwSc.2.hand", correctAction: "bet_small", explanationKey: "flopTexture.liveExploit.mwSc.2.explanation" },
+  { texture: "Axx" as FlopTextureType, handKey: "flopTexture.liveExploit.mwSc.3.hand", correctAction: "check", explanationKey: "flopTexture.liveExploit.mwSc.3.explanation" },
+  { texture: "BBB" as FlopTextureType, handKey: "flopTexture.liveExploit.mwSc.4.hand", correctAction: "bet_large", explanationKey: "flopTexture.liveExploit.mwSc.4.explanation" },
+  { texture: "BBB" as FlopTextureType, handKey: "flopTexture.liveExploit.mwSc.5.hand", correctAction: "check", explanationKey: "flopTexture.liveExploit.mwSc.5.explanation" },
+  { texture: "Low_conn" as FlopTextureType, handKey: "flopTexture.liveExploit.mwSc.6.hand", correctAction: "bet_small", explanationKey: "flopTexture.liveExploit.mwSc.6.explanation" },
+  { texture: "Low_conn" as FlopTextureType, handKey: "flopTexture.liveExploit.mwSc.7.hand", correctAction: "check", explanationKey: "flopTexture.liveExploit.mwSc.7.explanation" },
+  { texture: "JT_conn" as FlopTextureType, handKey: "flopTexture.liveExploit.mwSc.8.hand", correctAction: "bet_large", explanationKey: "flopTexture.liveExploit.mwSc.8.explanation" },
+  { texture: "JT_conn" as FlopTextureType, handKey: "flopTexture.liveExploit.mwSc.9.hand", correctAction: "check", explanationKey: "flopTexture.liveExploit.mwSc.9.explanation" },
+  { texture: "Paired" as FlopTextureType, handKey: "flopTexture.liveExploit.mwSc.10.hand", correctAction: "bet_small", explanationKey: "flopTexture.liveExploit.mwSc.10.explanation" },
+  { texture: "Paired" as FlopTextureType, handKey: "flopTexture.liveExploit.mwSc.11.hand", correctAction: "check", explanationKey: "flopTexture.liveExploit.mwSc.11.explanation" },
 ];
 
 // Danger sign scenarios
 const DANGER_SIGN_SCENARIOS = [
-  { texture: "ABB" as FlopTextureType, action: "對手 Flop check-raise 你的 C-bet", correctMeaning: "strong", explanation: "ABB 牌面 check-raise = 兩對或 set，別硬拼" },
-  { texture: "ABB" as FlopTextureType, action: "對手 River 對你的三條街 check-raise", correctMeaning: "nuts", explanation: "River 被 check-raise 幾乎都是真貨" },
-  { texture: "Axx" as FlopTextureType, action: "緊凶玩家突然 donk bet", correctMeaning: "strong", explanation: "緊凶 donk = Ax 或更強" },
-  { texture: "BBx" as FlopTextureType, action: "對手 Turn 突然加大下注尺寸", correctMeaning: "strong", explanation: "突然大注 = 有牌想取值" },
-  { texture: "Low_conn" as FlopTextureType, action: "魚玩家 River 小注", correctMeaning: "weak_value", explanation: "小注 = 詐唬迷思或弱價值，可以 raise" },
-  { texture: "Low_conn" as FlopTextureType, action: "對手全程 check-call 後 River bet pot", correctMeaning: "nuts", explanation: "這個 line 幾乎只有堅果" },
-  { texture: "JTx" as FlopTextureType, action: "被動玩家突然 3-bet 你的 Turn bet", correctMeaning: "nuts", explanation: "被動玩家主動出擊 = 極強牌" },
-  { texture: "Paired" as FlopTextureType, action: "對手 Flop check，Turn donk pot", correctMeaning: "strong", explanation: "配對牌面 delayed donk = 通常是三條" },
-  { texture: "Trips" as FlopTextureType, action: "對手快速 call 你的 Flop bet", correctMeaning: "drawing", explanation: "快速 call = 聽牌或弱對子" },
-  { texture: "BBB" as FlopTextureType, action: "對手長考後 all-in", correctMeaning: "polarized", explanation: "長考 all-in = 極化，堅果或詐唬" },
+  { texture: "ABB" as FlopTextureType, actionKey: "flopTexture.liveExploit.dsSc.0.action", correctMeaning: "strong", explanationKey: "flopTexture.liveExploit.dsSc.0.explanation" },
+  { texture: "ABB" as FlopTextureType, actionKey: "flopTexture.liveExploit.dsSc.1.action", correctMeaning: "nuts", explanationKey: "flopTexture.liveExploit.dsSc.1.explanation" },
+  { texture: "Axx" as FlopTextureType, actionKey: "flopTexture.liveExploit.dsSc.2.action", correctMeaning: "strong", explanationKey: "flopTexture.liveExploit.dsSc.2.explanation" },
+  { texture: "BBx" as FlopTextureType, actionKey: "flopTexture.liveExploit.dsSc.3.action", correctMeaning: "strong", explanationKey: "flopTexture.liveExploit.dsSc.3.explanation" },
+  { texture: "Low_conn" as FlopTextureType, actionKey: "flopTexture.liveExploit.dsSc.4.action", correctMeaning: "weak_value", explanationKey: "flopTexture.liveExploit.dsSc.4.explanation" },
+  { texture: "Low_conn" as FlopTextureType, actionKey: "flopTexture.liveExploit.dsSc.5.action", correctMeaning: "nuts", explanationKey: "flopTexture.liveExploit.dsSc.5.explanation" },
+  { texture: "JTx" as FlopTextureType, actionKey: "flopTexture.liveExploit.dsSc.6.action", correctMeaning: "nuts", explanationKey: "flopTexture.liveExploit.dsSc.6.explanation" },
+  { texture: "Paired" as FlopTextureType, actionKey: "flopTexture.liveExploit.dsSc.7.action", correctMeaning: "strong", explanationKey: "flopTexture.liveExploit.dsSc.7.explanation" },
+  { texture: "Trips" as FlopTextureType, actionKey: "flopTexture.liveExploit.dsSc.8.action", correctMeaning: "drawing", explanationKey: "flopTexture.liveExploit.dsSc.8.explanation" },
+  { texture: "BBB" as FlopTextureType, actionKey: "flopTexture.liveExploit.dsSc.9.action", correctMeaning: "polarized", explanationKey: "flopTexture.liveExploit.dsSc.9.explanation" },
 ];
 
 // Leak exploit scenarios
 const LEAK_EXPLOIT_SCENARIOS = [
-  { texture: "ABB" as FlopTextureType, leak: "對手用 1/3 pot 小注 C-bet", correctExploit: "raise", explanation: "小注 C-bet = 弱牌試探，raise 把他趕走" },
-  { texture: "Axx" as FlopTextureType, leak: "對手 Turn check 後 River 大注", correctExploit: "fold_marginal", explanation: "這個 line 幾乎沒有詐唬，棄掉邊緣牌" },
-  { texture: "Low_conn" as FlopTextureType, leak: "對手從不 check-raise", correctExploit: "bet_thin", explanation: "可以更薄價值下注，他不會 check-raise 你" },
-  { texture: "BBx" as FlopTextureType, leak: "對手 River 總是 check 中等牌", correctExploit: "value_bet", explanation: "他 check = 邊緣牌，你可以薄價值下注" },
-  { texture: "JT_conn" as FlopTextureType, leak: "對手過度保護聽牌，不願棄牌", correctExploit: "value_only", explanation: "對不棄牌的人只打價值，不詐唬" },
-  { texture: "Paired" as FlopTextureType, leak: "對手配對牌面過度 bluff", correctExploit: "call_light", explanation: "他詐唬太多，用更寬範圍跟注" },
-  { texture: "Trips" as FlopTextureType, leak: "對手有 Ax 不棄牌", correctExploit: "overbet_value", explanation: "他們 call 太多，用堅果 overbet 取值" },
-  { texture: "ABx" as FlopTextureType, leak: "對手面對 check-raise 過度棄牌", correctExploit: "cr_bluff", explanation: "用更多聽牌 check-raise 詐唬" },
+  { texture: "ABB" as FlopTextureType, leakKey: "flopTexture.liveExploit.leSc.0.leak", correctExploit: "raise", explanationKey: "flopTexture.liveExploit.leSc.0.explanation" },
+  { texture: "Axx" as FlopTextureType, leakKey: "flopTexture.liveExploit.leSc.1.leak", correctExploit: "fold_marginal", explanationKey: "flopTexture.liveExploit.leSc.1.explanation" },
+  { texture: "Low_conn" as FlopTextureType, leakKey: "flopTexture.liveExploit.leSc.2.leak", correctExploit: "bet_thin", explanationKey: "flopTexture.liveExploit.leSc.2.explanation" },
+  { texture: "BBx" as FlopTextureType, leakKey: "flopTexture.liveExploit.leSc.3.leak", correctExploit: "value_bet", explanationKey: "flopTexture.liveExploit.leSc.3.explanation" },
+  { texture: "JT_conn" as FlopTextureType, leakKey: "flopTexture.liveExploit.leSc.4.leak", correctExploit: "value_only", explanationKey: "flopTexture.liveExploit.leSc.4.explanation" },
+  { texture: "Paired" as FlopTextureType, leakKey: "flopTexture.liveExploit.leSc.5.leak", correctExploit: "call_light", explanationKey: "flopTexture.liveExploit.leSc.5.explanation" },
+  { texture: "Trips" as FlopTextureType, leakKey: "flopTexture.liveExploit.leSc.6.leak", correctExploit: "overbet_value", explanationKey: "flopTexture.liveExploit.leSc.6.explanation" },
+  { texture: "ABx" as FlopTextureType, leakKey: "flopTexture.liveExploit.leSc.7.leak", correctExploit: "cr_bluff", explanationKey: "flopTexture.liveExploit.leSc.7.explanation" },
 ];
 
 interface LiveQuizState {
@@ -1592,6 +1603,8 @@ interface LiveQuizState {
 }
 
 function LiveExploitDrill() {
+  const t = useTranslations("drill");
+  const tCommon = useTranslations("common");
   const [subMode, setSubMode] = useState<LiveExploitSubMode>("notes");
   const [selectedTexture, setSelectedTexture] = useState<FlopTextureType | null>(null);
   const [quiz, setQuiz] = useState<LiveQuizState | null>(null);
@@ -1693,10 +1706,10 @@ function LiveExploitDrill() {
         {/* Sub-mode toggle */}
         <div className="flex gap-2">
           <Button size="sm" variant="default" onClick={() => setSubMode("notes")}>
-            📋 筆記速查
+            📋 {t("flopTexture.liveExploit.notesTab")}
           </Button>
           <Button size="sm" variant="outline" onClick={() => setSubMode("quiz")}>
-            🎯 綜合測驗
+            🎯 {t("flopTexture.liveExploit.quizTab")}
           </Button>
         </div>
 
@@ -1729,42 +1742,42 @@ function LiveExploitDrill() {
               {/* GTO vs Live comparison */}
               <div className="grid grid-cols-2 gap-4 text-sm">
                 <div className="bg-gray-800/50 rounded p-3">
-                  <div className="text-gray-500 text-xs mb-1">GTO 頻率</div>
+                  <div className="text-gray-500 text-xs mb-1">{t("flopTexture.liveExploit.gtoFreq")}</div>
                   <div className="text-cyan-400">{selected.ip.cbetFreqMin}-{selected.ip.cbetFreqMax}%</div>
                 </div>
                 <div className="bg-gray-800/50 rounded p-3">
-                  <div className="text-gray-500 text-xs mb-1">線下調整</div>
-                  <div className={getFreqAdjustLabel(selected.liveExploit.frequencyAdjust).color}>
-                    {getFreqAdjustLabel(selected.liveExploit.frequencyAdjust).label}
+                  <div className="text-gray-500 text-xs mb-1">{t("flopTexture.liveExploit.liveAdjust")}</div>
+                  <div className={getFreqAdjustLabelKey(selected.liveExploit.frequencyAdjust).color}>
+                    {t(getFreqAdjustLabelKey(selected.liveExploit.frequencyAdjust).labelKey)}
                   </div>
                 </div>
                 <div className="bg-gray-800/50 rounded p-3">
-                  <div className="text-gray-500 text-xs mb-1">GTO 尺寸</div>
+                  <div className="text-gray-500 text-xs mb-1">{t("flopTexture.liveExploit.gtoSizing")}</div>
                   <div className="text-yellow-400">{selected.ip.sizing}</div>
                 </div>
                 <div className="bg-gray-800/50 rounded p-3">
-                  <div className="text-gray-500 text-xs mb-1">線下調整</div>
-                  <div className={getSizingAdjustLabel(selected.liveExploit.sizingAdjust).color}>
-                    {getSizingAdjustLabel(selected.liveExploit.sizingAdjust).label}
+                  <div className="text-gray-500 text-xs mb-1">{t("flopTexture.liveExploit.liveAdjust")}</div>
+                  <div className={getSizingAdjustLabelKey(selected.liveExploit.sizingAdjust).color}>
+                    {t(getSizingAdjustLabelKey(selected.liveExploit.sizingAdjust).labelKey)}
                   </div>
                 </div>
               </div>
 
               {/* Multi-way note */}
               <div className="bg-orange-900/20 border border-orange-700/30 rounded p-3">
-                <div className="text-orange-400 text-xs font-semibold mb-1">🎯 多路底池</div>
+                <div className="text-orange-400 text-xs font-semibold mb-1">🎯 {t("flopTexture.liveExploit.multiwayNote")}</div>
                 <p className="text-sm text-gray-300">{selected.liveExploit.multiWayNote}</p>
               </div>
 
               {/* Exploit tip */}
               <div className="bg-green-900/20 border border-green-700/30 rounded p-3">
-                <div className="text-green-400 text-xs font-semibold mb-1">💡 剝削重點</div>
+                <div className="text-green-400 text-xs font-semibold mb-1">💡 {t("flopTexture.liveExploit.exploitTip")}</div>
                 <p className="text-sm text-gray-300">{selected.liveExploit.exploitTip}</p>
               </div>
 
               {/* Common leaks */}
               <div>
-                <div className="text-gray-500 text-xs mb-2">對手常見漏洞</div>
+                <div className="text-gray-500 text-xs mb-2">{t("flopTexture.liveExploit.opponentLeaks")}</div>
                 <div className="flex flex-wrap gap-2">
                   {selected.liveExploit.commonLeaks.map((leak, i) => (
                     <Badge key={i} variant="outline" className="text-xs">{leak}</Badge>
@@ -1774,7 +1787,7 @@ function LiveExploitDrill() {
 
               {/* Danger signs */}
               <div className="bg-red-900/20 border border-red-700/30 rounded p-3">
-                <div className="text-red-400 text-xs font-semibold mb-1">⚠️ 警告信號</div>
+                <div className="text-red-400 text-xs font-semibold mb-1">⚠️ {t("flopTexture.liveExploit.dangerSigns")}</div>
                 <ul className="text-sm text-gray-300 space-y-1">
                   {selected.liveExploit.dangerSigns.map((sign, i) => (
                     <li key={i}>• {sign}</li>
@@ -1787,7 +1800,7 @@ function LiveExploitDrill() {
 
         {!selected && (
           <div className="text-center text-gray-500 py-8">
-            👆 選擇一種質地查看線下剝削筆記
+            👆 {t("flopTexture.liveExploit.selectTexture")}
           </div>
         )}
       </div>
@@ -1798,11 +1811,11 @@ function LiveExploitDrill() {
   const quizCategory = quiz ? FLOP_TEXTURE_CATEGORIES[quiz.texture] : null;
 
   // Quiz type labels
-  const quizTypeLabels: Record<LiveQuizType, { icon: string; title: string }> = {
-    adjustment: { icon: "📊", title: "頻率/尺寸調整" },
-    multiway: { icon: "👥", title: "多路底池決策" },
-    dangerSign: { icon: "⚠️", title: "危險信號識別" },
-    leakExploit: { icon: "🎯", title: "漏洞剝削" },
+  const quizTypeLabels: Record<LiveQuizType, { icon: string; titleKey: string }> = {
+    adjustment: { icon: "📊", titleKey: "flopTexture.liveExploit.quizType.adjustment" },
+    multiway: { icon: "👥", titleKey: "flopTexture.liveExploit.quizType.multiway" },
+    dangerSign: { icon: "⚠️", titleKey: "flopTexture.liveExploit.quizType.dangerSign" },
+    leakExploit: { icon: "🎯", titleKey: "flopTexture.liveExploit.quizType.leakExploit" },
   };
 
   return (
@@ -1810,22 +1823,22 @@ function LiveExploitDrill() {
       {/* Sub-mode toggle */}
       <div className="flex gap-2">
         <Button size="sm" variant="outline" onClick={() => setSubMode("notes")}>
-          📋 筆記速查
+          📋 {t("flopTexture.liveExploit.notesTab")}
         </Button>
         <Button size="sm" variant="default" onClick={() => setSubMode("quiz")}>
-          🎯 綜合測驗
+          🎯 {t("flopTexture.liveExploit.quizTab")}
         </Button>
       </div>
 
       {/* Score */}
       <div className="flex items-center justify-between text-sm">
         <span className="text-gray-400">
-          正確率: {quizScore.total > 0 ? Math.round((quizScore.correct / quizScore.total) * 100) : 0}%
+          {tCommon("accuracy")}: {quizScore.total > 0 ? Math.round((quizScore.correct / quizScore.total) * 100) : 0}%
           ({quizScore.correct}/{quizScore.total})
         </span>
         <Button variant="outline" size="sm" onClick={() => setQuizScore({ correct: 0, total: 0 })}>
           <RotateCcw className="h-4 w-4 mr-1" />
-          重置
+          {tCommon("reset")}
         </Button>
       </div>
 
@@ -1834,7 +1847,7 @@ function LiveExploitDrill() {
           {/* Quiz type badge */}
           <div className="flex justify-center">
             <Badge variant="secondary" className="text-sm">
-              {quizTypeLabels[quiz.type].icon} {quizTypeLabels[quiz.type].title}
+              {quizTypeLabels[quiz.type].icon} {t(quizTypeLabels[quiz.type].titleKey)}
             </Badge>
           </div>
 
@@ -1849,21 +1862,21 @@ function LiveExploitDrill() {
           {quiz.type === "adjustment" && (
             <>
               <div className="bg-gray-800/50 rounded p-3 text-center text-sm">
-                <span className="text-gray-400">GTO 基準: </span>
+                <span className="text-gray-400">{t("flopTexture.liveExploit.gtoBasis")}</span>
                 <span className="text-cyan-400">{quizCategory.ip.cbetFreqMin}-{quizCategory.ip.cbetFreqMax}%</span>
                 <span className="text-gray-400"> / </span>
                 <span className="text-yellow-400">{quizCategory.ip.sizing}</span>
               </div>
 
               <div className="text-center text-lg font-medium">
-                線下應該怎麼調整？
+                {t("flopTexture.liveExploit.liveAdjustQ")}
               </div>
 
               <div className="space-y-2">
-                <p className="text-sm text-gray-400">頻率調整:</p>
+                <p className="text-sm text-gray-400">{t("flopTexture.liveExploit.freqAdjLabel")}</p>
                 <div className="grid grid-cols-3 sm:grid-cols-5 gap-2">
                   {(["much_higher", "higher", "same", "lower", "much_lower"] as FrequencyAdjust[]).map((opt) => {
-                    const { label } = getFreqAdjustLabel(opt);
+                    const { labelKey } = getFreqAdjustLabelKey(opt);
                     return (
                       <Button
                         key={opt}
@@ -1877,7 +1890,7 @@ function LiveExploitDrill() {
                         onClick={() => !showQuizResult && setQuiz(prev => prev ? { ...prev, adjustmentAnswer: { ...prev.adjustmentAnswer!, freq: opt } } : null)}
                         disabled={showQuizResult}
                       >
-                        {label}
+                        {t(labelKey)}
                       </Button>
                     );
                   })}
@@ -1885,10 +1898,10 @@ function LiveExploitDrill() {
               </div>
 
               <div className="space-y-2">
-                <p className="text-sm text-gray-400">尺寸調整:</p>
+                <p className="text-sm text-gray-400">{t("flopTexture.liveExploit.sizingAdjLabel")}</p>
                 <div className="grid grid-cols-4 gap-2">
                   {(["much_larger", "larger", "same", "smaller"] as SizingAdjust[]).map((opt) => {
-                    const { label } = getSizingAdjustLabel(opt);
+                    const { labelKey } = getSizingAdjustLabelKey(opt);
                     return (
                       <Button
                         key={opt}
@@ -1902,7 +1915,7 @@ function LiveExploitDrill() {
                         onClick={() => !showQuizResult && setQuiz(prev => prev ? { ...prev, adjustmentAnswer: { ...prev.adjustmentAnswer!, sizing: opt } } : null)}
                         disabled={showQuizResult}
                       >
-                        {label}
+                        {t(labelKey)}
                       </Button>
                     );
                   })}
@@ -1915,7 +1928,7 @@ function LiveExploitDrill() {
                   disabled={!quiz.adjustmentAnswer?.freq || !quiz.adjustmentAnswer?.sizing}
                   className="w-full"
                 >
-                  確認答案
+                  {t("flopTexture.confirmAnswer")}
                 </Button>
               )}
 
@@ -1930,14 +1943,13 @@ function LiveExploitDrill() {
                     )}>
                       {quiz.adjustmentAnswer?.freq === quizCategory.liveExploit.frequencyAdjust &&
                        quiz.adjustmentAnswer?.sizing === quizCategory.liveExploit.sizingAdjust
-                        ? "完全正確！" : "需要調整"}
+                        ? t("flopTexture.cbet.allCorrect") : t("flopTexture.liveExploit.needsAdjust")}
                     </div>
                     <p className="text-sm text-gray-300 mb-2">
-                      正確答案：頻率 <span className={getFreqAdjustLabel(quizCategory.liveExploit.frequencyAdjust).color}>
-                        {getFreqAdjustLabel(quizCategory.liveExploit.frequencyAdjust).label}
-                      </span>，尺寸 <span className={getSizingAdjustLabel(quizCategory.liveExploit.sizingAdjust).color}>
-                        {getSizingAdjustLabel(quizCategory.liveExploit.sizingAdjust).label}
-                      </span>
+                      {t("flopTexture.liveExploit.correctAns", {
+                        freq: t(getFreqAdjustLabelKey(quizCategory.liveExploit.frequencyAdjust).labelKey),
+                        sizing: t(getSizingAdjustLabelKey(quizCategory.liveExploit.sizingAdjust).labelKey),
+                      })}
                     </p>
                     <p className="text-sm text-gray-400">{quizCategory.liveExploit.exploitTip}</p>
                   </CardContent>
@@ -1950,20 +1962,20 @@ function LiveExploitDrill() {
           {quiz.type === "multiway" && quiz.multiwayScenario && (
             <>
               <div className="bg-orange-900/20 border border-orange-700/30 rounded p-3 text-center">
-                <p className="text-orange-400 text-sm font-medium mb-1">多路底池 (3+ 人)</p>
-                <p className="text-white">你的手牌：{quiz.multiwayScenario.hand}</p>
+                <p className="text-orange-400 text-sm font-medium mb-1">{t("flopTexture.liveExploit.multiway.title")}</p>
+                <p className="text-white">{t("flopTexture.liveExploit.multiway.yourHand", { hand: t(quiz.multiwayScenario.handKey) })}</p>
               </div>
 
               <div className="text-center text-lg font-medium">
-                你應該？
+                {t("flopTexture.liveExploit.multiway.question")}
               </div>
 
               <div className="grid grid-cols-2 gap-2">
                 {[
-                  { value: "check", label: "Check", icon: "✋" },
-                  { value: "bet_small", label: "小注 (1/3)", icon: "💰" },
-                  { value: "bet_large", label: "大注 (2/3+)", icon: "💎" },
-                  { value: "fold", label: "Fold", icon: "🏳️" },
+                  { value: "check", labelKey: "flopTexture.liveExploit.multiway.check", icon: "✋" },
+                  { value: "bet_small", labelKey: "flopTexture.liveExploit.multiway.betSmall", icon: "💰" },
+                  { value: "bet_large", labelKey: "flopTexture.liveExploit.multiway.betLarge", icon: "💎" },
+                  { value: "fold", labelKey: "flopTexture.liveExploit.multiway.fold", icon: "🏳️" },
                 ].map((opt) => (
                   <Button
                     key={opt.value}
@@ -1977,14 +1989,14 @@ function LiveExploitDrill() {
                     onClick={() => !showQuizResult && setQuiz(prev => prev ? { ...prev, multiwayAnswer: opt.value } : null)}
                     disabled={showQuizResult}
                   >
-                    {opt.icon} {opt.label}
+                    {opt.icon} {t(opt.labelKey)}
                   </Button>
                 ))}
               </div>
 
               {!showQuizResult && (
                 <Button onClick={handleQuizSubmit} disabled={!quiz.multiwayAnswer} className="w-full">
-                  確認答案
+                  {t("flopTexture.confirmAnswer")}
                 </Button>
               )}
 
@@ -1995,9 +2007,9 @@ function LiveExploitDrill() {
                       "text-lg font-semibold mb-2",
                       quiz.multiwayAnswer === quiz.multiwayScenario.correctAction ? "text-green-400" : "text-orange-400"
                     )}>
-                      {quiz.multiwayAnswer === quiz.multiwayScenario.correctAction ? "正確！" : "不太對"}
+                      {quiz.multiwayAnswer === quiz.multiwayScenario.correctAction ? t("result.correct") : t("flopTexture.liveExploit.notCorrect")}
                     </div>
-                    <p className="text-sm text-gray-300">{quiz.multiwayScenario.explanation}</p>
+                    <p className="text-sm text-gray-300">{t(quiz.multiwayScenario.explanationKey)}</p>
                   </CardContent>
                 </Card>
               )}
@@ -2008,21 +2020,21 @@ function LiveExploitDrill() {
           {quiz.type === "dangerSign" && quiz.dangerScenario && (
             <>
               <div className="bg-red-900/20 border border-red-700/30 rounded p-3 text-center">
-                <p className="text-red-400 text-sm font-medium mb-1">對手動作</p>
-                <p className="text-white text-sm">{quiz.dangerScenario.action}</p>
+                <p className="text-red-400 text-sm font-medium mb-1">{t("flopTexture.liveExploit.dangerSign.opponentAction")}</p>
+                <p className="text-white text-sm">{t(quiz.dangerScenario.actionKey)}</p>
               </div>
 
               <div className="text-center text-lg font-medium">
-                這代表什麼？
+                {t("flopTexture.liveExploit.dangerSign.question")}
               </div>
 
               <div className="grid grid-cols-2 gap-2">
                 {[
-                  { value: "weak_value", label: "弱價值/試探", color: "text-yellow-400" },
-                  { value: "drawing", label: "聽牌/弱對", color: "text-blue-400" },
-                  { value: "strong", label: "強牌取值", color: "text-orange-400" },
-                  { value: "nuts", label: "堅果/極強", color: "text-red-400" },
-                  { value: "polarized", label: "極化 (堅果或詐唬)", color: "text-purple-400" },
+                  { value: "weak_value", labelKey: "flopTexture.liveExploit.dangerSign.weakValue", color: "text-yellow-400" },
+                  { value: "drawing", labelKey: "flopTexture.liveExploit.dangerSign.drawing", color: "text-blue-400" },
+                  { value: "strong", labelKey: "flopTexture.liveExploit.dangerSign.strong", color: "text-orange-400" },
+                  { value: "nuts", labelKey: "flopTexture.liveExploit.dangerSign.nuts", color: "text-red-400" },
+                  { value: "polarized", labelKey: "flopTexture.liveExploit.dangerSign.polarized", color: "text-purple-400" },
                 ].map((opt) => (
                   <Button
                     key={opt.value}
@@ -2036,14 +2048,14 @@ function LiveExploitDrill() {
                     onClick={() => !showQuizResult && setQuiz(prev => prev ? { ...prev, dangerAnswer: opt.value } : null)}
                     disabled={showQuizResult}
                   >
-                    {opt.label}
+                    {t(opt.labelKey)}
                   </Button>
                 ))}
               </div>
 
               {!showQuizResult && (
                 <Button onClick={handleQuizSubmit} disabled={!quiz.dangerAnswer} className="w-full">
-                  確認答案
+                  {t("flopTexture.confirmAnswer")}
                 </Button>
               )}
 
@@ -2054,9 +2066,9 @@ function LiveExploitDrill() {
                       "text-lg font-semibold mb-2",
                       quiz.dangerAnswer === quiz.dangerScenario.correctMeaning ? "text-green-400" : "text-orange-400"
                     )}>
-                      {quiz.dangerAnswer === quiz.dangerScenario.correctMeaning ? "正確！" : "需要調整"}
+                      {quiz.dangerAnswer === quiz.dangerScenario.correctMeaning ? t("result.correct") : t("flopTexture.liveExploit.needsAdjust")}
                     </div>
-                    <p className="text-sm text-gray-300">{quiz.dangerScenario.explanation}</p>
+                    <p className="text-sm text-gray-300">{t(quiz.dangerScenario.explanationKey)}</p>
                   </CardContent>
                 </Card>
               )}
@@ -2067,24 +2079,24 @@ function LiveExploitDrill() {
           {quiz.type === "leakExploit" && quiz.leakScenario && (
             <>
               <div className="bg-green-900/20 border border-green-700/30 rounded p-3 text-center">
-                <p className="text-green-400 text-sm font-medium mb-1">對手漏洞</p>
-                <p className="text-white text-sm">{quiz.leakScenario.leak}</p>
+                <p className="text-green-400 text-sm font-medium mb-1">{t("flopTexture.liveExploit.leakExploitQ.opponentLeak")}</p>
+                <p className="text-white text-sm">{t(quiz.leakScenario.leakKey)}</p>
               </div>
 
               <div className="text-center text-lg font-medium">
-                最佳剝削方式？
+                {t("flopTexture.liveExploit.leakExploitQ.question")}
               </div>
 
               <div className="grid grid-cols-2 gap-2">
                 {[
-                  { value: "raise", label: "加注/Raise", icon: "⬆️" },
-                  { value: "call_light", label: "輕鬆跟注", icon: "📞" },
-                  { value: "value_bet", label: "薄價值下注", icon: "💵" },
-                  { value: "value_only", label: "只打價值", icon: "✅" },
-                  { value: "overbet_value", label: "超池取值", icon: "💰" },
-                  { value: "cr_bluff", label: "Check-Raise 詐唬", icon: "🃏" },
-                  { value: "fold_marginal", label: "棄掉邊緣牌", icon: "🏳️" },
-                  { value: "bet_thin", label: "更薄下注", icon: "📉" },
+                  { value: "raise", labelKey: "flopTexture.liveExploit.leakExploitQ.raise", icon: "⬆️" },
+                  { value: "call_light", labelKey: "flopTexture.liveExploit.leakExploitQ.callLight", icon: "📞" },
+                  { value: "value_bet", labelKey: "flopTexture.liveExploit.leakExploitQ.valueBet", icon: "💵" },
+                  { value: "value_only", labelKey: "flopTexture.liveExploit.leakExploitQ.valueOnly", icon: "✅" },
+                  { value: "overbet_value", labelKey: "flopTexture.liveExploit.leakExploitQ.overbetValue", icon: "💰" },
+                  { value: "cr_bluff", labelKey: "flopTexture.liveExploit.leakExploitQ.crBluff", icon: "🃏" },
+                  { value: "fold_marginal", labelKey: "flopTexture.liveExploit.leakExploitQ.foldMarginal", icon: "🏳️" },
+                  { value: "bet_thin", labelKey: "flopTexture.liveExploit.leakExploitQ.betThin", icon: "📉" },
                 ].map((opt) => (
                   <Button
                     key={opt.value}
@@ -2098,14 +2110,14 @@ function LiveExploitDrill() {
                     onClick={() => !showQuizResult && setQuiz(prev => prev ? { ...prev, leakAnswer: opt.value } : null)}
                     disabled={showQuizResult}
                   >
-                    {opt.icon} {opt.label}
+                    {opt.icon} {t(opt.labelKey)}
                   </Button>
                 ))}
               </div>
 
               {!showQuizResult && (
                 <Button onClick={handleQuizSubmit} disabled={!quiz.leakAnswer} className="w-full">
-                  確認答案
+                  {t("flopTexture.confirmAnswer")}
                 </Button>
               )}
 
@@ -2116,9 +2128,9 @@ function LiveExploitDrill() {
                       "text-lg font-semibold mb-2",
                       quiz.leakAnswer === quiz.leakScenario.correctExploit ? "text-green-400" : "text-orange-400"
                     )}>
-                      {quiz.leakAnswer === quiz.leakScenario.correctExploit ? "正確！" : "不太對"}
+                      {quiz.leakAnswer === quiz.leakScenario.correctExploit ? t("result.correct") : t("flopTexture.liveExploit.notCorrect")}
                     </div>
-                    <p className="text-sm text-gray-300">{quiz.leakScenario.explanation}</p>
+                    <p className="text-sm text-gray-300">{t(quiz.leakScenario.explanationKey)}</p>
                   </CardContent>
                 </Card>
               )}
@@ -2128,7 +2140,7 @@ function LiveExploitDrill() {
           {/* Next button */}
           {showQuizResult && (
             <Button onClick={loadQuizScenario} className="w-full">
-              下一題 <ArrowRight className="h-4 w-4 ml-2" />
+              {t("flopTexture.next")} <ArrowRight className="h-4 w-4 ml-2" />
             </Button>
           )}
         </div>
@@ -2142,6 +2154,7 @@ function LiveExploitDrill() {
 // ============================================
 
 export default function FlopTextureDrillPage() {
+  const t = useTranslations("drill");
   const [mode, setMode] = useState<DrillMode>("threelayer");
 
   return (
@@ -2149,29 +2162,29 @@ export default function FlopTextureDrillPage() {
       <div className="container mx-auto px-4 py-8 max-w-3xl">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-2xl sm:text-3xl font-bold mb-2">翻牌質地訓練</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold mb-2">{t("flopTexture.title")}</h1>
           <p className="text-gray-400">
-            學習辨識翻牌質地，掌握 C-bet 頻率與尺寸
+            {t("flopTexture.description")}
           </p>
         </div>
 
         {/* Mode Tabs */}
         <Tabs value={mode} onValueChange={(v) => setMode(v as DrillMode)} className="space-y-6">
           <TabsList className="grid w-full grid-cols-4 sm:grid-cols-7 bg-gray-800 h-auto">
-            <TabsTrigger value="checkfirst" className="text-[10px] sm:text-sm data-[state=active]:bg-purple-600">🔥挑戰</TabsTrigger>
-            <TabsTrigger value="threelayer" className="text-[10px] sm:text-sm">三層判斷</TabsTrigger>
-            <TabsTrigger value="mustcheck" className="text-[10px] sm:text-sm">必Check</TabsTrigger>
-            <TabsTrigger value="liveexploit" className="text-[10px] sm:text-sm data-[state=active]:bg-amber-600">📍線下</TabsTrigger>
-            <TabsTrigger value="classify" className="text-[10px] sm:text-sm">質地分類</TabsTrigger>
-            <TabsTrigger value="cbet" className="text-[10px] sm:text-sm">C-bet</TabsTrigger>
-            <TabsTrigger value="quick" className="text-[10px] sm:text-sm">快速辨識</TabsTrigger>
+            <TabsTrigger value="checkfirst" className="text-[10px] sm:text-sm data-[state=active]:bg-purple-600">🔥{t("flopTexture.tabs.checkFirst")}</TabsTrigger>
+            <TabsTrigger value="threelayer" className="text-[10px] sm:text-sm">{t("flopTexture.tabs.threeLayer")}</TabsTrigger>
+            <TabsTrigger value="mustcheck" className="text-[10px] sm:text-sm">{t("flopTexture.tabs.mustCheck")}</TabsTrigger>
+            <TabsTrigger value="liveexploit" className="text-[10px] sm:text-sm data-[state=active]:bg-amber-600">📍{t("flopTexture.tabs.liveExploit")}</TabsTrigger>
+            <TabsTrigger value="classify" className="text-[10px] sm:text-sm">{t("flopTexture.tabs.classify")}</TabsTrigger>
+            <TabsTrigger value="cbet" className="text-[10px] sm:text-sm">{t("flopTexture.tabs.cbet")}</TabsTrigger>
+            <TabsTrigger value="quick" className="text-[10px] sm:text-sm">{t("flopTexture.tabs.quick")}</TabsTrigger>
           </TabsList>
 
           <TabsContent value="checkfirst">
             <Card className="bg-gray-800/50 border-purple-700/50">
               <CardHeader>
-                <CardTitle className="text-lg">🔥 Check First 挑戰</CardTitle>
-                <p className="text-sm text-gray-400">連續答對 10 題「應該 Check」的場景，養成 Check First 習慣</p>
+                <CardTitle className="text-lg">🔥 {t("flopTexture.checkFirst.cardTitle")}</CardTitle>
+                <p className="text-sm text-gray-400">{t("flopTexture.checkFirst.cardDesc")}</p>
               </CardHeader>
               <CardContent>
                 <CheckFirstDrill />
@@ -2182,8 +2195,8 @@ export default function FlopTextureDrillPage() {
           <TabsContent value="liveexploit">
             <Card className="bg-gray-800/50 border-amber-700/50">
               <CardHeader>
-                <CardTitle className="text-lg">📍 線下剝削筆記</CardTitle>
-                <p className="text-sm text-gray-400">GTO vs 線下調整對照，多路底池策略</p>
+                <CardTitle className="text-lg">📍 {t("flopTexture.liveExploit.cardTitle")}</CardTitle>
+                <p className="text-sm text-gray-400">{t("flopTexture.liveExploit.cardDesc")}</p>
               </CardHeader>
               <CardContent>
                 <LiveExploitDrill />
@@ -2194,8 +2207,8 @@ export default function FlopTextureDrillPage() {
           <TabsContent value="classify">
             <Card className="bg-gray-800/50 border-gray-700">
               <CardHeader>
-                <CardTitle className="text-lg">質地分類訓練</CardTitle>
-                <p className="text-sm text-gray-400">辨識翻牌屬於 12 種質地類型中的哪一種</p>
+                <CardTitle className="text-lg">{t("flopTexture.classify.cardTitle")}</CardTitle>
+                <p className="text-sm text-gray-400">{t("flopTexture.classify.cardDesc")}</p>
               </CardHeader>
               <CardContent>
                 <ClassifyDrill />
@@ -2206,8 +2219,8 @@ export default function FlopTextureDrillPage() {
           <TabsContent value="cbet">
             <Card className="bg-gray-800/50 border-gray-700">
               <CardHeader>
-                <CardTitle className="text-lg">C-bet 策略訓練</CardTitle>
-                <p className="text-sm text-gray-400">學習不同質地的 C-bet 頻率與尺寸</p>
+                <CardTitle className="text-lg">{t("flopTexture.cbet.cardTitle")}</CardTitle>
+                <p className="text-sm text-gray-400">{t("flopTexture.cbet.cardDesc")}</p>
               </CardHeader>
               <CardContent>
                 <CbetDrill />
@@ -2218,8 +2231,8 @@ export default function FlopTextureDrillPage() {
           <TabsContent value="quick">
             <Card className="bg-gray-800/50 border-gray-700">
               <CardHeader>
-                <CardTitle className="text-lg">快速辨識訓練</CardTitle>
-                <p className="text-sm text-gray-400">10 秒內快速判斷牌面特徵</p>
+                <CardTitle className="text-lg">{t("flopTexture.quick.cardTitle")}</CardTitle>
+                <p className="text-sm text-gray-400">{t("flopTexture.quick.cardDesc")}</p>
               </CardHeader>
               <CardContent>
                 <QuickDrill />
@@ -2230,8 +2243,8 @@ export default function FlopTextureDrillPage() {
           <TabsContent value="threelayer">
             <Card className="bg-gray-800/50 border-gray-700">
               <CardHeader>
-                <CardTitle className="text-lg">三層判斷訓練</CardTitle>
-                <p className="text-sm text-gray-400">翻牌後即時決策 OS：主動權 → 變臉 → 目的</p>
+                <CardTitle className="text-lg">{t("flopTexture.threeLayer.cardTitle")}</CardTitle>
+                <p className="text-sm text-gray-400">{t("flopTexture.threeLayer.cardDesc")}</p>
               </CardHeader>
               <CardContent>
                 <ThreeLayerDrill />
@@ -2242,8 +2255,8 @@ export default function FlopTextureDrillPage() {
           <TabsContent value="mustcheck">
             <Card className="bg-gray-800/50 border-gray-700">
               <CardHeader>
-                <CardTitle className="text-lg">必 Check 情況訓練</CardTitle>
-                <p className="text-sm text-gray-400">學習何時應該 Check 而非下注</p>
+                <CardTitle className="text-lg">{t("flopTexture.mustCheck.cardTitle")}</CardTitle>
+                <p className="text-sm text-gray-400">{t("flopTexture.mustCheck.cardDesc")}</p>
               </CardHeader>
               <CardContent>
                 <MustCheckDrill />
@@ -2255,7 +2268,7 @@ export default function FlopTextureDrillPage() {
         {/* Texture Reference */}
         <Card className="mt-8 bg-gray-800/50 border-gray-700">
           <CardHeader>
-            <CardTitle className="text-lg">質地參考表</CardTitle>
+            <CardTitle className="text-lg">{t("flopTexture.referenceTable")}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 gap-2 text-sm">
