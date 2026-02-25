@@ -1,4 +1,5 @@
 // GTO Poker Trainer Service Worker
+// Bump CACHE_VERSION when changing PRECACHE_URLS or caching strategy
 const CACHE_VERSION = 3;
 const CACHE_NAME = `grindgto-v${CACHE_VERSION}`;
 const STATIC_CACHE = `grindgto-static-v${CACHE_VERSION}`;

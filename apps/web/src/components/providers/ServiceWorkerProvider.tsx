@@ -5,14 +5,9 @@ import { useEffect } from "react";
 export function ServiceWorkerProvider() {
   useEffect(() => {
     if ("serviceWorker" in navigator && process.env.NODE_ENV === "production") {
-      navigator.serviceWorker
-        .register("/sw.js")
-        .then((registration) => {
-          console.log("SW registered:", registration.scope);
-        })
-        .catch((error) => {
-          console.log("SW registration failed:", error);
-        });
+      navigator.serviceWorker.register("/sw.js").catch(() => {
+        // SW registration failed silently
+      });
     }
   }, []);
 
