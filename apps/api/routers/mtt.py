@@ -228,7 +228,7 @@ def list_mtt_ranges(format: str = Query(default="6max", description="Game format
             pf_data = get_mtt_data("push_fold")
             if format in pf_data:
                 result["push_fold"]["stack_depths"] = list(pf_data[format].keys())
-        except:
+        except Exception:
             pass
 
         # Get defense data
@@ -238,7 +238,7 @@ def list_mtt_ranges(format: str = Query(default="6max", description="Game format
                 result["defense"]["scenarios"] = list(def_data[format].keys())
                 first_scenario = list(def_data[format].keys())[0]
                 result["defense"]["stack_depths"] = list(def_data[format][first_scenario].keys())
-        except:
+        except Exception:
             pass
 
         # Get resteal data
@@ -248,7 +248,7 @@ def list_mtt_ranges(format: str = Query(default="6max", description="Game format
                 result["resteal"]["scenarios"] = list(rs_data[format].keys())
                 first_scenario = list(rs_data[format].keys())[0]
                 result["resteal"]["stack_depths"] = list(rs_data[format][first_scenario].keys())
-        except:
+        except Exception:
             pass
 
         # Get HU data
@@ -258,7 +258,7 @@ def list_mtt_ranges(format: str = Query(default="6max", description="Game format
                 result["hu"]["scenarios"] = list(hu_data[format].keys())
                 first_scenario = list(hu_data[format].keys())[0]
                 result["hu"]["stack_depths"] = list(hu_data[format][first_scenario].keys())
-        except:
+        except Exception:
             pass
 
         return {"format": format, "available": result}

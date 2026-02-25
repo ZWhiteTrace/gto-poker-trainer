@@ -1,11 +1,12 @@
 """
 GTO Solver API - Precomputed postflop strategies from Desktop Postflop.
 """
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, HTTPException, Query, Header
 from pydantic import BaseModel
 from typing import Dict, List, Optional
 from pathlib import Path
 import json
+import os
 
 router = APIRouter()
 
@@ -352,8 +353,11 @@ def list_available_boards(
 
 
 @router.delete("/cache")
-def clear_solver_cache():
-    """Clear solver data cache (for development/testing)."""
+def clear_solver_cache(x_api_key: str = Header(...)):
+    """Clear solver data cache (for development/testing). Requires X-API-Key header."""
+    expected = os.getenv("ADMIN_API_KEY", "")
+    if not expected or x_api_key != expected:
+        raise HTTPException(status_code=403, detail="Forbidden")
     _solver_cache.clear()
     return {"message": "Solver cache cleared"}
 

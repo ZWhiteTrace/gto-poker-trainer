@@ -91,7 +91,7 @@ async def analyze_hand_history(request: Request, file: UploadFile = File(...)):
     except UnicodeDecodeError:
         try:
             content_str = content.decode("utf-8-sig")
-        except:
+        except Exception:
             raise HTTPException(status_code=400, detail="Unable to decode file. Please ensure it's a valid text file.")
 
     # Parse hands

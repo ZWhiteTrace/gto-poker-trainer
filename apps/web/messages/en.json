@@ -16,7 +16,8 @@
     "total": "Total",
     "correct": "Correct",
     "accuracy": "Accuracy",
-    "streak": "Streak"
+    "streak": "Streak",
+    "retry": "Retry"
   },
   "nav": {
     "practice": "Practice",
@@ -387,7 +388,9 @@
       "tip1": "River is the final decision point - no more improvement opportunities",
       "tip2": "Consider opponent's range: what hands call? what hands fold?",
       "tip3": "Blocker effects are crucial for river bluff decisions"
-    }
+    },
+    "sizingPrompt": "You decided to bet — choose the correct size",
+    "oopDefensePrompt": "Opponent bets 75% pot — your action?"
   },
   "mtt": {
     "pushFold": {
@@ -528,7 +531,11 @@
     "priorityUnanswered": "This exam will prioritize unanswered questions",
     "priorityReview": "All questions answered, this exam will review mistakes",
     "allMastered": "Congratulations! All questions mastered",
-    "points": "pts"
+    "points": "pts",
+    "improvementAreas": "Areas to Improve",
+    "mistakes": "mistakes",
+    "recommendedReading": "Recommended Reading",
+    "recommendedReadingDesc": "Deepen your understanding with these strategy articles"
   },
   "stats": {
     "title": "Statistics",

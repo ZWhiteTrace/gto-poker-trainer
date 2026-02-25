@@ -541,12 +541,12 @@ export default function PostflopDrillPage() {
             {/* Mode-specific context */}
             {drillMode === "sizing_only" && (
               <div className="text-sm text-center mb-2 p-2 bg-primary/10 rounded-lg">
-                <span className="font-medium">你決定下注</span> — 選擇正確的尺寸
+                {t("postflop.sizingPrompt")}
               </div>
             )}
             {drillMode === "oop_defense" && (
               <div className="text-sm text-center mb-2 p-2 bg-amber-500/10 rounded-lg">
-                <span className="font-medium">對手下注 75%</span> — 你的行動？
+                {t("postflop.oopDefensePrompt")}
               </div>
             )}
 

@@ -54,24 +54,27 @@ def evaluate_action(request: EvaluateRequest):
         # Format: "rfi_UTG" or "vs_rfi_BTN_vs_UTG"
         parts = request.scenario_key.split("_")
 
-        if parts[0] == "rfi":
-            action_type = ActionType.RFI
-            hero_position = Position[parts[1]]
-            villain_position = None
-        elif parts[0] == "vs" and parts[1] == "rfi":
-            action_type = ActionType.VS_RFI
-            hero_position = Position[parts[2]]
-            villain_position = Position[parts[4]] if len(parts) > 4 else None
-        elif parts[0] == "vs" and parts[1] == "3bet":
-            action_type = ActionType.VS_3BET
-            hero_position = Position[parts[2]]
-            villain_position = Position[parts[4]] if len(parts) > 4 else None
-        elif parts[0] == "vs" and parts[1] == "4bet":
-            action_type = ActionType.VS_4BET
-            hero_position = Position[parts[2]]
-            villain_position = Position[parts[4]] if len(parts) > 4 else None
-        else:
-            raise ValueError(f"Unknown scenario key format: {request.scenario_key}")
+        try:
+            if parts[0] == "rfi" and len(parts) >= 2:
+                action_type = ActionType.RFI
+                hero_position = Position[parts[1]]
+                villain_position = None
+            elif len(parts) >= 3 and parts[0] == "vs" and parts[1] == "rfi":
+                action_type = ActionType.VS_RFI
+                hero_position = Position[parts[2]]
+                villain_position = Position[parts[4]] if len(parts) > 4 else None
+            elif len(parts) >= 3 and parts[0] == "vs" and parts[1] == "3bet":
+                action_type = ActionType.VS_3BET
+                hero_position = Position[parts[2]]
+                villain_position = Position[parts[4]] if len(parts) > 4 else None
+            elif len(parts) >= 3 and parts[0] == "vs" and parts[1] == "4bet":
+                action_type = ActionType.VS_4BET
+                hero_position = Position[parts[2]]
+                villain_position = Position[parts[4]] if len(parts) > 4 else None
+            else:
+                raise HTTPException(status_code=422, detail=f"Unknown scenario key format: {request.scenario_key}")
+        except KeyError as e:
+            raise HTTPException(status_code=422, detail=f"Invalid position in scenario key: {e}")
 
         scenario = Scenario(
             hero_position=hero_position,

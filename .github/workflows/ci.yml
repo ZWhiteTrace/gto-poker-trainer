@@ -96,8 +96,10 @@ jobs:
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium
 
-      - name: E2E tests (production)
+      - name: E2E tests (post-deploy smoke)
         run: npx playwright test --config=e2e/playwright.config.ts
         env:
+          # NOTE: Tests run against production as a post-deploy smoke test.
+          # Consider adding a staging URL for pre-merge validation.
           E2E_BASE_URL: https://grindgto.com
           E2E_EXTERNAL_SERVER: "1"

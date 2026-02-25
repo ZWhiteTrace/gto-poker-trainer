@@ -16,7 +16,8 @@
     "total": "總計",
     "correct": "正確",
     "accuracy": "準確率",
-    "streak": "連續"
+    "streak": "連續",
+    "retry": "重試"
   },
   "nav": {
     "practice": "練習",
@@ -386,7 +387,9 @@
       "tip1": "河牌是最後的決策點，沒有後續改進機會",
       "tip2": "考慮對手的範圍：什麼牌會跟注？什麼牌會棄牌？",
       "tip3": "Blocker 效應在河牌 bluff 決策中非常重要"
-    }
+    },
+    "sizingPrompt": "你決定下注 — 選擇正確的尺寸",
+    "oopDefensePrompt": "對手下注 75% 底池 — 你的行動？"
   },
   "mtt": {
     "pushFold": {
@@ -527,7 +530,11 @@
     "priorityUnanswered": "本次考試將優先出未作答的題目",
     "priorityReview": "所有題目已作答，本次將複習錯題",
     "allMastered": "恭喜！所有題目都已掌握",
-    "points": "分"
+    "points": "分",
+    "improvementAreas": "需要加強的領域",
+    "mistakes": "次錯誤",
+    "recommendedReading": "推薦閱讀",
+    "recommendedReadingDesc": "透過這些策略文章加深理解"
   },
   "stats": {
     "title": "統計數據",
