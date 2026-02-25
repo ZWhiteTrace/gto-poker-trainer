@@ -547,7 +547,7 @@ def evaluate_texture_drill(
         raise HTTPException(status_code=404, detail=f"Hand '{hand}' not found in texture")
 
     # Extract note if present
-    note = hand_data.pop("note", None) if isinstance(hand_data, dict) else None
+    note = hand_data.get("note", None) if isinstance(hand_data, dict) else None
 
     # Calculate if correct (within 20% of optimal frequency)
     user_action_base = user_action.split("_")[0] if "_" in user_action else user_action

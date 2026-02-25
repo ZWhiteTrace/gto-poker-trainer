@@ -82,8 +82,11 @@ async def analyze_hand_history(request: Request, file: UploadFile = File(...)):
     if not file.filename.endswith(".txt"):
         raise HTTPException(status_code=400, detail="Only .txt files are supported")
 
+    MAX_FILE_SIZE = 10 * 1024 * 1024  # 10MB
     try:
         content = await file.read()
+        if len(content) > MAX_FILE_SIZE:
+            raise HTTPException(status_code=413, detail="File too large. Maximum size is 10MB.")
         content_str = content.decode("utf-8")
     except UnicodeDecodeError:
         try:
