@@ -3,13 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { RefreshCw, CheckCircle2, XCircle, Trophy, Coins } from "lucide-react";
@@ -56,7 +50,11 @@ interface ImpliedOddsQuestion extends BaseQuestion {
   correctAnswer: "call" | "fold";
 }
 
-type Question = PotOddsQuestion | CallDecisionQuestion | EVCalculationQuestion | ImpliedOddsQuestion;
+type Question =
+  | PotOddsQuestion
+  | CallDecisionQuestion
+  | EVCalculationQuestion
+  | ImpliedOddsQuestion;
 
 const QUESTION_CONFIGS = {
   pot_odds: {
@@ -88,21 +86,23 @@ const QUESTION_CONFIGS = {
 // Generate random pot odds question
 function generatePotOddsQuestion(): PotOddsQuestion {
   const scenarios = [
-    { potSize: 100, betSize: 50 },  // 25% equity needed
+    { potSize: 100, betSize: 50 }, // 25% equity needed
     { potSize: 100, betSize: 100 }, // 33% equity needed
-    { potSize: 100, betSize: 75 },  // 30% equity needed
+    { potSize: 100, betSize: 75 }, // 30% equity needed
     { potSize: 200, betSize: 100 }, // 25% equity needed
-    { potSize: 150, betSize: 50 },  // 20% equity needed
-    { potSize: 80, betSize: 40 },   // 25% equity needed
-    { potSize: 120, betSize: 60 },  // 25% equity needed
-    { potSize: 100, betSize: 33 },  // 20% equity needed
+    { potSize: 150, betSize: 50 }, // 20% equity needed
+    { potSize: 80, betSize: 40 }, // 25% equity needed
+    { potSize: 120, betSize: 60 }, // 25% equity needed
+    { potSize: 100, betSize: 33 }, // 20% equity needed
     { potSize: 200, betSize: 200 }, // 33% equity needed
-    { potSize: 50, betSize: 50 },   // 33% equity needed
+    { potSize: 50, betSize: 50 }, // 33% equity needed
   ];
 
   const scenario = scenarios[Math.floor(Math.random() * scenarios.length)];
   // Required equity = bet / (pot + bet + bet) = bet / (pot + 2*bet)
-  const requiredEquity = Math.round((scenario.betSize / (scenario.potSize + 2 * scenario.betSize)) * 100);
+  const requiredEquity = Math.round(
+    (scenario.betSize / (scenario.potSize + 2 * scenario.betSize)) * 100
+  );
 
   return {
     type: "pot_odds",
@@ -181,7 +181,9 @@ function generateImpliedOddsQuestion(): ImpliedOddsQuestion {
 }
 
 function generateQuestion(type?: QuestionType): Question {
-  const types: QuestionType[] = type ? [type] : ["pot_odds", "call_decision", "ev_calculation", "implied_odds"];
+  const types: QuestionType[] = type
+    ? [type]
+    : ["pot_odds", "call_decision", "ev_calculation", "implied_odds"];
   const selectedType = types[Math.floor(Math.random() * types.length)];
 
   switch (selectedType) {
@@ -230,11 +232,11 @@ function generateEVChoices(correct: number): number[] {
 function ChipStack({ amount, label }: { amount: number; label: string }) {
   return (
     <div className="flex flex-col items-center">
-      <div className="text-xs text-muted-foreground mb-1">{label}</div>
-      <div className="flex items-center gap-1.5 bg-muted/50 px-3 py-2 rounded-lg">
+      <div className="text-muted-foreground mb-1 text-xs">{label}</div>
+      <div className="bg-muted/50 flex items-center gap-1.5 rounded-lg px-3 py-2">
         <Coins className="h-4 w-4 text-yellow-500" />
-        <span className="font-bold text-lg">{amount}</span>
-        <span className="text-sm text-muted-foreground">BB</span>
+        <span className="text-lg font-bold">{amount}</span>
+        <span className="text-muted-foreground text-sm">BB</span>
       </div>
     </div>
   );
@@ -294,7 +296,7 @@ export default function EVQuizPage() {
     return (
       <div className="container max-w-2xl py-8">
         <div className="flex items-center justify-center py-12">
-          <RefreshCw className="h-8 w-8 animate-spin text-muted-foreground" />
+          <RefreshCw className="text-muted-foreground h-8 w-8 animate-spin" />
         </div>
       </div>
     );
@@ -311,21 +313,21 @@ export default function EVQuizPage() {
       </div>
 
       {/* Score */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="mb-6 flex items-center justify-between">
         <div className="flex items-center gap-4">
-          <Badge variant="outline" className="text-lg px-3 py-1">
-            <Trophy className="h-4 w-4 mr-1" />
+          <Badge variant="outline" className="px-3 py-1 text-lg">
+            <Trophy className="mr-1 h-4 w-4" />
             {score.correct}/{score.total}
           </Badge>
           <span className="text-muted-foreground">{accuracy}%</span>
           {cumulativeStats.total > 0 && (
-            <span className="text-xs text-muted-foreground">
+            <span className="text-muted-foreground text-xs">
               ({t("drill.allTime")}: {cumulativeStats.correct}/{cumulativeStats.total})
             </span>
           )}
         </div>
         <select
-          className="bg-muted px-3 py-1.5 rounded-md text-sm"
+          className="bg-muted rounded-md px-3 py-1.5 text-sm"
           value={category}
           onChange={(e) => {
             setCategory(e.target.value as QuestionType | "all");
@@ -350,8 +352,8 @@ export default function EVQuizPage() {
                 question.difficulty === "easy"
                   ? "default"
                   : question.difficulty === "medium"
-                  ? "secondary"
-                  : "destructive"
+                    ? "secondary"
+                    : "destructive"
               }
             >
               {questionConfig.nameZh}
@@ -366,27 +368,29 @@ export default function EVQuizPage() {
         </CardHeader>
         <CardContent>
           {/* Scenario Display */}
-          <div className="bg-green-900/20 rounded-lg p-4 mb-6">
-            <div className="flex justify-center gap-6 mb-4">
+          <div className="mb-6 rounded-lg bg-green-900/20 p-4">
+            <div className="mb-4 flex justify-center gap-6">
               <ChipStack amount={question.potSize} label={t("quiz.ev.pot")} />
               <ChipStack amount={question.betSize} label={t("quiz.ev.villainBet")} />
             </div>
 
             {(question.type === "call_decision" || question.type === "ev_calculation") && (
               <div className="text-center">
-                <span className="text-sm text-muted-foreground">{t("quiz.ev.yourEquity")}: </span>
-                <span className="font-bold text-lg text-primary">{question.yourEquity}%</span>
+                <span className="text-muted-foreground text-sm">{t("quiz.ev.yourEquity")}: </span>
+                <span className="text-primary text-lg font-bold">{question.yourEquity}%</span>
               </div>
             )}
 
             {question.type === "implied_odds" && (
-              <div className="text-center space-y-1">
+              <div className="space-y-1 text-center">
                 <div>
-                  <span className="text-sm text-muted-foreground">{t("quiz.ev.yourEquity")}: </span>
-                  <span className="font-bold text-primary">{question.yourEquity}%</span>
+                  <span className="text-muted-foreground text-sm">{t("quiz.ev.yourEquity")}: </span>
+                  <span className="text-primary font-bold">{question.yourEquity}%</span>
                 </div>
                 <div>
-                  <span className="text-sm text-muted-foreground">{t("quiz.ev.effectiveStack")}: </span>
+                  <span className="text-muted-foreground text-sm">
+                    {t("quiz.ev.effectiveStack")}:{" "}
+                  </span>
                   <span className="font-bold">{question.stacksRemaining} BB</span>
                 </div>
               </div>
@@ -394,12 +398,14 @@ export default function EVQuizPage() {
           </div>
 
           {/* Choices */}
-          <div className={cn(
-            "grid gap-3",
-            question.type === "call_decision" || question.type === "implied_odds"
-              ? "grid-cols-2"
-              : "grid-cols-2 sm:grid-cols-4"
-          )}>
+          <div
+            className={cn(
+              "grid gap-3",
+              question.type === "call_decision" || question.type === "implied_odds"
+                ? "grid-cols-2"
+                : "grid-cols-2 sm:grid-cols-4"
+            )}
+          >
             {choices.map((choice) => {
               const isSelected = selectedAnswer === choice;
               const showResult = selectedAnswer !== null;
@@ -413,15 +419,16 @@ export default function EVQuizPage() {
                       ? isCorrect
                         ? "default"
                         : isSelected
-                        ? "destructive"
-                        : "outline"
+                          ? "destructive"
+                          : "outline"
                       : "outline"
                   }
                   className={cn(
-                    "h-auto py-4 flex flex-col gap-1",
+                    "flex h-auto flex-col gap-1 py-4",
                     showResult && isCorrect && "bg-green-600 hover:bg-green-600",
                     showResult && isSelected && !isCorrect && "bg-red-600",
-                    (question.type === "call_decision" || question.type === "implied_odds") && "py-6"
+                    (question.type === "call_decision" || question.type === "implied_odds") &&
+                      "py-6"
                   )}
                   onClick={() => handleChoice(choice)}
                   disabled={showResult}
@@ -429,11 +436,13 @@ export default function EVQuizPage() {
                   {typeof choice === "number" ? (
                     <>
                       <span className="text-2xl font-bold">
-                        {question.type === "ev_calculation" ? (choice >= 0 ? `+${choice}` : choice) : choice}
+                        {question.type === "ev_calculation"
+                          ? choice >= 0
+                            ? `+${choice}`
+                            : choice
+                          : choice}
                       </span>
-                      <span className="text-xs">
-                        {question.type === "pot_odds" ? "%" : "BB"}
-                      </span>
+                      <span className="text-xs">{question.type === "pot_odds" ? "%" : "BB"}</span>
                     </>
                   ) : (
                     <span className="text-xl font-bold">
@@ -451,19 +460,22 @@ export default function EVQuizPage() {
           {selectedAnswer !== null && (
             <div className="mt-6 text-center">
               {selectedAnswer === question.correctAnswer ? (
-                <p className="text-green-500 font-medium">{t("drill.result.correct")}</p>
+                <p className="font-medium text-green-500">{t("drill.result.correct")}</p>
               ) : (
-                <p className="text-red-500 font-medium">
+                <p className="font-medium text-red-500">
                   {t("drill.result.incorrect")} - {t("quiz.correctAnswer")}:{" "}
                   {question.type === "pot_odds" && `${question.correctAnswer}%`}
-                  {question.type === "call_decision" && (question.correctAnswer === "call" ? t("quiz.ev.call") : t("quiz.ev.fold"))}
-                  {question.type === "ev_calculation" && `${question.correctAnswer >= 0 ? "+" : ""}${question.correctAnswer} BB`}
-                  {question.type === "implied_odds" && (question.correctAnswer === "call" ? t("quiz.ev.call") : t("quiz.ev.fold"))}
+                  {question.type === "call_decision" &&
+                    (question.correctAnswer === "call" ? t("quiz.ev.call") : t("quiz.ev.fold"))}
+                  {question.type === "ev_calculation" &&
+                    `${question.correctAnswer >= 0 ? "+" : ""}${question.correctAnswer} BB`}
+                  {question.type === "implied_odds" &&
+                    (question.correctAnswer === "call" ? t("quiz.ev.call") : t("quiz.ev.fold"))}
                 </p>
               )}
 
               {/* Explanation */}
-              <div className="mt-3 text-sm text-muted-foreground bg-muted/30 p-3 rounded-lg text-left">
+              <div className="text-muted-foreground bg-muted/30 mt-3 rounded-lg p-3 text-left text-sm">
                 {question.type === "pot_odds" && (
                   <p>
                     {t("quiz.ev.explainPotOdds", {
@@ -476,19 +488,20 @@ export default function EVQuizPage() {
                 {question.type === "call_decision" && (
                   <p>
                     {t("quiz.ev.explainDecision", {
-                      required: Math.round((question.betSize / (question.potSize + 2 * question.betSize)) * 100),
+                      required: Math.round(
+                        (question.betSize / (question.potSize + 2 * question.betSize)) * 100
+                      ),
                       yours: question.yourEquity,
                     })}
                   </p>
                 )}
                 {question.type === "ev_calculation" && (
                   <p>
-                    EV = ({question.yourEquity}% × {question.potSize + question.betSize}) - ({100 - question.yourEquity}% × {question.betSize}) = {question.correctAnswer} BB
+                    EV = ({question.yourEquity}% × {question.potSize + question.betSize}) - (
+                    {100 - question.yourEquity}% × {question.betSize}) = {question.correctAnswer} BB
                   </p>
                 )}
-                {question.type === "implied_odds" && (
-                  <p>{t("quiz.ev.explainImplied")}</p>
-                )}
+                {question.type === "implied_odds" && <p>{t("quiz.ev.explainImplied")}</p>}
               </div>
 
               <Button onClick={generateNewQuestion} className="mt-4">
@@ -504,7 +517,7 @@ export default function EVQuizPage() {
         <CardHeader>
           <CardTitle className="text-base">{t("quiz.ev.tipsTitle")}</CardTitle>
         </CardHeader>
-        <CardContent className="text-sm text-muted-foreground space-y-2">
+        <CardContent className="text-muted-foreground space-y-2 text-sm">
           <p>{t("quiz.ev.tipPotOdds")}</p>
           <p>{t("quiz.ev.tipEV")}</p>
           <p>{t("quiz.ev.tipImplied")}</p>

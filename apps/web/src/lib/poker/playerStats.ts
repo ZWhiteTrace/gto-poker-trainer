@@ -17,7 +17,11 @@ export const INITIAL_PLAYER_STATS = DEFAULT_HERO_STATS;
 /**
  * Safe division helper - returns default if result would be NaN or invalid
  */
-function safeDivide(numerator: number | undefined, denominator: number | undefined, defaultValue: number): number {
+function safeDivide(
+  numerator: number | undefined,
+  denominator: number | undefined,
+  defaultValue: number
+): number {
   if (denominator === undefined || denominator === 0 || numerator === undefined) {
     return defaultValue;
   }
@@ -43,8 +47,8 @@ export function getPlayerVPIP(stats: HeroStats): number {
  * Shows how often a player raises preflop
  */
 export function getPlayerPFR(stats: HeroStats): number {
-  if (!stats || stats.handsPlayed === 0) return 0.20; // Default assumption
-  return safeDivide(stats.handsPFR, stats.handsPlayed, 0.20);
+  if (!stats || stats.handsPlayed === 0) return 0.2; // Default assumption
+  return safeDivide(stats.handsPFR, stats.handsPlayed, 0.2);
 }
 
 /**
@@ -92,8 +96,8 @@ export function getFlopCBet(stats: HeroStats): number {
  * Calculate Turn C-Bet percentage
  */
 export function getTurnCBet(stats: HeroStats): number {
-  if (!stats || stats.turnCBetOpportunity === 0) return 0.50; // Default assumption
-  return safeDivide(stats.turnCBet, stats.turnCBetOpportunity, 0.50);
+  if (!stats || stats.turnCBetOpportunity === 0) return 0.5; // Default assumption
+  return safeDivide(stats.turnCBet, stats.turnCBetOpportunity, 0.5);
 }
 
 /**
@@ -220,7 +224,7 @@ export function getPlayerType(stats: HeroStats): string {
   if (vpip < 0.22 && pfr > 0.16 && taf > 2.5) return "TAG";
   if (vpip > 0.28 && pfr > 0.22 && taf > 2.5) return "LAG";
   if (vpip > 0.35 && gap > 0.15) return "Calling Station";
-  if (vpip > 0.40 && taf > 3.5) return "Maniac";
+  if (vpip > 0.4 && taf > 3.5) return "Maniac";
   if (vpip > 0.35 && taf < 1.5) return "Fish";
 
   return "Regular";

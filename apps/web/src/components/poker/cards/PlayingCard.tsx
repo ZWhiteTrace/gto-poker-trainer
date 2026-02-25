@@ -36,8 +36,8 @@ export const PlayingCard = memo(function PlayingCard({
   return (
     <div
       className={cn(
-        "relative bg-white dark:bg-gray-100 rounded-lg shadow-md flex flex-col items-center justify-center border-2",
-        highlighted ? "border-primary ring-2 ring-primary/50" : "border-gray-200",
+        "relative flex flex-col items-center justify-center rounded-lg border-2 bg-white shadow-md dark:bg-gray-100",
+        highlighted ? "border-primary ring-primary/50 ring-2" : "border-gray-200",
         sizeClasses[size],
         className
       )}
@@ -57,16 +57,16 @@ export const CardBack = memo(function CardBack({ size = "md", className }: CardB
   return (
     <div
       className={cn(
-        "relative rounded-lg shadow-md flex items-center justify-center border-2 border-gray-300",
+        "relative flex items-center justify-center rounded-lg border-2 border-gray-300 shadow-md",
         "bg-gradient-to-br from-blue-600 to-blue-800",
         sizeClasses[size],
         className
       )}
     >
       {/* Card back pattern */}
-      <div className="absolute inset-2 border-2 border-blue-400/30 rounded">
-        <div className="w-full h-full flex items-center justify-center">
-          <div className="w-4 h-4 border-2 border-blue-400/50 rounded-full" />
+      <div className="absolute inset-2 rounded border-2 border-blue-400/30">
+        <div className="flex h-full w-full items-center justify-center">
+          <div className="h-4 w-4 rounded-full border-2 border-blue-400/50" />
         </div>
       </div>
     </div>

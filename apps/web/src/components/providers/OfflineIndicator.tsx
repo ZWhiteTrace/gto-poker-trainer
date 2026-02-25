@@ -38,10 +38,8 @@ export function OfflineIndicator() {
   return (
     <div
       className={cn(
-        "fixed top-0 left-0 right-0 z-50 flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium transition-all duration-300",
-        isOnline
-          ? "bg-green-600 text-white"
-          : "bg-amber-600 text-white"
+        "fixed top-0 right-0 left-0 z-50 flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium transition-all duration-300",
+        isOnline ? "bg-green-600 text-white" : "bg-amber-600 text-white"
       )}
     >
       {isOnline ? (

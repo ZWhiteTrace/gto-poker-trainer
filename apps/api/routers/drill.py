@@ -1,13 +1,12 @@
 """
 Drill generation endpoints.
 """
+
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
-from typing import Optional, List
 
-from core.hand import Hand, random_hand
-from core.position import Position, POSITIONS_6MAX
-from core.scenario import Scenario, ActionType
+from core.position import Position
+from core.scenario import ActionType
 from trainer.drill import PreflopDrill
 
 router = APIRouter()
@@ -15,17 +14,17 @@ router = APIRouter()
 
 class DrillRequest(BaseModel):
     drill_type: str  # "rfi", "vs_rfi", "vs_3bet", "vs_4bet"
-    hero_position: Optional[str] = None
-    villain_position: Optional[str] = None
-    enabled_positions: Optional[List[str]] = None
+    hero_position: str | None = None
+    villain_position: str | None = None
+    enabled_positions: list[str] | None = None
 
 
 class SpotResponse(BaseModel):
     hand: str
     hero_position: str
-    villain_position: Optional[str]
+    villain_position: str | None
     action_type: str
-    available_actions: List[str]
+    available_actions: list[str]
     scenario_key: str
 
 
@@ -33,7 +32,7 @@ class SpotResponse(BaseModel):
 _drill_cache = {}
 
 
-def get_drill(drill_type: str, positions: List[str] = None) -> PreflopDrill:
+def get_drill(drill_type: str, positions: list[str] = None) -> PreflopDrill:
     """Get or create a drill engine."""
     cache_key = f"{drill_type}_{positions}"
     if cache_key not in _drill_cache:
@@ -71,7 +70,9 @@ def generate_spot(request: DrillRequest):
         return SpotResponse(
             hand=spot.hand.notation,
             hero_position=spot.scenario.hero_position.name,
-            villain_position=spot.scenario.villain_position.name if spot.scenario.villain_position else None,
+            villain_position=spot.scenario.villain_position.name
+            if spot.scenario.villain_position
+            else None,
             action_type=spot.scenario.action_type.value,
             available_actions=spot.scenario.available_actions,
             scenario_key=spot.scenario.scenario_key,

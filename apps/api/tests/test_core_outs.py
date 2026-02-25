@@ -1,23 +1,23 @@
 """
 Unit tests for outs calculation and hand evaluation.
 """
-import pytest
-import sys
+
 import os
+import sys
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from core.outs import (
     Card,
-    parse_cards,
+    DrawType,
+    HandStrength,
     calculate_outs,
-    evaluate_hand_strength,
-    count_suits,
     count_ranks,
+    count_suits,
+    evaluate_hand_strength,
     has_flush,
     has_straight,
-    HandStrength,
-    DrawType,
+    parse_cards,
 )
 
 
@@ -60,7 +60,7 @@ class TestCardParsing:
         ten = Card("T", "s")
 
         assert ace.value == 12  # Highest
-        assert two.value == 0   # Lowest
+        assert two.value == 0  # Lowest
         assert ten.value == 8
 
 

@@ -2,16 +2,15 @@
 Postflop outs calculator and quiz module.
 Calculates outs, draw types, and equity based on hole cards + board.
 """
+
 import random
-from dataclasses import dataclass, field
-from typing import List, Tuple, Optional, Set
+from dataclasses import dataclass
 from enum import Enum
 
-
 # Card ranks and suits
-RANKS = ['2', '3', '4', '5', '6', '7', '8', '9', 'T', 'J', 'Q', 'K', 'A']
-SUITS = ['s', 'h', 'd', 'c']  # spades, hearts, diamonds, clubs
-SUIT_SYMBOLS = {'s': '♠', 'h': '♥', 'd': '♦', 'c': '♣'}
+RANKS = ["2", "3", "4", "5", "6", "7", "8", "9", "T", "J", "Q", "K", "A"]
+SUITS = ["s", "h", "d", "c"]  # spades, hearts, diamonds, clubs
+SUIT_SYMBOLS = {"s": "♠", "h": "♥", "d": "♦", "c": "♣"}
 
 RANK_VALUES = {r: i for i, r in enumerate(RANKS)}
 
@@ -19,6 +18,7 @@ RANK_VALUES = {r: i for i, r in enumerate(RANKS)}
 @dataclass
 class Card:
     """A single playing card."""
+
     rank: str  # '2'-'9', 'T', 'J', 'Q', 'K', 'A'
     suit: str  # 's', 'h', 'd', 'c'
 
@@ -36,26 +36,28 @@ class Card:
         return RANK_VALUES[self.rank]
 
     @classmethod
-    def from_string(cls, s: str) -> 'Card':
+    def from_string(cls, s: str) -> "Card":
         """Parse card from string like 'As', 'Kh', 'Td'."""
         return cls(rank=s[0].upper(), suit=s[1].lower())
 
 
 class DrawType(Enum):
     """Types of draws."""
-    FLUSH_DRAW = "flush_draw"           # 4 to a flush (9 outs)
-    OESD = "oesd"                       # Open-ended straight draw (8 outs)
-    GUTSHOT = "gutshot"                 # Gutshot straight draw (4 outs)
-    DOUBLE_GUTSHOT = "double_gutshot"   # Double gutshot (8 outs)
-    OVERCARDS = "overcards"             # Two overcards (6 outs)
-    ONE_OVERCARD = "one_overcard"       # One overcard (3 outs)
-    SET_DRAW = "set_draw"               # Pocket pair to set (2 outs)
-    TWO_PAIR_DRAW = "two_pair_draw"     # One pair to two pair (5 outs)
-    COMBO_DRAW = "combo_draw"           # Flush draw + straight draw
+
+    FLUSH_DRAW = "flush_draw"  # 4 to a flush (9 outs)
+    OESD = "oesd"  # Open-ended straight draw (8 outs)
+    GUTSHOT = "gutshot"  # Gutshot straight draw (4 outs)
+    DOUBLE_GUTSHOT = "double_gutshot"  # Double gutshot (8 outs)
+    OVERCARDS = "overcards"  # Two overcards (6 outs)
+    ONE_OVERCARD = "one_overcard"  # One overcard (3 outs)
+    SET_DRAW = "set_draw"  # Pocket pair to set (2 outs)
+    TWO_PAIR_DRAW = "two_pair_draw"  # One pair to two pair (5 outs)
+    COMBO_DRAW = "combo_draw"  # Flush draw + straight draw
 
 
 class HandStrength(Enum):
     """Current hand strength categories."""
+
     HIGH_CARD = 0
     ONE_PAIR = 1
     TWO_PAIR = 2
@@ -71,42 +73,43 @@ class HandStrength(Enum):
 @dataclass
 class OutsResult:
     """Result of outs calculation."""
+
     hand_strength: HandStrength
     hand_description: str
     hand_description_zh: str
-    draws: List[Tuple[DrawType, int, List['Card']]]  # (draw type, outs count, specific out cards)
+    draws: list[tuple[DrawType, int, list["Card"]]]  # (draw type, outs count, specific out cards)
     total_outs: int
     turn_probability: float  # Probability of hitting on turn
     river_probability: float  # Probability of hitting on turn OR river
-    out_cards: List[Card]  # Specific cards that are outs
-    notes: List[str]
+    out_cards: list[Card]  # Specific cards that are outs
+    notes: list[str]
 
 
-def create_deck() -> List[Card]:
+def create_deck() -> list[Card]:
     """Create a standard 52-card deck."""
     return [Card(r, s) for r in RANKS for s in SUITS]
 
 
-def parse_cards(cards_str: str) -> List[Card]:
+def parse_cards(cards_str: str) -> list[Card]:
     """Parse cards from string like 'AsKh' or 'As Kh Qd'."""
-    cards_str = cards_str.replace(' ', '')
+    cards_str = cards_str.replace(" ", "")
     cards = []
     i = 0
     while i < len(cards_str):
-        cards.append(Card.from_string(cards_str[i:i+2]))
+        cards.append(Card.from_string(cards_str[i : i + 2]))
         i += 2
     return cards
 
 
-def count_suits(cards: List[Card]) -> dict:
+def count_suits(cards: list[Card]) -> dict:
     """Count cards by suit."""
-    counts = {'s': 0, 'h': 0, 'd': 0, 'c': 0}
+    counts = {"s": 0, "h": 0, "d": 0, "c": 0}
     for card in cards:
         counts[card.suit] += 1
     return counts
 
 
-def count_ranks(cards: List[Card]) -> dict:
+def count_ranks(cards: list[Card]) -> dict:
     """Count cards by rank."""
     counts = {r: 0 for r in RANKS}
     for card in cards:
@@ -114,12 +117,12 @@ def count_ranks(cards: List[Card]) -> dict:
     return counts
 
 
-def get_rank_values(cards: List[Card]) -> List[int]:
+def get_rank_values(cards: list[Card]) -> list[int]:
     """Get sorted rank values."""
     return sorted([c.value for c in cards])
 
 
-def has_flush(cards: List[Card]) -> Optional[str]:
+def has_flush(cards: list[Card]) -> str | None:
     """Check if 5+ cards of same suit. Returns suit or None."""
     suit_counts = count_suits(cards)
     for suit, count in suit_counts.items():
@@ -128,7 +131,7 @@ def has_flush(cards: List[Card]) -> Optional[str]:
     return None
 
 
-def has_straight(cards: List[Card]) -> bool:
+def has_straight(cards: list[Card]) -> bool:
     """Check if there's a 5-card straight."""
     values = set(c.value for c in cards)
     # Check for A-2-3-4-5 (wheel)
@@ -141,14 +144,16 @@ def has_straight(cards: List[Card]) -> bool:
     return False
 
 
-def evaluate_hand_strength(hole_cards: List[Card], board: List[Card]) -> Tuple[HandStrength, str, str]:
+def evaluate_hand_strength(
+    hole_cards: list[Card], board: list[Card]
+) -> tuple[HandStrength, str, str]:
     """
     Evaluate the current hand strength.
     Returns (strength, description_en, description_zh)
     """
     all_cards = hole_cards + board
     rank_counts = count_ranks(all_cards)
-    suit_counts = count_suits(all_cards)
+    count_suits(all_cards)
 
     # Count pairs, trips, quads
     pairs = [r for r, c in rank_counts.items() if c == 2]
@@ -174,10 +179,14 @@ def evaluate_hand_strength(hole_cards: List[Card], board: List[Card]) -> Tuple[H
         return HandStrength.FOUR_OF_A_KIND, f"Four of a Kind ({quads[0]}s)", f"四條 {quads[0]}"
 
     if trips and pairs:
-        return HandStrength.FULL_HOUSE, f"Full House ({trips[0]}s full of {pairs[0]}s)", f"葫蘆 {trips[0]} 帶 {pairs[0]}"
+        return (
+            HandStrength.FULL_HOUSE,
+            f"Full House ({trips[0]}s full of {pairs[0]}s)",
+            f"葫蘆 {trips[0]} 帶 {pairs[0]}",
+        )
 
     if flush_suit:
-        return HandStrength.FLUSH, f"Flush ({flush_suit})", f"同花"
+        return HandStrength.FLUSH, f"Flush ({flush_suit})", "同花"
 
     if is_straight:
         return HandStrength.STRAIGHT, "Straight", "順子"
@@ -187,7 +196,11 @@ def evaluate_hand_strength(hole_cards: List[Card], board: List[Card]) -> Tuple[H
 
     if len(pairs) >= 2:
         sorted_pairs = sorted(pairs, key=lambda r: RANK_VALUES[r], reverse=True)
-        return HandStrength.TWO_PAIR, f"Two Pair ({sorted_pairs[0]}s and {sorted_pairs[1]}s)", f"兩對 {sorted_pairs[0]} 和 {sorted_pairs[1]}"
+        return (
+            HandStrength.TWO_PAIR,
+            f"Two Pair ({sorted_pairs[0]}s and {sorted_pairs[1]}s)",
+            f"兩對 {sorted_pairs[0]} 和 {sorted_pairs[1]}",
+        )
 
     if pairs:
         # Check if pair uses hole cards
@@ -202,7 +215,7 @@ def evaluate_hand_strength(hole_cards: List[Card], board: List[Card]) -> Tuple[H
     return HandStrength.HIGH_CARD, f"High Card ({high_card.rank})", f"高牌 {high_card.rank}"
 
 
-def calculate_outs(hole_cards: List[Card], board: List[Card]) -> OutsResult:
+def calculate_outs(hole_cards: list[Card], board: list[Card]) -> OutsResult:
     """
     Calculate outs for improving the hand.
 
@@ -242,7 +255,7 @@ def calculate_outs(hole_cards: List[Card], board: List[Card]) -> OutsResult:
 
     # OESD check (open-ended straight draw)
     for i in range(len(values) - 3):
-        seq = values[i:i+4]
+        seq = values[i : i + 4]
         if seq[-1] - seq[0] == 3:  # 4 consecutive
             # Check both ends
             low_out = seq[0] - 1
@@ -257,7 +270,9 @@ def calculate_outs(hole_cards: List[Card], board: List[Card]) -> OutsResult:
                 out_cards.update(oesd_outs)
                 low_rank = RANKS[low_out] if low_out >= 0 else None
                 high_rank = RANKS[high_out] if high_out <= 12 else None
-                notes.append(f"兩頭順子聽牌 (OESD): {fmt_rank(low_rank) if low_rank else ''} 或 {fmt_rank(high_rank) if high_rank else ''}")
+                notes.append(
+                    f"兩頭順子聽牌 (OESD): {fmt_rank(low_rank) if low_rank else ''} 或 {fmt_rank(high_rank) if high_rank else ''}"
+                )
 
     # Gutshot check
     for target_low in range(9):  # Check all possible straights
@@ -280,7 +295,9 @@ def calculate_outs(hole_cards: List[Card], board: List[Card]) -> OutsResult:
         hole_high_cards = [c for c in hole_cards if c.value > board_high]
         if len(hole_high_cards) == 2:
             # Two overcards = 6 outs (3 per card)
-            overcard_outs = [c for c in remaining_deck if c.rank in [hc.rank for hc in hole_high_cards]]
+            overcard_outs = [
+                c for c in remaining_deck if c.rank in [hc.rank for hc in hole_high_cards]
+            ]
             draws.append((DrawType.OVERCARDS, len(overcard_outs), overcard_outs))
             out_cards.update(overcard_outs)
             ranks_str = " ".join([fmt_rank(hc.rank) for hc in hole_high_cards])
@@ -308,8 +325,11 @@ def calculate_outs(hole_cards: List[Card], board: List[Card]) -> OutsResult:
     if len(board) == 3:  # Flop
         turn_prob = total_outs / remaining_cards * 100
         # River probability uses rule of 4 approximation (or exact calculation)
-        river_prob = (1 - ((remaining_cards - total_outs) / remaining_cards) *
-                     ((remaining_cards - 1 - total_outs) / (remaining_cards - 1))) * 100
+        river_prob = (
+            1
+            - ((remaining_cards - total_outs) / remaining_cards)
+            * ((remaining_cards - 1 - total_outs) / (remaining_cards - 1))
+        ) * 100
     else:  # Turn
         turn_prob = total_outs / remaining_cards * 100
         river_prob = turn_prob
@@ -330,8 +350,9 @@ def calculate_outs(hole_cards: List[Card], board: List[Card]) -> OutsResult:
 @dataclass
 class OutsQuestion:
     """A single outs quiz question."""
-    hole_cards: List[Card]
-    board: List[Card]
+
+    hole_cards: list[Card]
+    board: list[Card]
     result: OutsResult
     question_type: str  # "outs_count" or "probability"
 
@@ -342,7 +363,7 @@ class OutsQuiz:
     def __init__(self):
         self.scenarios = self._generate_scenarios()
 
-    def _generate_scenarios(self) -> List[dict]:
+    def _generate_scenarios(self) -> list[dict]:
         """Generate interesting scenarios for practice."""
         # Pre-defined interesting scenarios
         return [
@@ -350,20 +371,16 @@ class OutsQuiz:
             {"hole": "AsKs", "board": "Qs7s2h", "desc": "Nut flush draw"},
             {"hole": "JsTs", "board": "9s8h2c", "desc": "Flush draw + OESD"},
             {"hole": "AhKh", "board": "Qh5h3c", "desc": "Flush draw + overcards"},
-
             # Straight draws
             {"hole": "JhTc", "board": "9s8d2h", "desc": "Open-ended straight draw"},
             {"hole": "QhJc", "board": "Ts8d3h", "desc": "Gutshot straight draw"},
             {"hole": "9h8h", "board": "7s6d2c", "desc": "OESD with suited"},
-
             # Overcards
             {"hole": "AhKc", "board": "Qs7d3h", "desc": "Two overcards"},
             {"hole": "AhQc", "board": "Js8d4h", "desc": "Ace high with overcard"},
-
             # Set draws
             {"hole": "JhJc", "board": "Ks8d4h", "desc": "Pocket pair under"},
             {"hole": "7h7c", "board": "As9d3h", "desc": "Small pocket pair"},
-
             # Combo draws
             {"hole": "AsQs", "board": "Ks Js 4h", "desc": "Royal flush draw"},
             {"hole": "8h7h", "board": "9h6h2c", "desc": "Flush draw + OESD (monster)"},
@@ -384,7 +401,7 @@ class OutsQuiz:
             question_type=question_type,
         )
 
-    def generate_choices(self, question: OutsQuestion, num_choices: int = 4) -> List[int]:
+    def generate_choices(self, question: OutsQuestion, num_choices: int = 4) -> list[int]:
         """Generate multiple choice options for outs count."""
         correct = question.result.total_outs
 

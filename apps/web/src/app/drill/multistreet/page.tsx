@@ -3,12 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
@@ -83,7 +78,9 @@ function loadStats(): Stats {
   try {
     const saved = localStorage.getItem(MULTISTREET_STATS_KEY);
     if (saved) return JSON.parse(saved);
-  } catch { /* ignore */ }
+  } catch {
+    /* ignore */
+  }
   return { totalHands: 0, correctFlop: 0, correctTurn: 0, correctRiver: 0, perfectHands: 0 };
 }
 
@@ -98,16 +95,14 @@ function BoardCard({ card, isNew = false }: { card: string; isNew?: boolean }) {
   const suit = card[1]?.toLowerCase() || "s";
 
   return (
-    <div className={cn(
-      "bg-white dark:bg-gray-100 rounded-lg shadow-md w-12 h-16 sm:w-14 sm:h-20 flex flex-col items-center justify-center border-2",
-      isNew ? "border-yellow-500 ring-2 ring-yellow-500/50" : "border-gray-200"
-    )}>
-      <span className={cn("text-xl sm:text-2xl font-bold", SUIT_CARD_COLORS[suit])}>
-        {rank}
-      </span>
-      <span className={cn("text-lg sm:text-xl", SUIT_CARD_COLORS[suit])}>
-        {SUIT_SYMBOLS[suit]}
-      </span>
+    <div
+      className={cn(
+        "flex h-16 w-12 flex-col items-center justify-center rounded-lg border-2 bg-white shadow-md sm:h-20 sm:w-14 dark:bg-gray-100",
+        isNew ? "border-yellow-500 ring-2 ring-yellow-500/50" : "border-gray-200"
+      )}
+    >
+      <span className={cn("text-xl font-bold sm:text-2xl", SUIT_CARD_COLORS[suit])}>{rank}</span>
+      <span className={cn("text-lg sm:text-xl", SUIT_CARD_COLORS[suit])}>{SUIT_SYMBOLS[suit]}</span>
     </div>
   );
 }
@@ -131,15 +126,15 @@ function resolveHeroCards(hand: string, board: string[]): [string, string] {
   let suit1: string;
   let suit2: string;
   if (suited) {
-    suit1 = allSuits.find(s => !used1.has(s) && !used2.has(s)) || "h";
+    suit1 = allSuits.find((s) => !used1.has(s) && !used2.has(s)) || "h";
     suit2 = suit1;
   } else if (isPair) {
-    const avail = allSuits.filter(s => !used1.has(s));
+    const avail = allSuits.filter((s) => !used1.has(s));
     suit1 = avail[0] || "h";
     suit2 = avail[1] || "d";
   } else {
-    suit1 = allSuits.find(s => !used1.has(s)) || "s";
-    suit2 = allSuits.find(s => !used2.has(s) && s !== suit1) || "c";
+    suit1 = allSuits.find((s) => !used1.has(s)) || "s";
+    suit2 = allSuits.find((s) => !used2.has(s) && s !== suit1) || "c";
   }
   return [`${rank1}${suit1}`, `${rank2}${suit2}`];
 }
@@ -153,16 +148,16 @@ function HeroHand({ hand, board = [] }: { hand: string; board?: string[] }) {
 
   return (
     <div className="flex gap-2">
-      <div className="bg-white dark:bg-gray-100 rounded-lg shadow-md w-12 h-16 sm:w-14 sm:h-20 flex flex-col items-center justify-center border-2 border-primary">
-        <span className={cn("text-xl sm:text-2xl font-bold", SUIT_CARD_COLORS[suit1])}>
+      <div className="border-primary flex h-16 w-12 flex-col items-center justify-center rounded-lg border-2 bg-white shadow-md sm:h-20 sm:w-14 dark:bg-gray-100">
+        <span className={cn("text-xl font-bold sm:text-2xl", SUIT_CARD_COLORS[suit1])}>
           {rank1}
         </span>
         <span className={cn("text-lg sm:text-xl", SUIT_CARD_COLORS[suit1])}>
           {SUIT_SYMBOLS[suit1]}
         </span>
       </div>
-      <div className="bg-white dark:bg-gray-100 rounded-lg shadow-md w-12 h-16 sm:w-14 sm:h-20 flex flex-col items-center justify-center border-2 border-primary">
-        <span className={cn("text-xl sm:text-2xl font-bold", SUIT_CARD_COLORS[suit2])}>
+      <div className="border-primary flex h-16 w-12 flex-col items-center justify-center rounded-lg border-2 bg-white shadow-md sm:h-20 sm:w-14 dark:bg-gray-100">
+        <span className={cn("text-xl font-bold sm:text-2xl", SUIT_CARD_COLORS[suit2])}>
           {rank2}
         </span>
         <span className={cn("text-lg sm:text-xl", SUIT_CARD_COLORS[suit2])}>
@@ -235,7 +230,8 @@ function getResponseStrategy(
   const hasAce = heroHand.includes("A");
   const hasKing = heroHand.includes("K");
   const isSuited = heroHand.endsWith("s");
-  const isConnector = Math.abs("AKQJT98765432".indexOf(heroHand[0]) - "AKQJT98765432".indexOf(heroHand[1])) <= 2;
+  const isConnector =
+    Math.abs("AKQJT98765432".indexOf(heroHand[0]) - "AKQJT98765432".indexOf(heroHand[1])) <= 2;
 
   let foldFreq = 100 - mdf;
   let callFreq = mdf * 0.8;
@@ -268,10 +264,7 @@ function getResponseStrategy(
 }
 
 // When hero bets, check if villain check-raises
-function shouldVillainCheckRaise(
-  texture: string,
-  street: Street
-): boolean {
+function shouldVillainCheckRaise(texture: string, street: Street): boolean {
   let crFreq = 0.08; // Base 8%
 
   if (texture.includes("wet") || texture.includes("two_tone")) {
@@ -290,9 +283,11 @@ function shouldVillainCheckRaise(
 }
 
 // Hero's response strategy when facing a check-raise (3x pot)
-function getCheckRaiseResponseStrategy(
-  heroHand: string
-): { fold: number; call: number; raise: number } {
+function getCheckRaiseResponseStrategy(heroHand: string): {
+  fold: number;
+  call: number;
+  raise: number;
+} {
   // CR to 3x → MDF ~50%
   const mdf = 50;
 
@@ -329,7 +324,7 @@ function getCheckRaiseResponseStrategy(
 }
 
 function getRandomCard(excludeCards: string[]): string {
-  const excludeSet = new Set(excludeCards.map(c => c.toUpperCase()));
+  const excludeSet = new Set(excludeCards.map((c) => c.toUpperCase()));
   const available: string[] = [];
 
   for (const rank of RANKS) {
@@ -363,7 +358,11 @@ export default function MultistreetDrillPage() {
   // Opponent action state
   const [villainAction, setVillainAction] = useState<VillainAction | null>(null);
   const [facingBet, setFacingBet] = useState(false);
-  const [responseStrategy, setResponseStrategy] = useState<{ fold: number; call: number; raise: number } | null>(null);
+  const [responseStrategy, setResponseStrategy] = useState<{
+    fold: number;
+    call: number;
+    raise: number;
+  } | null>(null);
 
   const fetchNewScenario = useCallback(async () => {
     setLoading(true);
@@ -457,7 +456,11 @@ export default function MultistreetDrillPage() {
         street: currentStreet,
         action,
         isCorrect,
-        gtoStrategy: { fold: responseStrategy.fold, call: responseStrategy.call, raise: responseStrategy.raise },
+        gtoStrategy: {
+          fold: responseStrategy.fold,
+          call: responseStrategy.call,
+          raise: responseStrategy.raise,
+        },
         villainAction: villainAction || undefined,
       };
 
@@ -470,7 +473,7 @@ export default function MultistreetDrillPage() {
         decision.cardTypeZh = riverClassification.river_type_zh;
       }
 
-      setDecisions(prev => [...prev, decision]);
+      setDecisions((prev) => [...prev, decision]);
       setShowStreetResult(true);
       setFacingBet(false);
       setVillainAction(null);
@@ -494,7 +497,9 @@ export default function MultistreetDrillPage() {
 
     // If hero checks, check if villain bets
     if (action === "check" && currentStreet !== "flop") {
-      const previousDecision = decisions.find(d => d.street === (currentStreet === "turn" ? "flop" : "turn"));
+      const previousDecision = decisions.find(
+        (d) => d.street === (currentStreet === "turn" ? "flop" : "turn")
+      );
       const { shouldBet, sizing } = shouldVillainBet(
         scenario.texture,
         previousDecision?.action || "check",
@@ -528,7 +533,7 @@ export default function MultistreetDrillPage() {
       decision.cardTypeZh = riverClassification.river_type_zh;
     }
 
-    setDecisions(prev => [...prev, decision]);
+    setDecisions((prev) => [...prev, decision]);
     setShowStreetResult(true);
   };
 
@@ -592,9 +597,9 @@ export default function MultistreetDrillPage() {
       const newStats = { ...stats };
       newStats.totalHands++;
 
-      const flopDecision = decisions.find(d => d.street === "flop");
-      const turnDecision = decisions.find(d => d.street === "turn");
-      const riverDecision = decisions.find(d => d.street === "river");
+      const flopDecision = decisions.find((d) => d.street === "flop");
+      const turnDecision = decisions.find((d) => d.street === "turn");
+      const riverDecision = decisions.find((d) => d.street === "river");
 
       if (flopDecision?.isCorrect) newStats.correctFlop++;
       if (turnDecision?.isCorrect) newStats.correctTurn++;
@@ -646,58 +651,60 @@ export default function MultistreetDrillPage() {
     return Array.from(options);
   };
 
-  const flopAccuracy = stats.totalHands > 0 ? Math.round((stats.correctFlop / stats.totalHands) * 100) : 0;
-  const turnAccuracy = stats.totalHands > 0 ? Math.round((stats.correctTurn / stats.totalHands) * 100) : 0;
-  const riverAccuracy = stats.totalHands > 0 ? Math.round((stats.correctRiver / stats.totalHands) * 100) : 0;
-  const perfectRate = stats.totalHands > 0 ? Math.round((stats.perfectHands / stats.totalHands) * 100) : 0;
+  const flopAccuracy =
+    stats.totalHands > 0 ? Math.round((stats.correctFlop / stats.totalHands) * 100) : 0;
+  const turnAccuracy =
+    stats.totalHands > 0 ? Math.round((stats.correctTurn / stats.totalHands) * 100) : 0;
+  const riverAccuracy =
+    stats.totalHands > 0 ? Math.round((stats.correctRiver / stats.totalHands) * 100) : 0;
+  const perfectRate =
+    stats.totalHands > 0 ? Math.round((stats.perfectHands / stats.totalHands) * 100) : 0;
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-4xl">
+    <div className="container mx-auto max-w-4xl px-4 py-8">
       {/* Header */}
       <div className="mb-6">
-        <h1 className="text-2xl font-bold mb-2 flex items-center gap-2">
+        <h1 className="mb-2 flex items-center gap-2 text-2xl font-bold">
           <Layers className="h-6 w-6" />
           {t("title")}
         </h1>
-        <p className="text-muted-foreground">
-          {t("description")}
-        </p>
+        <p className="text-muted-foreground">{t("description")}</p>
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-4 gap-3 mb-6">
+      <div className="mb-6 grid grid-cols-4 gap-3">
         <Card>
           <CardContent className="p-3 text-center">
             <div className="text-lg font-bold">{stats.totalHands}</div>
-            <div className="text-xs text-muted-foreground">{t("totalHands")}</div>
+            <div className="text-muted-foreground text-xs">{t("totalHands")}</div>
           </CardContent>
         </Card>
         <Card className="bg-blue-500/10">
           <CardContent className="p-3 text-center">
             <div className="text-lg font-bold text-blue-600">{flopAccuracy}%</div>
-            <div className="text-xs text-muted-foreground">Flop</div>
+            <div className="text-muted-foreground text-xs">Flop</div>
           </CardContent>
         </Card>
         <Card className="bg-orange-500/10">
           <CardContent className="p-3 text-center">
             <div className="text-lg font-bold text-orange-600">{turnAccuracy}%</div>
-            <div className="text-xs text-muted-foreground">Turn</div>
+            <div className="text-muted-foreground text-xs">Turn</div>
           </CardContent>
         </Card>
         <Card className="bg-green-500/10">
           <CardContent className="p-3 text-center">
             <div className="text-lg font-bold text-green-600">{perfectRate}%</div>
-            <div className="text-xs text-muted-foreground">{t("perfect")}</div>
+            <div className="text-muted-foreground text-xs">{t("perfect")}</div>
           </CardContent>
         </Card>
       </div>
 
       {/* Street Progress */}
       <div className="mb-6">
-        <div className="flex justify-between text-sm mb-2">
-          <span className={cn(currentStreet === "flop" && "font-bold text-primary")}>Flop</span>
-          <span className={cn(currentStreet === "turn" && "font-bold text-primary")}>Turn</span>
-          <span className={cn(currentStreet === "river" && "font-bold text-primary")}>River</span>
+        <div className="mb-2 flex justify-between text-sm">
+          <span className={cn(currentStreet === "flop" && "text-primary font-bold")}>Flop</span>
+          <span className={cn(currentStreet === "turn" && "text-primary font-bold")}>Turn</span>
+          <span className={cn(currentStreet === "river" && "text-primary font-bold")}>River</span>
         </div>
         <Progress value={getStreetProgress()} className="h-2" />
       </div>
@@ -714,9 +721,7 @@ export default function MultistreetDrillPage() {
                   </Badge>
                   <Badge variant="outline">{scenario.texture_zh}</Badge>
                   {turnClassification && currentStreet !== "flop" && (
-                    <Badge className="bg-yellow-500">
-                      Turn: {turnClassification.turn_type_zh}
-                    </Badge>
+                    <Badge className="bg-yellow-500">Turn: {turnClassification.turn_type_zh}</Badge>
                   )}
                   {riverClassification && currentStreet === "river" && (
                     <Badge className="bg-purple-500">
@@ -726,12 +731,7 @@ export default function MultistreetDrillPage() {
                 </>
               )}
             </div>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={fetchNewScenario}
-              disabled={loading}
-            >
+            <Button variant="ghost" size="icon" onClick={fetchNewScenario} disabled={loading}>
               <RefreshCw className={cn("h-4 w-4", loading && "animate-spin")} />
             </Button>
           </div>
@@ -740,7 +740,7 @@ export default function MultistreetDrillPage() {
         <CardContent className="space-y-6">
           {loading ? (
             <div className="flex items-center justify-center py-12">
-              <RefreshCw className="h-8 w-8 animate-spin text-muted-foreground" />
+              <RefreshCw className="text-muted-foreground h-8 w-8 animate-spin" />
             </div>
           ) : scenario ? (
             <>
@@ -761,14 +761,14 @@ export default function MultistreetDrillPage() {
               {/* Hero Hand */}
               <div className="flex justify-center">
                 <div className="text-center">
-                  <div className="text-sm text-muted-foreground mb-2">{t("yourHand")}</div>
+                  <div className="text-muted-foreground mb-2 text-sm">{t("yourHand")}</div>
                   <HeroHand hand={scenario.hand} board={getCurrentBoard()} />
                 </div>
               </div>
 
               {/* Current Street Label */}
-              <div className="text-center space-y-2">
-                <Badge variant="outline" className="text-lg px-4 py-1">
+              <div className="space-y-2 text-center">
+                <Badge variant="outline" className="px-4 py-1 text-lg">
                   {currentStreet === "flop" && t("flopDecision")}
                   {currentStreet === "turn" && t("turnDecision")}
                   {currentStreet === "river" && t("riverDecision")}
@@ -777,18 +777,26 @@ export default function MultistreetDrillPage() {
 
                 {/* Villain action notification */}
                 {facingBet && villainAction && (
-                  <div className={`p-3 rounded-lg border ${
-                    villainAction === "check_raise"
-                      ? "bg-red-500/20 border-red-500/30"
-                      : "bg-orange-500/20 border-orange-500/30"
-                  }`}>
+                  <div
+                    className={`rounded-lg border p-3 ${
+                      villainAction === "check_raise"
+                        ? "border-red-500/30 bg-red-500/20"
+                        : "border-orange-500/30 bg-orange-500/20"
+                    }`}
+                  >
                     <div className="flex items-center justify-center gap-2">
-                      <span className={`font-bold ${
-                        villainAction === "check_raise" ? "text-red-600" : "text-orange-600"
-                      }`}>
-                        {villainAction === "check_raise" ? t("villainCheckRaise") : t("villainBets")}
+                      <span
+                        className={`font-bold ${
+                          villainAction === "check_raise" ? "text-red-600" : "text-orange-600"
+                        }`}
+                      >
+                        {villainAction === "check_raise"
+                          ? t("villainCheckRaise")
+                          : t("villainBets")}
                       </span>
-                      <Badge className={villainAction === "check_raise" ? "bg-red-500" : "bg-orange-500"}>
+                      <Badge
+                        className={villainAction === "check_raise" ? "bg-red-500" : "bg-orange-500"}
+                      >
                         {villainAction === "check_raise"
                           ? "3× Pot"
                           : villainAction === "bet_50"
@@ -796,7 +804,7 @@ export default function MultistreetDrillPage() {
                             : "75% Pot"}
                       </Badge>
                     </div>
-                    <div className="text-sm text-muted-foreground mt-1">
+                    <div className="text-muted-foreground mt-1 text-sm">
                       {villainAction === "check_raise"
                         ? t("villainCRPrompt")
                         : t("villainBetPrompt")}
@@ -807,7 +815,7 @@ export default function MultistreetDrillPage() {
 
               {/* Action Buttons or Result */}
               {currentStreet !== "complete" && !showStreetResult && (
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
                   {getOptions().map((action) => (
                     <Button
                       key={action}
@@ -824,56 +832,58 @@ export default function MultistreetDrillPage() {
               {/* Street Result */}
               {showStreetResult && currentStreet !== "complete" && (
                 <div className="space-y-4">
-                  {decisions.length > 0 && (() => {
-                    const lastDecision = decisions[decisions.length - 1];
-                    const gtoStrategy = lastDecision.gtoStrategy;
+                  {decisions.length > 0 &&
+                    (() => {
+                      const lastDecision = decisions[decisions.length - 1];
+                      const gtoStrategy = lastDecision.gtoStrategy;
 
-                    return (
-                      <div
-                        className={cn(
-                          "p-4 rounded-lg",
-                          lastDecision.isCorrect
-                            ? "bg-green-500/10 border border-green-500/30"
-                            : "bg-red-500/10 border border-red-500/30"
-                        )}
-                      >
-                        <div className="flex items-center gap-2 mb-2">
-                          {lastDecision.isCorrect ? (
-                            <>
-                              <CheckCircle2 className="h-5 w-5 text-green-500" />
-                              <span className="font-bold text-green-600">{t("correct")}</span>
-                            </>
-                          ) : (
-                            <>
-                              <XCircle className="h-5 w-5 text-red-500" />
-                              <span className="font-bold text-red-600">{t("couldBeBetter")}</span>
-                            </>
+                      return (
+                        <div
+                          className={cn(
+                            "rounded-lg p-4",
+                            lastDecision.isCorrect
+                              ? "border border-green-500/30 bg-green-500/10"
+                              : "border border-red-500/30 bg-red-500/10"
                           )}
-                          {lastDecision.villainAction && (
-                            <Badge variant="outline" className="ml-2">
-                              vs {lastDecision.villainAction === "check_raise"
-                                ? "Check-Raise"
-                                : lastDecision.villainAction === "bet_50"
-                                  ? "50% Bet"
-                                  : "75% Bet"}
-                            </Badge>
-                          )}
-                        </div>
+                        >
+                          <div className="mb-2 flex items-center gap-2">
+                            {lastDecision.isCorrect ? (
+                              <>
+                                <CheckCircle2 className="h-5 w-5 text-green-500" />
+                                <span className="font-bold text-green-600">{t("correct")}</span>
+                              </>
+                            ) : (
+                              <>
+                                <XCircle className="h-5 w-5 text-red-500" />
+                                <span className="font-bold text-red-600">{t("couldBeBetter")}</span>
+                              </>
+                            )}
+                            {lastDecision.villainAction && (
+                              <Badge variant="outline" className="ml-2">
+                                vs{" "}
+                                {lastDecision.villainAction === "check_raise"
+                                  ? "Check-Raise"
+                                  : lastDecision.villainAction === "bet_50"
+                                    ? "50% Bet"
+                                    : "75% Bet"}
+                              </Badge>
+                            )}
+                          </div>
 
-                        <div className="text-sm text-muted-foreground">
-                          {t("gtoFrequency")}
-                          {Object.entries(gtoStrategy)
-                            .filter(([, freq]) => (freq as number) > 0)
-                            .sort(([, a], [, b]) => (b as number) - (a as number))
-                            .map(([action, freq]) => (
-                              <span key={action} className="mx-1">
-                                {ACTION_LABELS[action] || action} {freq}%
-                              </span>
-                            ))}
+                          <div className="text-muted-foreground text-sm">
+                            {t("gtoFrequency")}
+                            {Object.entries(gtoStrategy)
+                              .filter(([, freq]) => (freq as number) > 0)
+                              .sort(([, a], [, b]) => (b as number) - (a as number))
+                              .map(([action, freq]) => (
+                                <span key={action} className="mx-1">
+                                  {ACTION_LABELS[action] || action} {freq}%
+                                </span>
+                              ))}
+                          </div>
                         </div>
-                      </div>
-                    );
-                  })()}
+                      );
+                    })()}
 
                   <Button onClick={handleNextStreet} className="w-full gap-2">
                     {currentStreet === "river" ? t("completeHand") : t("dealNext")}
@@ -885,15 +895,13 @@ export default function MultistreetDrillPage() {
               {/* Complete Summary */}
               {currentStreet === "complete" && (
                 <div className="space-y-4">
-                  <div className="text-center text-lg font-bold mb-4">
-                    {t("handReview")}
-                  </div>
+                  <div className="mb-4 text-center text-lg font-bold">{t("handReview")}</div>
 
                   {decisions.map((d, i) => (
                     <div
                       key={i}
                       className={cn(
-                        "p-3 rounded-lg flex items-center justify-between",
+                        "flex items-center justify-between rounded-lg p-3",
                         d.isCorrect ? "bg-green-500/10" : "bg-red-500/10"
                       )}
                     >
@@ -911,7 +919,8 @@ export default function MultistreetDrillPage() {
                         )}
                         {d.villainAction && (
                           <Badge variant="secondary" className="text-xs">
-                            vs {d.villainAction === "check_raise"
+                            vs{" "}
+                            {d.villainAction === "check_raise"
                               ? "Check-Raise"
                               : d.villainAction === "bet_50"
                                 ? "50% Bet"
@@ -925,14 +934,15 @@ export default function MultistreetDrillPage() {
                     </div>
                   ))}
 
-                  <div className="text-center pt-4">
-                    {decisions.every(d => d.isCorrect) ? (
-                      <div className="text-green-600 font-bold text-lg">
-                        🎉 {t("perfectPlay")}
-                      </div>
+                  <div className="pt-4 text-center">
+                    {decisions.every((d) => d.isCorrect) ? (
+                      <div className="text-lg font-bold text-green-600">🎉 {t("perfectPlay")}</div>
                     ) : (
                       <div className="text-muted-foreground">
-                        {t("correctStreets", { correct: decisions.filter(d => d.isCorrect).length, total: decisions.length })}
+                        {t("correctStreets", {
+                          correct: decisions.filter((d) => d.isCorrect).length,
+                          total: decisions.length,
+                        })}
                       </div>
                     )}
                   </div>
@@ -945,9 +955,7 @@ export default function MultistreetDrillPage() {
               )}
             </>
           ) : (
-            <div className="text-center py-12 text-muted-foreground">
-              {t("loading")}
-            </div>
+            <div className="text-muted-foreground py-12 text-center">{t("loading")}</div>
           )}
         </CardContent>
       </Card>
@@ -957,18 +965,27 @@ export default function MultistreetDrillPage() {
         <CardHeader>
           <CardTitle className="text-sm">{t("tipsTitle")}</CardTitle>
         </CardHeader>
-        <CardContent className="text-sm text-muted-foreground space-y-2">
+        <CardContent className="text-muted-foreground space-y-2 text-sm">
           <div className="flex items-center gap-2">
             <TrendingUp className="h-4 w-4 text-green-500" />
-            <span><strong>{t("tipBrickLabel")}</strong>{t("tipBrickDesc")}</span>
+            <span>
+              <strong>{t("tipBrickLabel")}</strong>
+              {t("tipBrickDesc")}
+            </span>
           </div>
           <div className="flex items-center gap-2">
             <TrendingDown className="h-4 w-4 text-red-500" />
-            <span><strong>{t("tipCompleteLabel")}</strong>{t("tipCompleteDesc")}</span>
+            <span>
+              <strong>{t("tipCompleteLabel")}</strong>
+              {t("tipCompleteDesc")}
+            </span>
           </div>
           <div className="flex items-center gap-2">
             <Minus className="h-4 w-4 text-yellow-500" />
-            <span><strong>{t("tipPairedLabel")}</strong>{t("tipPairedDesc")}</span>
+            <span>
+              <strong>{t("tipPairedLabel")}</strong>
+              {t("tipPairedDesc")}
+            </span>
           </div>
         </CardContent>
       </Card>

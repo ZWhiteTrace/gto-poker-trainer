@@ -48,11 +48,11 @@ export function Navbar() {
   ];
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 pt-[env(safe-area-inset-top)]">
+    <header className="bg-background/95 supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50 w-full border-b pt-[env(safe-area-inset-top)] backdrop-blur">
       <div className="container flex h-14 items-center">
         {/* Logo */}
         <Link href="/" className="mr-6 flex items-center space-x-2" aria-label="首頁">
-          <Spade className="h-6 w-6 text-primary" aria-hidden="true" />
+          <Spade className="text-primary h-6 w-6" aria-hidden="true" />
           <span className="hidden font-bold sm:inline-block">GTO Trainer</span>
         </Link>
 
@@ -60,17 +60,17 @@ export function Navbar() {
         <nav className="hidden md:flex md:flex-1 md:items-center md:justify-between">
           <div className="flex items-center space-x-6">
             {/* Drill dropdown */}
-            <div className="relative group">
-              <span className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary cursor-pointer">
+            <div className="group relative">
+              <span className="text-muted-foreground hover:text-primary cursor-pointer text-sm font-medium transition-colors">
                 {t("nav.practice")}
               </span>
-              <div className="absolute left-0 mt-2 w-48 rounded-md shadow-lg bg-background border opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50">
+              <div className="bg-background invisible absolute left-0 z-50 mt-2 w-48 rounded-md border opacity-0 shadow-lg transition-all group-hover:visible group-hover:opacity-100">
                 <div className="py-1">
                   {drillItems.map((item) => (
                     <Link
                       key={item.href}
                       href={item.href}
-                      className="block px-4 py-2 text-sm text-muted-foreground hover:bg-muted hover:text-primary"
+                      className="text-muted-foreground hover:bg-muted hover:text-primary block px-4 py-2 text-sm"
                     >
                       {item.label}
                     </Link>
@@ -79,17 +79,17 @@ export function Navbar() {
               </div>
             </div>
             {/* MTT dropdown */}
-            <div className="relative group">
-              <span className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary cursor-pointer">
+            <div className="group relative">
+              <span className="text-muted-foreground hover:text-primary cursor-pointer text-sm font-medium transition-colors">
                 {t("nav.mtt")}
               </span>
-              <div className="absolute left-0 mt-2 w-48 rounded-md shadow-lg bg-background border opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50">
+              <div className="bg-background invisible absolute left-0 z-50 mt-2 w-48 rounded-md border opacity-0 shadow-lg transition-all group-hover:visible group-hover:opacity-100">
                 <div className="py-1">
                   {mttItems.map((item) => (
                     <Link
                       key={item.href}
                       href={item.href}
-                      className="block px-4 py-2 text-sm text-muted-foreground hover:bg-muted hover:text-primary"
+                      className="text-muted-foreground hover:bg-muted hover:text-primary block px-4 py-2 text-sm"
                     >
                       {item.label}
                     </Link>
@@ -101,7 +101,7 @@ export function Navbar() {
               <Link
                 key={item.href}
                 href={item.href}
-                className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
+                className="text-muted-foreground hover:text-primary text-sm font-medium transition-colors"
               >
                 {item.label}
               </Link>
@@ -113,12 +113,7 @@ export function Navbar() {
               <UserMenu user={user} signOut={signOut} />
             ) : (
               <>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={signInWithGoogle}
-                  disabled={isLoading}
-                >
+                <Button variant="ghost" size="sm" onClick={signInWithGoogle} disabled={isLoading}>
                   {t("common.signIn")}
                 </Button>
                 <Button size="sm" onClick={signInWithGoogle} disabled={isLoading}>
@@ -138,19 +133,14 @@ export function Navbar() {
               size="sm"
               onClick={signInWithGoogle}
               disabled={isLoading}
-              className="text-xs px-2"
+              className="px-2 text-xs"
             >
-              <User className="h-4 w-4 mr-1" />
+              <User className="mr-1 h-4 w-4" />
               {t("common.signIn")}
             </Button>
           )}
           {user && (
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setIsOpen(true)}
-              className="h-8 w-8"
-            >
+            <Button variant="ghost" size="icon" onClick={() => setIsOpen(true)} className="h-8 w-8">
               {user.user_metadata?.avatar_url ? (
                 <img
                   src={user.user_metadata.avatar_url}
@@ -170,26 +160,24 @@ export function Navbar() {
               </Button>
             </SheetTrigger>
             <SheetContent side="right" className="w-[300px] overflow-hidden">
-              <nav className="flex flex-col space-y-4 mt-8 overflow-y-auto h-full pb-8">
+              <nav className="mt-8 flex h-full flex-col space-y-4 overflow-y-auto pb-8">
                 {user && (
                   <>
-                    <div className="flex items-center gap-3 p-3 rounded-lg bg-muted/50">
-                      <div className="h-10 w-10 rounded-full bg-primary/20 flex items-center justify-center">
+                    <div className="bg-muted/50 flex items-center gap-3 rounded-lg p-3">
+                      <div className="bg-primary/20 flex h-10 w-10 items-center justify-center rounded-full">
                         <User className="h-5 w-5" />
                       </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium truncate">
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate text-sm font-medium">
                           {user.user_metadata?.full_name || user.email}
                         </p>
-                        <p className="text-xs text-muted-foreground truncate">
-                          {user.email}
-                        </p>
+                        <p className="text-muted-foreground truncate text-xs">{user.email}</p>
                       </div>
                     </div>
                     <Link
                       href="/profile"
                       onClick={() => setIsOpen(false)}
-                      className="flex items-center gap-2 text-lg font-medium transition-colors hover:text-primary"
+                      className="hover:text-primary flex items-center gap-2 text-lg font-medium transition-colors"
                     >
                       <User className="h-5 w-5" />
                       {t("profile.title") || "Profile"}
@@ -197,7 +185,7 @@ export function Navbar() {
                     <Link
                       href="/stats"
                       onClick={() => setIsOpen(false)}
-                      className="flex items-center gap-2 text-lg font-medium transition-colors hover:text-primary"
+                      className="hover:text-primary flex items-center gap-2 text-lg font-medium transition-colors"
                     >
                       <BarChart3 className="h-5 w-5" />
                       {t("stats.title") || "Stats"}
@@ -205,7 +193,7 @@ export function Navbar() {
                     <Link
                       href="/achievements"
                       onClick={() => setIsOpen(false)}
-                      className="flex items-center gap-2 text-lg font-medium transition-colors hover:text-primary"
+                      className="hover:text-primary flex items-center gap-2 text-lg font-medium transition-colors"
                     >
                       <Award className="h-5 w-5" />
                       {t("achievements.title") || "Achievements"}
@@ -213,7 +201,7 @@ export function Navbar() {
                     <Link
                       href="/leaderboard"
                       onClick={() => setIsOpen(false)}
-                      className="flex items-center gap-2 text-lg font-medium transition-colors hover:text-primary"
+                      className="hover:text-primary flex items-center gap-2 text-lg font-medium transition-colors"
                     >
                       <Trophy className="h-5 w-5" />
                       {t("leaderboard.title") || "Leaderboard"}
@@ -221,7 +209,7 @@ export function Navbar() {
                     <hr className="my-2" />
                   </>
                 )}
-                <div className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
+                <div className="text-muted-foreground text-sm font-semibold tracking-wide uppercase">
                   {t("nav.practice")}
                 </div>
                 {drillItems.map((item) => (
@@ -229,13 +217,13 @@ export function Navbar() {
                     key={item.href}
                     href={item.href}
                     onClick={() => setIsOpen(false)}
-                    className="text-lg font-medium transition-colors hover:text-primary pl-2"
+                    className="hover:text-primary pl-2 text-lg font-medium transition-colors"
                   >
                     {item.label}
                   </Link>
                 ))}
                 <hr className="my-2" />
-                <div className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
+                <div className="text-muted-foreground text-sm font-semibold tracking-wide uppercase">
                   {t("nav.mtt")}
                 </div>
                 {mttItems.map((item) => (
@@ -243,7 +231,7 @@ export function Navbar() {
                     key={item.href}
                     href={item.href}
                     onClick={() => setIsOpen(false)}
-                    className="text-lg font-medium transition-colors hover:text-primary pl-2"
+                    className="hover:text-primary pl-2 text-lg font-medium transition-colors"
                   >
                     {item.label}
                   </Link>
@@ -254,7 +242,7 @@ export function Navbar() {
                     key={item.href}
                     href={item.href}
                     onClick={() => setIsOpen(false)}
-                    className="text-lg font-medium transition-colors hover:text-primary"
+                    className="hover:text-primary text-lg font-medium transition-colors"
                   >
                     {item.label}
                   </Link>
@@ -269,16 +257,12 @@ export function Navbar() {
                       setIsOpen(false);
                     }}
                   >
-                    <LogOut className="h-4 w-4 mr-2" />
+                    <LogOut className="mr-2 h-4 w-4" />
                     {t("common.signOut")}
                   </Button>
                 ) : (
                   <>
-                    <Button
-                      variant="outline"
-                      className="w-full"
-                      onClick={signInWithGoogle}
-                    >
+                    <Button variant="outline" className="w-full" onClick={signInWithGoogle}>
                       {t("common.signIn")}
                     </Button>
                     <Button className="w-full" onClick={signInWithGoogle}>
@@ -304,16 +288,12 @@ function UserMenu({ user, signOut }: UserMenuProps) {
   const t = useTranslations();
 
   return (
-    <div className="relative group">
-      <button className="flex items-center gap-2 text-sm font-medium text-muted-foreground transition-colors hover:text-primary">
+    <div className="group relative">
+      <button className="text-muted-foreground hover:text-primary flex items-center gap-2 text-sm font-medium transition-colors">
         {user.user_metadata?.avatar_url ? (
-          <img
-            src={user.user_metadata.avatar_url}
-            alt="Avatar"
-            className="h-7 w-7 rounded-full"
-          />
+          <img src={user.user_metadata.avatar_url} alt="Avatar" className="h-7 w-7 rounded-full" />
         ) : (
-          <div className="h-7 w-7 rounded-full bg-primary/20 flex items-center justify-center">
+          <div className="bg-primary/20 flex h-7 w-7 items-center justify-center rounded-full">
             <User className="h-4 w-4" />
           </div>
         )}
@@ -321,45 +301,45 @@ function UserMenu({ user, signOut }: UserMenuProps) {
           {user.user_metadata?.full_name || user.email?.split("@")[0]}
         </span>
       </button>
-      <div className="absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-background border opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50">
+      <div className="bg-background invisible absolute right-0 z-50 mt-2 w-48 rounded-md border opacity-0 shadow-lg transition-all group-hover:visible group-hover:opacity-100">
         <div className="py-1">
-          <div className="px-4 py-2 border-b">
-            <p className="text-sm font-medium truncate">
+          <div className="border-b px-4 py-2">
+            <p className="truncate text-sm font-medium">
               {user.user_metadata?.full_name || "User"}
             </p>
-            <p className="text-xs text-muted-foreground truncate">{user.email}</p>
+            <p className="text-muted-foreground truncate text-xs">{user.email}</p>
           </div>
           <Link
             href="/profile"
-            className="flex items-center gap-2 px-4 py-2 text-sm text-muted-foreground hover:bg-muted hover:text-primary"
+            className="text-muted-foreground hover:bg-muted hover:text-primary flex items-center gap-2 px-4 py-2 text-sm"
           >
             <User className="h-4 w-4" />
             {t("profile.title") || "Profile"}
           </Link>
           <Link
             href="/stats"
-            className="flex items-center gap-2 px-4 py-2 text-sm text-muted-foreground hover:bg-muted hover:text-primary"
+            className="text-muted-foreground hover:bg-muted hover:text-primary flex items-center gap-2 px-4 py-2 text-sm"
           >
             <BarChart3 className="h-4 w-4" />
             {t("stats.title") || "Stats"}
           </Link>
           <Link
             href="/achievements"
-            className="flex items-center gap-2 px-4 py-2 text-sm text-muted-foreground hover:bg-muted hover:text-primary"
+            className="text-muted-foreground hover:bg-muted hover:text-primary flex items-center gap-2 px-4 py-2 text-sm"
           >
             <Award className="h-4 w-4" />
             {t("achievements.title") || "Achievements"}
           </Link>
           <Link
             href="/leaderboard"
-            className="flex items-center gap-2 px-4 py-2 text-sm text-muted-foreground hover:bg-muted hover:text-primary"
+            className="text-muted-foreground hover:bg-muted hover:text-primary flex items-center gap-2 px-4 py-2 text-sm"
           >
             <Trophy className="h-4 w-4" />
             {t("leaderboard.title") || "Leaderboard"}
           </Link>
           <button
             onClick={signOut}
-            className="flex items-center gap-2 w-full px-4 py-2 text-sm text-muted-foreground hover:bg-muted hover:text-primary"
+            className="text-muted-foreground hover:bg-muted hover:text-primary flex w-full items-center gap-2 px-4 py-2 text-sm"
           >
             <LogOut className="h-4 w-4" />
             {t("common.signOut")}

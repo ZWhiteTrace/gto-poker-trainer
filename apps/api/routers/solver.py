@@ -1,26 +1,28 @@
 """
 GTO Solver API - Precomputed postflop strategies from Desktop Postflop.
 """
-from fastapi import APIRouter, HTTPException, Query, Header
-from pydantic import BaseModel
-from typing import Dict, List, Optional
-from pathlib import Path
+
 import json
 import os
+import random
+from pathlib import Path
+
+from fastapi import APIRouter, Header, HTTPException, Query
+from pydantic import BaseModel
 
 router = APIRouter()
 
 # Cache for solver data
-_solver_cache: Dict[str, Dict] = {}
+_solver_cache: dict[str, dict] = {}
 
 
 class SolverStrategy(BaseModel):
-    bet_33: Optional[float] = None
-    bet_50: Optional[float] = None
-    bet_66: Optional[float] = None
-    bet_75: Optional[float] = None
-    bet_100: Optional[float] = None
-    check: Optional[float] = None
+    bet_33: float | None = None
+    bet_50: float | None = None
+    bet_66: float | None = None
+    bet_75: float | None = None
+    bet_100: float | None = None
+    check: float | None = None
 
 
 class SolverScenario(BaseModel):
@@ -28,23 +30,23 @@ class SolverScenario(BaseModel):
     position: str
     villain: str
     pot_type: str
-    board: List[str]
+    board: list[str]
     texture: str
     texture_zh: str
-    strategies: Dict[str, Dict[str, float]]
+    strategies: dict[str, dict[str, float]]
 
 
 class SolverQueryResponse(BaseModel):
     found: bool
-    scenario_id: Optional[str] = None
-    position: Optional[str] = None
-    villain: Optional[str] = None
-    board: Optional[List[str]] = None
-    texture: Optional[str] = None
-    texture_zh: Optional[str] = None
-    hand: Optional[str] = None
-    strategy: Optional[Dict[str, float]] = None
-    message: Optional[str] = None
+    scenario_id: str | None = None
+    position: str | None = None
+    villain: str | None = None
+    board: list[str] | None = None
+    texture: str | None = None
+    texture_zh: str | None = None
+    hand: str | None = None
+    strategy: dict[str, float] | None = None
+    message: str | None = None
 
 
 class BoardTextureInfo(BaseModel):
@@ -53,7 +55,7 @@ class BoardTextureInfo(BaseModel):
     count: int
 
 
-def get_solver_data() -> List[Dict]:
+def get_solver_data() -> list[dict]:
     """Load all solver scenario data."""
     if "all" in _solver_cache:
         return _solver_cache["all"]
@@ -78,13 +80,13 @@ def get_solver_data() -> List[Dict]:
     return all_scenarios
 
 
-def normalize_board(board: str) -> List[str]:
+def normalize_board(board: str) -> list[str]:
     """Convert board string to card list. 'AhKs5d' -> ['Ah', 'Ks', '5d']"""
     cards = []
     i = 0
     while i < len(board):
         if i + 1 < len(board):
-            cards.append(board[i:i+2])
+            cards.append(board[i : i + 2])
             i += 2
         else:
             i += 1
@@ -110,13 +112,13 @@ def normalize_hand(hand: str) -> str:
     elif len(hand) == 3:
         ranks = hand[:2].upper()
         suit = hand[2].lower()
-        if suit in ('s', 'o'):
+        if suit in ("s", "o"):
             return ranks + suit
         return ranks + "o"  # Invalid suffix, default to offsuit
     return hand.upper()[:2]  # Truncate invalid input
 
 
-def get_suit_pattern(board: List[str]) -> str:
+def get_suit_pattern(board: list[str]) -> str:
     """Get suit pattern: monotone, two_tone, or rainbow."""
     suits = [c[1].lower() for c in board if len(c) >= 2]
     unique_suits = len(set(suits))
@@ -127,7 +129,7 @@ def get_suit_pattern(board: List[str]) -> str:
     return "rainbow"
 
 
-def boards_match(board1: List[str], board2: List[str]) -> bool:
+def boards_match(board1: list[str], board2: list[str]) -> bool:
     """Check if two boards match (ranks + suit pattern)."""
     if len(board1) != len(board2):
         return False
@@ -145,11 +147,8 @@ def boards_match(board1: List[str], board2: List[str]) -> bool:
 
 
 def find_matching_scenario(
-    board: List[str],
-    position: str,
-    villain: str,
-    pot_type: str = "srp"
-) -> Optional[Dict]:
+    board: list[str], position: str, villain: str, pot_type: str = "srp"
+) -> dict | None:
     """Find a scenario matching the given parameters."""
     # First try exact scenario data
     scenarios = get_solver_data()
@@ -167,9 +166,10 @@ def find_matching_scenario(
     # Fall back to Level 1 texture data
     # Support: IP vs BB (SRP/3bet) and OOP 3bet scenarios (SB/BB as 3bettor vs BTN)
     valid_combo = (
-        (position in ["BTN", "CO", "UTG", "HJ", "SB"] and villain == "BB" and pot_type in ["srp", "3bet"]) or
-        (position in ["SB", "BB"] and villain == "BTN" and pot_type == "3bet")
-    )
+        position in ["BTN", "CO", "UTG", "HJ", "SB"]
+        and villain == "BB"
+        and pot_type in ["srp", "3bet"]
+    ) or (position in ["SB", "BB"] and villain == "BTN" and pot_type == "3bet")
     if valid_combo:
         level1_data = get_level1_data()
         textures = level1_data.get("textures", [])
@@ -184,7 +184,7 @@ def find_matching_scenario(
                     "board": texture.get("representative_board"),
                     "texture": texture.get("texture_id"),
                     "texture_zh": texture.get("texture_zh"),
-                    "strategies": texture.get("strategies", {})
+                    "strategies": texture.get("strategies", {}),
                 }
 
     return None
@@ -204,16 +204,12 @@ def get_postflop_strategy(
         normalized_hand = normalize_hand(hand)
 
         scenario = find_matching_scenario(
-            board_cards,
-            position.upper(),
-            villain.upper(),
-            pot_type.lower()
+            board_cards, position.upper(), villain.upper(), pot_type.lower()
         )
 
         if not scenario:
             return SolverQueryResponse(
-                found=False,
-                message=f"No precomputed data for {position} vs {villain} on {board}"
+                found=False, message=f"No precomputed data for {position} vs {villain} on {board}"
             )
 
         strategies = scenario.get("strategies", {})
@@ -241,7 +237,7 @@ def get_postflop_strategy(
                 texture_zh=scenario.get("texture_zh"),
                 hand=normalized_hand,
                 strategy=None,
-                message=f"Hand {normalized_hand} not found in this scenario"
+                message=f"Hand {normalized_hand} not found in this scenario",
             )
 
         return SolverQueryResponse(
@@ -264,7 +260,7 @@ def list_solver_textures():
     """List all available board textures in solver data."""
     scenarios = get_solver_data()
 
-    textures: Dict[str, BoardTextureInfo] = {}
+    textures: dict[str, BoardTextureInfo] = {}
     for s in scenarios:
         texture = s.get("texture")
         texture_zh = s.get("texture_zh", "")
@@ -273,23 +269,21 @@ def list_solver_textures():
                 textures[texture].count += 1
             else:
                 textures[texture] = BoardTextureInfo(
-                    texture=texture,
-                    texture_zh=texture_zh,
-                    count=1
+                    texture=texture, texture_zh=texture_zh, count=1
                 )
 
     return {
         "textures": [t.model_dump() for t in textures.values()],
-        "total_scenarios": len(scenarios)
+        "total_scenarios": len(scenarios),
     }
 
 
 @router.get("/scenarios")
 def list_solver_scenarios(
-    position: Optional[str] = Query(default=None, description="Filter by hero position"),
-    villain: Optional[str] = Query(default=None, description="Filter by villain position"),
-    pot_type: Optional[str] = Query(default=None, description="Filter by pot type"),
-    texture: Optional[str] = Query(default=None, description="Filter by board texture"),
+    position: str | None = Query(default=None, description="Filter by hero position"),
+    villain: str | None = Query(default=None, description="Filter by villain position"),
+    pot_type: str | None = Query(default=None, description="Filter by pot type"),
+    texture: str | None = Query(default=None, description="Filter by board texture"),
     limit: int = Query(default=20, le=100),
 ):
     """List available solver scenarios with optional filtering."""
@@ -316,10 +310,10 @@ def list_solver_scenarios(
                 "board": s.get("board"),
                 "texture": s.get("texture"),
                 "texture_zh": s.get("texture_zh"),
-                "hand_count": len(s.get("strategies", {}))
+                "hand_count": len(s.get("strategies", {})),
             }
             for s in filtered[:limit]
-        ]
+        ],
     }
 
 
@@ -334,21 +328,25 @@ def list_available_boards(
 
     boards = []
     for s in scenarios:
-        if s.get("position") == position.upper() and \
-           s.get("villain") == villain.upper() and \
-           s.get("pot_type") == pot_type.lower():
-            boards.append({
-                "board": s.get("board"),
-                "texture": s.get("texture"),
-                "texture_zh": s.get("texture_zh"),
-            })
+        if (
+            s.get("position") == position.upper()
+            and s.get("villain") == villain.upper()
+            and s.get("pot_type") == pot_type.lower()
+        ):
+            boards.append(
+                {
+                    "board": s.get("board"),
+                    "texture": s.get("texture"),
+                    "texture_zh": s.get("texture_zh"),
+                }
+            )
 
     return {
         "position": position.upper(),
         "villain": villain.upper(),
         "pot_type": pot_type,
         "boards": boards,
-        "count": len(boards)
+        "count": len(boards),
     }
 
 
@@ -364,9 +362,8 @@ def clear_solver_cache(x_api_key: str = Header(...)):
 
 # ============ Level 1: Texture Learning System ============
 
-import random
 
-def get_level1_data() -> Dict:
+def get_level1_data() -> dict:
     """Load Level 1 texture learning data."""
     if "level1" in _solver_cache:
         return _solver_cache["level1"]
@@ -385,8 +382,8 @@ def get_level1_data() -> Dict:
 class TextureConcept(BaseModel):
     title: str
     summary: str
-    key_points: List[str]
-    common_mistakes: List[str]
+    key_points: list[str]
+    common_mistakes: list[str]
 
 
 class TextureInfo(BaseModel):
@@ -394,7 +391,7 @@ class TextureInfo(BaseModel):
     texture_zh: str
     category: str
     difficulty: int
-    representative_board: List[str]
+    representative_board: list[str]
     concept: TextureConcept
     hand_count: int
 
@@ -402,17 +399,17 @@ class TextureInfo(BaseModel):
 class TextureDrillQuestion(BaseModel):
     texture_id: str
     texture_zh: str
-    board: List[str]
+    board: list[str]
     hand: str
-    hand_note: Optional[str]
-    options: List[str]
+    hand_note: str | None
+    options: list[str]
 
 
 class TextureDrillAnswer(BaseModel):
     correct: bool
     user_action: str
-    correct_strategy: Dict[str, float]
-    note: Optional[str]
+    correct_strategy: dict[str, float]
+    note: str | None
     concept_summary: str
 
 
@@ -438,10 +435,10 @@ def list_level1_textures():
                 "difficulty": t.get("difficulty"),
                 "representative_board": t.get("representative_board"),
                 "concept": t.get("concept"),
-                "hand_count": len(t.get("strategies", {}))
+                "hand_count": len(t.get("strategies", {})),
             }
             for t in textures
-        ]
+        ],
     }
 
 
@@ -467,14 +464,14 @@ def get_texture_detail(texture_id: str):
         difficulty=texture.get("difficulty"),
         representative_board=texture.get("representative_board"),
         concept=TextureConcept(**texture.get("concept", {})),
-        hand_count=len(texture.get("strategies", {}))
+        hand_count=len(texture.get("strategies", {})),
     )
 
 
 @router.get("/level1/drill")
 def get_texture_drill(
-    texture_id: Optional[str] = Query(default=None, description="Specific texture to drill"),
-    difficulty: Optional[int] = Query(default=None, ge=1, le=3, description="Filter by difficulty"),
+    texture_id: str | None = Query(default=None, description="Specific texture to drill"),
+    difficulty: int | None = Query(default=None, ge=1, le=3, description="Filter by difficulty"),
 ):
     """Get a random drill question for texture training."""
     data = get_level1_data()
@@ -503,7 +500,12 @@ def get_texture_drill(
 
     # Build options based on what actions are available
     options = []
-    if "bet_33" in hand_data or "bet_50" in hand_data or "bet_66" in hand_data or "bet_75" in hand_data:
+    if (
+        "bet_33" in hand_data
+        or "bet_50" in hand_data
+        or "bet_66" in hand_data
+        or "bet_75" in hand_data
+    ):
         options.extend(["bet_33", "bet_50", "bet_66", "bet_75"])
     if "check" in hand_data:
         options.append("check")
@@ -520,7 +522,7 @@ def get_texture_drill(
         "board": texture.get("representative_board"),
         "hand": hand,
         "options": list(set(options)),  # Remove duplicates
-        "concept_hint": texture.get("concept", {}).get("title", "")
+        "concept_hint": texture.get("concept", {}).get("title", ""),
     }
 
 
@@ -554,7 +556,7 @@ def evaluate_texture_drill(
     note = hand_data.get("note", None) if isinstance(hand_data, dict) else None
 
     # Calculate if correct (within 20% of optimal frequency)
-    user_action_base = user_action.split("_")[0] if "_" in user_action else user_action
+    user_action.split("_")[0] if "_" in user_action else user_action
 
     # Find the highest frequency action
     max_freq = 0
@@ -579,7 +581,7 @@ def evaluate_texture_drill(
         "full_strategy": strategy_clean,
         "note": note,
         "concept_summary": texture.get("concept", {}).get("summary", ""),
-        "key_points": texture.get("concept", {}).get("key_points", [])
+        "key_points": texture.get("concept", {}).get("key_points", []),
     }
 
 
@@ -604,9 +606,9 @@ def get_texture_hands(texture_id: str):
     hands_by_category = {
         "strong_value": [],  # Sets, two pair, strong top pair
         "medium_value": [],  # Top pair medium kicker, overpair
-        "draws": [],         # Flush draws, straight draws
-        "bluffs": [],        # Air with blockers
-        "check_mostly": []   # Hands that mostly check
+        "draws": [],  # Flush draws, straight draws
+        "bluffs": [],  # Air with blockers
+        "check_mostly": [],  # Hands that mostly check
     }
 
     for hand, data in strategies.items():
@@ -631,13 +633,14 @@ def get_texture_hands(texture_id: str):
         "board": texture.get("representative_board"),
         "concept": texture.get("concept"),
         "hands_by_category": hands_by_category,
-        "total_hands": len(strategies)
+        "total_hands": len(strategies),
     }
 
 
 # ============ Turn/River Strategy Adjustments ============
 
-def get_turn_adjustments() -> Dict:
+
+def get_turn_adjustments() -> dict:
     """Load turn adjustment data."""
     if "turn_adjustments" in _solver_cache:
         return _solver_cache["turn_adjustments"]
@@ -653,10 +656,7 @@ def get_turn_adjustments() -> Dict:
     return data
 
 
-def classify_turn_card(
-    flop: List[str],
-    turn: str
-) -> str:
+def classify_turn_card(flop: list[str], turn: str) -> str:
     """Classify the turn card type based on flop texture."""
     turn_rank = turn[0].upper()
     turn_suit = turn[1].lower() if len(turn) > 1 else ""
@@ -674,7 +674,21 @@ def classify_turn_card(
         return "flush_card"
 
     # Check for straight card (simplified: within 2 ranks of any flop card)
-    rank_values = {"A": 14, "K": 13, "Q": 12, "J": 11, "T": 10, "9": 9, "8": 8, "7": 7, "6": 6, "5": 5, "4": 4, "3": 3, "2": 2}
+    rank_values = {
+        "A": 14,
+        "K": 13,
+        "Q": 12,
+        "J": 11,
+        "T": 10,
+        "9": 9,
+        "8": 8,
+        "7": 7,
+        "6": 6,
+        "5": 5,
+        "4": 4,
+        "3": 3,
+        "2": 2,
+    }
     turn_value = rank_values.get(turn_rank, 0)
     flop_values = [rank_values.get(r, 0) for r in flop_ranks]
 
@@ -682,7 +696,7 @@ def classify_turn_card(
         if abs(turn_value - fv) <= 2 and turn_value != fv:
             # Check if it creates more connectivity
             all_values = sorted(flop_values + [turn_value])
-            gaps = [all_values[i+1] - all_values[i] for i in range(len(all_values)-1)]
+            gaps = [all_values[i + 1] - all_values[i] for i in range(len(all_values) - 1)]
             if max(gaps) <= 2:
                 return "straight_card"
 
@@ -697,9 +711,16 @@ def classify_turn_card(
 @router.get("/turn")
 def get_turn_adjustment(
     flop_texture: str = Query(..., description="Flop texture ID (e.g., 'dry_ace_high')"),
-    turn_type: str = Query(..., description="Turn card type: brick, overcard, pair_board, flush_draw, flush_complete, straight_card, straight_complete"),
-    position: str = Query(default="ip", description="Position: ip (in position) or oop (out of position)"),
-    hand_category: Optional[str] = Query(default=None, description="Hand category: value, marginal, bluff"),
+    turn_type: str = Query(
+        ...,
+        description="Turn card type: brick, overcard, pair_board, flush_draw, flush_complete, straight_card, straight_complete",
+    ),
+    position: str = Query(
+        default="ip", description="Position: ip (in position) or oop (out of position)"
+    ),
+    hand_category: str | None = Query(
+        default=None, description="Hand category: value, marginal, bluff"
+    ),
 ):
     """Get strategy adjustments for turn based on card type and position."""
     data = get_turn_adjustments()
@@ -714,11 +735,16 @@ def get_turn_adjustment(
         if all_textures:
             texture_adjustments = list(all_textures.values())[0]
         else:
-            raise HTTPException(status_code=404, detail=f"No adjustment data for texture '{flop_texture}'")
+            raise HTTPException(
+                status_code=404, detail=f"No adjustment data for texture '{flop_texture}'"
+            )
 
     turn_adjustment = texture_adjustments.get(turn_type)
     if not turn_adjustment:
-        return {"error": f"No adjustment data for turn type '{turn_type}'", "available_types": list(texture_adjustments.keys())}
+        return {
+            "error": f"No adjustment data for turn type '{turn_type}'",
+            "available_types": list(texture_adjustments.keys()),
+        }
 
     pos_key = position.lower()
     if pos_key not in ["ip", "oop"]:
@@ -743,7 +769,7 @@ def get_turn_adjustment(
             "bluffs": "bluff",
             "value": "value",
             "marginal": "marginal",
-            "bluff": "bluff"
+            "bluff": "bluff",
         }
         cat_key = category_map.get(hand_category, "marginal")
         freq_delta = pos_adjustments.get(cat_key, 0)
@@ -769,7 +795,7 @@ def classify_turn(
     i = 0
     while i < len(flop):
         if i + 1 < len(flop):
-            flop_cards.append(flop[i:i+2])
+            flop_cards.append(flop[i : i + 2])
             i += 2
         else:
             i += 1
@@ -789,7 +815,7 @@ def classify_turn(
             "pair_board": "配對牌",
             "flush_card": "同花牌",
             "straight_card": "順子牌",
-        }.get(turn_type, turn_type)
+        }.get(turn_type, turn_type),
     }
 
 
@@ -800,13 +826,14 @@ def list_turn_card_types():
     return {
         "turn_card_types": data.get("turn_card_classification", {}),
         "hand_categories": data.get("hand_categories", {}),
-        "available_textures": list(data.get("adjustments_by_texture", {}).keys())
+        "available_textures": list(data.get("adjustments_by_texture", {}).keys()),
     }
 
 
 # ============ River Strategy Adjustments ============
 
-def get_river_adjustments() -> Dict:
+
+def get_river_adjustments() -> dict:
     """Load river adjustment data."""
     if "river_adjustments" in _solver_cache:
         return _solver_cache["river_adjustments"]
@@ -822,10 +849,7 @@ def get_river_adjustments() -> Dict:
     return data
 
 
-def classify_river_card(
-    board: List[str],
-    river: str
-) -> str:
+def classify_river_card(board: list[str], river: str) -> str:
     """Classify the river card type based on the 4-card board."""
     river_rank = river[0].upper()
     river_suit = river[1].lower() if len(river) > 1 else ""
@@ -834,7 +858,7 @@ def classify_river_card(
     board_suits = [c[1].lower() for c in board if len(c) > 1]
 
     # Count suits on board
-    suit_counts: Dict[str, int] = {}
+    suit_counts: dict[str, int] = {}
     for s in board_suits:
         suit_counts[s] = suit_counts.get(s, 0) + 1
 
@@ -843,7 +867,7 @@ def classify_river_card(
         return "flush_complete"
 
     # Check for pair board (adds to existing pair or creates new pair)
-    rank_counts: Dict[str, int] = {}
+    rank_counts: dict[str, int] = {}
     for r in board_ranks:
         rank_counts[r] = rank_counts.get(r, 0) + 1
 
@@ -851,14 +875,28 @@ def classify_river_card(
         return "pair_board"
 
     # Check for straight complete
-    rank_values = {"A": 14, "K": 13, "Q": 12, "J": 11, "T": 10, "9": 9, "8": 8, "7": 7, "6": 6, "5": 5, "4": 4, "3": 3, "2": 2}
+    rank_values = {
+        "A": 14,
+        "K": 13,
+        "Q": 12,
+        "J": 11,
+        "T": 10,
+        "9": 9,
+        "8": 8,
+        "7": 7,
+        "6": 6,
+        "5": 5,
+        "4": 4,
+        "3": 3,
+        "2": 2,
+    }
     river_value = rank_values.get(river_rank, 0)
     board_values = sorted([rank_values.get(r, 0) for r in board_ranks])
 
     # Check if river completes a straight
     all_values = sorted(set(board_values + [river_value]))
     for i in range(len(all_values) - 4):
-        if all_values[i+4] - all_values[i] == 4:
+        if all_values[i + 4] - all_values[i] == 4:
             return "straight_complete"
 
     # Check for wheel (A-2-3-4-5)
@@ -866,7 +904,7 @@ def classify_river_card(
         wheel_values = [1 if v == 14 else v for v in all_values]
         wheel_values = sorted(set(wheel_values))
         for i in range(len(wheel_values) - 4):
-            if wheel_values[i+4] - wheel_values[i] == 4:
+            if wheel_values[i + 4] - wheel_values[i] == 4:
                 return "straight_complete"
 
     # Check for overcard
@@ -886,9 +924,17 @@ def classify_river_card(
 
 @router.get("/river")
 def get_river_adjustment(
-    board_texture: str = Query(..., description="Board texture ID (e.g., 'dry_ace_high', 'wet_board')"),
-    river_type: str = Query(..., description="River card type: brick, overcard, pair_board, flush_complete, straight_complete, counterfeit"),
-    hand_category: Optional[str] = Query(default=None, description="Hand category: nuts, strong_value, medium_value, thin_value, missed_draws, air"),
+    board_texture: str = Query(
+        ..., description="Board texture ID (e.g., 'dry_ace_high', 'wet_board')"
+    ),
+    river_type: str = Query(
+        ...,
+        description="River card type: brick, overcard, pair_board, flush_complete, straight_complete, counterfeit",
+    ),
+    hand_category: str | None = Query(
+        default=None,
+        description="Hand category: nuts, strong_value, medium_value, thin_value, missed_draws, air",
+    ),
 ):
     """Get strategy adjustments for river based on card type."""
     data = get_river_adjustments()
@@ -933,7 +979,7 @@ def classify_river(
     i = 0
     while i < len(board):
         if i + 1 < len(board):
-            board_cards.append(board[i:i+2])
+            board_cards.append(board[i : i + 2])
             i += 2
         else:
             i += 1
@@ -954,7 +1000,7 @@ def classify_river(
             "flush_complete": "同花完成",
             "straight_complete": "順子完成",
             "counterfeit": "反殺牌",
-        }.get(river_type, river_type)
+        }.get(river_type, river_type),
     }
 
 
@@ -965,17 +1011,18 @@ def list_river_card_types():
     return {
         "river_card_types": data.get("river_card_types", {}),
         "river_hand_categories": data.get("river_hand_categories", {}),
-        "available_textures": list(data.get("texture_adjustments", {}).keys())
+        "available_textures": list(data.get("texture_adjustments", {}).keys()),
     }
 
 
 # ============ Multi-Street Strategy ============
 
+
 @router.get("/multistreet")
 def get_multistreet_strategy(
     flop: str = Query(..., description="Flop cards (e.g., 'Ah7s2d')"),
-    turn: Optional[str] = Query(default=None, description="Turn card (e.g., 'Kc')"),
-    river: Optional[str] = Query(default=None, description="River card (e.g., '3h')"),
+    turn: str | None = Query(default=None, description="Turn card (e.g., 'Kc')"),
+    river: str | None = Query(default=None, description="River card (e.g., '3h')"),
     hand: str = Query(..., description="Hero hand (e.g., 'AKo')"),
     position: str = Query(..., description="Hero position (BTN, CO, BB, etc.)"),
     villain: str = Query(default="BB", description="Villain position"),
@@ -999,7 +1046,7 @@ def get_multistreet_strategy(
         "position": pos,
         "villain": villain.upper(),
         "pot_type": pot_type,
-        "streets": {}
+        "streets": {},
     }
 
     # Flop strategy
@@ -1095,9 +1142,12 @@ def get_multistreet_strategy(
 
 # ============ Random Drill (Endless Practice) ============
 
+
 @router.get("/random-drill")
 def get_random_drill(
-    pot_type: Optional[str] = Query(default=None, description="Filter by pot type: srp, 3bet, 4bet, multiway, limp, squeeze"),
+    pot_type: str | None = Query(
+        default=None, description="Filter by pot type: srp, 3bet, 4bet, multiway, limp, squeeze"
+    ),
 ):
     """Get a random drill question from all available scenarios."""
     scenarios = get_solver_data()
@@ -1143,7 +1193,9 @@ def get_random_drill(
         options.update(["bet_33", "bet_75", "all_in", "check"])
 
     # Clean strategy (remove note)
-    strategy_clean = {k: v for k, v in hand_data.items() if k != "note" and isinstance(v, (int, float))}
+    strategy_clean = {
+        k: v for k, v in hand_data.items() if k != "note" and isinstance(v, (int, float))
+    }
 
     return {
         "scenario_id": scenario.get("scenario_id"),
@@ -1164,12 +1216,9 @@ def list_pot_types():
     """List all available pot types with scenario counts."""
     scenarios = get_solver_data()
 
-    pot_type_counts: Dict[str, int] = {}
+    pot_type_counts: dict[str, int] = {}
     for s in scenarios:
         pt = s.get("pot_type", "unknown")
         pot_type_counts[pt] = pot_type_counts.get(pt, 0) + 1
 
-    return {
-        "pot_types": pot_type_counts,
-        "total_scenarios": len(scenarios)
-    }
+    return {"pot_types": pot_type_counts, "total_scenarios": len(scenarios)}

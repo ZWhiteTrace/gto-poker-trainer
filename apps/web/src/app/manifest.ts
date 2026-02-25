@@ -4,7 +4,8 @@ export default function manifest(): MetadataRoute.Manifest {
   return {
     name: "GTO 撲克訓練器 - 免費德州撲克練習工具",
     short_name: "GTO訓練器",
-    description: "專為德撲玩家打造的免費 GTO 訓練工具。翻前範圍練習、EV 計算、Push/Fold 圖表，全中文介面，無需註冊。",
+    description:
+      "專為德撲玩家打造的免費 GTO 訓練工具。翻前範圍練習、EV 計算、Push/Fold 圖表，全中文介面，無需註冊。",
     start_url: "/",
     display: "standalone",
     background_color: "#0a0a0a",

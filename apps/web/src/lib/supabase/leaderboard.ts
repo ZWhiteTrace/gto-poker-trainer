@@ -115,11 +115,15 @@ export async function updateLeaderboardStats(
         best_streak: newBestStreak,
         weekly_hands: resetWeekly ? 1 : existing.weekly_hands + 1,
         weekly_correct: resetWeekly
-          ? (isCorrect ? 1 : 0)
+          ? isCorrect
+            ? 1
+            : 0
           : existing.weekly_correct + (isCorrect ? 1 : 0),
         monthly_hands: resetMonthly ? 1 : existing.monthly_hands + 1,
         monthly_correct: resetMonthly
-          ? (isCorrect ? 1 : 0)
+          ? isCorrect
+            ? 1
+            : 0
           : existing.monthly_correct + (isCorrect ? 1 : 0),
         week_start_at: resetWeekly ? weekStart.toISOString() : existing.week_start_at,
         month_start_at: resetMonthly ? monthStart.toISOString() : existing.month_start_at,
@@ -182,13 +186,11 @@ export async function updateUserProfile(
 ): Promise<boolean> {
   const supabase = createClient();
 
-  const { error } = await supabase
-    .from("user_profiles")
-    .upsert({
-      id: userId,
-      ...profile,
-      updated_at: new Date().toISOString(),
-    });
+  const { error } = await supabase.from("user_profiles").upsert({
+    id: userId,
+    ...profile,
+    updated_at: new Date().toISOString(),
+  });
 
   if (error) {
     log.error("Error updating profile:", error);
@@ -245,11 +247,13 @@ export async function getUserAchievements(userId: string): Promise<AchievementSu
     // Get user's unlocked achievements with full achievement data
     const { data: userAchievements, error: uaError } = await supabase
       .from("user_achievements")
-      .select(`
+      .select(
+        `
         achievement_id,
         unlocked_at,
         achievements (*)
-      `)
+      `
+      )
       .eq("user_id", userId);
 
     if (uaError) {
@@ -291,7 +295,9 @@ export async function checkAchievements(userId: string): Promise<Achievement[]> 
     // 1. Get user's current stats (extended fields)
     const { data: stats, error: statsError } = await supabase
       .from("leaderboard_stats")
-      .select("total_hands, correct_hands, current_streak, best_streak, weekly_hands, monthly_hands")
+      .select(
+        "total_hands, correct_hands, current_streak, best_streak, weekly_hands, monthly_hands"
+      )
       .eq("user_id", userId)
       .single();
 
@@ -324,9 +330,7 @@ export async function checkAchievements(userId: string): Promise<Achievement[]> 
     const unlockedIds = new Set((unlockedData || []).map((ua) => ua.achievement_id));
 
     // 4. Check each achievement
-    const accuracy = stats.total_hands > 0
-      ? (stats.correct_hands / stats.total_hands) * 100
-      : 0;
+    const accuracy = stats.total_hands > 0 ? (stats.correct_hands / stats.total_hands) * 100 : 0;
 
     for (const achievement of allAchievements) {
       // Skip if already unlocked
@@ -363,13 +367,11 @@ export async function checkAchievements(userId: string): Promise<Achievement[]> 
 
       if (isUnlocked) {
         // Award the achievement
-        const { error: insertError } = await supabase
-          .from("user_achievements")
-          .insert({
-            user_id: userId,
-            achievement_id: achievement.id,
-            unlocked_at: new Date().toISOString(),
-          });
+        const { error: insertError } = await supabase.from("user_achievements").insert({
+          user_id: userId,
+          achievement_id: achievement.id,
+          unlocked_at: new Date().toISOString(),
+        });
 
         if (!insertError) {
           newlyUnlocked.push({

@@ -23,13 +23,8 @@ function requireTs(tsPath) {
 }
 
 const sizingPath = path.resolve(__dirname, "../src/lib/poker/sizing.ts");
-const {
-  clamp,
-  roundToHalf,
-  getOpenRaiseSize,
-  getThreeBetSize,
-  getFourBetSize,
-} = requireTs(sizingPath);
+const { clamp, roundToHalf, getOpenRaiseSize, getThreeBetSize, getFourBetSize } =
+  requireTs(sizingPath);
 
 function approx(actual, expected, epsilon = 1e-6) {
   assert.ok(

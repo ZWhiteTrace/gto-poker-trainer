@@ -11,10 +11,7 @@ import type {
   Street,
   HoleCards,
 } from "./types";
-import {
-  querySolverStrategy,
-  type SolverQueryResult,
-} from "./solverClient";
+import { querySolverStrategy, type SolverQueryResult } from "./solverClient";
 
 // ============================================
 // Types
@@ -143,7 +140,7 @@ function isHeroInPosition(heroPosition: Position, villainPosition: Position): bo
 
 function findVillainPosition(history: HandHistory, heroPosition: Position): Position {
   // Find the main villain (usually the one who put in the most action)
-  const activePlayers = history.players.filter(p => p.position !== heroPosition);
+  const activePlayers = history.players.filter((p) => p.position !== heroPosition);
 
   // For simplicity, return BB if hero is IP, or BTN if hero is OOP
   if (heroPosition === "SB" || heroPosition === "BB") {
@@ -219,13 +216,20 @@ function calculateDeviationScore(
 
 function mapActionToSolverKey(action: ActionType): string {
   switch (action) {
-    case "fold": return "fold";
-    case "check": return "check";
-    case "call": return "call";
-    case "bet": return "bet";
-    case "raise": return "raise";
-    case "allin": return "raise"; // All-in is a form of raise
-    default: return action;
+    case "fold":
+      return "fold";
+    case "check":
+      return "check";
+    case "call":
+      return "call";
+    case "bet":
+      return "bet";
+    case "raise":
+      return "raise";
+    case "allin":
+      return "raise"; // All-in is a form of raise
+    default:
+      return action;
   }
 }
 
@@ -257,7 +261,10 @@ function getActionFrequencyFromStrategy(
   return 0;
 }
 
-function getRecommendedAction(strategy: SolverQueryResult["strategy"]): { action: ActionType; frequency: number } {
+function getRecommendedAction(strategy: SolverQueryResult["strategy"]): {
+  action: ActionType;
+  frequency: number;
+} {
   if (!strategy) {
     return { action: "check", frequency: 0 };
   }
@@ -320,7 +327,7 @@ async function analyzeDecision(
   history: HandHistory,
   decision: DecisionPoint
 ): Promise<GTOComparison> {
-  const hero = history.players.find(p => p.isHero);
+  const hero = history.players.find((p) => p.isHero);
   const heroCards = hero?.holeCards;
 
   // Build query parameters
@@ -433,7 +440,7 @@ function calculateGrade(avgScore: number): {
 }
 
 export async function analyzeHandHistory(history: HandHistory): Promise<HandAnalysis> {
-  const hero = history.players.find(p => p.isHero);
+  const hero = history.players.find((p) => p.isHero);
 
   // Extract hero's decision points
   const decisionPoints = extractHeroDecisions(history);
@@ -482,9 +489,7 @@ export async function analyzeHandHistory(history: HandHistory): Promise<HandAnal
 // Batch Analysis
 // ============================================
 
-export async function analyzeMultipleHands(
-  histories: HandHistory[]
-): Promise<{
+export async function analyzeMultipleHands(histories: HandHistory[]): Promise<{
   analyses: HandAnalysis[];
   summary: {
     totalHands: number;
@@ -528,11 +533,18 @@ export async function analyzeMultipleHands(
 
   // Calculate average grade
   const gradeValues: Record<string, number> = { A: 4, B: 3, C: 2, D: 1, F: 0 };
-  const avgGradeValue = analyses.reduce((sum, a) => sum + gradeValues[a.grade], 0) / analyses.length;
-  const avgGrade = avgGradeValue >= 3.5 ? "A" :
-                   avgGradeValue >= 2.5 ? "B" :
-                   avgGradeValue >= 1.5 ? "C" :
-                   avgGradeValue >= 0.5 ? "D" : "F";
+  const avgGradeValue =
+    analyses.reduce((sum, a) => sum + gradeValues[a.grade], 0) / analyses.length;
+  const avgGrade =
+    avgGradeValue >= 3.5
+      ? "A"
+      : avgGradeValue >= 2.5
+        ? "B"
+        : avgGradeValue >= 1.5
+          ? "C"
+          : avgGradeValue >= 0.5
+            ? "D"
+            : "F";
 
   // Identify improvement areas
   const improvementAreas: string[] = [];

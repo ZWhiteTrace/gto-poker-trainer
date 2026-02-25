@@ -44,7 +44,11 @@ export function getThreeBetSize(openSize: number, isIP: boolean, effectiveStack:
   return openSize * multiplier;
 }
 
-export function getFourBetSize(threeBetSize: number, isIP: boolean, effectiveStack: number): number {
+export function getFourBetSize(
+  threeBetSize: number,
+  isIP: boolean,
+  effectiveStack: number
+): number {
   let multiplier = isIP ? 2.2 : 2.4;
   if (effectiveStack <= 40) {
     multiplier = 2.1;

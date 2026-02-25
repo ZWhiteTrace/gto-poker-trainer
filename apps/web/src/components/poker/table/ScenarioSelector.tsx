@@ -20,13 +20,11 @@ interface ScenarioSelectorProps {
 export function ScenarioSelector({ onSelect, onClose }: ScenarioSelectorProps) {
   const [selectedCategory, setSelectedCategory] = useState<ScenarioCategory | null>(null);
 
-  const scenarios = selectedCategory
-    ? getScenariosByCategory(selectedCategory)
-    : SCENARIO_PRESETS;
+  const scenarios = selectedCategory ? getScenariosByCategory(selectedCategory) : SCENARIO_PRESETS;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
-      <Card className="w-full max-w-3xl max-h-[80vh] overflow-hidden bg-gray-900 border-gray-700">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm">
+      <Card className="max-h-[80vh] w-full max-w-3xl overflow-hidden border-gray-700 bg-gray-900">
         <CardHeader className="border-b border-gray-700">
           <div className="flex items-center justify-between">
             <CardTitle className="text-xl">選擇訓練場景</CardTitle>
@@ -36,7 +34,7 @@ export function ScenarioSelector({ onSelect, onClose }: ScenarioSelectorProps) {
           </div>
         </CardHeader>
 
-        <CardContent className="p-4 space-y-4 overflow-y-auto max-h-[calc(80vh-80px)]">
+        <CardContent className="max-h-[calc(80vh-80px)] space-y-4 overflow-y-auto p-4">
           {/* Category Filter */}
           <div className="flex flex-wrap gap-2">
             <Button
@@ -59,7 +57,7 @@ export function ScenarioSelector({ onSelect, onClose }: ScenarioSelectorProps) {
           </div>
 
           {/* Scenario Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
             {scenarios.map((scenario) => (
               <ScenarioCard
                 key={scenario.id}
@@ -86,28 +84,28 @@ function ScenarioCard({ scenario, onClick }: ScenarioCardProps) {
     <button
       onClick={onClick}
       className={cn(
-        "text-left p-4 rounded-lg border border-gray-700 bg-gray-800/50",
-        "hover:bg-gray-700/50 hover:border-primary/50 transition-all",
-        "focus:outline-none focus:ring-2 focus:ring-primary"
+        "rounded-lg border border-gray-700 bg-gray-800/50 p-4 text-left",
+        "hover:border-primary/50 transition-all hover:bg-gray-700/50",
+        "focus:ring-primary focus:ring-2 focus:outline-none"
       )}
     >
-      <div className="flex items-start justify-between mb-2">
+      <div className="mb-2 flex items-start justify-between">
         <h3 className="font-semibold text-white">{scenario.nameZh}</h3>
-        <Badge variant="outline" className="text-xs shrink-0">
+        <Badge variant="outline" className="shrink-0 text-xs">
           {categoryInfo?.nameZh}
         </Badge>
       </div>
 
-      <p className="text-sm text-gray-400 mb-3">{scenario.descriptionZh}</p>
+      <p className="mb-3 text-sm text-gray-400">{scenario.descriptionZh}</p>
 
       <div className="flex flex-wrap gap-2 text-xs">
-        <span className="px-2 py-0.5 bg-blue-500/20 text-blue-400 rounded">
+        <span className="rounded bg-blue-500/20 px-2 py-0.5 text-blue-400">
           Hero: {scenario.heroPosition}
         </span>
-        <span className="px-2 py-0.5 bg-green-500/20 text-green-400 rounded">
+        <span className="rounded bg-green-500/20 px-2 py-0.5 text-green-400">
           {scenario.effectiveStack}BB
         </span>
-        <span className="px-2 py-0.5 bg-purple-500/20 text-purple-400 rounded">
+        <span className="rounded bg-purple-500/20 px-2 py-0.5 text-purple-400">
           {scenario.numPlayers} 人
         </span>
       </div>
@@ -115,10 +113,7 @@ function ScenarioCard({ scenario, onClick }: ScenarioCardProps) {
       {scenario.trainingFocus && scenario.trainingFocus.length > 0 && (
         <div className="mt-3 flex flex-wrap gap-1">
           {scenario.trainingFocus.slice(0, 3).map((focus, i) => (
-            <span
-              key={i}
-              className="text-xs px-1.5 py-0.5 bg-gray-700 text-gray-300 rounded"
-            >
+            <span key={i} className="rounded bg-gray-700 px-1.5 py-0.5 text-xs text-gray-300">
               {focus}
             </span>
           ))}
@@ -136,12 +131,7 @@ interface ScenarioButtonProps {
 
 export function ScenarioButton({ onClick, className }: ScenarioButtonProps) {
   return (
-    <Button
-      variant="outline"
-      size="sm"
-      onClick={onClick}
-      className={cn("gap-2", className)}
-    >
+    <Button variant="outline" size="sm" onClick={onClick} className={cn("gap-2", className)}>
       <svg
         xmlns="http://www.w3.org/2000/svg"
         width="16"

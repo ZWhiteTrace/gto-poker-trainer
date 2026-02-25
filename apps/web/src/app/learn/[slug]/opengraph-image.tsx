@@ -21,11 +21,7 @@ const categoryColors: Record<string, string> = {
   advanced: "#ef4444",
 };
 
-export default async function Image({
-  params,
-}: {
-  params: Promise<{ slug: string }>;
-}) {
+export default async function Image({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const guide = getGuide(slug);
 
@@ -35,87 +31,85 @@ export default async function Image({
   const accentColor = categoryColors[category] ?? "#16a34a";
 
   return new ImageResponse(
-    (
+    <div
+      style={{
+        background: "linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%)",
+        width: "100%",
+        height: "100%",
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+        padding: "60px 80px",
+        fontFamily: "sans-serif",
+      }}
+    >
       <div
         style={{
-          background: "linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%)",
-          width: "100%",
-          height: "100%",
           display: "flex",
-          flexDirection: "column",
-          justifyContent: "center",
-          padding: "60px 80px",
-          fontFamily: "sans-serif",
+          alignItems: "center",
+          gap: "12px",
+          marginBottom: "24px",
         }}
       >
         <div
           style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "12px",
-            marginBottom: "24px",
-          }}
-        >
-          <div
-            style={{
-              padding: "6px 16px",
-              borderRadius: "8px",
-              background: accentColor,
-              color: "#ffffff",
-              fontSize: "20px",
-              fontWeight: 600,
-            }}
-          >
-            {categoryLabel}
-          </div>
-        </div>
-        <div
-          style={{
-            fontSize: title.length > 20 ? "48px" : "56px",
-            fontWeight: 800,
+            padding: "6px 16px",
+            borderRadius: "8px",
+            background: accentColor,
             color: "#ffffff",
-            lineHeight: 1.2,
-            letterSpacing: "-1px",
-            marginBottom: "24px",
-            display: "flex",
+            fontSize: "20px",
+            fontWeight: 600,
           }}
         >
-          {title}
-        </div>
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "12px",
-            marginTop: "auto",
-          }}
-        >
-          <div
-            style={{
-              width: "40px",
-              height: "40px",
-              borderRadius: "10px",
-              background: "#16a34a",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              fontSize: "22px",
-            }}
-          >
-            ♠
-          </div>
-          <div
-            style={{
-              fontSize: "22px",
-              color: "#71717a",
-              fontWeight: 600,
-            }}
-          >
-            grindgto.com
-          </div>
+          {categoryLabel}
         </div>
       </div>
-    ),
+      <div
+        style={{
+          fontSize: title.length > 20 ? "48px" : "56px",
+          fontWeight: 800,
+          color: "#ffffff",
+          lineHeight: 1.2,
+          letterSpacing: "-1px",
+          marginBottom: "24px",
+          display: "flex",
+        }}
+      >
+        {title}
+      </div>
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: "12px",
+          marginTop: "auto",
+        }}
+      >
+        <div
+          style={{
+            width: "40px",
+            height: "40px",
+            borderRadius: "10px",
+            background: "#16a34a",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            fontSize: "22px",
+          }}
+        >
+          ♠
+        </div>
+        <div
+          style={{
+            fontSize: "22px",
+            color: "#71717a",
+            fontWeight: 600,
+          }}
+        >
+          grindgto.com
+        </div>
+      </div>
+    </div>,
     { ...size }
   );
 }

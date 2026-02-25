@@ -1,6 +1,7 @@
 """
 Tests for range query endpoints.
 """
+
 import pytest
 
 

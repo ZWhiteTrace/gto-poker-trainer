@@ -1,7 +1,14 @@
 // Exam question types and data
 // Extracted from exam/page.tsx for better maintainability
 
-export type QuestionType = "logic" | "equity" | "position" | "push_fold" | "postflop" | "sizing" | "range";
+export type QuestionType =
+  | "logic"
+  | "equity"
+  | "position"
+  | "push_fold"
+  | "postflop"
+  | "sizing"
+  | "range";
 
 export interface ExamQuestion {
   id: string;
@@ -118,7 +125,8 @@ export const EXAM_QUESTIONS: ExamQuestion[] = [
       { key: "d", text: "因為 BB 想看翻牌" },
     ],
     correctAnswer: "a",
-    explanation: "BB 已投入 1BB，面對 2.5BB 加注只需再投 1.5BB，底池賠率（Pot Odds）使寬防守有利可圖。",
+    explanation:
+      "BB 已投入 1BB，面對 2.5BB 加注只需再投 1.5BB，底池賠率（Pot Odds）使寬防守有利可圖。",
   },
   {
     id: "p3",
@@ -145,7 +153,8 @@ export const EXAM_QUESTIONS: ExamQuestion[] = [
       { key: "d", text: "跛入" },
     ],
     correctAnswer: "c",
-    explanation: "10BB BTN 的 push 範圍很寬，A2o 有阻擋（持有 A 讓對手有 A 的機率下降）且能贏翻牌，應該全下。",
+    explanation:
+      "10BB BTN 的 push 範圍很寬，A2o 有阻擋（持有 A 讓對手有 A 的機率下降）且能贏翻牌，應該全下。",
   },
   {
     id: "pf2",
@@ -185,7 +194,8 @@ export const EXAM_QUESTIONS: ExamQuestion[] = [
       { key: "d", text: "因為想要生存" },
     ],
     correctAnswer: "a",
-    explanation: "ICM（獨立籌碼模型）的核心是籌碼價值非線性，泡沫期出局意味著失去所有已累積的獎金期望值。",
+    explanation:
+      "ICM（獨立籌碼模型）的核心是籌碼價值非線性，泡沫期出局意味著失去所有已累積的獎金期望值。",
   },
   {
     id: "l5",
@@ -204,7 +214,8 @@ export const EXAM_QUESTIONS: ExamQuestion[] = [
   {
     id: "cb1",
     type: "logic",
-    question: "在乾燥 K72r（彩虹面）牌面，IP（有位置）玩家作為翻前加注者應該使用什麼 C-bet（持續下注）策略？",
+    question:
+      "在乾燥 K72r（彩虹面）牌面，IP（有位置）玩家作為翻前加注者應該使用什麼 C-bet（持續下注）策略？",
     options: [
       { key: "a", text: "高頻小注（25-33% pot）" },
       { key: "b", text: "低頻大注（75% pot）" },
@@ -212,7 +223,8 @@ export const EXAM_QUESTIONS: ExamQuestion[] = [
       { key: "d", text: "總是 check" },
     ],
     correctAnswer: "a",
-    explanation: "乾燥高牌面對開牌者非常有利，小注高頻可以有效利用範圍優勢（你的牌比對手整體更好）。",
+    explanation:
+      "乾燥高牌面對開牌者非常有利，小注高頻可以有效利用範圍優勢（你的牌比對手整體更好）。",
   },
   {
     id: "cb2",
@@ -345,7 +357,8 @@ export const EXAM_QUESTIONS: ExamQuestion[] = [
       { key: "d", text: "80% vs 20%" },
     ],
     correctAnswer: "a",
-    explanation: "Set 約 65% vs 同花聽牌 35%。如果聽牌有額外 outs（如 backdoor straight），比例會更接近。",
+    explanation:
+      "Set 約 65% vs 同花聽牌 35%。如果聽牌有額外 outs（如 backdoor straight），比例會更接近。",
   },
   // Exploit Questions
   {
@@ -412,7 +425,8 @@ export const EXAM_QUESTIONS: ExamQuestion[] = [
       { key: "d", text: "因為想看便宜的翻牌" },
     ],
     correctAnswer: "a",
-    explanation: "現代 GTO 研究顯示，SB vs BB 使用簡化策略（全部 limp 或全部 raise）已經非常接近最優。",
+    explanation:
+      "現代 GTO 研究顯示，SB vs BB 使用簡化策略（全部 limp 或全部 raise）已經非常接近最優。",
   },
   // More Push/Fold
   {
@@ -439,7 +453,8 @@ export const EXAM_QUESTIONS: ExamQuestion[] = [
       { key: "d", text: "25BB 以下" },
     ],
     correctAnswer: "a",
-    explanation: "當有效籌碼低於 10BB，standard raise 後如果被 3-bet 會很尷尬，全下通常是更好的選擇。",
+    explanation:
+      "當有效籌碼低於 10BB，standard raise 後如果被 3-bet 會很尷尬，全下通常是更好的選擇。",
   },
   {
     id: "pf6",
@@ -506,7 +521,8 @@ export const EXAM_QUESTIONS: ExamQuestion[] = [
       { key: "d", text: "籌碼管理原則" },
     ],
     correctAnswer: "a",
-    explanation: "快速估算 equity：翻牌時 outs×4 ≈ 翻牌到河牌勝率；轉牌時 outs×2 ≈ 轉牌到河牌勝率。",
+    explanation:
+      "快速估算 equity：翻牌時 outs×4 ≈ 翻牌到河牌勝率；轉牌時 outs×2 ≈ 轉牌到河牌勝率。",
   },
   {
     id: "e8",
@@ -533,7 +549,8 @@ export const EXAM_QUESTIONS: ExamQuestion[] = [
       { key: "d", text: "只有在詐唬時" },
     ],
     correctAnswer: "a",
-    explanation: "好的 double barrel 時機是當轉牌對你有利（如 A/K 掉落）或減少對手的 equity（如對手聽牌未中）。",
+    explanation:
+      "好的 double barrel 時機是當轉牌對你有利（如 A/K 掉落）或減少對手的 equity（如對手聽牌未中）。",
   },
   {
     id: "pf8",
@@ -546,7 +563,8 @@ export const EXAM_QUESTIONS: ExamQuestion[] = [
       { key: "d", text: "因為籌碼不夠" },
     ],
     correctAnswer: "a",
-    explanation: "河牌不需要保護手牌，所以策略自然極化：用強牌和詐唬下注，中等牌 check-call 或 check-fold。",
+    explanation:
+      "河牌不需要保護手牌，所以策略自然極化：用強牌和詐唬下注，中等牌 check-call 或 check-fold。",
   },
 
   // ========== 新增 Push/Fold 題目 ==========
@@ -574,7 +592,8 @@ export const EXAM_QUESTIONS: ExamQuestion[] = [
       { key: "d", text: "取決於對手形象" },
     ],
     correctAnswer: "b",
-    explanation: "泡沫期大籌碼應該收緊跟注範圍。即使 A5s 有足夠 equity，ICM（獨立籌碼模型）考量下應該放棄邊緣跟注。",
+    explanation:
+      "泡沫期大籌碼應該收緊跟注範圍。即使 A5s 有足夠 equity，ICM（獨立籌碼模型）考量下應該放棄邊緣跟注。",
   },
   {
     id: "pf11",
@@ -613,7 +632,8 @@ export const EXAM_QUESTIONS: ExamQuestion[] = [
       { key: "d", text: "小額 3-bet" },
     ],
     correctAnswer: "b",
-    explanation: "15BB 時，99 面對 HJ 開牌是標準 3-bet 全下牌。跟注翻後難以遊戲，小額 3-bet 沒意義。",
+    explanation:
+      "15BB 時，99 面對 HJ 開牌是標準 3-bet 全下牌。跟注翻後難以遊戲，小額 3-bet 沒意義。",
   },
   {
     id: "pf14",
@@ -626,7 +646,8 @@ export const EXAM_QUESTIONS: ExamQuestion[] = [
       { key: "d", text: "跟注但很勉強" },
     ],
     correctAnswer: "a",
-    explanation: "BB 已投入 1BB，面對 8BB push 的底池賠率約 1.5:1。BTN 範圍很寬，K7o 有足夠 equity。",
+    explanation:
+      "BB 已投入 1BB，面對 8BB push 的底池賠率約 1.5:1。BTN 範圍很寬，K7o 有足夠 equity。",
   },
   {
     id: "pf15",
@@ -639,7 +660,8 @@ export const EXAM_QUESTIONS: ExamQuestion[] = [
       { key: "d", text: "小額 4-bet" },
     ],
     correctAnswer: "c",
-    explanation: "20BB 有效籌碼，面對 8BB 的 3-bet，AJo 沒有足夠深度跟注。要嘛 4-bet 全下，要嘛棄牌。AJo 通常是全下。",
+    explanation:
+      "20BB 有效籌碼，面對 8BB 的 3-bet，AJo 沒有足夠深度跟注。要嘛 4-bet 全下，要嘛棄牌。AJo 通常是全下。",
   },
   {
     id: "pf16",
@@ -667,7 +689,8 @@ export const EXAM_QUESTIONS: ExamQuestion[] = [
       { key: "d", text: "BTN 比較有經驗" },
     ],
     correctAnswer: "a",
-    explanation: "BTN 翻後總是有位置（對除了 BTN 外所有位置），可以用更寬的範圍 3-bet 獲取位置優勢。",
+    explanation:
+      "BTN 翻後總是有位置（對除了 BTN 外所有位置），可以用更寬的範圍 3-bet 獲取位置優勢。",
   },
   {
     id: "pos7",
@@ -693,7 +716,8 @@ export const EXAM_QUESTIONS: ExamQuestion[] = [
       { key: "d", text: "只用 AA/KK 3-bet" },
     ],
     correctAnswer: "a",
-    explanation: "HJ 的開牌範圍相對緊，所以 CO 的 3-bet 範圍也應該收緊，因為 HJ 被 3-bet 後會棄牌較少。",
+    explanation:
+      "HJ 的開牌範圍相對緊，所以 CO 的 3-bet 範圍也應該收緊，因為 HJ 被 3-bet 後會棄牌較少。",
   },
   {
     id: "pos9",
@@ -706,7 +730,8 @@ export const EXAM_QUESTIONS: ExamQuestion[] = [
       { key: "d", text: "盲注位更有經驗" },
     ],
     correctAnswer: "a",
-    explanation: "BB 已投入 1BB，面對 2.5BB 加注只需 1.5BB 看翻牌，底池賠率約 3.5:1，可以用很寬的範圍防守。",
+    explanation:
+      "BB 已投入 1BB，面對 2.5BB 加注只需 1.5BB 看翻牌，底池賠率約 3.5:1，可以用很寬的範圍防守。",
   },
   {
     id: "pos10",
@@ -719,7 +744,8 @@ export const EXAM_QUESTIONS: ExamQuestion[] = [
       { key: "d", text: "混合策略（3-bet/call 各半）" },
     ],
     correctAnswer: "b",
-    explanation: "AQo 面對早位開牌是標準 3-bet 牌。跟注會讓你翻後面對多人底池且沒位置，3-bet 可以隔離並取得主動權。",
+    explanation:
+      "AQo 面對早位開牌是標準 3-bet 牌。跟注會讓你翻後面對多人底池且沒位置，3-bet 可以隔離並取得主動權。",
   },
   {
     id: "pos11",
@@ -732,7 +758,8 @@ export const EXAM_QUESTIONS: ExamQuestion[] = [
       { key: "d", text: "因為怕被 3-bet" },
     ],
     correctAnswer: "a",
-    explanation: "Solver 研究顯示，SB vs BB limp-heavy 策略非常接近 EV 最優，因為 BB 難以有效懲罰大量的 limp。",
+    explanation:
+      "Solver 研究顯示，SB vs BB limp-heavy 策略非常接近 EV 最優，因為 BB 難以有效懲罰大量的 limp。",
   },
   {
     id: "pos12",
@@ -745,7 +772,8 @@ export const EXAM_QUESTIONS: ExamQuestion[] = [
       { key: "d", text: "永遠不應該 check-raise" },
     ],
     correctAnswer: "a",
-    explanation: "OOP check-raise 用於建立大底池（強牌）或獲得詐唬/半詐唬的摺疊勝率。是重要的平衡策略。",
+    explanation:
+      "OOP check-raise 用於建立大底池（強牌）或獲得詐唬/半詐唬的摺疊勝率。是重要的平衡策略。",
   },
   {
     id: "pos13",
@@ -758,7 +786,8 @@ export const EXAM_QUESTIONS: ExamQuestion[] = [
       { key: "d", text: "總是棄牌" },
     ],
     correctAnswer: "a",
-    explanation: "BTN 翻後有位置，可以用較寬的範圍跟注。而且 SB cold 3-bet 頻率通常不高，但 BTN 仍有位置優勢。",
+    explanation:
+      "BTN 翻後有位置，可以用較寬的範圍跟注。而且 SB cold 3-bet 頻率通常不高，但 BTN 仍有位置優勢。",
   },
   {
     id: "pos14",
@@ -771,7 +800,8 @@ export const EXAM_QUESTIONS: ExamQuestion[] = [
       { key: "d", text: "跟注或 3-bet 都可以" },
     ],
     correctAnswer: "d",
-    explanation: "87s 是彈性手牌，既可以 call 利用位置翻後玩牌，也可以 3-bet bluff 作為平衡。取決於對手和桌上動態。",
+    explanation:
+      "87s 是彈性手牌，既可以 call 利用位置翻後玩牌，也可以 3-bet bluff 作為平衡。取決於對手和桌上動態。",
   },
   {
     id: "pos15",
@@ -784,7 +814,8 @@ export const EXAM_QUESTIONS: ExamQuestion[] = [
       { key: "d", text: "可以詐唬更多" },
     ],
     correctAnswer: "a",
-    explanation: "多人底池中，後位可以看到所有人的行動再做決定。check 到你代表弱，有人下注代表強，資訊價值大增。",
+    explanation:
+      "多人底池中，後位可以看到所有人的行動再做決定。check 到你代表弱，有人下注代表強，資訊價值大增。",
   },
 
   // ========== 新增 Postflop 題目 ==========
@@ -799,7 +830,8 @@ export const EXAM_QUESTIONS: ExamQuestion[] = [
       { key: "d", text: "只用強牌下注" },
     ],
     correctAnswer: "a",
-    explanation: "AK7r 對開牌者範圍非常有利，小注高頻可以有效利用範圍優勢，讓對手的邊緣牌難以繼續。",
+    explanation:
+      "AK7r 對開牌者範圍非常有利，小注高頻可以有效利用範圍優勢，讓對手的邊緣牌難以繼續。",
   },
   {
     id: "post2",
@@ -812,7 +844,8 @@ export const EXAM_QUESTIONS: ExamQuestion[] = [
       { key: "d", text: "全下" },
     ],
     correctAnswer: "b",
-    explanation: "876 連接面對 BB 防守範圍非常有利（兩對、順子、聽牌多），開牌者範圍優勢不明顯，應該謹慎。",
+    explanation:
+      "876 連接面對 BB 防守範圍非常有利（兩對、順子、聽牌多），開牌者範圍優勢不明顯，應該謹慎。",
   },
   {
     id: "post3",
@@ -851,7 +884,8 @@ export const EXAM_QUESTIONS: ExamQuestion[] = [
       { key: "d", text: "加注" },
     ],
     correctAnswer: "c",
-    explanation: "面對底池大小下注，MDF 約 50%。你需要用一定頻率的 bluff-catch 手牌防守，防止對手過度詐唬。",
+    explanation:
+      "面對底池大小下注，MDF 約 50%。你需要用一定頻率的 bluff-catch 手牌防守，防止對手過度詐唬。",
   },
   {
     id: "post6",
@@ -890,7 +924,8 @@ export const EXAM_QUESTIONS: ExamQuestion[] = [
       { key: "d", text: "任何河牌都可以" },
     ],
     correctAnswer: "a",
-    explanation: "Overbet 在你有 nuts 優勢（堅果牌優勢）時最有效，可以從對手的強牌抽取更多價值，同時平衡詐唬。",
+    explanation:
+      "Overbet 在你有 nuts 優勢（堅果牌優勢）時最有效，可以從對手的強牌抽取更多價值，同時平衡詐唬。",
   },
   {
     id: "post9",
@@ -903,7 +938,8 @@ export const EXAM_QUESTIONS: ExamQuestion[] = [
       { key: "d", text: "沒有任何資訊" },
     ],
     correctAnswer: "a",
-    explanation: "Donk bet 通常代表中等牌力或聽牌，對手不想 check-call 也不想 check-fold，想主動控制底池大小。",
+    explanation:
+      "Donk bet 通常代表中等牌力或聽牌，對手不想 check-call 也不想 check-fold，想主動控制底池大小。",
   },
   {
     id: "post10",
@@ -916,7 +952,8 @@ export const EXAM_QUESTIONS: ExamQuestion[] = [
       { key: "d", text: "任何牌面都用大注" },
     ],
     correctAnswer: "a",
-    explanation: "動態牌面（如 T98 雙花）需要大注來對聽牌收費，因為對手會有很多繼續的牌。乾燥面小注即可。",
+    explanation:
+      "動態牌面（如 T98 雙花）需要大注來對聽牌收費，因為對手會有很多繼續的牌。乾燥面小注即可。",
   },
   {
     id: "post11",
@@ -942,7 +979,8 @@ export const EXAM_QUESTIONS: ExamQuestion[] = [
       { key: "d", text: "河牌才下注" },
     ],
     correctAnswer: "a",
-    explanation: "Delay C-bet 是翻牌選擇 check，然後轉牌下注。可以用於保護 check 範圍或對抗喜歡 float 的對手。",
+    explanation:
+      "Delay C-bet 是翻牌選擇 check，然後轉牌下注。可以用於保護 check 範圍或對抗喜歡 float 的對手。",
   },
   {
     id: "post13",
@@ -955,7 +993,8 @@ export const EXAM_QUESTIONS: ExamQuestion[] = [
       { key: "d", text: "全下" },
     ],
     correctAnswer: "a",
-    explanation: "Protection bet 用於保護脆弱的好牌（如頂對弱踢腳），阻止對手免費看牌追聽牌或改進。",
+    explanation:
+      "Protection bet 用於保護脆弱的好牌（如頂對弱踢腳），阻止對手免費看牌追聽牌或改進。",
   },
   {
     id: "post14",
@@ -968,7 +1007,8 @@ export const EXAM_QUESTIONS: ExamQuestion[] = [
       { key: "d", text: "當底池很大時" },
     ],
     correctAnswer: "a",
-    explanation: "如果下注後對手只會用比你好的牌跟注（way ahead/way behind 情況），check 讓對手詐唬更好。",
+    explanation:
+      "如果下注後對手只會用比你好的牌跟注（way ahead/way behind 情況），check 讓對手詐唬更好。",
   },
   {
     id: "post15",
@@ -981,7 +1021,8 @@ export const EXAM_QUESTIONS: ExamQuestion[] = [
       { key: "d", text: "加注" },
     ],
     correctAnswer: "a",
-    explanation: "Overbet 的 MDF 較低（如 1.5x pot 只需防守 40%），而且對手通常會用極化範圍 overbet。",
+    explanation:
+      "Overbet 的 MDF 較低（如 1.5x pot 只需防守 40%），而且對手通常會用極化範圍 overbet。",
   },
 
   // ========== 新增 Sizing 題目 ==========
@@ -1074,7 +1115,8 @@ export const EXAM_QUESTIONS: ExamQuestion[] = [
       { key: "d", text: "check-raise" },
     ],
     correctAnswer: "b",
-    explanation: "河牌 value bet 尺寸取決於對手的跟注範圍。有時大注抽更多價值，有時小注讓更多牌跟注。",
+    explanation:
+      "河牌 value bet 尺寸取決於對手的跟注範圍。有時大注抽更多價值，有時小注讓更多牌跟注。",
   },
   {
     id: "sz8",
@@ -1087,7 +1129,8 @@ export const EXAM_QUESTIONS: ExamQuestion[] = [
       { key: "d", text: "33% pot" },
     ],
     correctAnswer: "b",
-    explanation: "詐唬尺寸需要平衡成功率和風險。通常 66-100% pot 是合理範圍，讓詐唬有足夠摺疊勝率。",
+    explanation:
+      "詐唬尺寸需要平衡成功率和風險。通常 66-100% pot 是合理範圍，讓詐唬有足夠摺疊勝率。",
   },
   {
     id: "sz9",
@@ -1100,7 +1143,8 @@ export const EXAM_QUESTIONS: ExamQuestion[] = [
       { key: "d", text: "總是小注" },
     ],
     correctAnswer: "a",
-    explanation: "Geometric sizing 是計算在翻/轉/河能剛好全進的尺寸。如 100BB 想在河全進，翻牌約 33% pot。",
+    explanation:
+      "Geometric sizing 是計算在翻/轉/河能剛好全進的尺寸。如 100BB 想在河全進，翻牌約 33% pot。",
   },
   {
     id: "sz10",
@@ -1113,7 +1157,8 @@ export const EXAM_QUESTIONS: ExamQuestion[] = [
       { key: "d", text: "直接全下" },
     ],
     correctAnswer: "a",
-    explanation: "短籌碼時開局可以用 2-2.2BB，保留更多 postflop 籌碼深度。太大尺寸會使 pot committed。",
+    explanation:
+      "短籌碼時開局可以用 2-2.2BB，保留更多 postflop 籌碼深度。太大尺寸會使 pot committed。",
   },
 
   // ========== 新增 Range 題目 ==========
@@ -1141,7 +1186,8 @@ export const EXAM_QUESTIONS: ExamQuestion[] = [
       { key: "d", text: "不應該 3-bet bluff" },
     ],
     correctAnswer: "a",
-    explanation: "3-bet bluff 用有阻擋（A blocker）和可玩性的牌。A5s 阻擋 AA/AK，小同花連張翻後有潛力。",
+    explanation:
+      "3-bet bluff 用有阻擋（A blocker）和可玩性的牌。A5s 阻擋 AA/AK，小同花連張翻後有潛力。",
   },
   {
     id: "rg3",
@@ -1193,7 +1239,8 @@ export const EXAM_QUESTIONS: ExamQuestion[] = [
       { key: "d", text: "不應該 4-bet bluff" },
     ],
     correctAnswer: "a",
-    explanation: "Cold 4-bet bluff 用有 A blocker 的牌（減少對手 AA/AK 的組合數）但翻後可玩性有限的牌。",
+    explanation:
+      "Cold 4-bet bluff 用有 A blocker 的牌（減少對手 AA/AK 的組合數）但翻後可玩性有限的牌。",
   },
   {
     id: "rg7",
@@ -1206,7 +1253,8 @@ export const EXAM_QUESTIONS: ExamQuestion[] = [
       { key: "d", text: "不應該 3-bet" },
     ],
     correctAnswer: "a",
-    explanation: "SB vs BTN 用線性範圍 3-bet。因為 OOP 翻後難打，用強牌直接 3-bet 爭取 fold equity。",
+    explanation:
+      "SB vs BTN 用線性範圍 3-bet。因為 OOP 翻後難打，用強牌直接 3-bet 爭取 fold equity。",
   },
   {
     id: "rg8",
@@ -1299,7 +1347,8 @@ export const EXAM_QUESTIONS: ExamQuestion[] = [
       { key: "d", text: "TPTK 約 50%" },
     ],
     correctAnswer: "a",
-    explanation: "面對暗三條，TPTK（頂對頂踢腳）只有約 10% 勝率（需要跑跑全對或更好），是典型的 cooler 場景。",
+    explanation:
+      "面對暗三條，TPTK（頂對頂踢腳）只有約 10% 勝率（需要跑跑全對或更好），是典型的 cooler 場景。",
   },
   {
     id: "e13",
@@ -1353,7 +1402,8 @@ export const EXAM_QUESTIONS: ExamQuestion[] = [
       { key: "d", text: "BBB (3 Broadway no Ace)" },
     ],
     correctAnswer: "a",
-    explanation: "A + K（Broadway）+ 7（low）= A + 1 Broadway + 1 low，但這裡 K 是 Broadway，所以是 ABB。翻牌 A + 2 Broadway（K 和某個 T-Q 的牌算 Broadway）。這裡更精確是 ABx。",
+    explanation:
+      "A + K（Broadway）+ 7（low）= A + 1 Broadway + 1 low，但這裡 K 是 Broadway，所以是 ABB。翻牌 A + 2 Broadway（K 和某個 T-Q 的牌算 Broadway）。這裡更精確是 ABx。",
   },
   {
     id: "tx2",
@@ -1366,7 +1416,8 @@ export const EXAM_QUESTIONS: ExamQuestion[] = [
       { key: "d", text: "位置較後的玩家" },
     ],
     correctAnswer: "a",
-    explanation: "QJT 是 BBB（3 張 Broadway），開牌者範圍包含更多強 Broadway 組合（AK, AQ, KQ, QQ, JJ, TT），有明顯範圍優勢。",
+    explanation:
+      "QJT 是 BBB（3 張 Broadway），開牌者範圍包含更多強 Broadway 組合（AK, AQ, KQ, QQ, JJ, TT），有明顯範圍優勢。",
   },
   {
     id: "tx3",
@@ -1379,7 +1430,8 @@ export const EXAM_QUESTIONS: ExamQuestion[] = [
       { key: "d", text: "BBx" },
     ],
     correctAnswer: "a",
-    explanation: "875 全是低牌（≤9），且 gapSum = (8-7) + (7-5) = 1 + 2 = 3 ≤ 4，符合連接標準，是 Low_conn。",
+    explanation:
+      "875 全是低牌（≤9），且 gapSum = (8-7) + (7-5) = 1 + 2 = 3 ≤ 4，符合連接標準，是 Low_conn。",
   },
   {
     id: "tx4",
@@ -1405,7 +1457,8 @@ export const EXAM_QUESTIONS: ExamQuestion[] = [
       { key: "d", text: "Low_unconn" },
     ],
     correctAnswer: "b",
-    explanation: "K 是唯一高牌（Broadway），7 和 3 都是 low，符合 KQx（K/Q 作為唯一高牌 + 2 張低牌）定義。",
+    explanation:
+      "K 是唯一高牌（Broadway），7 和 3 都是 low，符合 KQx（K/Q 作為唯一高牌 + 2 張低牌）定義。",
   },
   {
     id: "tx6",
@@ -1418,7 +1471,8 @@ export const EXAM_QUESTIONS: ExamQuestion[] = [
       { key: "d", text: "極低（<20%）" },
     ],
     correctAnswer: "b",
-    explanation: "J97 是 JT_conn 類型，J 是唯一 Broadway 且牌面連接。跟注者有很多兩對/順子，開牌者需要謹慎，中頻 C-bet。",
+    explanation:
+      "J97 是 JT_conn 類型，J 是唯一 Broadway 且牌面連接。跟注者有很多兩對/順子，開牌者需要謹慎，中頻 C-bet。",
   },
   {
     id: "tx7",
@@ -1444,7 +1498,8 @@ export const EXAM_QUESTIONS: ExamQuestion[] = [
       { key: "d", text: "只影響河牌策略" },
     ],
     correctAnswer: "a",
-    explanation: "連接度用 gapSum（相鄰牌差值總和）衡量。gapSum ≤ 4 視為連接，連接牌面有更多順子可能，需要大注對聽牌收費。",
+    explanation:
+      "連接度用 gapSum（相鄰牌差值總和）衡量。gapSum ≤ 4 視為連接，連接牌面有更多順子可能，需要大注對聽牌收費。",
   },
   {
     id: "tx9",
@@ -1470,7 +1525,8 @@ export const EXAM_QUESTIONS: ExamQuestion[] = [
       { key: "d", text: "因為需要更大的注" },
     ],
     correctAnswer: "a",
-    explanation: "單花面對手會用更多同花聽牌（9 outs）和已完成同花繼續，C-bet 成功率下降，需要降頻或用極化策略。",
+    explanation:
+      "單花面對手會用更多同花聽牌（9 outs）和已完成同花繼續，C-bet 成功率下降，需要降頻或用極化策略。",
   },
   {
     id: "tx11",
@@ -1483,7 +1539,8 @@ export const EXAM_QUESTIONS: ExamQuestion[] = [
       { key: "d", text: "取決於花色" },
     ],
     correctAnswer: "a",
-    explanation: "Q73r（KQx 類型）非常乾燥，開牌者有明顯範圍優勢。QT8 連接度高，跟注者有更多兩對/順子組合。",
+    explanation:
+      "Q73r（KQx 類型）非常乾燥，開牌者有明顯範圍優勢。QT8 連接度高，跟注者有更多兩對/順子組合。",
   },
   {
     id: "tx12",
@@ -1496,7 +1553,8 @@ export const EXAM_QUESTIONS: ExamQuestion[] = [
       { key: "d", text: "極低（<20%）" },
     ],
     correctAnswer: "a",
-    explanation: "KQ5 是 BBx，開牌者有強烈的範圍優勢（更多 Kx, Qx 組合），適合高頻 C-bet，混合大小注。",
+    explanation:
+      "KQ5 是 BBx，開牌者有強烈的範圍優勢（更多 Kx, Qx 組合），適合高頻 C-bet，混合大小注。",
   },
   {
     id: "tx13",
@@ -1509,7 +1567,8 @@ export const EXAM_QUESTIONS: ExamQuestion[] = [
       { key: "d", text: "Monotone - 單花面" },
     ],
     correctAnswer: "a",
-    explanation: "高 Broadway 牌面對開牌者範圍非常有利（更多強 Broadway 手牌），是「high advantage tier」，可以高頻 C-bet。",
+    explanation:
+      "高 Broadway 牌面對開牌者範圍非常有利（更多強 Broadway 手牌），是「high advantage tier」，可以高頻 C-bet。",
   },
   {
     id: "tx14",
@@ -1522,7 +1581,8 @@ export const EXAM_QUESTIONS: ExamQuestion[] = [
       { key: "d", text: "Axx" },
     ],
     correctAnswer: "b",
-    explanation: "952 全是低牌（≤9），gapSum = (9-5) + (5-2) = 4 + 3 = 7 > 4，不符合連接標準，是 Low_unconn。",
+    explanation:
+      "952 全是低牌（≤9），gapSum = (9-5) + (5-2) = 4 + 3 = 7 > 4，不符合連接標準，是 Low_unconn。",
   },
   {
     id: "tx15",
@@ -1535,7 +1595,8 @@ export const EXAM_QUESTIONS: ExamQuestion[] = [
       { key: "d", text: "全下" },
     ],
     correctAnswer: "a",
-    explanation: "765 是 Low_conn，跟注者的範圍有很多適合的牌（67, 78, 89, 中對），開牌者沒有明顯優勢，應該降頻 C-bet。",
+    explanation:
+      "765 是 Low_conn，跟注者的範圍有很多適合的牌（67, 78, 89, 中對），開牌者沒有明顯優勢，應該降頻 C-bet。",
   },
   {
     id: "tx16",
@@ -1548,7 +1609,8 @@ export const EXAM_QUESTIONS: ExamQuestion[] = [
       { key: "d", text: "Overbet" },
     ],
     correctAnswer: "a",
-    explanation: "T97 是 JT_conn 類型，連接度高，對手有很多順子聽牌和兩對。需要大注來對聽牌收費，降低對手繼續的 equity realization。",
+    explanation:
+      "T97 是 JT_conn 類型，連接度高，對手有很多順子聽牌和兩對。需要大注來對聽牌收費，降低對手繼續的 equity realization。",
   },
   {
     id: "tx17",
@@ -1561,7 +1623,8 @@ export const EXAM_QUESTIONS: ExamQuestion[] = [
       { key: "d", text: "因為對手會害怕" },
     ],
     correctAnswer: "a",
-    explanation: "AKQ 牌面對開牌者極其有利，幾乎所有強手牌（AA, KK, QQ, AK, AQ, KQ）都在開牌範圍內，可以 95-100% C-bet。",
+    explanation:
+      "AKQ 牌面對開牌者極其有利，幾乎所有強手牌（AA, KK, QQ, AK, AQ, KQ）都在開牌範圍內，可以 95-100% C-bet。",
   },
   {
     id: "tx18",
@@ -1574,7 +1637,8 @@ export const EXAM_QUESTIONS: ExamQuestion[] = [
       { key: "d", text: "只影響 sizing" },
     ],
     correctAnswer: "a",
-    explanation: "花色是 overlay 層：Rainbow 保持基礎策略，Twotone 略降頻，Monotone 明顯降頻（對手同花聽牌多，棄牌率低）。",
+    explanation:
+      "花色是 overlay 層：Rainbow 保持基礎策略，Twotone 略降頻，Monotone 明顯降頻（對手同花聽牌多，棄牌率低）。",
   },
   {
     id: "tx19",
@@ -1587,7 +1651,8 @@ export const EXAM_QUESTIONS: ExamQuestion[] = [
       { key: "d", text: "Low_unconn" },
     ],
     correctAnswer: "a",
-    explanation: "J 是唯一 Broadway，8 和 4 是 low 且不連接（gapSum = 3+4 = 7 > 4），符合 JTx 定義。",
+    explanation:
+      "J 是唯一 Broadway，8 和 4 是 low 且不連接（gapSum = 3+4 = 7 > 4），符合 JTx 定義。",
   },
   {
     id: "tx20",
@@ -1600,7 +1665,8 @@ export const EXAM_QUESTIONS: ExamQuestion[] = [
       { key: "d", text: "OOP 應該用更小的注" },
     ],
     correctAnswer: "a",
-    explanation: "OOP 翻後會被 float 和 position 利用，所以 C-bet 策略更極化：強牌/聽牌用大注 C-bet，邊緣牌 check。",
+    explanation:
+      "OOP 翻後會被 float 和 position 利用，所以 C-bet 策略更極化：強牌/聽牌用大注 C-bet，邊緣牌 check。",
   },
 ];
 

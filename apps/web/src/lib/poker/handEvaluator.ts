@@ -326,6 +326,9 @@ export function determineWinners(
 /**
  * Format hand for display
  */
-export function formatHandDescription(evaluation: HandEvaluation, locale: "en" | "zh" = "zh"): string {
+export function formatHandDescription(
+  evaluation: HandEvaluation,
+  locale: "en" | "zh" = "zh"
+): string {
   return locale === "zh" ? evaluation.descriptionZh : evaluation.description;
 }

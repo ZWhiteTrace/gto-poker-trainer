@@ -4,24 +4,11 @@ import { useEffect, useState, useCallback, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { api, MttDrillSpotResponse, MttDrillEvaluateResponse } from "@/lib/api";
-import {
-  Loader2,
-  CheckCircle2,
-  XCircle,
-  RotateCcw,
-  Settings,
-  Layers,
-} from "lucide-react";
+import { Loader2, CheckCircle2, XCircle, RotateCcw, Settings, Layers } from "lucide-react";
 import { useProgressStore } from "@/stores/progressStore";
 import { useAuthStore } from "@/stores/authStore";
 
@@ -96,7 +83,13 @@ function PushFoldDrillInner() {
   const [enabledPositions, setEnabledPositions] = useState<string[]>(
     focusPosition && allPositions.includes(focusPosition) ? [focusPosition] : allPositions
   );
-  const [enabledStackDepths, setEnabledStackDepths] = useState<string[]>(["5bb", "8bb", "10bb", "12bb", "15bb"]);
+  const [enabledStackDepths, setEnabledStackDepths] = useState<string[]>([
+    "5bb",
+    "8bb",
+    "10bb",
+    "12bb",
+    "15bb",
+  ]);
   const [enabledScenarios, setEnabledScenarios] = useState<string[]>([]);
 
   const generateSpot = useCallback(async () => {
@@ -212,9 +205,7 @@ function PushFoldDrillInner() {
   }, [mode]);
 
   const accuracy =
-    sessionStats.total > 0
-      ? Math.round((sessionStats.correct / sessionStats.total) * 100)
-      : 0;
+    sessionStats.total > 0 ? Math.round((sessionStats.correct / sessionStats.total) * 100) : 0;
 
   const getActionLabel = (action: string) => {
     const actionMap: Record<string, string> = {
@@ -260,11 +251,7 @@ function PushFoldDrillInner() {
           </p>
         </div>
         <div className="flex gap-2">
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={() => setShowSettings(!showSettings)}
-          >
+          <Button variant="outline" size="icon" onClick={() => setShowSettings(!showSettings)}>
             <Settings className="h-4 w-4" />
           </Button>
           <Button variant="outline" onClick={resetSession}>
@@ -288,7 +275,7 @@ function PushFoldDrillInner() {
       {showSettings && (
         <Card className="mb-6">
           <CardHeader>
-            <CardTitle className="text-lg flex items-center gap-2">
+            <CardTitle className="flex items-center gap-2 text-lg">
               <Layers className="h-5 w-5" />
               {t("drill.settings") || "Drill Settings"}
             </CardTitle>
@@ -297,7 +284,7 @@ function PushFoldDrillInner() {
             {/* Positions (only for push mode) */}
             {mode === "push" && (
               <div>
-                <p className="text-sm font-medium mb-2">{t("drill.positionFilter")}</p>
+                <p className="mb-2 text-sm font-medium">{t("drill.positionFilter")}</p>
                 <div className="flex flex-wrap gap-2">
                   {["UTG", "HJ", "CO", "BTN", "SB"].map((pos) => (
                     <Button
@@ -315,7 +302,9 @@ function PushFoldDrillInner() {
 
             {/* Stack Depths */}
             <div>
-              <p className="text-sm font-medium mb-2">{t("drill.pushFold.stackDepth") || "Stack Depths"}</p>
+              <p className="mb-2 text-sm font-medium">
+                {t("drill.pushFold.stackDepth") || "Stack Depths"}
+              </p>
               <div className="flex flex-wrap gap-2">
                 {STACK_DEPTHS.map((depth) => (
                   <Button
@@ -333,7 +322,9 @@ function PushFoldDrillInner() {
             {/* Scenarios (for defense/resteal/hu modes) */}
             {mode !== "push" && (
               <div>
-                <p className="text-sm font-medium mb-2">{t("drill.pushFold.scenarios") || "Scenarios"}</p>
+                <p className="mb-2 text-sm font-medium">
+                  {t("drill.pushFold.scenarios") || "Scenarios"}
+                </p>
                 <div className="flex flex-wrap gap-2">
                   {getScenarioOptions().map((scenario) => (
                     <Button
@@ -346,7 +337,7 @@ function PushFoldDrillInner() {
                     </Button>
                   ))}
                 </div>
-                <p className="text-xs text-muted-foreground mt-1">
+                <p className="text-muted-foreground mt-1 text-xs">
                   {t("drill.pushFold.scenariosHint") || "Leave empty to include all scenarios"}
                 </p>
               </div>
@@ -358,45 +349,46 @@ function PushFoldDrillInner() {
       {/* Stats Bar */}
       <div className="mb-8 grid grid-cols-4 gap-2 sm:gap-4">
         <Card>
-          <CardContent className="p-3 sm:p-4 text-center">
-            <div className="text-xl sm:text-2xl font-bold">{sessionStats.total}</div>
-            <div className="text-xs sm:text-sm text-muted-foreground">{t("common.total")}</div>
+          <CardContent className="p-3 text-center sm:p-4">
+            <div className="text-xl font-bold sm:text-2xl">{sessionStats.total}</div>
+            <div className="text-muted-foreground text-xs sm:text-sm">{t("common.total")}</div>
           </CardContent>
         </Card>
         <Card>
-          <CardContent className="p-3 sm:p-4 text-center">
-            <div className="text-xl sm:text-2xl font-bold text-green-500">
+          <CardContent className="p-3 text-center sm:p-4">
+            <div className="text-xl font-bold text-green-500 sm:text-2xl">
               {sessionStats.correct}
             </div>
-            <div className="text-xs sm:text-sm text-muted-foreground">{t("common.correct")}</div>
+            <div className="text-muted-foreground text-xs sm:text-sm">{t("common.correct")}</div>
           </CardContent>
         </Card>
         <Card>
-          <CardContent className="p-3 sm:p-4 text-center">
-            <div className="text-xl sm:text-2xl font-bold">{accuracy}%</div>
-            <div className="text-xs sm:text-sm text-muted-foreground">{t("common.accuracy")}</div>
+          <CardContent className="p-3 text-center sm:p-4">
+            <div className="text-xl font-bold sm:text-2xl">{accuracy}%</div>
+            <div className="text-muted-foreground text-xs sm:text-sm">{t("common.accuracy")}</div>
           </CardContent>
         </Card>
         <Card>
-          <CardContent className="p-3 sm:p-4 text-center">
-            <div className="text-xl sm:text-2xl font-bold text-primary">
-              {sessionStats.streak}
-            </div>
-            <div className="text-xs sm:text-sm text-muted-foreground">{t("common.streak")}</div>
+          <CardContent className="p-3 text-center sm:p-4">
+            <div className="text-primary text-xl font-bold sm:text-2xl">{sessionStats.streak}</div>
+            <div className="text-muted-foreground text-xs sm:text-sm">{t("common.streak")}</div>
           </CardContent>
         </Card>
       </div>
 
       {/* Cumulative Stats (All-time) */}
       {cumulativeStats && cumulativeStats.total > 0 && (
-        <div className="mb-8 p-3 rounded-lg bg-muted/50 flex items-center justify-between text-sm">
+        <div className="bg-muted/50 mb-8 flex items-center justify-between rounded-lg p-3 text-sm">
           <span className="text-muted-foreground">{t("drill.allTime") || "All-time"}:</span>
           <div className="flex gap-4">
-            <span>{cumulativeStats.total} {t("common.total")}</span>
+            <span>
+              {cumulativeStats.total} {t("common.total")}
+            </span>
             <span className="text-green-500">
               {cumulativeStats.total > 0
                 ? Math.round((cumulativeStats.correct / cumulativeStats.total) * 100)
-                : 0}% {t("common.accuracy")}
+                : 0}
+              % {t("common.accuracy")}
             </span>
           </div>
         </div>
@@ -410,41 +402,45 @@ function PushFoldDrillInner() {
         </CardHeader>
         <CardContent>
           {error && (
-            <div className="mb-4 rounded-lg bg-destructive/10 p-4 text-destructive">
-              {error}
-            </div>
+            <div className="bg-destructive/10 text-destructive mb-4 rounded-lg p-4">{error}</div>
           )}
 
           {isLoading && !currentSpot ? (
             <div className="flex items-center justify-center py-12">
-              <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+              <Loader2 className="text-muted-foreground h-8 w-8 animate-spin" />
             </div>
           ) : currentSpot ? (
             <div className="space-y-6">
               {/* Scenario Display */}
               {currentSpot.scenario_display && (
-                <div className="text-center p-3 rounded-lg bg-muted/50">
+                <div className="bg-muted/50 rounded-lg p-3 text-center">
                   <span className="text-muted-foreground">{currentSpot.scenario_display}</span>
                 </div>
               )}
 
               {/* Hand, Position & Stack Display */}
-              <div className="flex items-center justify-center gap-4 sm:gap-8 flex-wrap">
+              <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-8">
                 <div className="text-center">
-                  <div className="text-4xl sm:text-6xl font-bold">{currentSpot.hand}</div>
-                  <div className="mt-2 text-sm text-muted-foreground">{t("drill.yourHand")}</div>
+                  <div className="text-4xl font-bold sm:text-6xl">{currentSpot.hand}</div>
+                  <div className="text-muted-foreground mt-2 text-sm">{t("drill.yourHand")}</div>
                 </div>
                 <div className="text-center">
-                  <Badge variant="secondary" className="text-base sm:text-lg px-3 sm:px-4 py-1 sm:py-2">
+                  <Badge
+                    variant="secondary"
+                    className="px-3 py-1 text-base sm:px-4 sm:py-2 sm:text-lg"
+                  >
                     {currentSpot.position}
                   </Badge>
-                  <div className="mt-2 text-sm text-muted-foreground">{t("drill.position")}</div>
+                  <div className="text-muted-foreground mt-2 text-sm">{t("drill.position")}</div>
                 </div>
                 <div className="text-center">
-                  <Badge variant="outline" className="text-base sm:text-lg px-3 sm:px-4 py-1 sm:py-2">
+                  <Badge
+                    variant="outline"
+                    className="px-3 py-1 text-base sm:px-4 sm:py-2 sm:text-lg"
+                  >
                     {currentSpot.stack_depth}
                   </Badge>
-                  <div className="mt-2 text-sm text-muted-foreground">
+                  <div className="text-muted-foreground mt-2 text-sm">
                     {t("drill.pushFold.stack") || "Stack"}
                   </div>
                 </div>
@@ -455,11 +451,11 @@ function PushFoldDrillInner() {
                 <div
                   className={`rounded-lg p-4 ${
                     lastResult.is_correct
-                      ? "bg-green-500/10 border border-green-500/20"
-                      : "bg-red-500/10 border border-red-500/20"
+                      ? "border border-green-500/20 bg-green-500/10"
+                      : "border border-red-500/20 bg-red-500/10"
                   }`}
                 >
-                  <div className="flex items-center gap-2 mb-2">
+                  <div className="mb-2 flex items-center gap-2">
                     {lastResult.is_correct ? (
                       <>
                         <CheckCircle2 className="h-5 w-5 text-green-500" />
@@ -478,10 +474,10 @@ function PushFoldDrillInner() {
                   </div>
                   <p className="text-sm">
                     {t("drill.gto") || "GTO"}:{" "}
-                    <strong>{getActionLabel(lastResult.correct_action)}</strong>{" "}
-                    ({t("drill.pushFold.rangeSize") || "Range"}: {lastResult.range_pct}%)
+                    <strong>{getActionLabel(lastResult.correct_action)}</strong> (
+                    {t("drill.pushFold.rangeSize") || "Range"}: {lastResult.range_pct}%)
                   </p>
-                  <p className="text-sm text-muted-foreground mt-1">
+                  <p className="text-muted-foreground mt-1 text-sm">
                     {lastResult.explanation_zh || lastResult.explanation}
                   </p>
                 </div>
@@ -508,19 +504,15 @@ function PushFoldDrillInner() {
                   ))}
                 </div>
               ) : (
-                <Button
-                  size="lg"
-                  onClick={generateSpot}
-                  className="w-full h-16 text-lg"
-                >
+                <Button size="lg" onClick={generateSpot} className="h-16 w-full text-lg">
                   {t("drill.nextHand")}
                 </Button>
               )}
             </div>
           ) : (
-            <div className="text-center py-12 text-muted-foreground">
+            <div className="text-muted-foreground py-12 text-center">
               {t("drill.clickToStart")}
-              <Button onClick={generateSpot} className="mt-4 block mx-auto">
+              <Button onClick={generateSpot} className="mx-auto mt-4 block">
                 {t("drill.startDrill")}
               </Button>
             </div>
@@ -534,7 +526,7 @@ function PushFoldDrillInner() {
           <CardTitle>{t("drill.pushFold.reference") || "Push/Fold Reference"}</CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-muted-foreground text-sm">
             {t("drill.pushFold.referenceDesc") ||
               "Push/Fold charts are based on Nash equilibrium ranges for tournament play. The correct decision depends on your stack size, position, and the action before you."}
           </p>

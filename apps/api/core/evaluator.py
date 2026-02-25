@@ -1,18 +1,20 @@
 """
 Evaluator for checking if an action matches GTO strategy.
 """
+
 import json
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Dict, List, Optional
+
 from .hand import Hand
-from .scenario import Scenario, ActionType
 from .position import Position
+from .scenario import ActionType, Scenario
 
 
 @dataclass
 class EvalResult:
     """Result of evaluating a player's action."""
+
     is_correct: bool
     correct_action: str
     player_action: str
@@ -37,10 +39,10 @@ class Evaluator:
         if data_dir is None:
             data_dir = Path(__file__).parent.parent / "data" / "ranges"
         self.data_dir = data_dir
-        self._ranges_cache: Dict[str, Dict] = {}
-        self._frequencies_cache: Dict[str, Dict] = {}
+        self._ranges_cache: dict[str, dict] = {}
+        self._frequencies_cache: dict[str, dict] = {}
 
-    def load_ranges(self, format: str = "6max") -> Dict:
+    def load_ranges(self, format: str = "6max") -> dict:
         """Load range data for given format."""
         if format in self._ranges_cache:
             return self._ranges_cache[format]
@@ -50,14 +52,14 @@ class Evaluator:
 
         # Load all JSON files in the format directory
         for json_file in range_dir.glob("*.json"):
-            with open(json_file, 'r') as f:
+            with open(json_file) as f:
                 data = json.load(f)
                 ranges[json_file.stem] = data
 
         self._ranges_cache[format] = ranges
         return ranges
 
-    def load_frequencies(self, format: str = "6max") -> Dict:
+    def load_frequencies(self, format: str = "6max") -> dict:
         """Load frequency data for given format."""
         if format in self._frequencies_cache:
             return self._frequencies_cache[format]
@@ -67,7 +69,7 @@ class Evaluator:
 
         # Try to load frequency files (e.g., rfi_frequencies.json)
         for json_file in range_dir.glob("*_frequencies.json"):
-            with open(json_file, 'r') as f:
+            with open(json_file) as f:
                 data = json.load(f)
                 # Extract the base name (e.g., "rfi" from "rfi_frequencies.json")
                 base_name = json_file.stem.replace("_frequencies", "")
@@ -76,44 +78,70 @@ class Evaluator:
         self._frequencies_cache[format] = frequencies
         return frequencies
 
-    def get_rfi_frequencies(self, position: str, format: str = "6max") -> Dict[str, Dict]:
+    def get_rfi_frequencies(self, position: str, format: str = "6max") -> dict[str, dict]:
         """Get RFI frequency data for a position. Returns {hand: {action: freq}}."""
         frequencies = self.load_frequencies(format)
         rfi_freq = frequencies.get("rfi", {})
-        position_data = rfi_freq.get(position.upper() if isinstance(position, str) else position.value, {})
+        position_data = rfi_freq.get(
+            position.upper() if isinstance(position, str) else position.value, {}
+        )
         return position_data.get("frequencies", {})
 
-    def get_vs_rfi_frequencies(self, hero_position: str, villain_position: str, format: str = "6max") -> Dict[str, Dict]:
+    def get_vs_rfi_frequencies(
+        self, hero_position: str, villain_position: str, format: str = "6max"
+    ) -> dict[str, dict]:
         """Get vs RFI frequency data for a position pair. Returns {hand: {action: freq}}."""
         frequencies = self.load_frequencies(format)
         vs_rfi_freq = frequencies.get("vs_rfi", {})
         hero = hero_position.upper() if isinstance(hero_position, str) else hero_position.value
-        villain = villain_position.upper() if isinstance(villain_position, str) else villain_position.value
+        villain = (
+            villain_position.upper()
+            if isinstance(villain_position, str)
+            else villain_position.value
+        )
         key = f"{hero}_vs_{villain}"
         position_data = vs_rfi_freq.get(key, {})
         return position_data.get("frequencies", {})
 
-    def get_vs_3bet_frequencies(self, hero_position: str, villain_position: str, format: str = "6max") -> Dict[str, Dict]:
+    def get_vs_3bet_frequencies(
+        self, hero_position: str, villain_position: str, format: str = "6max"
+    ) -> dict[str, dict]:
         """Get vs 3bet frequency data for a position pair. Returns {hand: {action: freq}}."""
         frequencies = self.load_frequencies(format)
         vs_3bet_freq = frequencies.get("vs_3bet", {})
         hero = hero_position.upper() if isinstance(hero_position, str) else hero_position.value
-        villain = villain_position.upper() if isinstance(villain_position, str) else villain_position.value
+        villain = (
+            villain_position.upper()
+            if isinstance(villain_position, str)
+            else villain_position.value
+        )
         key = f"{hero}_vs_{villain}"
         position_data = vs_3bet_freq.get(key, {})
         return position_data.get("frequencies", {})
 
-    def get_vs_4bet_frequencies(self, hero_position: str, villain_position: str, format: str = "6max") -> Dict[str, Dict]:
+    def get_vs_4bet_frequencies(
+        self, hero_position: str, villain_position: str, format: str = "6max"
+    ) -> dict[str, dict]:
         """Get vs 4bet frequency data for a position pair. Returns {hand: {action: freq}}."""
         frequencies = self.load_frequencies(format)
         vs_4bet_freq = frequencies.get("vs_4bet", {})
         hero = hero_position.upper() if isinstance(hero_position, str) else hero_position.value
-        villain = villain_position.upper() if isinstance(villain_position, str) else villain_position.value
+        villain = (
+            villain_position.upper()
+            if isinstance(villain_position, str)
+            else villain_position.value
+        )
         key = f"{hero}_vs_{villain}"
         position_data = vs_4bet_freq.get(key, {})
         return position_data.get("frequencies", {})
 
-    def get_scenario_drillable(self, scenario_type: str, hero_position: str, villain_position: str = None, format: str = "6max") -> list:
+    def get_scenario_drillable(
+        self,
+        scenario_type: str,
+        hero_position: str,
+        villain_position: str = None,
+        format: str = "6max",
+    ) -> list:
         """Get pre-defined drillable hands from JSON for a scenario."""
         frequencies = self.load_frequencies(format)
         hero = hero_position.upper() if isinstance(hero_position, str) else hero_position.value
@@ -123,7 +151,11 @@ class Evaluator:
             position_data = rfi_freq.get(hero, {})
             return position_data.get("drillable", [])
 
-        villain = villain_position.upper() if isinstance(villain_position, str) else villain_position.value
+        villain = (
+            villain_position.upper()
+            if isinstance(villain_position, str)
+            else villain_position.value
+        )
         key = f"{hero}_vs_{villain}"
 
         if scenario_type == "vs_rfi":
@@ -140,7 +172,9 @@ class Evaluator:
 
         return position_data.get("drillable", [])
 
-    def get_hand_frequencies(self, hand: Hand, scenario: Scenario, format: str = "6max") -> Dict[str, int]:
+    def get_hand_frequencies(
+        self, hand: Hand, scenario: Scenario, format: str = "6max"
+    ) -> dict[str, int]:
         """
         Get frequencies for all actions for a hand in a scenario.
         Returns: {"raise": 75, "fold": 25} or {"3bet": 50, "call": 30, "fold": 20}
@@ -359,7 +393,9 @@ class Evaluator:
 
         return "fold"
 
-    def evaluate(self, hand: Hand, scenario: Scenario, player_action: str, format: str = "6max") -> EvalResult:
+    def evaluate(
+        self, hand: Hand, scenario: Scenario, player_action: str, format: str = "6max"
+    ) -> EvalResult:
         """
         Evaluate a player's action against GTO.
         Now supports mixed strategies with frequency-based evaluation.
@@ -370,13 +406,19 @@ class Evaluator:
         # Get frequency data
         frequencies = self.get_hand_frequencies(hand, scenario, format)
         correct_freq = frequencies.get(correct_action.lower(), 100) if frequencies else 100
-        player_freq = frequencies.get(player_action.lower(), 0) if frequencies else (100 if is_correct else 0)
+        player_freq = (
+            frequencies.get(player_action.lower(), 0) if frequencies else (100 if is_correct else 0)
+        )
 
         # Determine if player's action is acceptable (mixed strategy)
         is_acceptable = player_freq >= self.ACCEPTABLE_THRESHOLD
 
-        explanation = self._generate_explanation(hand, scenario, correct_action, is_correct, frequencies)
-        explanation_zh = self._generate_explanation_zh(hand, scenario, correct_action, is_correct, frequencies)
+        explanation = self._generate_explanation(
+            hand, scenario, correct_action, is_correct, frequencies
+        )
+        explanation_zh = self._generate_explanation_zh(
+            hand, scenario, correct_action, is_correct, frequencies
+        )
 
         return EvalResult(
             is_correct=is_correct,
@@ -389,7 +431,14 @@ class Evaluator:
             is_acceptable=is_acceptable,
         )
 
-    def _generate_explanation(self, hand: Hand, scenario: Scenario, correct_action: str, is_correct: bool, frequencies: Dict = None) -> str:
+    def _generate_explanation(
+        self,
+        hand: Hand,
+        scenario: Scenario,
+        correct_action: str,
+        is_correct: bool,
+        frequencies: dict = None,
+    ) -> str:
         """Generate English explanation for the answer."""
         hand_str = str(hand)
         pos = scenario.hero_position.value
@@ -416,7 +465,9 @@ class Evaluator:
             elif correct_action == "call":
                 return f"{hand_str} has good implied odds to call vs {villain}'s open.{freq_info}"
             else:
-                return f"{hand_str} is not strong enough to continue vs {villain}'s range.{freq_info}"
+                return (
+                    f"{hand_str} is not strong enough to continue vs {villain}'s range.{freq_info}"
+                )
 
         elif scenario.action_type == ActionType.VS_3BET:
             if correct_action == "4bet":
@@ -437,21 +488,34 @@ class Evaluator:
 
         return f"The correct action is {correct_action}.{freq_info}"
 
-    def _generate_explanation_zh(self, hand: Hand, scenario: Scenario, correct_action: str, is_correct: bool, frequencies: Dict = None) -> str:
+    def _generate_explanation_zh(
+        self,
+        hand: Hand,
+        scenario: Scenario,
+        correct_action: str,
+        is_correct: bool,
+        frequencies: dict = None,
+    ) -> str:
         """Generate Chinese explanation for the answer."""
         hand_str = str(hand)
         pos = scenario.hero_position.value
 
         action_names = {
-            "raise": "加注", "fold": "蓋牌", "call": "跟注",
-            "3bet": "3-bet", "4bet": "4-bet", "5bet": "5-bet"
+            "raise": "加注",
+            "fold": "蓋牌",
+            "call": "跟注",
+            "3bet": "3-bet",
+            "4bet": "4-bet",
+            "5bet": "5-bet",
         }
         action_zh = action_names.get(correct_action, correct_action)
 
         # Add frequency info if available
         freq_info = ""
         if frequencies:
-            freq_parts = [f"{action_names.get(k, k)}: {v}%" for k, v in frequencies.items() if v > 0]
+            freq_parts = [
+                f"{action_names.get(k, k)}: {v}%" for k, v in frequencies.items() if v > 0
+            ]
             if freq_parts:
                 freq_info = f" (GTO: {' | '.join(freq_parts)})"
 
@@ -491,7 +555,9 @@ class Evaluator:
 
         return f"正確動作是{action_zh}。{freq_info}"
 
-    def get_range_for_scenario(self, scenario: Scenario, format: str = "6max") -> Dict[str, List[str]]:
+    def get_range_for_scenario(
+        self, scenario: Scenario, format: str = "6max"
+    ) -> dict[str, list[str]]:
         """Get full range data for a scenario. Derives raise/fold/call lists from frequencies for RFI."""
         if scenario.action_type == ActionType.RFI:
             # Derive from frequencies - single source of truth
@@ -581,7 +647,9 @@ class Evaluator:
 
         return {}
 
-    def _derive_range_from_frequencies(self, freq_data: Dict, action_types: List[str]) -> Dict[str, List[str]]:
+    def _derive_range_from_frequencies(
+        self, freq_data: dict, action_types: list[str]
+    ) -> dict[str, list[str]]:
         """
         Derive hand lists from frequency data.
         action_types: ["3bet", "call"] or ["4bet", "call"] or ["5bet", "call"]
@@ -611,7 +679,9 @@ class Evaluator:
 
         return result
 
-    def get_frequencies_for_scenario(self, scenario: Scenario, format: str = "6max") -> Dict[str, Dict[str, int]]:
+    def get_frequencies_for_scenario(
+        self, scenario: Scenario, format: str = "6max"
+    ) -> dict[str, dict[str, int]]:
         """
         Get all hand frequencies for a scenario.
         Returns: {"AA": {"raise": 100}, "A5s": {"raise": 70, "fold": 30}, ...}

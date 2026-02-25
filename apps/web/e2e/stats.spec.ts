@@ -38,7 +38,10 @@ test.describe("Leaderboard Page", () => {
 
   test("should have tabs or content", async ({ page }) => {
     const tabs = page.locator("[role='tab'], [role='tablist']");
-    const hasTabList = await tabs.first().isVisible().catch(() => false);
+    const hasTabList = await tabs
+      .first()
+      .isVisible()
+      .catch(() => false);
     const buttons = page.locator("button");
     const buttonCount = await buttons.count();
     expect(hasTabList || buttonCount > 0).toBe(true);

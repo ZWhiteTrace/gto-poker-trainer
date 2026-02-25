@@ -4,13 +4,27 @@ import { useEffect, useState, useRef, useMemo } from "react";
 import { useTableStore, setAIOpponentStyle } from "@/stores/tableStore";
 import { useProgressStore } from "@/stores/progressStore";
 import { useAuthStore } from "@/stores/authStore";
-import { PokerTable, CompactPokerTable, ActionButtons, ScenarioSelector, ScenarioButton } from "@/components/poker/table";
+import {
+  PokerTable,
+  CompactPokerTable,
+  ActionButtons,
+  ScenarioSelector,
+  ScenarioButton,
+} from "@/components/poker/table";
 import { AI_PROFILES, type AIPlayerProfile } from "@/lib/poker/aiDecisionEngine";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
-import { POSITIONS, Position, POSITION_LABELS, ScenarioPreset, HintMode, GTOHint, ActionType } from "@/lib/poker/types";
+import {
+  POSITIONS,
+  Position,
+  POSITION_LABELS,
+  ScenarioPreset,
+  HintMode,
+  GTOHint,
+  ActionType,
+} from "@/lib/poker/types";
 import {
   getPlayerVPIP,
   getPlayerPFR,
@@ -129,11 +143,16 @@ export default function TableTrainerClient() {
 
   // Record hand result when phase changes to "result" or "showdown"
   useEffect(() => {
-    if ((phase === "result" || phase === "showdown") && winners && winners.length > 0 && !handRecorded.current) {
+    if (
+      (phase === "result" || phase === "showdown") &&
+      winners &&
+      winners.length > 0 &&
+      !handRecorded.current
+    ) {
       handRecorded.current = true;
-      const hero = players.find(p => p.isHero);
+      const hero = players.find((p) => p.isHero);
       if (hero) {
-        const isWin = winners.some(w => w.isHero);
+        const isWin = winners.some((w) => w.isHero);
         // Calculate correct profit accounting for split pots
         const potShare = lastWonPot / winners.length;
         const profitBB = isWin ? potShare - hero.totalInvested : -hero.totalInvested;
@@ -148,7 +167,7 @@ export default function TableTrainerClient() {
 
   // Memoize display pot to prevent flicker during phase transitions
   const displayPot = useMemo(() => {
-    return (phase === "result" || phase === "showdown") ? lastWonPot : pot;
+    return phase === "result" || phase === "showdown" ? lastWonPot : pot;
   }, [phase, pot, lastWonPot]);
 
   // GTO hint state - async with solver, fallback to rules-based
@@ -162,7 +181,7 @@ export default function TableTrainerClient() {
       return;
     }
 
-    const hero = players.find(p => p.isHero);
+    const hero = players.find((p) => p.isHero);
     if (!hero || !hero.holeCards || phase !== "playing") {
       setGtoHint(null);
       return;
@@ -175,17 +194,20 @@ export default function TableTrainerClient() {
     }
 
     // Determine if hero is in position
-    const dealerIndex = players.findIndex(p => p.isDealer);
-    const activePlayers = players.filter(p => p.isActive && !p.isFolded && !p.isAllIn);
+    const dealerIndex = players.findIndex((p) => p.isDealer);
+    const activePlayers = players.filter((p) => p.isActive && !p.isFolded && !p.isAllIn);
     const heroSeatIndex = hero.seatIndex;
-    const isInPosition = activePlayers.every(p =>
-      p.seatIndex === heroSeatIndex ||
-      ((p.seatIndex - dealerIndex + 6) % 6) < ((heroSeatIndex - dealerIndex + 6) % 6)
+    const isInPosition = activePlayers.every(
+      (p) =>
+        p.seatIndex === heroSeatIndex ||
+        (p.seatIndex - dealerIndex + 6) % 6 < (heroSeatIndex - dealerIndex + 6) % 6
     );
 
     // Check if hero was preflop aggressor
-    const preflopActions = actionHistory.filter(a => a.street === "preflop");
-    const preflopRaiser = preflopActions.filter(a => a.action === "raise" || a.action === "bet").pop();
+    const preflopActions = actionHistory.filter((a) => a.street === "preflop");
+    const preflopRaiser = preflopActions
+      .filter((a) => a.action === "raise" || a.action === "bet")
+      .pop();
     const isPreflopAggressor = preflopRaiser?.isHero ?? false;
 
     // Check if facing a bet
@@ -226,7 +248,17 @@ export default function TableTrainerClient() {
           setIsLoadingSolverHint(false);
         });
     }
-  }, [players, activePlayerIndex, phase, communityCards, currentStreet, pot, currentBet, actionHistory, hintMode]);
+  }, [
+    players,
+    activePlayerIndex,
+    phase,
+    communityCards,
+    currentStreet,
+    pot,
+    currentBet,
+    actionHistory,
+    hintMode,
+  ]);
 
   // Wrap handleAction to track last hero action
   const handleActionWithTracking = (action: ActionType, amount?: number) => {
@@ -318,7 +350,15 @@ export default function TableTrainerClient() {
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [phase, activePlayerIndex, players, getAvailableActions, handleAction, selectedBetSize, startNewHand]);
+  }, [
+    phase,
+    activePlayerIndex,
+    players,
+    getAvailableActions,
+    handleAction,
+    selectedBetSize,
+    startNewHand,
+  ]);
 
   // Set default bet size when actions change
   useEffect(() => {
@@ -347,19 +387,26 @@ export default function TableTrainerClient() {
   // Hide footer when this component is mounted
   useEffect(() => {
     // Add a class to body to hide footer on this page
-    document.body.classList.add('table-trainer-active');
+    document.body.classList.add("table-trainer-active");
     return () => {
-      document.body.classList.remove('table-trainer-active');
+      document.body.classList.remove("table-trainer-active");
     };
   }, []);
 
   return (
-    <div className="fixed inset-0 bg-gradient-to-b from-gray-900 to-gray-950 text-white flex flex-col z-40 pb-[env(safe-area-inset-bottom)]">
+    <div className="fixed inset-0 z-40 flex flex-col bg-gradient-to-b from-gray-900 to-gray-950 pb-[env(safe-area-inset-bottom)] text-white">
       {/* Header */}
-      <header data-table-trainer-header className="border-b border-gray-800 bg-gray-900/50 backdrop-blur-sm shrink-0 z-50 pt-[env(safe-area-inset-top)]">
-        <div className="container mx-auto px-4 py-2 sm:py-3 flex items-center justify-between">
+      <header
+        data-table-trainer-header
+        className="z-50 shrink-0 border-b border-gray-800 bg-gray-900/50 pt-[env(safe-area-inset-top)] backdrop-blur-sm"
+      >
+        <div className="container mx-auto flex items-center justify-between px-4 py-2 sm:py-3">
           <div className="flex items-center gap-2 sm:gap-4">
-            <Link href="/" className="p-2 hover:bg-gray-800 rounded-lg transition-colors" title="回首頁">
+            <Link
+              href="/"
+              className="rounded-lg p-2 transition-colors hover:bg-gray-800"
+              title="回首頁"
+            >
               <Home className="h-5 w-5" />
             </Link>
             <Badge variant="outline" className="text-xs">
@@ -367,11 +414,9 @@ export default function TableTrainerClient() {
             </Badge>
           </div>
 
-          <div className="flex items-center gap-2 sm:gap-3 overflow-x-auto max-w-[60vw] sm:max-w-none scrollbar-thin scrollbar-thumb-gray-700">
+          <div className="scrollbar-thin scrollbar-thumb-gray-700 flex max-w-[60vw] items-center gap-2 overflow-x-auto sm:max-w-none sm:gap-3">
             {/* Scenario Selector Button */}
-            {phase === "setup" && (
-              <ScenarioButton onClick={() => setShowScenarioSelector(true)} />
-            )}
+            {phase === "setup" && <ScenarioButton onClick={() => setShowScenarioSelector(true)} />}
 
             {/* AI Opponent Style Selector */}
             <select
@@ -385,7 +430,7 @@ export default function TableTrainerClient() {
                   initializeTable();
                 }
               }}
-              className="h-10 px-2 rounded-md bg-gray-800 border border-gray-700 text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+              className="focus:ring-primary h-10 rounded-md border border-gray-700 bg-gray-800 px-2 text-sm text-white focus:ring-2 focus:outline-none"
               title="AI 對手風格"
             >
               <option value="mixed">🎲 混合對手</option>
@@ -402,13 +447,13 @@ export default function TableTrainerClient() {
               variant={autoRotate ? "default" : "outline"}
               size="sm"
               onClick={() => setAutoRotate(!autoRotate)}
-              className={cn(
-                "gap-1.5",
-                autoRotate && "bg-blue-600 hover:bg-blue-500"
-              )}
+              className={cn("gap-1.5", autoRotate && "bg-blue-600 hover:bg-blue-500")}
               title={autoRotate ? "自動輪流位置 (開啟)" : "自動輪流位置 (關閉)"}
             >
-              <RotateCw className={cn("h-4 w-4", autoRotate && "animate-spin")} style={{ animationDuration: "3s" }} />
+              <RotateCw
+                className={cn("h-4 w-4", autoRotate && "animate-spin")}
+                style={{ animationDuration: "3s" }}
+              />
               <span className="hidden sm:inline">{autoRotate ? "輪流" : "固定"}</span>
             </Button>
 
@@ -417,7 +462,7 @@ export default function TableTrainerClient() {
               <select
                 onChange={(e) => handleHeroPositionChange(e.target.value)}
                 defaultValue={hero?.position || "BTN"}
-                className="w-36 h-10 px-3 rounded-md bg-gray-800 border border-gray-700 text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                className="focus:ring-primary h-10 w-36 rounded-md border border-gray-700 bg-gray-800 px-3 text-sm text-white focus:ring-2 focus:outline-none"
               >
                 {POSITIONS.map((pos) => (
                   <option key={pos} value={pos}>
@@ -429,13 +474,16 @@ export default function TableTrainerClient() {
 
             {/* Active Scenario Badge */}
             {trainingMode.scenario && (
-              <Badge variant="secondary" className="bg-purple-600/20 text-purple-400 border-purple-500/50">
+              <Badge
+                variant="secondary"
+                className="border-purple-500/50 bg-purple-600/20 text-purple-400"
+              >
                 {trainingMode.scenario.nameZh}
               </Badge>
             )}
 
             {/* Session Stats */}
-            <div className="hidden sm:flex items-center gap-3 text-sm">
+            <div className="hidden items-center gap-3 text-sm sm:flex">
               <span className="text-gray-400">
                 手數: <span className="text-white">{sessionStats.handsPlayed}</span>
               </span>
@@ -461,8 +509,9 @@ export default function TableTrainerClient() {
 
             {/* Dev Mode: AI Adaptation Hint */}
             {devMode && heroStats.handsPlayed >= 10 && (
-              <div className="hidden sm:block px-2 py-1 bg-purple-900/50 rounded text-xs text-purple-300 border border-purple-500/30">
-                AI 適應中: VPIP {(getPlayerVPIP(heroStats) * 100).toFixed(0)}% / PFR {(getPlayerPFR(heroStats) * 100).toFixed(0)}%
+              <div className="hidden rounded border border-purple-500/30 bg-purple-900/50 px-2 py-1 text-xs text-purple-300 sm:block">
+                AI 適應中: VPIP {(getPlayerVPIP(heroStats) * 100).toFixed(0)}% / PFR{" "}
+                {(getPlayerPFR(heroStats) * 100).toFixed(0)}%
               </div>
             )}
 
@@ -479,11 +528,7 @@ export default function TableTrainerClient() {
             </Button>
 
             {/* GTO Hint Mode Selector */}
-            <HintModeSelector
-              mode={hintMode}
-              onChange={setHintMode}
-              className="flex"
-            />
+            <HintModeSelector mode={hintMode} onChange={setHintMode} className="flex" />
 
             {/* Hand History Toggle */}
             <Button
@@ -516,13 +561,13 @@ export default function TableTrainerClient() {
         </div>
       </header>
 
-      <main className="container mx-auto px-2 sm:px-4 py-2 sm:py-4 flex-1 flex flex-col overflow-auto">
+      <main className="container mx-auto flex flex-1 flex-col overflow-auto px-2 py-2 sm:px-4 sm:py-4">
         {/* Desktop: Table + Action buttons side by side, Mobile: Stack */}
-        <div className="flex-1 flex flex-col lg:flex-row gap-2 sm:gap-4 min-h-0">
+        <div className="flex min-h-0 flex-1 flex-col gap-2 sm:gap-4 lg:flex-row">
           {/* Left: Poker Table Area */}
-          <div className="flex-1 flex flex-col gap-2 sm:gap-3 min-h-0">
+          <div className="flex min-h-0 flex-1 flex-col gap-2 sm:gap-3">
             {/* Game Phase Indicator */}
-            <div className="flex items-center justify-between mb-1 sm:mb-2 shrink-0">
+            <div className="mb-1 flex shrink-0 items-center justify-between sm:mb-2">
               <div className="flex items-center gap-1 sm:gap-2">
                 <Badge
                   variant={phase === "playing" ? "default" : "secondary"}
@@ -539,14 +584,16 @@ export default function TableTrainerClient() {
                 </Badge>
 
                 {aiThinking && (
-                  <span className="text-sm text-gray-400 animate-pulse">AI 思考中...</span>
+                  <span className="animate-pulse text-sm text-gray-400">AI 思考中...</span>
                 )}
               </div>
 
               {activePlayer && phase === "playing" && (
                 <div className="text-sm">
                   <span className="text-gray-400">當前行動: </span>
-                  <span className={activePlayer.isHero ? "text-yellow-400 font-semibold" : "text-white"}>
+                  <span
+                    className={activePlayer.isHero ? "font-semibold text-yellow-400" : "text-white"}
+                  >
                     {activePlayer.name} ({activePlayer.position})
                   </span>
                 </div>
@@ -554,7 +601,7 @@ export default function TableTrainerClient() {
             </div>
 
             {/* Poker Table */}
-            <div className="bg-gray-800/50 rounded-lg sm:rounded-2xl p-1 sm:p-6 flex-1 min-h-0">
+            <div className="min-h-0 flex-1 rounded-lg bg-gray-800/50 p-1 sm:rounded-2xl sm:p-6">
               {isMobile ? (
                 <CompactPokerTable
                   players={players}
@@ -578,14 +625,14 @@ export default function TableTrainerClient() {
             </div>
 
             {/* Mobile Action Area - only show on mobile */}
-            <div className="lg:hidden space-y-2 relative z-30 shrink-0">
+            <div className="relative z-30 shrink-0 space-y-2 lg:hidden">
               {/* Start / New Hand Button */}
               {(phase === "setup" || phase === "result" || phase === "showdown") && (
                 <div className="flex justify-center">
                   <Button
                     size="lg"
                     onClick={startNewHand}
-                    className="bg-green-600 hover:bg-green-500 text-base px-6"
+                    className="bg-green-600 px-6 text-base hover:bg-green-500"
                   >
                     {phase === "setup" ? "開始遊戲" : "下一手"}
                   </Button>
@@ -594,26 +641,35 @@ export default function TableTrainerClient() {
 
               {/* Winner Display */}
               {winners && winners.length > 0 && (
-                <div className="text-center py-2 space-y-1">
+                <div className="space-y-1 py-2 text-center">
                   <p className="text-sm">
                     <span className="text-gray-400">贏家: </span>
-                    <span className={winners[0].isHero ? "text-yellow-400 font-bold" : "text-white font-semibold"}>
-                      {winners.map(w => `${w.name} (${w.position})`).join(", ")}
+                    <span
+                      className={
+                        winners[0].isHero ? "font-bold text-yellow-400" : "font-semibold text-white"
+                      }
+                    >
+                      {winners.map((w) => `${w.name} (${w.position})`).join(", ")}
                     </span>
                     {lastWonPot > 0 && (
-                      <span className={cn("ml-2", winners.some(w => w.isHero) ? "text-green-400" : "text-red-400")}>
-                        {winners.some(w => w.isHero)
+                      <span
+                        className={cn(
+                          "ml-2",
+                          winners.some((w) => w.isHero) ? "text-green-400" : "text-red-400"
+                        )}
+                      >
+                        {winners.some((w) => w.isHero)
                           ? `(+${lastWonPot.toFixed(1)} BB)`
                           : (hero?.totalInvested ?? 0) > 0
                             ? `(-${(hero?.totalInvested ?? 0).toFixed(1)} BB)`
-                            : `(${lastWonPot.toFixed(1)} BB)`
-                        }
+                            : `(${lastWonPot.toFixed(1)} BB)`}
                       </span>
                     )}
                   </p>
                   {handEvaluations && handEvaluations.size > 0 && winners[0] && (
                     <p className="text-xs text-green-400">
-                      {handEvaluations.get(winners[0].id)?.descriptionZh || handEvaluations.get(winners[0].id)?.description}
+                      {handEvaluations.get(winners[0].id)?.descriptionZh ||
+                        handEvaluations.get(winners[0].id)?.description}
                     </p>
                   )}
                 </div>
@@ -621,19 +677,25 @@ export default function TableTrainerClient() {
 
               {/* Mobile Hero Stats - show above action buttons */}
               {hero && phase === "playing" && (
-                <div className="flex items-center justify-between px-3 py-1.5 bg-yellow-500/10 rounded-lg text-sm border border-yellow-500/20">
+                <div className="flex items-center justify-between rounded-lg border border-yellow-500/20 bg-yellow-500/10 px-3 py-1.5 text-sm">
                   <div className="flex items-center gap-2">
-                    <span className="text-yellow-400 font-semibold">{hero.position}</span>
+                    <span className="font-semibold text-yellow-400">{hero.position}</span>
                     <span className="text-gray-400">Hero</span>
                   </div>
                   <div className="flex items-center gap-3">
-                    <span className="text-gray-400 text-xs">
+                    <span className="text-xs text-gray-400">
                       投入: <span className="text-orange-400">{hero.totalInvested.toFixed(1)}</span>
                     </span>
-                    <span className={cn(
-                      "font-semibold",
-                      hero.stack > 50 ? "text-green-400" : hero.stack > 20 ? "text-yellow-400" : "text-red-400"
-                    )}>
+                    <span
+                      className={cn(
+                        "font-semibold",
+                        hero.stack > 50
+                          ? "text-green-400"
+                          : hero.stack > 20
+                            ? "text-yellow-400"
+                            : "text-red-400"
+                      )}
+                    >
                       {hero.stack.toFixed(1)} BB
                     </span>
                   </div>
@@ -657,11 +719,7 @@ export default function TableTrainerClient() {
               {/* GTO Hint Panel - Mobile */}
               <div className="lg:hidden">
                 {(hintMode === "before" || hintMode === "detailed") && isHeroTurn && gtoHint && (
-                  <GTOHintPanel
-                    hint={gtoHint}
-                    mode={hintMode}
-                    className="mt-3"
-                  />
+                  <GTOHintPanel hint={gtoHint} mode={hintMode} className="mt-3" />
                 )}
                 {hintMode === "after" && lastHeroAction && gtoHint && (
                   <GTOHintPanel
@@ -676,17 +734,17 @@ export default function TableTrainerClient() {
           </div>
 
           {/* Desktop Right Panel - Action Buttons & Controls */}
-          <div className="hidden lg:flex flex-col w-80 shrink-0 gap-3 overflow-y-auto max-h-full">
+          <div className="hidden max-h-full w-80 shrink-0 flex-col gap-3 overflow-y-auto lg:flex">
             {/* Action Buttons Area */}
-            <Card className="bg-gray-800/50 border-gray-700 flex-1">
-              <CardContent className="p-4 h-full flex flex-col">
+            <Card className="flex-1 border-gray-700 bg-gray-800/50">
+              <CardContent className="flex h-full flex-col p-4">
                 {/* Start / New Hand Button */}
                 {(phase === "setup" || phase === "result" || phase === "showdown") && (
-                  <div className="flex-1 flex items-center justify-center">
+                  <div className="flex flex-1 items-center justify-center">
                     <Button
                       size="lg"
                       onClick={startNewHand}
-                      className="bg-green-600 hover:bg-green-500 text-lg px-8 py-6"
+                      className="bg-green-600 px-8 py-6 text-lg hover:bg-green-500"
                     >
                       {phase === "setup" ? "開始遊戲" : "下一手"}
                     </Button>
@@ -695,56 +753,67 @@ export default function TableTrainerClient() {
 
                 {/* Winner Display + Hand Review */}
                 {winners && winners.length > 0 && (
-                  <div className="space-y-3 mb-4">
+                  <div className="mb-4 space-y-3">
                     {/* Winner Info */}
-                    <div className="text-center py-2 space-y-1">
+                    <div className="space-y-1 py-2 text-center">
                       <p className="text-lg">
                         <span className="text-gray-400">贏家: </span>
-                        <span className={winners[0].isHero ? "text-yellow-400 font-bold" : "text-white font-semibold"}>
-                          {winners.map(w => `${w.name} (${w.position})`).join(", ")}
+                        <span
+                          className={
+                            winners[0].isHero
+                              ? "font-bold text-yellow-400"
+                              : "font-semibold text-white"
+                          }
+                        >
+                          {winners.map((w) => `${w.name} (${w.position})`).join(", ")}
                         </span>
                       </p>
                       {lastWonPot > 0 && (
-                        <p className={cn(
-                          "text-xl font-bold",
-                          winners.some(w => w.isHero) ? "text-green-400" : "text-red-400"
-                        )}>
-                          {winners.some(w => w.isHero)
+                        <p
+                          className={cn(
+                            "text-xl font-bold",
+                            winners.some((w) => w.isHero) ? "text-green-400" : "text-red-400"
+                          )}
+                        >
+                          {winners.some((w) => w.isHero)
                             ? `+${lastWonPot.toFixed(1)} BB`
                             : (hero?.totalInvested ?? 0) > 0
                               ? `-${(hero?.totalInvested ?? 0).toFixed(1)} BB`
-                              : `底池 ${lastWonPot.toFixed(1)} BB`
-                          }
+                              : `底池 ${lastWonPot.toFixed(1)} BB`}
                         </p>
                       )}
                       {handEvaluations && handEvaluations.size > 0 && winners[0] && (
                         <p className="text-sm text-green-400">
-                          {handEvaluations.get(winners[0].id)?.descriptionZh || handEvaluations.get(winners[0].id)?.description}
+                          {handEvaluations.get(winners[0].id)?.descriptionZh ||
+                            handEvaluations.get(winners[0].id)?.description}
                         </p>
                       )}
                     </div>
 
                     {/* Hand Review - Hero's Actions */}
-                    {actionHistory.filter(a => a.isHero).length > 0 && (
-                      <div className="bg-gray-800/50 rounded-lg p-3">
-                        <p className="text-xs text-gray-400 mb-2">你的行動回顧:</p>
+                    {actionHistory.filter((a) => a.isHero).length > 0 && (
+                      <div className="rounded-lg bg-gray-800/50 p-3">
+                        <p className="mb-2 text-xs text-gray-400">你的行動回顧:</p>
                         <div className="flex flex-wrap gap-1">
-                          {actionHistory.filter(a => a.isHero).map((action, i) => (
-                            <span
-                              key={i}
-                              className={cn(
-                                "px-2 py-0.5 rounded text-xs",
-                                action.action === "fold" && "bg-red-500/20 text-red-400",
-                                action.action === "check" && "bg-gray-500/20 text-gray-300",
-                                action.action === "call" && "bg-blue-500/20 text-blue-400",
-                                (action.action === "bet" || action.action === "raise") && "bg-green-500/20 text-green-400",
-                                action.action === "allin" && "bg-red-600/30 text-red-400"
-                              )}
-                            >
-                              {action.street}: {action.action.toUpperCase()}
-                              {action.amount ? ` ${action.amount.toFixed(1)}` : ""}
-                            </span>
-                          ))}
+                          {actionHistory
+                            .filter((a) => a.isHero)
+                            .map((action, i) => (
+                              <span
+                                key={i}
+                                className={cn(
+                                  "rounded px-2 py-0.5 text-xs",
+                                  action.action === "fold" && "bg-red-500/20 text-red-400",
+                                  action.action === "check" && "bg-gray-500/20 text-gray-300",
+                                  action.action === "call" && "bg-blue-500/20 text-blue-400",
+                                  (action.action === "bet" || action.action === "raise") &&
+                                    "bg-green-500/20 text-green-400",
+                                  action.action === "allin" && "bg-red-600/30 text-red-400"
+                                )}
+                              >
+                                {action.street}: {action.action.toUpperCase()}
+                                {action.amount ? ` ${action.amount.toFixed(1)}` : ""}
+                              </span>
+                            ))}
                         </div>
                       </div>
                     )}
@@ -770,11 +839,7 @@ export default function TableTrainerClient() {
                 {/* 行動後: 你行動後才顯示分析 */}
                 {/* 詳細: 顯示更詳細的說明 */}
                 {(hintMode === "before" || hintMode === "detailed") && isHeroTurn && gtoHint && (
-                  <GTOHintPanel
-                    hint={gtoHint}
-                    mode={hintMode}
-                    className="mt-3"
-                  />
+                  <GTOHintPanel hint={gtoHint} mode={hintMode} className="mt-3" />
                 )}
                 {hintMode === "after" && lastHeroAction && gtoHint && (
                   <GTOHintPanel
@@ -787,8 +852,8 @@ export default function TableTrainerClient() {
 
                 {/* Waiting indicator */}
                 {phase === "playing" && !isHeroTurn && (
-                  <div className="flex-1 flex items-center justify-center">
-                    <p className="text-gray-400 text-center">
+                  <div className="flex flex-1 items-center justify-center">
+                    <p className="text-center text-gray-400">
                       {aiThinking ? "AI 思考中..." : "等待對手行動..."}
                     </p>
                   </div>
@@ -798,12 +863,14 @@ export default function TableTrainerClient() {
 
             {/* Hero Stats - Desktop */}
             {hero && (
-              <Card className="bg-yellow-500/10 border-yellow-500/30">
+              <Card className="border-yellow-500/30 bg-yellow-500/10">
                 <CardContent className="p-3">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-yellow-400 font-semibold">{hero.position} - Hero</p>
-                      <p className="text-xs text-gray-400">本手投入: {hero.totalInvested.toFixed(1)} BB</p>
+                      <p className="font-semibold text-yellow-400">{hero.position} - Hero</p>
+                      <p className="text-xs text-gray-400">
+                        本手投入: {hero.totalInvested.toFixed(1)} BB
+                      </p>
                     </div>
                     <p className="text-xl font-bold text-green-400">{hero.stack.toFixed(1)} BB</p>
                   </div>
@@ -814,32 +881,34 @@ export default function TableTrainerClient() {
         </div>
 
         {/* Bottom Panel - Action History (Desktop) / Toggle (Mobile) */}
-        <div className="shrink-0 mt-2 sm:mt-3">
+        <div className="mt-2 shrink-0 sm:mt-3">
           {/* Mobile Sidebar Toggle */}
           <div className="lg:hidden">
             <Button
               variant="outline"
               size="sm"
               onClick={() => setShowMobileSidebar(!showMobileSidebar)}
-              className="w-full flex items-center justify-center gap-2"
+              className="flex w-full items-center justify-center gap-2"
             >
               <History className="h-4 w-4" />
               <span>行動歷史</span>
-              {showMobileSidebar ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+              {showMobileSidebar ? (
+                <ChevronUp className="h-4 w-4" />
+              ) : (
+                <ChevronDown className="h-4 w-4" />
+              )}
             </Button>
           </div>
 
           {/* Action History - Desktop (horizontal bar) / Mobile (collapsible) */}
-          <div className={cn(
-            showMobileSidebar ? "block mt-2" : "hidden lg:block"
-          )}>
+          <div className={cn(showMobileSidebar ? "mt-2 block" : "hidden lg:block")}>
             {/* Desktop: Horizontal action history bar - limited width to not overlap right panel */}
-            <div className="hidden lg:block lg:mr-[21rem]">
-              <Card className="bg-gray-800/50 border-gray-700 overflow-hidden">
-                <CardContent className="py-2 px-4">
-                  <div className="flex items-center gap-4 max-w-full">
-                    <span className="text-xs text-gray-400 shrink-0">行動歷史:</span>
-                    <div className="flex-1 flex items-center gap-2 overflow-x-auto">
+            <div className="hidden lg:mr-[21rem] lg:block">
+              <Card className="overflow-hidden border-gray-700 bg-gray-800/50">
+                <CardContent className="px-4 py-2">
+                  <div className="flex max-w-full items-center gap-4">
+                    <span className="shrink-0 text-xs text-gray-400">行動歷史:</span>
+                    <div className="flex flex-1 items-center gap-2 overflow-x-auto">
                       {actionHistory.length === 0 ? (
                         <span className="text-xs text-gray-500">尚無行動</span>
                       ) : (
@@ -847,41 +916,46 @@ export default function TableTrainerClient() {
                           <span
                             key={i}
                             className={cn(
-                              "text-xs px-2 py-1 rounded whitespace-nowrap",
+                              "rounded px-2 py-1 text-xs whitespace-nowrap",
                               action.isHero ? "bg-yellow-500/20" : "bg-gray-700/50"
                             )}
                           >
                             <span className="text-gray-400">{action.position}</span>{" "}
-                            <span className={cn(
-                              action.action === "fold" && "text-red-400",
-                              action.action === "check" && "text-gray-300",
-                              action.action === "call" && "text-blue-400",
-                              (action.action === "bet" || action.action === "raise") && "text-green-400",
-                              action.action === "allin" && "text-red-500 font-bold"
-                            )}>
+                            <span
+                              className={cn(
+                                action.action === "fold" && "text-red-400",
+                                action.action === "check" && "text-gray-300",
+                                action.action === "call" && "text-blue-400",
+                                (action.action === "bet" || action.action === "raise") &&
+                                  "text-green-400",
+                                action.action === "allin" && "font-bold text-red-500"
+                              )}
+                            >
                               {action.action.toUpperCase()}
                             </span>
-                            {action.amount && <span className="text-gray-400"> {action.amount.toFixed(1)}</span>}
+                            {action.amount && (
+                              <span className="text-gray-400"> {action.amount.toFixed(1)}</span>
+                            )}
                           </span>
                         ))
                       )}
                     </div>
                     {/* Keyboard shortcuts inline */}
-                    <div className="flex items-center gap-3 shrink-0 border-l border-gray-700 pl-4">
+                    <div className="flex shrink-0 items-center gap-3 border-l border-gray-700 pl-4">
                       <span className="text-[10px] text-gray-500">
-                        <kbd className="px-1 bg-gray-700 rounded">F</kbd> Fold
+                        <kbd className="rounded bg-gray-700 px-1">F</kbd> Fold
                       </span>
                       <span className="text-[10px] text-gray-500">
-                        <kbd className="px-1 bg-gray-700 rounded">C</kbd> Call
+                        <kbd className="rounded bg-gray-700 px-1">C</kbd> Call
                       </span>
                       <span className="text-[10px] text-gray-500">
-                        <kbd className="px-1 bg-gray-700 rounded">R</kbd> Raise
+                        <kbd className="rounded bg-gray-700 px-1">R</kbd> Raise
                       </span>
                       <span className="text-[10px] text-gray-500">
-                        <kbd className="px-1 bg-gray-700 rounded">A</kbd> All-in
+                        <kbd className="rounded bg-gray-700 px-1">A</kbd> All-in
                       </span>
                       <span className="text-[10px] text-gray-500">
-                        <kbd className="px-1 bg-gray-700 rounded">Space</kbd> 下一手
+                        <kbd className="rounded bg-gray-700 px-1">Space</kbd> 下一手
                       </span>
                     </div>
                   </div>
@@ -890,10 +964,10 @@ export default function TableTrainerClient() {
             </div>
 
             {/* Mobile: Vertical collapsible */}
-            <div className="lg:hidden space-y-2">
-              <Card className="bg-gray-800/50 border-gray-700">
+            <div className="space-y-2 lg:hidden">
+              <Card className="border-gray-700 bg-gray-800/50">
                 <CardContent className="py-2">
-                  <div className="max-h-32 overflow-y-auto space-y-1">
+                  <div className="max-h-32 space-y-1 overflow-y-auto">
                     {actionHistory.length === 0 ? (
                       <p className="text-xs text-gray-500">尚無行動</p>
                     ) : (
@@ -901,21 +975,26 @@ export default function TableTrainerClient() {
                         <div
                           key={i}
                           className={cn(
-                            "text-xs p-1 rounded",
+                            "rounded p-1 text-xs",
                             action.isHero ? "bg-yellow-500/10" : "bg-gray-700/50"
                           )}
                         >
                           <span className="text-gray-400">{action.position}</span>{" "}
-                          <span className={cn(
-                            action.action === "fold" && "text-red-400",
-                            action.action === "check" && "text-gray-300",
-                            action.action === "call" && "text-blue-400",
-                            (action.action === "bet" || action.action === "raise") && "text-green-400",
-                            action.action === "allin" && "text-red-500 font-bold"
-                          )}>
+                          <span
+                            className={cn(
+                              action.action === "fold" && "text-red-400",
+                              action.action === "check" && "text-gray-300",
+                              action.action === "call" && "text-blue-400",
+                              (action.action === "bet" || action.action === "raise") &&
+                                "text-green-400",
+                              action.action === "allin" && "font-bold text-red-500"
+                            )}
+                          >
                             {action.action.toUpperCase()}
                           </span>
-                          {action.amount && <span className="text-gray-400"> {action.amount.toFixed(1)}</span>}
+                          {action.amount && (
+                            <span className="text-gray-400"> {action.amount.toFixed(1)}</span>
+                          )}
                         </div>
                       ))
                     )}
@@ -937,11 +1016,11 @@ export default function TableTrainerClient() {
 
       {/* Stats Panel Modal */}
       {showStatsPanel && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <Card className="bg-gray-900 border-gray-700 w-full max-w-lg max-h-[80vh] overflow-auto">
-            <CardHeader className="border-b border-gray-700 sticky top-0 bg-gray-900 z-10">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm">
+          <Card className="max-h-[80vh] w-full max-w-lg overflow-auto border-gray-700 bg-gray-900">
+            <CardHeader className="sticky top-0 z-10 border-b border-gray-700 bg-gray-900">
               <div className="flex items-center justify-between">
-                <CardTitle className="text-white flex items-center gap-2">
+                <CardTitle className="flex items-center gap-2 text-white">
                   <BarChart3 className="h-5 w-5" />
                   玩家統計
                 </CardTitle>
@@ -950,20 +1029,23 @@ export default function TableTrainerClient() {
                 </Button>
               </div>
             </CardHeader>
-            <CardContent className="p-4 space-y-4">
+            <CardContent className="space-y-4 p-4">
               {/* Player Summary - Always Show */}
-              <div className="flex items-center justify-between bg-gray-800/50 rounded-lg p-3">
+              <div className="flex items-center justify-between rounded-lg bg-gray-800/50 p-3">
                 <div>
                   <p className="text-xs text-gray-400">手數</p>
                   <p className="text-lg font-bold text-white">{heroStats.handsPlayed}</p>
                 </div>
                 <div className="text-center">
                   <p className="text-xs text-gray-400">盈虧</p>
-                  <p className={cn(
-                    "text-lg font-bold",
-                    sessionStats.totalProfit >= 0 ? "text-green-400" : "text-red-400"
-                  )}>
-                    {sessionStats.totalProfit >= 0 ? "+" : ""}{sessionStats.totalProfit.toFixed(1)} BB
+                  <p
+                    className={cn(
+                      "text-lg font-bold",
+                      sessionStats.totalProfit >= 0 ? "text-green-400" : "text-red-400"
+                    )}
+                  >
+                    {sessionStats.totalProfit >= 0 ? "+" : ""}
+                    {sessionStats.totalProfit.toFixed(1)} BB
                   </p>
                 </div>
                 <div className="text-right">
@@ -971,7 +1053,8 @@ export default function TableTrainerClient() {
                   <p className="text-lg font-bold text-white">
                     {heroStats.handsPlayed > 0
                       ? ((sessionStats.handsWon / heroStats.handsPlayed) * 100).toFixed(0)
-                      : 0}%
+                      : 0}
+                    %
                   </p>
                 </div>
               </div>
@@ -979,13 +1062,13 @@ export default function TableTrainerClient() {
               {/* ===== 分階段統計顯示 ===== */}
               {heroStats.handsPlayed < STATS_THRESHOLDS.BASIC ? (
                 /* 階段 1: 收集中 (0-29 手) */
-                <div className="text-center py-8 space-y-4">
-                  <div className="text-6xl mb-4">📊</div>
-                  <p className="text-gray-300 text-lg font-semibold">收集數據中...</p>
-                  <p className="text-gray-500 text-sm">
+                <div className="space-y-4 py-8 text-center">
+                  <div className="mb-4 text-6xl">📊</div>
+                  <p className="text-lg font-semibold text-gray-300">收集數據中...</p>
+                  <p className="text-sm text-gray-500">
                     需要 {STATS_THRESHOLDS.BASIC} 手才能顯示基礎統計
                   </p>
-                  <div className="max-w-xs mx-auto space-y-2">
+                  <div className="mx-auto max-w-xs space-y-2">
                     <Progress
                       value={(heroStats.handsPlayed / STATS_THRESHOLDS.BASIC) * 100}
                       className="h-2"
@@ -999,27 +1082,51 @@ export default function TableTrainerClient() {
                 /* 階段 2: 基礎統計 (30-99 手) */
                 <>
                   {/* Player Type */}
-                  <div className="text-center bg-gray-800/30 rounded-lg p-3">
-                    <p className="text-xs text-gray-400 mb-1">玩家類型</p>
+                  <div className="rounded-lg bg-gray-800/30 p-3 text-center">
+                    <p className="mb-1 text-xs text-gray-400">玩家類型</p>
                     <p className="text-xl font-bold text-yellow-400">{getPlayerType(heroStats)}</p>
                   </div>
 
                   {/* Basic Preflop Stats */}
                   <div>
-                    <h3 className="text-sm font-semibold text-gray-300 mb-2">翻前統計 (基礎)</h3>
+                    <h3 className="mb-2 text-sm font-semibold text-gray-300">翻前統計 (基礎)</h3>
                     <div className="grid grid-cols-4 gap-2">
-                      <StatRing label="VPIP" value={getPlayerVPIP(heroStats)} target={[0.22, 0.26]} color="cyan" />
-                      <StatRing label="PFR" value={getPlayerPFR(heroStats)} target={[0.18, 0.22]} color="orange" />
-                      <StatRing label="ATS" value={getPlayerATS(heroStats)} target={[0.32, 0.38]} color="yellow" />
-                      <StatRing label="3BET" value={getPlayer3Bet(heroStats)} target={[0.08, 0.12]} color="red" />
+                      <StatRing
+                        label="VPIP"
+                        value={getPlayerVPIP(heroStats)}
+                        target={[0.22, 0.26]}
+                        color="cyan"
+                      />
+                      <StatRing
+                        label="PFR"
+                        value={getPlayerPFR(heroStats)}
+                        target={[0.18, 0.22]}
+                        color="orange"
+                      />
+                      <StatRing
+                        label="ATS"
+                        value={getPlayerATS(heroStats)}
+                        target={[0.32, 0.38]}
+                        color="yellow"
+                      />
+                      <StatRing
+                        label="3BET"
+                        value={getPlayer3Bet(heroStats)}
+                        target={[0.08, 0.12]}
+                        color="red"
+                      />
                     </div>
                   </div>
 
                   {/* Progress to Full Stats */}
-                  <div className="bg-blue-900/20 border border-blue-500/30 rounded-lg p-3 space-y-2">
-                    <p className="text-xs text-blue-400 font-semibold">解鎖完整分析</p>
+                  <div className="space-y-2 rounded-lg border border-blue-500/30 bg-blue-900/20 p-3">
+                    <p className="text-xs font-semibold text-blue-400">解鎖完整分析</p>
                     <Progress
-                      value={((heroStats.handsPlayed - STATS_THRESHOLDS.BASIC) / (STATS_THRESHOLDS.FULL - STATS_THRESHOLDS.BASIC)) * 100}
+                      value={
+                        ((heroStats.handsPlayed - STATS_THRESHOLDS.BASIC) /
+                          (STATS_THRESHOLDS.FULL - STATS_THRESHOLDS.BASIC)) *
+                        100
+                      }
                       className="h-2"
                     />
                     <p className="text-xs text-gray-500">
@@ -1029,18 +1136,25 @@ export default function TableTrainerClient() {
 
                   {/* Position Stats - Basic */}
                   <div>
-                    <h3 className="text-sm font-semibold text-gray-300 mb-2">各位置盈虧</h3>
+                    <h3 className="mb-2 text-sm font-semibold text-gray-300">各位置盈虧</h3>
                     <div className="grid grid-cols-6 gap-1">
                       {(["BTN", "CO", "HJ", "UTG", "SB", "BB"] as const).map((pos) => {
-                        const stats = positionStats?.[pos] ?? { handsPlayed: 0, handsWon: 0, totalProfit: 0 };
+                        const stats = positionStats?.[pos] ?? {
+                          handsPlayed: 0,
+                          handsWon: 0,
+                          totalProfit: 0,
+                        };
                         return (
-                          <div key={pos} className="text-center bg-gray-800/30 rounded p-1.5">
+                          <div key={pos} className="rounded bg-gray-800/30 p-1.5 text-center">
                             <p className="text-xs font-semibold text-gray-400">{pos}</p>
-                            <p className={cn(
-                              "text-sm font-bold",
-                              stats.totalProfit >= 0 ? "text-green-400" : "text-red-400"
-                            )}>
-                              {stats.totalProfit >= 0 ? "+" : ""}{stats.totalProfit.toFixed(0)}
+                            <p
+                              className={cn(
+                                "text-sm font-bold",
+                                stats.totalProfit >= 0 ? "text-green-400" : "text-red-400"
+                              )}
+                            >
+                              {stats.totalProfit >= 0 ? "+" : ""}
+                              {stats.totalProfit.toFixed(0)}
                             </p>
                             <p className="text-[10px] text-gray-500">{stats.handsPlayed}手</p>
                           </div>
@@ -1053,20 +1167,26 @@ export default function TableTrainerClient() {
                 /* 階段 3: 完整統計 + 建議 (100+ 手) */
                 <>
                   {/* Player Type & Performance */}
-                  <div className="flex items-center justify-between bg-gray-800/30 rounded-lg p-3">
+                  <div className="flex items-center justify-between rounded-lg bg-gray-800/30 p-3">
                     <div>
                       <p className="text-xs text-gray-400">玩家類型</p>
-                      <p className="text-xl font-bold text-yellow-400">{getPlayerType(heroStats)}</p>
+                      <p className="text-xl font-bold text-yellow-400">
+                        {getPlayerType(heroStats)}
+                      </p>
                     </div>
                     <div className="text-right">
                       <p className="text-xs text-gray-400">整體評估</p>
-                      <p className={cn(
-                        "text-lg font-bold",
-                        getOverallPerformance(heroStats).level === "excellent" && "text-green-400",
-                        getOverallPerformance(heroStats).level === "good" && "text-blue-400",
-                        getOverallPerformance(heroStats).level === "needs_work" && "text-yellow-400",
-                        getOverallPerformance(heroStats).level === "poor" && "text-red-400"
-                      )}>
+                      <p
+                        className={cn(
+                          "text-lg font-bold",
+                          getOverallPerformance(heroStats).level === "excellent" &&
+                            "text-green-400",
+                          getOverallPerformance(heroStats).level === "good" && "text-blue-400",
+                          getOverallPerformance(heroStats).level === "needs_work" &&
+                            "text-yellow-400",
+                          getOverallPerformance(heroStats).level === "poor" && "text-red-400"
+                        )}
+                      >
                         {getOverallPerformance(heroStats).levelZh}
                       </p>
                     </div>
@@ -1074,8 +1194,8 @@ export default function TableTrainerClient() {
 
                   {/* Improvement Suggestions */}
                   {getTopImprovementAreas(heroStats, 3).length > 0 && (
-                    <div className="bg-amber-900/20 border border-amber-500/30 rounded-lg p-3 space-y-2">
-                      <p className="text-xs text-amber-400 font-semibold flex items-center gap-1">
+                    <div className="space-y-2 rounded-lg border border-amber-500/30 bg-amber-900/20 p-3">
+                      <p className="flex items-center gap-1 text-xs font-semibold text-amber-400">
                         💡 改進建議
                       </p>
                       <div className="space-y-2">
@@ -1083,12 +1203,13 @@ export default function TableTrainerClient() {
                           <div key={idx} className="text-sm">
                             <p className="text-amber-200">
                               <span className="font-semibold">{item.stat}</span>
-                              <span className="text-gray-400 ml-2">
-                                {(item.value * 100).toFixed(0)}%
-                                (目標 {(item.target[0] * 100).toFixed(0)}-{(item.target[1] * 100).toFixed(0)}%)
+                              <span className="ml-2 text-gray-400">
+                                {(item.value * 100).toFixed(0)}% (目標{" "}
+                                {(item.target[0] * 100).toFixed(0)}-
+                                {(item.target[1] * 100).toFixed(0)}%)
                               </span>
                             </p>
-                            <p className="text-xs text-gray-400 mt-0.5">{item.suggestion}</p>
+                            <p className="mt-0.5 text-xs text-gray-400">{item.suggestion}</p>
                           </div>
                         ))}
                       </div>
@@ -1097,60 +1218,94 @@ export default function TableTrainerClient() {
 
                   {/* Full Preflop Stats */}
                   <div>
-                    <h3 className="text-sm font-semibold text-gray-300 mb-2">翻前統計</h3>
+                    <h3 className="mb-2 text-sm font-semibold text-gray-300">翻前統計</h3>
                     <div className="grid grid-cols-4 gap-2">
-                      <StatRing label="VPIP" value={getPlayerVPIP(heroStats)} target={[0.22, 0.26]} color="cyan" />
-                      <StatRing label="PFR" value={getPlayerPFR(heroStats)} target={[0.18, 0.22]} color="orange" />
-                      <StatRing label="ATS" value={getPlayerATS(heroStats)} target={[0.32, 0.38]} color="yellow" />
-                      <StatRing label="3BET" value={getPlayer3Bet(heroStats)} target={[0.08, 0.12]} color="red" />
+                      <StatRing
+                        label="VPIP"
+                        value={getPlayerVPIP(heroStats)}
+                        target={[0.22, 0.26]}
+                        color="cyan"
+                      />
+                      <StatRing
+                        label="PFR"
+                        value={getPlayerPFR(heroStats)}
+                        target={[0.18, 0.22]}
+                        color="orange"
+                      />
+                      <StatRing
+                        label="ATS"
+                        value={getPlayerATS(heroStats)}
+                        target={[0.32, 0.38]}
+                        color="yellow"
+                      />
+                      <StatRing
+                        label="3BET"
+                        value={getPlayer3Bet(heroStats)}
+                        target={[0.08, 0.12]}
+                        color="red"
+                      />
                     </div>
                   </div>
 
                   {/* Full Postflop Stats - By Street */}
                   <div className="grid grid-cols-3 gap-3">
                     {/* Flop */}
-                    <div className="bg-gray-800/30 rounded-lg p-2">
-                      <h4 className="text-xs font-semibold text-gray-400 mb-2 text-center">翻牌</h4>
-                      <StatBar label="CB" value={getFlopCBet(heroStats)} target={[0.50, 0.60]} />
+                    <div className="rounded-lg bg-gray-800/30 p-2">
+                      <h4 className="mb-2 text-center text-xs font-semibold text-gray-400">翻牌</h4>
+                      <StatBar label="CB" value={getFlopCBet(heroStats)} target={[0.5, 0.6]} />
                       <StatBar label="FCB" value={getFoldToCBet(heroStats)} target={[0.38, 0.45]} />
-                      <StatBar label="CCB" value={getCallCBet(heroStats)} target={[0.40, 0.50]} />
-                      <StatBar label="RCB" value={getRaiseCBet(heroStats)} target={[0.10, 0.15]} />
+                      <StatBar label="CCB" value={getCallCBet(heroStats)} target={[0.4, 0.5]} />
+                      <StatBar label="RCB" value={getRaiseCBet(heroStats)} target={[0.1, 0.15]} />
                     </div>
                     {/* Turn */}
-                    <div className="bg-gray-800/30 rounded-lg p-2">
-                      <h4 className="text-xs font-semibold text-gray-400 mb-2 text-center">轉牌</h4>
+                    <div className="rounded-lg bg-gray-800/30 p-2">
+                      <h4 className="mb-2 text-center text-xs font-semibold text-gray-400">轉牌</h4>
                       <StatBar label="CB" value={getTurnCBet(heroStats)} target={[0.45, 0.52]} />
-                      <StatBar label="FCB" value={getFoldToCBet(heroStats)} target={[0.40, 0.48]} />
-                      <StatBar label="CCB" value={getCallCBet(heroStats)} target={[0.40, 0.48]} />
+                      <StatBar label="FCB" value={getFoldToCBet(heroStats)} target={[0.4, 0.48]} />
+                      <StatBar label="CCB" value={getCallCBet(heroStats)} target={[0.4, 0.48]} />
                       <StatBar label="RCB" value={getRaiseCBet(heroStats)} target={[0.08, 0.12]} />
                     </div>
                     {/* River / Showdown */}
-                    <div className="bg-gray-800/30 rounded-lg p-2">
-                      <h4 className="text-xs font-semibold text-gray-400 mb-2 text-center">河牌</h4>
-                      <StatBar label="WT" value={getWTSD(heroStats)} target={[0.26, 0.30]} />
-                      <StatBar label="WSD" value={getWSD(heroStats)} target={[0.50, 0.55]} />
-                      <StatBar label="TAF" value={Math.min(getTAF(heroStats) / 5, 1)} target={[0.35, 0.45]} isRatio />
-                      <div className="flex justify-between items-center text-xs mt-1">
+                    <div className="rounded-lg bg-gray-800/30 p-2">
+                      <h4 className="mb-2 text-center text-xs font-semibold text-gray-400">河牌</h4>
+                      <StatBar label="WT" value={getWTSD(heroStats)} target={[0.26, 0.3]} />
+                      <StatBar label="WSD" value={getWSD(heroStats)} target={[0.5, 0.55]} />
+                      <StatBar
+                        label="TAF"
+                        value={Math.min(getTAF(heroStats) / 5, 1)}
+                        target={[0.35, 0.45]}
+                        isRatio
+                      />
+                      <div className="mt-1 flex items-center justify-between text-xs">
                         <span className="text-gray-500">TAF</span>
-                        <span className="text-white font-semibold">{getTAF(heroStats).toFixed(1)}</span>
+                        <span className="font-semibold text-white">
+                          {getTAF(heroStats).toFixed(1)}
+                        </span>
                       </div>
                     </div>
                   </div>
 
                   {/* Position Stats */}
                   <div>
-                    <h3 className="text-sm font-semibold text-gray-300 mb-2">各位置盈虧</h3>
+                    <h3 className="mb-2 text-sm font-semibold text-gray-300">各位置盈虧</h3>
                     <div className="grid grid-cols-6 gap-1">
                       {(["BTN", "CO", "HJ", "UTG", "SB", "BB"] as const).map((pos) => {
-                        const stats = positionStats?.[pos] ?? { handsPlayed: 0, handsWon: 0, totalProfit: 0 };
+                        const stats = positionStats?.[pos] ?? {
+                          handsPlayed: 0,
+                          handsWon: 0,
+                          totalProfit: 0,
+                        };
                         return (
-                          <div key={pos} className="text-center bg-gray-800/30 rounded p-1.5">
+                          <div key={pos} className="rounded bg-gray-800/30 p-1.5 text-center">
                             <p className="text-xs font-semibold text-gray-400">{pos}</p>
-                            <p className={cn(
-                              "text-sm font-bold",
-                              stats.totalProfit >= 0 ? "text-green-400" : "text-red-400"
-                            )}>
-                              {stats.totalProfit >= 0 ? "+" : ""}{stats.totalProfit.toFixed(0)}
+                            <p
+                              className={cn(
+                                "text-sm font-bold",
+                                stats.totalProfit >= 0 ? "text-green-400" : "text-red-400"
+                              )}
+                            >
+                              {stats.totalProfit >= 0 ? "+" : ""}
+                              {stats.totalProfit.toFixed(0)}
                             </p>
                             <p className="text-[10px] text-gray-500">{stats.handsPlayed}手</p>
                           </div>
@@ -1160,8 +1315,8 @@ export default function TableTrainerClient() {
                   </div>
 
                   {/* AI Adaptation Status */}
-                  <div className="bg-purple-900/30 border border-purple-500/30 rounded-lg p-3">
-                    <p className="text-xs text-purple-400 font-semibold mb-1">AI 適應狀態</p>
+                  <div className="rounded-lg border border-purple-500/30 bg-purple-900/30 p-3">
+                    <p className="mb-1 text-xs font-semibold text-purple-400">AI 適應狀態</p>
                     <p className="text-sm text-purple-300">
                       {getPlayerVPIP(heroStats) > 0.35
                         ? "你打得較鬆，AI 會增加 3-bet 頻率來對抗"
@@ -1185,11 +1340,11 @@ export default function TableTrainerClient() {
 
       {/* Hand History Panel Modal */}
       {showHandHistory && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <Card className="bg-gray-900 border-gray-700 w-full max-w-lg max-h-[80vh] overflow-auto">
-            <CardHeader className="border-b border-gray-700 sticky top-0 bg-gray-900 z-10">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm">
+          <Card className="max-h-[80vh] w-full max-w-lg overflow-auto border-gray-700 bg-gray-900">
+            <CardHeader className="sticky top-0 z-10 border-b border-gray-700 bg-gray-900">
               <div className="flex items-center justify-between">
-                <CardTitle className="text-white flex items-center gap-2">
+                <CardTitle className="flex items-center gap-2 text-white">
                   <FileText className="h-5 w-5" />
                   手牌紀錄
                 </CardTitle>
@@ -1241,16 +1396,13 @@ function StatRing({ label, value, target, color }: StatRingProps) {
 
   return (
     <div className="flex flex-col items-center">
-      <div className="relative w-14 h-14">
-        <svg className="w-14 h-14 -rotate-90" viewBox="0 0 36 36">
+      <div className="relative h-14 w-14">
+        <svg className="h-14 w-14 -rotate-90" viewBox="0 0 36 36">
+          <circle cx="18" cy="18" r="15" fill="none" stroke="#374151" strokeWidth="3" />
           <circle
-            cx="18" cy="18" r="15"
-            fill="none"
-            stroke="#374151"
-            strokeWidth="3"
-          />
-          <circle
-            cx="18" cy="18" r="15"
+            cx="18"
+            cy="18"
+            r="15"
             fill="none"
             className={bgColorMap[color]}
             strokeWidth="3"
@@ -1264,7 +1416,7 @@ function StatRing({ label, value, target, color }: StatRingProps) {
           </span>
         </div>
       </div>
-      <span className="text-xs text-gray-400 mt-1">{label}</span>
+      <span className="mt-1 text-xs text-gray-400">{label}</span>
       <span className="text-[10px] text-gray-500">
         {(target[0] * 100).toFixed(0)}-{(target[1] * 100).toFixed(0)}%
       </span>
@@ -1285,24 +1437,22 @@ function StatBar({ label, value, target, isRatio }: StatBarProps) {
   const isLow = value < target[0];
 
   // Color based on whether in range
-  const barColor = isInRange
-    ? "bg-green-500"
-    : isLow
-      ? "bg-orange-500"
-      : "bg-red-500";
+  const barColor = isInRange ? "bg-green-500" : isLow ? "bg-orange-500" : "bg-red-500";
 
   return (
     <div className="mb-1.5">
-      <div className="flex justify-between items-center text-xs mb-0.5">
+      <div className="mb-0.5 flex items-center justify-between text-xs">
         <span className="text-gray-400">{label}</span>
-        <span className={cn(
-          "font-semibold",
-          isInRange ? "text-green-400" : isLow ? "text-orange-400" : "text-red-400"
-        )}>
+        <span
+          className={cn(
+            "font-semibold",
+            isInRange ? "text-green-400" : isLow ? "text-orange-400" : "text-red-400"
+          )}
+        >
           {isRatio ? "" : (value * 100).toFixed(0) + "%"}
         </span>
       </div>
-      <div className="h-1.5 bg-gray-700 rounded-full overflow-hidden">
+      <div className="h-1.5 overflow-hidden rounded-full bg-gray-700">
         <div
           className={cn("h-full rounded-full transition-all", barColor)}
           style={{ width: `${percentage}%` }}

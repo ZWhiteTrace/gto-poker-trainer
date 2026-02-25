@@ -2,15 +2,14 @@
 MTT Push/Fold drill engine for short stack training.
 Based on Nash equilibrium push/fold ranges.
 """
-import random
+
 import json
+import random
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
-from typing import List, Optional, Set
 
-from core.hand import Hand, random_hand, ALL_HANDS
-
+from core.hand import ALL_HANDS, Hand, random_hand
 
 # Available positions for push/fold (6-max)
 PUSH_FOLD_POSITIONS = ["UTG", "HJ", "CO", "BTN", "SB"]
@@ -84,7 +83,7 @@ def load_push_fold_data() -> dict:
     """Load push/fold ranges from JSON file."""
     data_path = Path(__file__).parent.parent / "data" / "ranges" / "mtt" / "push_fold.json"
     try:
-        with open(data_path, 'r', encoding='utf-8') as f:
+        with open(data_path, encoding="utf-8") as f:
             return json.load(f)
     except Exception as e:
         print(f"Failed to load push/fold data: {e}")
@@ -95,7 +94,7 @@ def load_defense_data() -> dict:
     """Load defense vs shove ranges from JSON file."""
     data_path = Path(__file__).parent.parent / "data" / "ranges" / "mtt" / "defense_vs_shove.json"
     try:
-        with open(data_path, 'r', encoding='utf-8') as f:
+        with open(data_path, encoding="utf-8") as f:
             return json.load(f)
     except Exception as e:
         print(f"Failed to load defense data: {e}")
@@ -106,7 +105,7 @@ def load_resteal_data() -> dict:
     """Load resteal (3bet shove) ranges from JSON file."""
     data_path = Path(__file__).parent.parent / "data" / "ranges" / "mtt" / "resteal.json"
     try:
-        with open(data_path, 'r', encoding='utf-8') as f:
+        with open(data_path, encoding="utf-8") as f:
             return json.load(f)
     except Exception as e:
         print(f"Failed to load resteal data: {e}")
@@ -117,7 +116,7 @@ def load_hu_data() -> dict:
     """Load Heads Up push/defense ranges from JSON file."""
     data_path = Path(__file__).parent.parent / "data" / "ranges" / "mtt" / "hu_push_defense.json"
     try:
-        with open(data_path, 'r', encoding='utf-8') as f:
+        with open(data_path, encoding="utf-8") as f:
             return json.load(f)
     except Exception as e:
         print(f"Failed to load HU data: {e}")
@@ -134,6 +133,7 @@ _HU_DATA = load_hu_data()
 @dataclass
 class PushFoldSpot:
     """Represents a single push/fold training spot."""
+
     hand: Hand
     position: str
     stack_depth: str
@@ -171,6 +171,7 @@ class PushFoldSpot:
 @dataclass
 class PushFoldResult:
     """Result of a push/fold evaluation."""
+
     is_correct: bool
     correct_action: str  # "push" or "fold"
     explanation: str
@@ -231,7 +232,9 @@ class PushFoldDrill:
         for scenario in self.resteal_data["6max"]:
             self.resteal_ranges[scenario] = {}
             for stack in self.resteal_data["6max"][scenario]:
-                self.resteal_ranges[scenario][stack] = set(self.resteal_data["6max"][scenario][stack])
+                self.resteal_ranges[scenario][stack] = set(
+                    self.resteal_data["6max"][scenario][stack]
+                )
 
     def _build_hu_ranges(self):
         """Build HU (Heads Up) range sets for quick lookup."""
@@ -244,31 +247,31 @@ class PushFoldDrill:
             for stack in self.hu_data["hu"][scenario]:
                 self.hu_ranges[scenario][stack] = set(self.hu_data["hu"][scenario][stack])
 
-    def set_enabled_positions(self, positions: List[str]):
+    def set_enabled_positions(self, positions: list[str]):
         """Set which positions to practice."""
         self.enabled_positions = positions
 
-    def set_enabled_stack_depths(self, stack_depths: List[str]):
+    def set_enabled_stack_depths(self, stack_depths: list[str]):
         """Set which stack depths to practice."""
         self.enabled_stack_depths = stack_depths
 
-    def set_enabled_defense_scenarios(self, scenarios: List[str]):
+    def set_enabled_defense_scenarios(self, scenarios: list[str]):
         """Set which defense scenarios to practice."""
         self.enabled_defense_scenarios = scenarios
 
-    def set_enabled_resteal_scenarios(self, scenarios: List[str]):
+    def set_enabled_resteal_scenarios(self, scenarios: list[str]):
         """Set which resteal scenarios to practice."""
         self.enabled_resteal_scenarios = scenarios
 
-    def set_enabled_hu_scenarios(self, scenarios: List[str]):
+    def set_enabled_hu_scenarios(self, scenarios: list[str]):
         """Set which HU scenarios to practice."""
         self.enabled_hu_scenarios = scenarios
 
-    def set_enabled_hu_stack_depths(self, stack_depths: List[str]):
+    def set_enabled_hu_stack_depths(self, stack_depths: list[str]):
         """Set which HU stack depths to practice."""
         self.enabled_hu_stack_depths = stack_depths
 
-    def get_push_range(self, stack_depth: str, position: str) -> Set[str]:
+    def get_push_range(self, stack_depth: str, position: str) -> set[str]:
         """Get the push range for a given stack depth and position."""
         return self.push_ranges.get(stack_depth, {}).get(position, set())
 
@@ -277,11 +280,11 @@ class PushFoldDrill:
         push_range = self.get_push_range(stack_depth, position)
         return str(hand) in push_range
 
-    def get_call_range(self, scenario: str, stack_depth: str) -> Set[str]:
+    def get_call_range(self, scenario: str, stack_depth: str) -> set[str]:
         """Get the call range for a given defense scenario and stack depth."""
         return self.call_ranges.get(scenario, {}).get(stack_depth, set())
 
-    def get_available_stack_depths_for_scenario(self, scenario: str) -> List[str]:
+    def get_available_stack_depths_for_scenario(self, scenario: str) -> list[str]:
         """Get available stack depths for a defense scenario."""
         if scenario in self.call_ranges:
             return list(self.call_ranges[scenario].keys())
@@ -292,11 +295,11 @@ class PushFoldDrill:
         call_range = self.get_call_range(scenario, stack_depth)
         return str(hand) in call_range
 
-    def get_resteal_range(self, scenario: str, stack_depth: str) -> Set[str]:
+    def get_resteal_range(self, scenario: str, stack_depth: str) -> set[str]:
         """Get the resteal (3bet shove) range for a given scenario and stack depth."""
         return self.resteal_ranges.get(scenario, {}).get(stack_depth, set())
 
-    def get_available_stack_depths_for_resteal_scenario(self, scenario: str) -> List[str]:
+    def get_available_stack_depths_for_resteal_scenario(self, scenario: str) -> list[str]:
         """Get available stack depths for a resteal scenario."""
         if scenario in self.resteal_ranges:
             return list(self.resteal_ranges[scenario].keys())
@@ -307,11 +310,11 @@ class PushFoldDrill:
         resteal_range = self.get_resteal_range(scenario, stack_depth)
         return str(hand) in resteal_range
 
-    def get_hu_range(self, scenario: str, stack_depth: str) -> Set[str]:
+    def get_hu_range(self, scenario: str, stack_depth: str) -> set[str]:
         """Get the HU range for a given scenario and stack depth."""
         return self.hu_ranges.get(scenario, {}).get(stack_depth, set())
 
-    def get_available_stack_depths_for_hu_scenario(self, scenario: str) -> List[str]:
+    def get_available_stack_depths_for_hu_scenario(self, scenario: str) -> list[str]:
         """Get available stack depths for a HU scenario."""
         if scenario in self.hu_ranges:
             return list(self.hu_ranges[scenario].keys())
@@ -340,7 +343,7 @@ class PushFoldDrill:
 
         return PushFoldSpot(hand=hand, position=position, stack_depth=stack_depth)
 
-    def generate_defense_spot(self) -> Optional[PushFoldSpot]:
+    def generate_defense_spot(self) -> PushFoldSpot | None:
         """Generate a random defense vs shove spot."""
         if not self.enabled_defense_scenarios:
             return None
@@ -372,7 +375,7 @@ class PushFoldDrill:
             defense_scenario=scenario,
         )
 
-    def generate_resteal_spot(self) -> Optional[PushFoldSpot]:
+    def generate_resteal_spot(self) -> PushFoldSpot | None:
         """Generate a random resteal (3bet shove) spot."""
         if not self.enabled_resteal_scenarios:
             return None
@@ -404,7 +407,7 @@ class PushFoldDrill:
             resteal_scenario=scenario,
         )
 
-    def _generate_resteal_edge_hand(self, resteal_range: Set[str]) -> Hand:
+    def _generate_resteal_edge_hand(self, resteal_range: set[str]) -> Hand:
         """Generate a hand near the resteal/fold edge for interesting decisions."""
         all_hands = set(ALL_HANDS)
         edge_hands = []
@@ -426,7 +429,7 @@ class PushFoldDrill:
 
         return random_hand()
 
-    def generate_hu_spot(self) -> Optional[PushFoldSpot]:
+    def generate_hu_spot(self) -> PushFoldSpot | None:
         """Generate a random HU (Heads Up) spot."""
         if not self.enabled_hu_scenarios:
             return None
@@ -461,7 +464,7 @@ class PushFoldDrill:
             hu_scenario=scenario,
         )
 
-    def _generate_hu_edge_hand(self, hu_range: Set[str]) -> Hand:
+    def _generate_hu_edge_hand(self, hu_range: set[str]) -> Hand:
         """Generate a hand near the push/call edge for HU decisions."""
         all_hands = set(ALL_HANDS)
         edge_hands = []
@@ -483,7 +486,7 @@ class PushFoldDrill:
 
         return random_hand()
 
-    def _generate_defense_edge_hand(self, call_range: Set[str]) -> Hand:
+    def _generate_defense_edge_hand(self, call_range: set[str]) -> Hand:
         """Generate a hand near the call/fold edge for defense scenarios."""
         all_hands = set(ALL_HANDS)
         edge_hands = []
@@ -505,7 +508,7 @@ class PushFoldDrill:
 
         return random_hand()
 
-    def _generate_edge_hand(self, push_range: Set[str], position: str, stack_depth: str) -> Hand:
+    def _generate_edge_hand(self, push_range: set[str], position: str, stack_depth: str) -> Hand:
         """Generate a hand near the push/fold edge for more interesting decisions."""
         # Get hands that are close to the boundary
         all_hands = set(ALL_HANDS)
@@ -551,7 +554,7 @@ class PushFoldDrill:
         elif player_action in ["fold", "muck"]:
             player_action = "fold"
 
-        is_correct = (player_action == correct_action)
+        is_correct = player_action == correct_action
 
         # Get range info for explanation
         push_range = self.get_push_range(spot.stack_depth, spot.position)
@@ -559,9 +562,7 @@ class PushFoldDrill:
         push_pct = (push_count / 169) * 100
 
         # Generate explanation
-        explanation = self._generate_explanation(
-            spot, correct_action, is_correct, push_pct
-        )
+        explanation = self._generate_explanation(spot, correct_action, is_correct, push_pct)
 
         return PushFoldResult(
             is_correct=is_correct,
@@ -595,7 +596,7 @@ class PushFoldDrill:
         elif player_action in ["fold", "muck"]:
             player_action = "fold"
 
-        is_correct = (player_action == correct_action)
+        is_correct = player_action == correct_action
 
         # Get range info for explanation
         call_range = self.get_call_range(spot.defense_scenario, spot.stack_depth)
@@ -603,9 +604,7 @@ class PushFoldDrill:
         call_pct = (call_count / 169) * 100
 
         # Generate explanation
-        explanation = self._generate_defense_explanation(
-            spot, correct_action, is_correct, call_pct
-        )
+        explanation = self._generate_defense_explanation(spot, correct_action, is_correct, call_pct)
 
         return PushFoldResult(
             is_correct=is_correct,
@@ -639,7 +638,7 @@ class PushFoldDrill:
         elif player_action in ["fold", "muck"]:
             player_action = "fold"
 
-        is_correct = (player_action == correct_action)
+        is_correct = player_action == correct_action
 
         # Get range info for explanation
         resteal_range = self.get_resteal_range(spot.resteal_scenario, spot.stack_depth)
@@ -712,7 +711,7 @@ class PushFoldDrill:
         elif player_action in ["fold", "muck"]:
             player_action = "fold"
 
-        is_correct = (player_action == correct_action)
+        is_correct = player_action == correct_action
 
         # Get range info for explanation
         hu_range = self.get_hu_range(spot.hu_scenario, spot.stack_depth)
@@ -720,9 +719,7 @@ class PushFoldDrill:
         range_pct = (range_count / 169) * 100
 
         # Generate explanation
-        explanation = self._generate_hu_explanation(
-            spot, correct_action, is_correct, range_pct
-        )
+        explanation = self._generate_hu_explanation(spot, correct_action, is_correct, range_pct)
 
         return PushFoldResult(
             is_correct=is_correct,
@@ -780,7 +777,9 @@ class PushFoldDrill:
                 return f"{hand_str} 在 {scenario_label} {stack} 不在 Call 範圍內，應該 Fold"
         else:
             if correct_action == "call":
-                return f"錯誤！{hand_str} 在 {scenario_label} {stack} 應該 Call (範圍 {call_pct:.0f}%)"
+                return (
+                    f"錯誤！{hand_str} 在 {scenario_label} {stack} 應該 Call (範圍 {call_pct:.0f}%)"
+                )
             else:
                 return f"錯誤！{hand_str} 在 {scenario_label} {stack} 不在 Call 範圍，應該 Fold"
 

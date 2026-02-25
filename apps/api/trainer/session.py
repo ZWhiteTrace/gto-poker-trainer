@@ -1,23 +1,25 @@
 """
 Training session management.
 """
+
 import json
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
-from typing import List, Dict, Optional
+
+from core.evaluator import EvalResult
 
 from .drill import Spot
-from core.evaluator import EvalResult
 
 
 @dataclass
 class SpotResult:
     """Result of a single spot in a session."""
+
     spot: Spot
     player_action: str
     eval_result: EvalResult
-    response_time_ms: Optional[float] = None
+    response_time_ms: float | None = None
 
     def to_dict(self) -> dict:
         return {
@@ -36,9 +38,10 @@ class TrainingSession:
     """
     Manages a single training session.
     """
+
     session_id: str = field(default_factory=lambda: datetime.now().strftime("%Y%m%d_%H%M%S"))
     start_time: datetime = field(default_factory=datetime.now)
-    results: List[SpotResult] = field(default_factory=list)
+    results: list[SpotResult] = field(default_factory=list)
 
     @property
     def total_spots(self) -> int:
@@ -52,17 +55,25 @@ class TrainingSession:
     @property
     def acceptable_count(self) -> int:
         """Count of acceptable answers (mixed strategy, not primary but valid)."""
-        return sum(1 for r in self.results if r.eval_result.is_acceptable and not r.eval_result.is_correct)
+        return sum(
+            1 for r in self.results if r.eval_result.is_acceptable and not r.eval_result.is_correct
+        )
 
     @property
     def not_wrong_count(self) -> int:
         """Count of correct + acceptable answers."""
-        return sum(1 for r in self.results if r.eval_result.is_correct or r.eval_result.is_acceptable)
+        return sum(
+            1 for r in self.results if r.eval_result.is_correct or r.eval_result.is_acceptable
+        )
 
     @property
     def incorrect_count(self) -> int:
         """Count of true errors (0% frequency actions)."""
-        return sum(1 for r in self.results if not r.eval_result.is_correct and not r.eval_result.is_acceptable)
+        return sum(
+            1
+            for r in self.results
+            if not r.eval_result.is_correct and not r.eval_result.is_acceptable
+        )
 
     @property
     def accuracy(self) -> float:
@@ -76,21 +87,32 @@ class TrainingSession:
         return f"{self.accuracy * 100:.1f}%"
 
     @property
-    def mistakes(self) -> List[SpotResult]:
+    def mistakes(self) -> list[SpotResult]:
         """Only true mistakes (0% frequency actions), not acceptable mixed strategies."""
-        return [r for r in self.results if not r.eval_result.is_correct and not r.eval_result.is_acceptable]
+        return [
+            r
+            for r in self.results
+            if not r.eval_result.is_correct and not r.eval_result.is_acceptable
+        ]
 
-    def add_result(self, spot: Spot, player_action: str, eval_result: EvalResult,
-                   response_time_ms: Optional[float] = None):
+    def add_result(
+        self,
+        spot: Spot,
+        player_action: str,
+        eval_result: EvalResult,
+        response_time_ms: float | None = None,
+    ):
         """Add a spot result to the session."""
-        self.results.append(SpotResult(
-            spot=spot,
-            player_action=player_action,
-            eval_result=eval_result,
-            response_time_ms=response_time_ms,
-        ))
+        self.results.append(
+            SpotResult(
+                spot=spot,
+                player_action=player_action,
+                eval_result=eval_result,
+                response_time_ms=response_time_ms,
+            )
+        )
 
-    def get_stats_by_action_type(self) -> Dict[str, Dict]:
+    def get_stats_by_action_type(self) -> dict[str, dict]:
         """Get accuracy stats grouped by action type."""
         stats = {}
         for result in self.results:
@@ -109,7 +131,7 @@ class TrainingSession:
 
         return stats
 
-    def get_stats_by_position(self) -> Dict[str, Dict]:
+    def get_stats_by_position(self) -> dict[str, dict]:
         """Get accuracy stats grouped by hero position."""
         stats = {}
         for result in self.results:
@@ -128,7 +150,7 @@ class TrainingSession:
 
         return stats
 
-    def get_weak_hands(self, min_attempts: int = 2) -> List[Dict]:
+    def get_weak_hands(self, min_attempts: int = 2) -> list[dict]:
         """
         Find hands that are frequently answered incorrectly.
         Returns list of {hand, scenario, attempts, correct, accuracy}
@@ -178,13 +200,13 @@ class TrainingSession:
         data_dir.mkdir(parents=True, exist_ok=True)
         filepath = data_dir / f"session_{self.session_id}.json"
 
-        with open(filepath, 'w') as f:
+        with open(filepath, "w") as f:
             json.dump(self.to_dict(), f, indent=2)
 
     @classmethod
     def load(cls, filepath: Path) -> "TrainingSession":
         """Load session from JSON file."""
-        with open(filepath, 'r') as f:
+        with open(filepath) as f:
             data = json.load(f)
         # Note: This is a simplified load that doesn't fully reconstruct Spot objects
         session = cls(session_id=data["session_id"])
@@ -207,7 +229,7 @@ class ProgressTracker:
     def _load_progress(self):
         """Load progress from file."""
         if self.progress_file.exists():
-            with open(self.progress_file, 'r') as f:
+            with open(self.progress_file) as f:
                 self.data = json.load(f)
         else:
             self.data = {
@@ -221,7 +243,7 @@ class ProgressTracker:
     def _save_progress(self):
         """Save progress to file."""
         self.data_dir.mkdir(parents=True, exist_ok=True)
-        with open(self.progress_file, 'w') as f:
+        with open(self.progress_file, "w") as f:
             json.dump(self.data, f, indent=2)
 
     def record_session(self, session: TrainingSession):
@@ -245,11 +267,13 @@ class ProgressTracker:
             self.data["hand_stats"][key]["last_seen"] = datetime.now().isoformat()
 
         # Add to session history
-        self.data["session_history"].append({
-            "date": session.start_time.isoformat(),
-            "accuracy": session.accuracy,
-            "spots": session.total_spots,
-        })
+        self.data["session_history"].append(
+            {
+                "date": session.start_time.isoformat(),
+                "accuracy": session.accuracy,
+                "spots": session.total_spots,
+            }
+        )
 
         self._save_progress()
 
@@ -259,7 +283,7 @@ class ProgressTracker:
             return 0.0
         return self.data["total_correct"] / self.data["total_spots"]
 
-    def get_weak_spots(self, min_attempts: int = 3, max_accuracy: float = 0.7) -> List[Dict]:
+    def get_weak_spots(self, min_attempts: int = 3, max_accuracy: float = 0.7) -> list[dict]:
         """Get spots that need more practice."""
         weak = []
         for key, stats in self.data["hand_stats"].items():
@@ -267,11 +291,13 @@ class ProgressTracker:
                 accuracy = stats["correct"] / stats["attempts"]
                 if accuracy <= max_accuracy:
                     hand, scenario = key.rsplit("_", 1)
-                    weak.append({
-                        "hand": hand,
-                        "scenario": scenario,
-                        "accuracy": accuracy,
-                        "attempts": stats["attempts"],
-                    })
+                    weak.append(
+                        {
+                            "hand": hand,
+                            "scenario": scenario,
+                            "accuracy": accuracy,
+                            "attempts": stats["attempts"],
+                        }
+                    )
         weak.sort(key=lambda x: x["accuracy"])
         return weak

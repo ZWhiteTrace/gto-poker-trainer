@@ -1,11 +1,12 @@
 """
 Range data endpoints.
 """
+
+import json
+from pathlib import Path
+
 from fastapi import APIRouter, HTTPException, Query
 from pydantic import BaseModel
-from typing import Dict, List, Optional
-from pathlib import Path
-import json
 
 router = APIRouter()
 
@@ -13,16 +14,16 @@ router = APIRouter()
 class RangeResponse(BaseModel):
     position: str
     action_type: str
-    hands: Dict[str, Dict[str, int]]  # {hand: {action: frequency}}
-    drillable: List[str]
+    hands: dict[str, dict[str, int]]  # {hand: {action: frequency}}
+    drillable: list[str]
     total_hands: int
 
 
 # Cache for range data
-_range_cache: Dict[str, Dict] = {}
+_range_cache: dict[str, dict] = {}
 
 
-def get_range_data(format: str = "6max") -> Dict:
+def get_range_data(format: str = "6max") -> dict:
     """Load range data from JSON files."""
     if format in _range_cache:
         return _range_cache[format]

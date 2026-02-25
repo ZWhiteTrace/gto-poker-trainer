@@ -7,25 +7,22 @@ ICM calculates the real-money equity of chip stacks based on:
 
 Uses the Malmuth-Harville formula to calculate finish probabilities.
 """
-from typing import List, Tuple, Optional
+
 from dataclasses import dataclass
-from itertools import permutations
 
 
 @dataclass
 class ICMResult:
     """Result of ICM calculation."""
-    stacks: List[int]
-    payouts: List[float]
-    equities: List[float]  # $ equity for each player
-    equity_pcts: List[float]  # Percentage of prize pool
+
+    stacks: list[int]
+    payouts: list[float]
+    equities: list[float]  # $ equity for each player
+    equity_pcts: list[float]  # Percentage of prize pool
 
 
 def calculate_finish_probability(
-    stacks: List[int],
-    player_idx: int,
-    position: int,
-    excluded: Tuple[int, ...] = ()
+    stacks: list[int], player_idx: int, position: int, excluded: tuple[int, ...] = ()
 ) -> float:
     """
     Calculate probability of a player finishing in a specific position.
@@ -74,7 +71,7 @@ def calculate_finish_probability(
     return prob
 
 
-def calculate_icm_equity(stacks: List[int], payouts: List[float]) -> ICMResult:
+def calculate_icm_equity(stacks: list[int], payouts: list[float]) -> ICMResult:
     """
     Calculate ICM equity for each player.
 
@@ -100,7 +97,7 @@ def calculate_icm_equity(stacks: List[int], payouts: List[float]) -> ICMResult:
             stacks=stacks,
             payouts=payouts,
             equities=[0.0] * n_players,
-            equity_pcts=[0.0] * n_players
+            equity_pcts=[0.0] * n_players,
         )
 
     # If only one player left, they get 1st place
@@ -123,22 +120,14 @@ def calculate_icm_equity(stacks: List[int], payouts: List[float]) -> ICMResult:
             prob = calculate_finish_probability(stacks, player_idx, position)
             equities[player_idx] += prob * payouts[position]
 
-    total_payout = sum(payouts[:min(n_payouts, n_players)])
+    total_payout = sum(payouts[: min(n_payouts, n_players)])
     equity_pcts = [e / total_payout * 100 if total_payout > 0 else 0 for e in equities]
 
-    return ICMResult(
-        stacks=stacks,
-        payouts=payouts,
-        equities=equities,
-        equity_pcts=equity_pcts
-    )
+    return ICMResult(stacks=stacks, payouts=payouts, equities=equities, equity_pcts=equity_pcts)
 
 
 def calculate_icm_pressure(
-    stacks: List[int],
-    payouts: List[float],
-    player_idx: int,
-    pot_size: int
+    stacks: list[int], payouts: list[float], player_idx: int, pot_size: int
 ) -> dict:
     """
     Calculate ICM pressure for a specific player in a pot.
@@ -174,7 +163,7 @@ def calculate_icm_pressure(
     loss = current_equity - lose_equity
 
     # ICM pressure ratio: how much more you lose vs gain
-    pressure_ratio = loss / gain if gain > 0 else float('inf')
+    pressure_ratio = loss / gain if gain > 0 else float("inf")
 
     return {
         "current_equity": current_equity,
@@ -183,7 +172,7 @@ def calculate_icm_pressure(
         "potential_gain": gain,
         "potential_loss": loss,
         "pressure_ratio": pressure_ratio,
-        "pressure_level": _get_pressure_level(pressure_ratio)
+        "pressure_level": _get_pressure_level(pressure_ratio),
     }
 
 
@@ -199,7 +188,7 @@ def _get_pressure_level(ratio: float) -> str:
         return "extreme"
 
 
-def get_standard_payouts(n_players: int, buyin: float = 100) -> List[float]:
+def get_standard_payouts(n_players: int, buyin: float = 100) -> list[float]:
     """
     Generate standard MTT payout structure.
 
@@ -220,7 +209,7 @@ def get_standard_payouts(n_players: int, buyin: float = 100) -> List[float]:
     elif n_players <= 9:
         pct = [0.50, 0.30, 0.20, 0, 0, 0, 0, 0, 0][:n_players]
     elif n_players <= 18:
-        pct = [0.40, 0.25, 0.18, 0.12, 0.05, 0, 0, 0, 0][:min(5, n_players)]
+        pct = [0.40, 0.25, 0.18, 0.12, 0.05, 0, 0, 0, 0][: min(5, n_players)]
     else:
         # Larger field - top 15% pay
         pct = [0.30, 0.20, 0.15, 0.10, 0.08, 0.06, 0.05, 0.04, 0.02]
@@ -231,12 +220,12 @@ def get_standard_payouts(n_players: int, buyin: float = 100) -> List[float]:
 
 
 # Quick utility functions
-def icm_ev(stacks: List[int], payouts: List[float]) -> List[float]:
+def icm_ev(stacks: list[int], payouts: list[float]) -> list[float]:
     """Convenience function to get just the equity values."""
     return calculate_icm_equity(stacks, payouts).equities
 
 
-def chip_ev(stacks: List[int], prize_pool: float) -> List[float]:
+def chip_ev(stacks: list[int], prize_pool: float) -> list[float]:
     """Calculate simple chip EV (proportional to chips)."""
     total_chips = sum(stacks)
     if total_chips == 0:
@@ -244,7 +233,7 @@ def chip_ev(stacks: List[int], prize_pool: float) -> List[float]:
     return [s / total_chips * prize_pool for s in stacks]
 
 
-def icm_vs_chip_ev_diff(stacks: List[int], payouts: List[float]) -> List[float]:
+def icm_vs_chip_ev_diff(stacks: list[int], payouts: list[float]) -> list[float]:
     """Calculate the difference between ICM and chip EV for each player."""
     icm_equities = icm_ev(stacks, payouts)
     prize_pool = sum(payouts)

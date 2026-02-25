@@ -2,16 +2,17 @@
 Hand representation for poker.
 Supports notation like: AA, AKs, AKo, T9s, 72o
 """
-from dataclasses import dataclass
-from typing import List, Tuple
-import random
 
-RANKS = ['A', 'K', 'Q', 'J', 'T', '9', '8', '7', '6', '5', '4', '3', '2']
-SUITS = ['s', 'h', 'd', 'c']  # spades, hearts, diamonds, clubs
-SUIT_SYMBOLS = {'s': '\u2660', 'h': '\u2665', 'd': '\u2666', 'c': '\u2663'}
+import random
+from dataclasses import dataclass
+
+RANKS = ["A", "K", "Q", "J", "T", "9", "8", "7", "6", "5", "4", "3", "2"]
+SUITS = ["s", "h", "d", "c"]  # spades, hearts, diamonds, clubs
+SUIT_SYMBOLS = {"s": "\u2660", "h": "\u2665", "d": "\u2666", "c": "\u2663"}
+
 
 # All 169 unique starting hands
-def generate_all_hands() -> List[str]:
+def generate_all_hands() -> list[str]:
     """Generate all 169 unique starting hands."""
     hands = []
     for i, r1 in enumerate(RANKS):
@@ -27,12 +28,14 @@ def generate_all_hands() -> List[str]:
                 hands.append(f"{r2}{r1}o")
     return hands
 
+
 ALL_HANDS = generate_all_hands()
 
 
 @dataclass
 class Hand:
     """Represents a poker starting hand."""
+
     notation: str  # e.g., "AKs", "QQ", "T9o"
 
     def __post_init__(self):
@@ -41,7 +44,7 @@ class Hand:
     @staticmethod
     def _normalize(notation: str) -> str:
         """Normalize hand notation (higher rank first)."""
-        notation = notation.upper().replace('10', 'T')
+        notation = notation.upper().replace("10", "T")
         if len(notation) == 2:
             # Pocket pair
             return notation
@@ -68,14 +71,14 @@ class Hand:
 
     @property
     def is_suited(self) -> bool:
-        return len(self.notation) == 3 and self.notation[2].lower() == 's'
+        return len(self.notation) == 3 and self.notation[2].lower() == "s"
 
     @property
     def is_offsuit(self) -> bool:
-        return len(self.notation) == 3 and self.notation[2].lower() == 'o'
+        return len(self.notation) == 3 and self.notation[2].lower() == "o"
 
     @property
-    def grid_position(self) -> Tuple[int, int]:
+    def grid_position(self) -> tuple[int, int]:
         """Return (row, col) position in 13x13 grid."""
         row = RANKS.index(self.rank1)
         col = RANKS.index(self.rank2)
@@ -114,7 +117,7 @@ def random_hand() -> Hand:
     return Hand(random.choice(ALL_HANDS))
 
 
-def parse_range(range_str: str) -> List[Hand]:
+def parse_range(range_str: str) -> list[Hand]:
     """
     Parse a range string into list of hands.
     Examples:
@@ -124,19 +127,19 @@ def parse_range(range_str: str) -> List[Hand]:
         "A5s-A2s" -> [Hand("A5s"), Hand("A4s"), Hand("A3s"), Hand("A2s")]
     """
     hands = []
-    parts = [p.strip() for p in range_str.split(',')]
+    parts = [p.strip() for p in range_str.split(",")]
 
     for part in parts:
-        part = part.upper().replace('10', 'T')
+        part = part.upper().replace("10", "T")
 
         if not part:
             continue
 
-        if '-' in part:
+        if "-" in part:
             # Range like "A5s-A2s" or "JJ-88"
-            start, end = part.split('-')
+            start, end = part.split("-")
             hands.extend(_expand_dash_range(start.strip(), end.strip()))
-        elif part.endswith('+'):
+        elif part.endswith("+"):
             # Range like "TT+" or "AQs+"
             base = part[:-1]
             hands.extend(_expand_plus_range(base))
@@ -147,7 +150,7 @@ def parse_range(range_str: str) -> List[Hand]:
     return hands
 
 
-def _expand_plus_range(base: str) -> List[Hand]:
+def _expand_plus_range(base: str) -> list[Hand]:
     """Expand TT+ to TT, JJ, QQ, KK, AA or AQs+ to AQs, AKs."""
     hands = []
 
@@ -167,7 +170,7 @@ def _expand_plus_range(base: str) -> List[Hand]:
     return hands
 
 
-def _expand_dash_range(start: str, end: str) -> List[Hand]:
+def _expand_dash_range(start: str, end: str) -> list[Hand]:
     """Expand A5s-A2s or JJ-88 style ranges."""
     hands = []
 

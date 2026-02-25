@@ -3,13 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { SUIT_SYMBOLS, SUIT_CARD_COLORS } from "@/lib/poker/types";
@@ -115,13 +109,17 @@ function generateScenario(drawType: DrawType): Question {
     return { rank, suit };
   };
 
-  const getRandomUnusedCard = (constraints?: { suit?: Suit; notSuit?: Suit; ranks?: Rank[] }): CardType => {
+  const getRandomUnusedCard = (constraints?: {
+    suit?: Suit;
+    notSuit?: Suit;
+    ranks?: Rank[];
+  }): CardType => {
     const availableRanks = constraints?.ranks || [...RANKS];
     const availableSuits = constraints?.suit
       ? [constraints.suit]
       : constraints?.notSuit
-      ? SUITS.filter((s) => s !== constraints.notSuit)
-      : [...SUITS];
+        ? SUITS.filter((s) => s !== constraints.notSuit)
+        : [...SUITS];
 
     let attempts = 0;
     while (attempts < 100) {
@@ -170,7 +168,7 @@ function generateScenario(drawType: DrawType): Question {
       const oesdExclude = new Set<Rank>();
       if (startIdx - 1 >= 0) oesdExclude.add(RANKS[startIdx - 1]);
       if (startIdx + 4 < RANKS.length) oesdExclude.add(RANKS[startIdx + 4]);
-      const oesdSafeRanks = ([...RANKS] as Rank[]).filter(r => !oesdExclude.has(r));
+      const oesdSafeRanks = ([...RANKS] as Rank[]).filter((r) => !oesdExclude.has(r));
       board = [
         getCard(RANKS[startIdx + 2], SUITS[Math.floor(Math.random() * 4)]),
         getCard(RANKS[startIdx + 3], SUITS[Math.floor(Math.random() * 4)]),
@@ -191,7 +189,7 @@ function generateScenario(drawType: DrawType): Question {
       gsExclude.add(RANKS[startIdx + 1]);
       if (startIdx + 5 < RANKS.length) gsExclude.add(RANKS[startIdx + 5]);
       if (startIdx + 6 < RANKS.length) gsExclude.add(RANKS[startIdx + 6]);
-      const gsSafeRanks = ([...RANKS] as Rank[]).filter(r => !gsExclude.has(r));
+      const gsSafeRanks = ([...RANKS] as Rank[]).filter((r) => !gsExclude.has(r));
       board = [
         getCard(RANKS[startIdx + 3], SUITS[Math.floor(Math.random() * 4)]),
         getCard(RANKS[startIdx + 4], SUITS[Math.floor(Math.random() * 4)]),
@@ -204,16 +202,13 @@ function generateScenario(drawType: DrawType): Question {
       // Flush draw + gutshot
       const suit = SUITS[Math.floor(Math.random() * SUITS.length)];
       const startIdx = Math.floor(Math.random() * 6) + 2;
-      heroHand = [
-        getCard(RANKS[startIdx], suit),
-        getCard(RANKS[startIdx + 2], suit),
-      ];
+      heroHand = [getCard(RANKS[startIdx], suit), getCard(RANKS[startIdx + 2], suit)];
       // Exclude: completing rank (+1) and ranks creating extra straight outs (+5, +6)
       const fgExclude = new Set<Rank>();
       fgExclude.add(RANKS[startIdx + 1]);
       if (startIdx + 5 < RANKS.length) fgExclude.add(RANKS[startIdx + 5]);
       if (startIdx + 6 < RANKS.length) fgExclude.add(RANKS[startIdx + 6]);
-      const fgSafeRanks = ([...RANKS] as Rank[]).filter(r => !fgExclude.has(r));
+      const fgSafeRanks = ([...RANKS] as Rank[]).filter((r) => !fgExclude.has(r));
       board = [
         getCard(RANKS[startIdx + 3], suit),
         getCard(RANKS[startIdx + 4], SUITS.filter((s) => s !== suit)[0]),
@@ -226,15 +221,12 @@ function generateScenario(drawType: DrawType): Question {
       // Flush draw + open-ended straight draw (combo draw)
       const suit = SUITS[Math.floor(Math.random() * SUITS.length)];
       const startIdx = Math.floor(Math.random() * 6) + 2;
-      heroHand = [
-        getCard(RANKS[startIdx], suit),
-        getCard(RANKS[startIdx + 1], suit),
-      ];
+      heroHand = [getCard(RANKS[startIdx], suit), getCard(RANKS[startIdx + 1], suit)];
       // Exclude the two completing ranks that would make a straight
       const foExclude = new Set<Rank>();
       if (startIdx - 1 >= 0) foExclude.add(RANKS[startIdx - 1]);
       if (startIdx + 4 < RANKS.length) foExclude.add(RANKS[startIdx + 4]);
-      const foSafeRanks = ([...RANKS] as Rank[]).filter(r => !foExclude.has(r));
+      const foSafeRanks = ([...RANKS] as Rank[]).filter((r) => !foExclude.has(r));
       board = [
         getCard(RANKS[startIdx + 2], suit),
         getCard(RANKS[startIdx + 3], SUITS.filter((s) => s !== suit)[0]),
@@ -262,16 +254,12 @@ function generateScenario(drawType: DrawType): Question {
       // Flopped a pair, looking to hit trips
       const pairRank = RANKS[Math.floor(Math.random() * 10) + 2];
       // Kicker must not be the same rank as the pair (would make trips already)
-      const kickerRanks = (["A", "K", "Q", "J", "T"] as Rank[]).filter(r => r !== pairRank);
+      const kickerRanks = (["A", "K", "Q", "J", "T"] as Rank[]).filter((r) => r !== pairRank);
       heroHand = [
         getCard(pairRank, SUITS[0]),
         getCard(kickerRanks[Math.floor(Math.random() * kickerRanks.length)], SUITS[1]),
       ];
-      board = [
-        getCard(pairRank, SUITS[2]),
-        getRandomUnusedCard(),
-        getRandomUnusedCard(),
-      ];
+      board = [getCard(pairRank, SUITS[2]), getRandomUnusedCard(), getRandomUnusedCard()];
       break;
     }
 
@@ -279,7 +267,7 @@ function generateScenario(drawType: DrawType): Question {
       // Pocket pair looking for set — board must not contain the pair rank
       const pairRank = RANKS[Math.floor(Math.random() * 10) + 2];
       heroHand = [getCard(pairRank, SUITS[0]), getCard(pairRank, SUITS[1])];
-      const nonPairRanks = ([...RANKS] as Rank[]).filter(r => r !== pairRank);
+      const nonPairRanks = ([...RANKS] as Rank[]).filter((r) => r !== pairRank);
       board = [
         getRandomUnusedCard({ ranks: nonPairRanks }),
         getRandomUnusedCard({ ranks: nonPairRanks }),
@@ -321,8 +309,8 @@ function PlayingCard({ card, size = "normal" }: { card: CardType; size?: "normal
   return (
     <div
       className={cn(
-        "bg-white dark:bg-gray-100 rounded-lg shadow-md flex flex-col items-center justify-center border-2 border-gray-200",
-        size === "large" ? "w-14 h-20 sm:w-16 sm:h-24" : "w-10 h-14 sm:w-12 sm:h-16"
+        "flex flex-col items-center justify-center rounded-lg border-2 border-gray-200 bg-white shadow-md dark:bg-gray-100",
+        size === "large" ? "h-20 w-14 sm:h-24 sm:w-16" : "h-14 w-10 sm:h-16 sm:w-12"
       )}
     >
       <span
@@ -361,9 +349,7 @@ export default function OutsQuizPage() {
   const generateNewQuestion = useCallback(() => {
     const drawTypes = Object.keys(DRAW_TYPES) as DrawType[];
     const selectedType =
-      category === "all"
-        ? drawTypes[Math.floor(Math.random() * drawTypes.length)]
-        : category;
+      category === "all" ? drawTypes[Math.floor(Math.random() * drawTypes.length)] : category;
 
     const newQuestion = generateScenario(selectedType);
     setQuestion(newQuestion);
@@ -391,14 +377,13 @@ export default function OutsQuizPage() {
     }
   };
 
-  const accuracy =
-    score.total > 0 ? Math.round((score.correct / score.total) * 100) : 0;
+  const accuracy = score.total > 0 ? Math.round((score.correct / score.total) * 100) : 0;
 
   if (!question) {
     return (
       <div className="container max-w-2xl py-8">
         <div className="flex items-center justify-center py-12">
-          <RefreshCw className="h-8 w-8 animate-spin text-muted-foreground" />
+          <RefreshCw className="text-muted-foreground h-8 w-8 animate-spin" />
         </div>
       </div>
     );
@@ -415,21 +400,21 @@ export default function OutsQuizPage() {
       </div>
 
       {/* Score */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="mb-6 flex items-center justify-between">
         <div className="flex items-center gap-4">
-          <Badge variant="outline" className="text-lg px-3 py-1">
-            <Trophy className="h-4 w-4 mr-1" />
+          <Badge variant="outline" className="px-3 py-1 text-lg">
+            <Trophy className="mr-1 h-4 w-4" />
             {score.correct}/{score.total}
           </Badge>
           <span className="text-muted-foreground">{accuracy}%</span>
           {cumulativeStats.total > 0 && (
-            <span className="text-xs text-muted-foreground">
+            <span className="text-muted-foreground text-xs">
               ({t("drill.allTime")}: {cumulativeStats.correct}/{cumulativeStats.total})
             </span>
           )}
         </div>
         <select
-          className="bg-muted px-3 py-1.5 rounded-md text-sm"
+          className="bg-muted rounded-md px-3 py-1.5 text-sm"
           value={category}
           onChange={(e) => {
             setCategory(e.target.value as DrawType | "all");
@@ -454,8 +439,8 @@ export default function OutsQuizPage() {
                 drawInfo.difficulty === "easy"
                   ? "default"
                   : drawInfo.difficulty === "medium"
-                  ? "secondary"
-                  : "destructive"
+                    ? "secondary"
+                    : "destructive"
               }
             >
               {drawInfo.nameZh}
@@ -466,8 +451,8 @@ export default function OutsQuizPage() {
         <CardContent>
           {/* Hero Hand */}
           <div className="mb-6">
-            <div className="text-sm text-muted-foreground mb-2">{t("quiz.outs.yourHand")}</div>
-            <div className="flex gap-2 justify-center">
+            <div className="text-muted-foreground mb-2 text-sm">{t("quiz.outs.yourHand")}</div>
+            <div className="flex justify-center gap-2">
               {question.heroHand.map((card, i) => (
                 <PlayingCard key={i} card={card} size="large" />
               ))}
@@ -476,8 +461,8 @@ export default function OutsQuizPage() {
 
           {/* Board */}
           <div className="mb-6">
-            <div className="text-sm text-muted-foreground mb-2">{t("quiz.outs.board")}</div>
-            <div className="flex gap-2 justify-center bg-green-800/30 py-4 px-6 rounded-lg">
+            <div className="text-muted-foreground mb-2 text-sm">{t("quiz.outs.board")}</div>
+            <div className="flex justify-center gap-2 rounded-lg bg-green-800/30 px-6 py-4">
               {question.board.map((card, i) => (
                 <PlayingCard key={i} card={card} />
               ))}
@@ -499,12 +484,12 @@ export default function OutsQuizPage() {
                       ? isCorrect
                         ? "default"
                         : isSelected
-                        ? "destructive"
-                        : "outline"
+                          ? "destructive"
+                          : "outline"
                       : "outline"
                   }
                   className={cn(
-                    "h-auto py-4 flex flex-col gap-1",
+                    "flex h-auto flex-col gap-1 py-4",
                     showResult && isCorrect && "bg-green-600 hover:bg-green-600",
                     showResult && isSelected && !isCorrect && "bg-red-600"
                   )}
@@ -524,13 +509,13 @@ export default function OutsQuizPage() {
           {selectedAnswer !== null && (
             <div className="mt-6 text-center">
               {selectedAnswer === question.outs ? (
-                <p className="text-green-500 font-medium">{t("drill.result.correct")}</p>
+                <p className="font-medium text-green-500">{t("drill.result.correct")}</p>
               ) : (
-                <p className="text-red-500 font-medium">
+                <p className="font-medium text-red-500">
                   {t("drill.result.incorrect")} - {t("quiz.correctAnswer")}: {question.outs} outs
                 </p>
               )}
-              <p className="text-sm text-muted-foreground mt-2">{drawInfo.descriptionZh}</p>
+              <p className="text-muted-foreground mt-2 text-sm">{drawInfo.descriptionZh}</p>
               <Button onClick={generateNewQuestion} className="mt-4">
                 {t("drill.nextHand")}
               </Button>
@@ -544,7 +529,7 @@ export default function OutsQuizPage() {
         <CardHeader>
           <CardTitle className="text-base">{t("quiz.outs.tipsTitle")}</CardTitle>
         </CardHeader>
-        <CardContent className="text-sm text-muted-foreground space-y-2">
+        <CardContent className="text-muted-foreground space-y-2 text-sm">
           <p>{t("quiz.outs.tipFlush")}</p>
           <p>{t("quiz.outs.tipOesd")}</p>
           <p>{t("quiz.outs.tipGutshot")}</p>

@@ -1,6 +1,7 @@
 """
 Tests for hand analysis and AI review endpoints.
 """
+
 import pytest
 
 
@@ -12,7 +13,7 @@ class TestDemoAnalysis:
         response = client.get("/api/analyze/demo")
         assert response.status_code == 200
         data = response.json()
-        assert data["success"] == True
+        assert data["success"]
         assert "total_hands" in data
         assert "analyzed_hands" in data
         assert "mistakes" in data
@@ -43,7 +44,7 @@ class TestAIReview:
                     "total_hands": 50,
                     "mistakes": 12,
                     "mistake_rate": 24.0,
-                    "ev_loss": 8.0
+                    "ev_loss": 8.0,
                 },
                 {
                     "type": "scenario",
@@ -51,14 +52,14 @@ class TestAIReview:
                     "total_hands": 80,
                     "mistakes": 8,
                     "mistake_rate": 10.0,
-                    "ev_loss": 5.0
-                }
+                    "ev_loss": 5.0,
+                },
             ],
             "total_hands": 1000,
             "analyzed_hands": 580,
             "mistakes": 54,
             "mistake_rate": 9.3,
-            "total_ev_loss": 38.7
+            "total_ev_loss": 38.7,
         }
 
     def test_ai_review_returns_insights(self, client, sample_analysis_data):

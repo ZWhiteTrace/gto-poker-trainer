@@ -11,12 +11,12 @@ FCB + CCB + RCB = 100%（對 C-Bet 的回應）
 """
 
 from dataclasses import dataclass
-from typing import Tuple
 
 
 @dataclass
 class StatRange:
     """健康數值範圍"""
+
     low: float
     high: float
     name_en: str
@@ -39,27 +39,31 @@ class StatRange:
 # FLOP 翻牌圈標準 (based on GTO Wizard research)
 # ============================================
 FLOP_CB = StatRange(
-    low=55, high=65,
-    name_en="C-Bet", name_zh="持續下注",
-    description_zh="IP位置、根據牌面質地調整"
+    low=55, high=65, name_en="C-Bet", name_zh="持續下注", description_zh="IP位置、根據牌面質地調整"
 )
 
 FLOP_FCB = StatRange(
-    low=35, high=50,
-    name_en="Fold to C-Bet", name_zh="棄牌率",
-    description_zh="OOP防守，35%緊防、50%鬆防"
+    low=35,
+    high=50,
+    name_en="Fold to C-Bet",
+    name_zh="棄牌率",
+    description_zh="OOP防守，35%緊防、50%鬆防",
 )
 
 FLOP_CCB = StatRange(
-    low=30, high=50,
-    name_en="Call vs C-Bet", name_zh="跟注率",
-    description_zh="OOP平衡策略，包含 check 後跟注"
+    low=30,
+    high=50,
+    name_en="Call vs C-Bet",
+    name_zh="跟注率",
+    description_zh="OOP平衡策略，包含 check 後跟注",
 )
 
 FLOP_RCB = StatRange(
-    low=7, high=12,
-    name_en="Raise vs C-Bet", name_zh="加注率",
-    description_zh="強牌保護、強聽牌半詐唬"
+    low=7,
+    high=12,
+    name_en="Raise vs C-Bet",
+    name_zh="加注率",
+    description_zh="強牌保護、強聽牌半詐唬",
 )
 
 
@@ -67,27 +71,31 @@ FLOP_RCB = StatRange(
 # TURN 轉牌圈標準 (真實牌力 + 路線承諾)
 # ============================================
 TURN_CB = StatRange(
-    low=40, high=60,
-    name_en="C-Bet", name_zh="持續下注",
-    description_zh="有利 run out 時增加頻率"
+    low=40, high=60, name_en="C-Bet", name_zh="持續下注", description_zh="有利 run out 時增加頻率"
 )
 
 TURN_FCB = StatRange(
-    low=40, high=65,
-    name_en="Fold to C-Bet", name_zh="棄牌率",
-    description_zh="已投入籌碼，40%緊防、65%鬆防"
+    low=40,
+    high=65,
+    name_en="Fold to C-Bet",
+    name_zh="棄牌率",
+    description_zh="已投入籌碼，40%緊防、65%鬆防",
 )
 
 TURN_CCB = StatRange(
-    low=25, high=35,
-    name_en="Call vs C-Bet", name_zh="跟注率",
-    description_zh="更重視攤牌價值，更嚴格的範圍"
+    low=25,
+    high=35,
+    name_en="Call vs C-Bet",
+    name_zh="跟注率",
+    description_zh="更重視攤牌價值，更嚴格的範圍",
 )
 
 TURN_RCB = StatRange(
-    low=3, high=8,
-    name_en="Raise vs C-Bet", name_zh="加注率",
-    description_zh="極強價值、少數 combo draw"
+    low=3,
+    high=8,
+    name_en="Raise vs C-Bet",
+    name_zh="加注率",
+    description_zh="極強價值、少數 combo draw",
 )
 
 
@@ -95,15 +103,11 @@ TURN_RCB = StatRange(
 # RIVER 河牌圈標準
 # ============================================
 RIVER_CB = StatRange(
-    low=45, high=60,
-    name_en="C-Bet", name_zh="持續下注",
-    description_zh="價值下注和平衡詐唬"
+    low=45, high=60, name_en="C-Bet", name_zh="持續下注", description_zh="價值下注和平衡詐唬"
 )
 
 RIVER_RCB = StatRange(
-    low=4, high=7,
-    name_en="Raise vs C-Bet", name_zh="加注率",
-    description_zh="極強價值或大型詐唬"
+    low=4, high=7, name_en="Raise vs C-Bet", name_zh="加注率", description_zh="極強價值或大型詐唬"
 )
 
 
@@ -222,7 +226,9 @@ def get_leak_diagnosis(stats: dict) -> list:
     flop_ccb = stats.get("flop_ccb", 0)
     turn_ccb = stats.get("turn_ccb", 0)
     if turn_ccb > 0 and flop_ccb > 0 and abs(flop_ccb - turn_ccb) < 5:
-        leaks.append(f"轉牌 CCB ({turn_ccb:.1f}%) ≈ 翻牌 CCB ({flop_ccb:.1f}%)：沒有在轉牌做真正決策")
+        leaks.append(
+            f"轉牌 CCB ({turn_ccb:.1f}%) ≈ 翻牌 CCB ({flop_ccb:.1f}%)：沒有在轉牌做真正決策"
+        )
 
     flop_cb = stats.get("flop_cbet", 0)
     turn_cb = stats.get("turn_cbet", 0)

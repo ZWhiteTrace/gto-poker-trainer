@@ -7,11 +7,7 @@ export default function LearnIndexPage() {
   const featuredGuides = getFeaturedGuides();
 
   return (
-    <LearnPageClient
-      guides={guides}
-      categories={categories}
-      featuredGuides={featuredGuides}
-    />
+    <LearnPageClient guides={guides} categories={categories} featuredGuides={featuredGuides} />
   );
 }
 

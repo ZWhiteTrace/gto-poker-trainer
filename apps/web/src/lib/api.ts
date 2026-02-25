@@ -2,8 +2,7 @@
  * API client for FastAPI backend
  */
 
-export const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL || "https://api.grindgto.com";
+export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://api.grindgto.com";
 
 interface DrillRequest {
   drill_type: "rfi" | "vs_rfi" | "vs_3bet" | "vs_4bet";
@@ -135,10 +134,7 @@ class ApiClient {
     this.baseUrl = baseUrl;
   }
 
-  private async fetch<T>(
-    endpoint: string,
-    options: RequestInit = {}
-  ): Promise<T> {
+  private async fetch<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
     const url = `${this.baseUrl}${endpoint}`;
     const response = await fetch(url, {
       ...options,
@@ -172,13 +168,8 @@ class ApiClient {
   }
 
   // Range endpoints
-  async getRfiRange(
-    position: string,
-    format: string = "6max"
-  ): Promise<RangeResponse> {
-    return this.fetch<RangeResponse>(
-      `/api/ranges/rfi/${position}?format=${format}`
-    );
+  async getRfiRange(position: string, format: string = "6max"): Promise<RangeResponse> {
+    return this.fetch<RangeResponse>(`/api/ranges/rfi/${position}?format=${format}`);
   }
 
   async getVsRfiRange(
@@ -230,7 +221,9 @@ class ApiClient {
     });
   }
 
-  async evaluateMttDrillAction(request: MttDrillEvaluateRequest): Promise<MttDrillEvaluateResponse> {
+  async evaluateMttDrillAction(
+    request: MttDrillEvaluateRequest
+  ): Promise<MttDrillEvaluateResponse> {
     return this.fetch<MttDrillEvaluateResponse>("/api/mtt/drill/evaluate", {
       method: "POST",
       body: JSON.stringify(request),

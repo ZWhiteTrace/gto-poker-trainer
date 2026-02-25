@@ -38,18 +38,13 @@ interface HandHistoryViewerProps {
 function formatCard(card: { rank: string; suit: string }) {
   return (
     <span className={cn("font-mono", SUIT_CARD_COLORS[card.suit])}>
-      {card.rank}{SUIT_SYMBOLS[card.suit]}
+      {card.rank}
+      {SUIT_SYMBOLS[card.suit]}
     </span>
   );
 }
 
-function HandSummaryCard({
-  hand,
-  onClick,
-}: {
-  hand: HandHistory;
-  onClick: () => void;
-}) {
+function HandSummaryCard({ hand, onClick }: { hand: HandHistory; onClick: () => void }) {
   const isWin = hand.heroProfit > 0;
   const isLoss = hand.heroProfit < 0;
 
@@ -61,7 +56,7 @@ function HandSummaryCard({
     <button
       onClick={onClick}
       className={cn(
-        "w-full p-3 rounded-lg border text-left transition-all hover:bg-muted/50",
+        "hover:bg-muted/50 w-full rounded-lg border p-3 text-left transition-all",
         isWin && "border-green-500/30 bg-green-500/5",
         isLoss && "border-red-500/30 bg-red-500/5",
         !isWin && !isLoss && "border-muted"
@@ -94,10 +89,10 @@ function HandSummaryCard({
           </span>
           {isWin && <TrendingUp className="h-4 w-4 text-green-500" />}
           {isLoss && <TrendingDown className="h-4 w-4 text-red-500" />}
-          <ChevronRight className="h-4 w-4 text-muted-foreground" />
+          <ChevronRight className="text-muted-foreground h-4 w-4" />
         </div>
       </div>
-      <div className="mt-2 flex items-center gap-2 text-xs text-muted-foreground">
+      <div className="text-muted-foreground mt-2 flex items-center gap-2 text-xs">
         <span>Hand #{hand.handNumber}</span>
         <span>•</span>
         <span>
@@ -123,13 +118,7 @@ function HandSummaryCard({
   );
 }
 
-function HandDetailView({
-  hand,
-  onBack,
-}: {
-  hand: HandHistory;
-  onBack: () => void;
-}) {
+function HandDetailView({ hand, onBack }: { hand: HandHistory; onBack: () => void }) {
   const [copied, setCopied] = useState(false);
 
   const handleCopy = async () => {
@@ -160,17 +149,22 @@ function HandDetailView({
       </Button>
 
       {/* Summary */}
-      <div className={cn(
-        "p-4 rounded-lg",
-        isWin ? "bg-green-500/10" : hand.heroProfit < 0 ? "bg-red-500/10" : "bg-muted/30"
-      )}>
-        <div className="flex items-center justify-between mb-2">
-          <span className="text-sm text-muted-foreground">Hand #{hand.handNumber}</span>
-          <span className={cn(
-            "font-bold text-lg",
-            isWin ? "text-green-500" : hand.heroProfit < 0 ? "text-red-500" : ""
-          )}>
-            {isWin && "+"}{hand.heroProfit.toFixed(1)} BB
+      <div
+        className={cn(
+          "rounded-lg p-4",
+          isWin ? "bg-green-500/10" : hand.heroProfit < 0 ? "bg-red-500/10" : "bg-muted/30"
+        )}
+      >
+        <div className="mb-2 flex items-center justify-between">
+          <span className="text-muted-foreground text-sm">Hand #{hand.handNumber}</span>
+          <span
+            className={cn(
+              "text-lg font-bold",
+              isWin ? "text-green-500" : hand.heroProfit < 0 ? "text-red-500" : ""
+            )}
+          >
+            {isWin && "+"}
+            {hand.heroProfit.toFixed(1)} BB
           </span>
         </div>
         <div className="flex items-center gap-3">
@@ -185,21 +179,21 @@ function HandDetailView({
 
       {/* Board */}
       {hand.board.flop && (
-        <div className="p-4 bg-muted/30 rounded-lg">
-          <div className="text-sm text-muted-foreground mb-2">Board</div>
+        <div className="bg-muted/30 rounded-lg p-4">
+          <div className="text-muted-foreground mb-2 text-sm">Board</div>
           <div className="flex gap-2 text-lg">
             {hand.board.flop.map((c, i) => (
-              <span key={`flop-${i}`} className="px-2 py-1 bg-background rounded">
+              <span key={`flop-${i}`} className="bg-background rounded px-2 py-1">
                 {formatCard(c)}
               </span>
             ))}
             {hand.board.turn && (
-              <span className="px-2 py-1 bg-background rounded border-l-2 border-amber-500">
+              <span className="bg-background rounded border-l-2 border-amber-500 px-2 py-1">
                 {formatCard(hand.board.turn)}
               </span>
             )}
             {hand.board.river && (
-              <span className="px-2 py-1 bg-background rounded border-l-2 border-blue-500">
+              <span className="bg-background rounded border-l-2 border-blue-500 px-2 py-1">
                 {formatCard(hand.board.river)}
               </span>
             )}
@@ -211,12 +205,14 @@ function HandDetailView({
       <div className="space-y-3">
         {hand.actions.preflop.length > 0 && (
           <div>
-            <div className="text-sm font-medium mb-1">Preflop</div>
-            <div className="text-sm text-muted-foreground">
+            <div className="mb-1 text-sm font-medium">Preflop</div>
+            <div className="text-muted-foreground text-sm">
               {hand.actions.preflop.map((a, i) => (
                 <span key={i}>
                   {i > 0 && " → "}
-                  <span className={a.position === hand.heroPosition ? "text-primary font-medium" : ""}>
+                  <span
+                    className={a.position === hand.heroPosition ? "text-primary font-medium" : ""}
+                  >
                     {a.position}: {a.action}
                     {a.amount ? ` ${a.amount.toFixed(1)}` : ""}
                   </span>
@@ -227,12 +223,14 @@ function HandDetailView({
         )}
         {hand.actions.flop.length > 0 && (
           <div>
-            <div className="text-sm font-medium mb-1">Flop</div>
-            <div className="text-sm text-muted-foreground">
+            <div className="mb-1 text-sm font-medium">Flop</div>
+            <div className="text-muted-foreground text-sm">
               {hand.actions.flop.map((a, i) => (
                 <span key={i}>
                   {i > 0 && " → "}
-                  <span className={a.position === hand.heroPosition ? "text-primary font-medium" : ""}>
+                  <span
+                    className={a.position === hand.heroPosition ? "text-primary font-medium" : ""}
+                  >
                     {a.position}: {a.action}
                     {a.amount ? ` ${a.amount.toFixed(1)}` : ""}
                   </span>
@@ -243,12 +241,14 @@ function HandDetailView({
         )}
         {hand.actions.turn.length > 0 && (
           <div>
-            <div className="text-sm font-medium mb-1">Turn</div>
-            <div className="text-sm text-muted-foreground">
+            <div className="mb-1 text-sm font-medium">Turn</div>
+            <div className="text-muted-foreground text-sm">
               {hand.actions.turn.map((a, i) => (
                 <span key={i}>
                   {i > 0 && " → "}
-                  <span className={a.position === hand.heroPosition ? "text-primary font-medium" : ""}>
+                  <span
+                    className={a.position === hand.heroPosition ? "text-primary font-medium" : ""}
+                  >
                     {a.position}: {a.action}
                     {a.amount ? ` ${a.amount.toFixed(1)}` : ""}
                   </span>
@@ -259,12 +259,14 @@ function HandDetailView({
         )}
         {hand.actions.river.length > 0 && (
           <div>
-            <div className="text-sm font-medium mb-1">River</div>
-            <div className="text-sm text-muted-foreground">
+            <div className="mb-1 text-sm font-medium">River</div>
+            <div className="text-muted-foreground text-sm">
               {hand.actions.river.map((a, i) => (
                 <span key={i}>
                   {i > 0 && " → "}
-                  <span className={a.position === hand.heroPosition ? "text-primary font-medium" : ""}>
+                  <span
+                    className={a.position === hand.heroPosition ? "text-primary font-medium" : ""}
+                  >
                     {a.position}: {a.action}
                     {a.amount ? ` ${a.amount.toFixed(1)}` : ""}
                   </span>
@@ -277,8 +279,8 @@ function HandDetailView({
 
       {/* Result */}
       {hand.result.showdownHands && hand.result.showdownHands.length > 0 && (
-        <div className="p-4 bg-muted/30 rounded-lg">
-          <div className="text-sm font-medium mb-2">Showdown</div>
+        <div className="bg-muted/30 rounded-lg p-4">
+          <div className="mb-2 text-sm font-medium">Showdown</div>
           <div className="space-y-1 text-sm">
             {hand.result.showdownHands.map((sh, i) => (
               <div key={i} className="flex items-center justify-between">
@@ -295,11 +297,11 @@ function HandDetailView({
       {/* Export Buttons */}
       <div className="flex gap-2">
         <Button variant="outline" size="sm" onClick={handleCopy}>
-          {copied ? <Check className="h-4 w-4 mr-2" /> : <Copy className="h-4 w-4 mr-2" />}
+          {copied ? <Check className="mr-2 h-4 w-4" /> : <Copy className="mr-2 h-4 w-4" />}
           {copied ? "已複製" : "複製"}
         </Button>
         <Button variant="outline" size="sm" onClick={handleDownload}>
-          <Download className="h-4 w-4 mr-2" />
+          <Download className="mr-2 h-4 w-4" />
           下載
         </Button>
       </div>
@@ -345,32 +347,35 @@ export function HandHistoryViewer({ className }: HandHistoryViewerProps) {
   const winRate = totalHands > 0 ? ((wins / totalHands) * 100).toFixed(0) : 0;
 
   const content = (
-    <div className="h-full flex flex-col">
+    <div className="flex h-full flex-col">
       {/* Stats Summary */}
       {totalHands > 0 && (
-        <div className="grid grid-cols-3 gap-2 mb-4 p-3 bg-muted/30 rounded-lg">
+        <div className="bg-muted/30 mb-4 grid grid-cols-3 gap-2 rounded-lg p-3">
           <div className="text-center">
             <div className="text-lg font-bold">{totalHands}</div>
-            <div className="text-xs text-muted-foreground">Hands</div>
+            <div className="text-muted-foreground text-xs">Hands</div>
           </div>
           <div className="text-center">
-            <div className={cn(
-              "text-lg font-bold",
-              totalProfit > 0 ? "text-green-500" : totalProfit < 0 ? "text-red-500" : ""
-            )}>
-              {totalProfit > 0 && "+"}{totalProfit.toFixed(1)}
+            <div
+              className={cn(
+                "text-lg font-bold",
+                totalProfit > 0 ? "text-green-500" : totalProfit < 0 ? "text-red-500" : ""
+              )}
+            >
+              {totalProfit > 0 && "+"}
+              {totalProfit.toFixed(1)}
             </div>
-            <div className="text-xs text-muted-foreground">BB P/L</div>
+            <div className="text-muted-foreground text-xs">BB P/L</div>
           </div>
           <div className="text-center">
             <div className="text-lg font-bold">{winRate}%</div>
-            <div className="text-xs text-muted-foreground">Win Rate</div>
+            <div className="text-muted-foreground text-xs">Win Rate</div>
           </div>
         </div>
       )}
 
       {/* Action Buttons */}
-      <div className="flex gap-2 mb-4">
+      <div className="mb-4 flex gap-2">
         <Button
           variant="outline"
           size="sm"
@@ -378,7 +383,7 @@ export function HandHistoryViewer({ className }: HandHistoryViewerProps) {
           disabled={histories.length === 0}
           className="flex-1"
         >
-          <Download className="h-4 w-4 mr-2" />
+          <Download className="mr-2 h-4 w-4" />
           匯出全部
         </Button>
         <Button
@@ -395,23 +400,16 @@ export function HandHistoryViewer({ className }: HandHistoryViewerProps) {
       {/* Hand List or Detail */}
       <div className="flex-1 overflow-y-auto">
         {selectedHand ? (
-          <HandDetailView
-            hand={selectedHand}
-            onBack={() => setSelectedHand(null)}
-          />
+          <HandDetailView hand={selectedHand} onBack={() => setSelectedHand(null)} />
         ) : histories.length > 0 ? (
           <div className="space-y-2">
             {histories.map((hand) => (
-              <HandSummaryCard
-                key={hand.id}
-                hand={hand}
-                onClick={() => setSelectedHand(hand)}
-              />
+              <HandSummaryCard key={hand.id} hand={hand} onClick={() => setSelectedHand(hand)} />
             ))}
           </div>
         ) : (
-          <div className="text-center py-8 text-muted-foreground">
-            <History className="h-12 w-12 mx-auto mb-2 opacity-50" />
+          <div className="text-muted-foreground py-8 text-center">
+            <History className="mx-auto mb-2 h-12 w-12 opacity-50" />
             <p>尚無手牌記錄</p>
             <p className="text-sm">開始練習後會自動記錄</p>
           </div>
@@ -424,16 +422,14 @@ export function HandHistoryViewer({ className }: HandHistoryViewerProps) {
     <Sheet open={isOpen} onOpenChange={setIsOpen}>
       <SheetTrigger asChild>
         <Button variant="outline" size="sm">
-          <History className="h-4 w-4 mr-2" />
+          <History className="mr-2 h-4 w-4" />
           手牌回顧
         </Button>
       </SheetTrigger>
       <SheetContent className="w-full sm:max-w-md">
         <SheetHeader>
           <SheetTitle>手牌歷史</SheetTitle>
-          <SheetDescription>
-            查看並匯出你的練習記錄
-          </SheetDescription>
+          <SheetDescription>查看並匯出你的練習記錄</SheetDescription>
         </SheetHeader>
         <div className="mt-4 h-[calc(100vh-120px)]">{content}</div>
       </SheetContent>

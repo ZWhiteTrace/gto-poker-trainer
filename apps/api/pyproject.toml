@@ -1,0 +1,14 @@
+[tool.ruff]
+line-length = 100
+target-version = "py313"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP"]
+ignore = ["E501"]
+# E = pycodestyle errors, F = pyflakes, W = warnings
+# I = isort, UP = pyupgrade
+# E501 ignored: ruff format handles line length; remaining violations are in f-strings
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"

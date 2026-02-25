@@ -10,7 +10,6 @@ GTO Logic Quiz Engine (Layer C: Question Generation)
 import json
 import random
 from pathlib import Path
-from typing import List, Dict, Optional, Tuple
 
 # 資料目錄
 DATA_DIR = Path(__file__).parent.parent / "data"
@@ -27,10 +26,10 @@ class LogicQuestion:
         self,
         question_type: str,
         question_text: str,
-        options: List[str],
+        options: list[str],
         correct_index: int,
         explanation: str,
-        tags_involved: List[str],
+        tags_involved: list[str],
         layer: str,
         hand: str = "",
         scenario: str = "",
@@ -72,7 +71,7 @@ class LogicQuizEngine:
         """載入原則標籤庫"""
         if not TAGS_PATH.exists():
             return {}
-        with open(TAGS_PATH, "r", encoding="utf-8") as f:
+        with open(TAGS_PATH, encoding="utf-8") as f:
             data = json.load(f)
         return data.get("tags", {})
 
@@ -82,7 +81,7 @@ class LogicQuizEngine:
         if not REASONING_DIR.exists():
             return reasoning
         for filepath in REASONING_DIR.glob("*.json"):
-            with open(filepath, "r", encoding="utf-8") as f:
+            with open(filepath, encoding="utf-8") as f:
                 data = json.load(f)
             # 取出所有 scenario (排除 meta)
             for key, value in data.items():
@@ -94,14 +93,21 @@ class LogicQuizEngine:
 
     def _load_postflop_reasoning(self) -> dict:
         """載入翻後 reasoning 檔案 (cbet, barrel, defense, multiway, donk, bluffcatch)"""
-        postflop = {"cbet": {}, "barrel": {}, "defense": {}, "multiway": {}, "donk": {}, "bluffcatch": {}}
+        postflop = {
+            "cbet": {},
+            "barrel": {},
+            "defense": {},
+            "multiway": {},
+            "donk": {},
+            "bluffcatch": {},
+        }
         if not POSTFLOP_DIR.exists():
             return postflop
 
         # 載入 C-bet reasoning
         cbet_path = POSTFLOP_DIR / "cbet_reasoning.json"
         if cbet_path.exists():
-            with open(cbet_path, "r", encoding="utf-8") as f:
+            with open(cbet_path, encoding="utf-8") as f:
                 data = json.load(f)
             for key, value in data.items():
                 if key != "meta" and isinstance(value, dict):
@@ -110,7 +116,7 @@ class LogicQuizEngine:
         # 載入 Barrel reasoning
         barrel_path = POSTFLOP_DIR / "barrel_reasoning.json"
         if barrel_path.exists():
-            with open(barrel_path, "r", encoding="utf-8") as f:
+            with open(barrel_path, encoding="utf-8") as f:
                 data = json.load(f)
             for key, value in data.items():
                 if key != "meta" and isinstance(value, dict):
@@ -119,7 +125,7 @@ class LogicQuizEngine:
         # 載入 Defense reasoning
         defense_path = POSTFLOP_DIR / "defense_reasoning.json"
         if defense_path.exists():
-            with open(defense_path, "r", encoding="utf-8") as f:
+            with open(defense_path, encoding="utf-8") as f:
                 data = json.load(f)
             for key, value in data.items():
                 if key != "meta" and isinstance(value, dict):
@@ -128,7 +134,7 @@ class LogicQuizEngine:
         # 載入 Multiway reasoning
         multiway_path = POSTFLOP_DIR / "multiway_reasoning.json"
         if multiway_path.exists():
-            with open(multiway_path, "r", encoding="utf-8") as f:
+            with open(multiway_path, encoding="utf-8") as f:
                 data = json.load(f)
             for key, value in data.items():
                 if key != "meta" and isinstance(value, dict):
@@ -137,7 +143,7 @@ class LogicQuizEngine:
         # 載入 Donk reasoning
         donk_path = POSTFLOP_DIR / "donk_reasoning.json"
         if donk_path.exists():
-            with open(donk_path, "r", encoding="utf-8") as f:
+            with open(donk_path, encoding="utf-8") as f:
                 data = json.load(f)
             for key, value in data.items():
                 if key != "meta" and isinstance(value, dict):
@@ -146,7 +152,7 @@ class LogicQuizEngine:
         # 載入 Bluff Catch reasoning
         bluffcatch_path = POSTFLOP_DIR / "bluffcatch_reasoning.json"
         if bluffcatch_path.exists():
-            with open(bluffcatch_path, "r", encoding="utf-8") as f:
+            with open(bluffcatch_path, encoding="utf-8") as f:
                 data = json.load(f)
             for key, value in data.items():
                 if key != "meta" and isinstance(value, dict):
@@ -158,15 +164,15 @@ class LogicQuizEngine:
         """載入題目模板"""
         if not TEMPLATES_PATH.exists():
             return {}
-        with open(TEMPLATES_PATH, "r", encoding="utf-8") as f:
+        with open(TEMPLATES_PATH, encoding="utf-8") as f:
             data = json.load(f)
         return data.get("question_types", {})
 
-    def get_available_scenarios(self) -> List[str]:
+    def get_available_scenarios(self) -> list[str]:
         """取得有 reasoning 資料的所有場景"""
         return list(self.reasoning_data.keys())
 
-    def get_scenario_hands(self, scenario: str) -> List[str]:
+    def get_scenario_hands(self, scenario: str) -> list[str]:
         """取得某場景中有 reasoning 的所有手牌"""
         if scenario not in self.reasoning_data:
             return []
@@ -200,14 +206,12 @@ class LogicQuizEngine:
         tag = self.tags_data.get(tag_key, {})
         return tag.get("name", tag_key)
 
-    def _get_misconceptions(self, tag_key: str) -> List[str]:
+    def _get_misconceptions(self, tag_key: str) -> list[str]:
         """取得某 tag 的常見錯誤認知"""
         tag = self.tags_data.get(tag_key, {})
         return tag.get("misconceptions", [])
 
-    def _generate_distractors(
-        self, correct_tags: List[str], count: int = 3
-    ) -> List[str]:
+    def _generate_distractors(self, correct_tags: list[str], count: int = 3) -> list[str]:
         """
         生成干擾選項：
         Priority 1: 正確 tag 的 misconceptions
@@ -248,9 +252,7 @@ class LogicQuizEngine:
         random.shuffle(distractors)
         return distractors[:count]
 
-    def generate_type_a(
-        self, scenario: str, hand: str
-    ) -> Optional[LogicQuestion]:
+    def generate_type_a(self, scenario: str, hand: str) -> LogicQuestion | None:
         """
         生成 A 類題型：角色辨識
         「為什麼 {hand} 在 {scenario} 中做 {action}？」
@@ -271,8 +273,7 @@ class LogicQuizEngine:
         # 選擇主要 tag 作為正確答案
         primary_tag = tags[0]
         correct_answer = (
-            f"{self._get_tag_name(primary_tag)}："
-            f"{self._get_tag_explanation(primary_tag)}"
+            f"{self._get_tag_name(primary_tag)}：{self._get_tag_explanation(primary_tag)}"
         )
 
         # 生成干擾選項
@@ -297,9 +298,7 @@ class LogicQuizEngine:
         # 解說（列出所有相關 tags）
         explanation_parts = []
         for t in tags:
-            explanation_parts.append(
-                f"• {self._get_tag_name(t)}：{self._get_tag_explanation(t)}"
-            )
+            explanation_parts.append(f"• {self._get_tag_name(t)}：{self._get_tag_explanation(t)}")
         if hand_data.get("note"):
             explanation_parts.append(f"\n補充：{hand_data['note']}")
         explanation = "\n".join(explanation_parts)
@@ -316,9 +315,7 @@ class LogicQuizEngine:
             scenario=scenario,
         )
 
-    def generate_type_b(
-        self, scenario: str, compare_group: str = None
-    ) -> Optional[LogicQuestion]:
+    def generate_type_b(self, scenario: str, compare_group: str = None) -> LogicQuestion | None:
         """
         生成 B 類題型：比較推理
         「為什麼 {hand_a} 做 {action_a} 但 {hand_b} 做 {action_b}？」
@@ -356,28 +353,20 @@ class LogicQuizEngine:
                 f"{hand_a} 具有 {self._get_tag_name(primary_diff)}："
                 f"{self._get_tag_explanation(primary_diff)}"
             )
-            explanation_parts.append(
-                f"{hand_a} 的優勢：{self._get_tag_name(primary_diff)}"
-            )
+            explanation_parts.append(f"{hand_a} 的優勢：{self._get_tag_name(primary_diff)}")
         elif diff_b_only:
             primary_diff = diff_b_only[0]
             correct_answer = (
                 f"{hand_b} 受到 {self._get_tag_name(primary_diff)} 影響："
                 f"{self._get_tag_explanation(primary_diff)}"
             )
-            explanation_parts.append(
-                f"{hand_b} 的劣勢：{self._get_tag_name(primary_diff)}"
-            )
+            explanation_parts.append(f"{hand_b} 的劣勢：{self._get_tag_name(primary_diff)}")
 
         # 補充所有差異
         for t in diff_a_only:
-            explanation_parts.append(
-                f"• {hand_a} 有 {self._get_tag_name(t)}"
-            )
+            explanation_parts.append(f"• {hand_a} 有 {self._get_tag_name(t)}")
         for t in diff_b_only:
-            explanation_parts.append(
-                f"• {hand_b} 受 {self._get_tag_name(t)} 影響"
-            )
+            explanation_parts.append(f"• {hand_b} 受 {self._get_tag_name(t)} 影響")
 
         # 生成干擾項
         all_diff_tags = diff_a_only + diff_b_only
@@ -413,7 +402,7 @@ class LogicQuizEngine:
 
     def _find_comparison_pairs(
         self, hands: dict, compare_group: str = None
-    ) -> List[Tuple[str, str]]:
+    ) -> list[tuple[str, str]]:
         """在同一 compare_group 中找 role 不同的配對"""
         # 按 compare_group 分組
         groups = {}
@@ -437,7 +426,7 @@ class LogicQuizEngine:
 
     # ========== Postflop Question Types ==========
 
-    def get_available_board_textures(self, category: str = "cbet") -> List[str]:
+    def get_available_board_textures(self, category: str = "cbet") -> list[str]:
         """取得可用的牌面類型"""
         if category not in self.postflop_data:
             return []
@@ -465,7 +454,7 @@ class LogicQuizEngine:
 
     def generate_type_e(
         self, board_texture: str = None, spot: str = "srp_btn_vs_bb"
-    ) -> Optional[LogicQuestion]:
+    ) -> LogicQuestion | None:
         """
         生成 E 類題型：C-bet 決策
         「在 {board} 牌面，為什麼 {hand} 應該 bet/check？」
@@ -548,7 +537,7 @@ class LogicQuizEngine:
 
     def generate_type_f(
         self, board_texture: str = None, spot: str = "bb_vs_btn_srp"
-    ) -> Optional[LogicQuestion]:
+    ) -> LogicQuestion | None:
         """
         生成 F 類題型：OOP 防守決策
         「面對 c-bet，為什麼 {hand} 應該 call/raise/fold？」
@@ -578,7 +567,7 @@ class LogicQuizEngine:
         hand_data = hands[hand]
 
         action = hand_data.get("action", "")
-        role = hand_data.get("role", "")
+        hand_data.get("role", "")
         tags = hand_data.get("tags", [])
         example_board = texture_data.get("example_board", board_texture)
 
@@ -588,8 +577,7 @@ class LogicQuizEngine:
         # 正確答案：用主要 tag 解釋
         primary_tag = tags[0]
         correct_answer = (
-            f"{self._get_tag_name(primary_tag)}："
-            f"{self._get_tag_explanation(primary_tag)}"
+            f"{self._get_tag_name(primary_tag)}：{self._get_tag_explanation(primary_tag)}"
         )
 
         # 生成干擾選項
@@ -619,9 +607,7 @@ class LogicQuizEngine:
         context = texture_data.get("context", {})
         explanation_parts = []
         for t in tags:
-            explanation_parts.append(
-                f"• {self._get_tag_name(t)}：{self._get_tag_explanation(t)}"
-            )
+            explanation_parts.append(f"• {self._get_tag_name(t)}：{self._get_tag_explanation(t)}")
         explanation_parts.append("")
         explanation_parts.append(f"牌面範圍優勢：{context.get('range_advantage', 'N/A')}")
         explanation_parts.append(f"防守頻率：{context.get('defense_frequency', 'N/A')}")
@@ -642,7 +628,7 @@ class LogicQuizEngine:
 
     def generate_type_g(
         self, street: str = None, spot: str = "srp_btn_vs_bb"
-    ) -> Optional[LogicQuestion]:
+    ) -> LogicQuestion | None:
         """
         生成 G 類題型：Barrel 決策
         「Flop bet 後 Turn/River 為什麼應該繼續/停止？」
@@ -756,7 +742,7 @@ class LogicQuizEngine:
 
     def generate_random_question(
         self, scenario: str = None, include_postflop: bool = False
-    ) -> Optional[LogicQuestion]:
+    ) -> LogicQuestion | None:
         """隨機生成一道題目（A, B, E, F 類型）"""
         if not scenario:
             scenarios = self.get_available_scenarios()
@@ -785,9 +771,7 @@ class LogicQuizEngine:
         else:
             return self.generate_type_g()
 
-    def generate_quiz(
-        self, scenario: str, count: int = 5
-    ) -> List[LogicQuestion]:
+    def generate_quiz(self, scenario: str, count: int = 5) -> list[LogicQuestion]:
         """生成一組測驗題"""
         questions = []
         hands = self.get_scenario_hands(scenario)
@@ -823,7 +807,7 @@ class LogicQuizEngine:
 
     def generate_postflop_quiz(
         self, board_texture: str = None, count: int = 5
-    ) -> List[LogicQuestion]:
+    ) -> list[LogicQuestion]:
         """生成一組翻後測驗題 (E + F 類型)"""
         questions = []
 
@@ -881,8 +865,6 @@ class LogicQuizEngine:
                 for scenario_name, scenario_data in scenarios.items():
                     summary["barrel_scenarios"] += 1
 
-        summary["total_postflop_hands"] = (
-            summary["cbet_hands"] + summary["defense_hands"]
-        )
+        summary["total_postflop_hands"] = summary["cbet_hands"] + summary["defense_hands"]
 
         return summary

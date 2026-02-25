@@ -68,25 +68,23 @@ Train at grindgto.com`;
     <Sheet open={isOpen} onOpenChange={setIsOpen}>
       <SheetTrigger asChild>
         <Button variant="outline" size="sm">
-          <Share2 className="h-4 w-4 mr-2" />
+          <Share2 className="mr-2 h-4 w-4" />
           分享成果
         </Button>
       </SheetTrigger>
-      <SheetContent className="w-full sm:max-w-md overflow-y-auto">
+      <SheetContent className="w-full overflow-y-auto sm:max-w-md">
         <SheetHeader>
           <SheetTitle>分享你的訓練成果</SheetTitle>
-          <SheetDescription>
-            生成圖卡或複製文字分享到社群
-          </SheetDescription>
+          <SheetDescription>生成圖卡或複製文字分享到社群</SheetDescription>
         </SheetHeader>
 
         {/* Preview Card */}
-        <div className="p-6 mt-4 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 rounded-xl border border-gray-700">
+        <div className="mt-4 rounded-xl border border-gray-700 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 p-6">
           {/* Header */}
-          <div className="flex items-center justify-between mb-6">
+          <div className="mb-6 flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-cyan-500 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-lg">G</span>
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-emerald-500 to-cyan-500">
+                <span className="text-lg font-bold text-white">G</span>
               </div>
               <div>
                 <h3 className="font-bold text-white">GrindGTO</h3>
@@ -94,63 +92,63 @@ Train at grindgto.com`;
               </div>
             </div>
             {stats.rank && (
-              <div className="flex items-center gap-1 px-3 py-1 bg-yellow-500/20 rounded-full">
+              <div className="flex items-center gap-1 rounded-full bg-yellow-500/20 px-3 py-1">
                 <Trophy className="h-4 w-4 text-yellow-500" />
-                <span className="text-yellow-500 font-bold">#{stats.rank}</span>
+                <span className="font-bold text-yellow-500">#{stats.rank}</span>
               </div>
             )}
           </div>
 
           {/* Stats Grid */}
           <div className="grid grid-cols-2 gap-4">
-            <div className="p-4 bg-gray-800/50 rounded-lg">
-              <Activity className="h-5 w-5 text-blue-400 mb-2" />
-              <div className="text-2xl font-bold text-white">{stats.totalHands.toLocaleString()}</div>
+            <div className="rounded-lg bg-gray-800/50 p-4">
+              <Activity className="mb-2 h-5 w-5 text-blue-400" />
+              <div className="text-2xl font-bold text-white">
+                {stats.totalHands.toLocaleString()}
+              </div>
               <div className="text-xs text-gray-400">總練習手數</div>
             </div>
-            <div className="p-4 bg-gray-800/50 rounded-lg">
-              <Target className="h-5 w-5 text-green-400 mb-2" />
+            <div className="rounded-lg bg-gray-800/50 p-4">
+              <Target className="mb-2 h-5 w-5 text-green-400" />
               <div className="text-2xl font-bold text-white">{stats.accuracy.toFixed(1)}%</div>
               <div className="text-xs text-gray-400">準確率</div>
             </div>
-            <div className="p-4 bg-gray-800/50 rounded-lg">
-              <Flame className="h-5 w-5 text-orange-400 mb-2" />
+            <div className="rounded-lg bg-gray-800/50 p-4">
+              <Flame className="mb-2 h-5 w-5 text-orange-400" />
               <div className="text-2xl font-bold text-white">{stats.bestStreak}</div>
               <div className="text-xs text-gray-400">最佳連勝</div>
             </div>
-            <div className="p-4 bg-gray-800/50 rounded-lg">
-              <Trophy className="h-5 w-5 text-purple-400 mb-2" />
+            <div className="rounded-lg bg-gray-800/50 p-4">
+              <Trophy className="mb-2 h-5 w-5 text-purple-400" />
               <div className="text-2xl font-bold text-white">{stats.weeklyHands}</div>
               <div className="text-xs text-gray-400">本週練習</div>
             </div>
           </div>
 
           {/* Footer */}
-          <div className="mt-6 pt-4 border-t border-gray-700 flex items-center justify-between">
-            {userName && (
-              <span className="text-sm text-gray-400">@{userName}</span>
-            )}
+          <div className="mt-6 flex items-center justify-between border-t border-gray-700 pt-4">
+            {userName && <span className="text-sm text-gray-400">@{userName}</span>}
             <span className="text-xs text-gray-500">grindgto.com</span>
           </div>
         </div>
 
         {/* Action Buttons */}
-        <div className="flex gap-2 mt-4">
+        <div className="mt-4 flex gap-2">
           <Button variant="outline" className="flex-1" onClick={handleCopyText}>
             {copied ? (
               <>
-                <Check className="h-4 w-4 mr-2" />
+                <Check className="mr-2 h-4 w-4" />
                 已複製
               </>
             ) : (
               <>
-                <Copy className="h-4 w-4 mr-2" />
+                <Copy className="mr-2 h-4 w-4" />
                 複製文字
               </>
             )}
           </Button>
           <Button className="flex-1" onClick={handleShare}>
-            <Share2 className="h-4 w-4 mr-2" />
+            <Share2 className="mr-2 h-4 w-4" />
             分享
           </Button>
         </div>

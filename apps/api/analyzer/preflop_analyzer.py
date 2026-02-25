@@ -2,29 +2,32 @@
 Preflop GTO Leak Analyzer
 Analyzes user's preflop play against GTO frequencies to find leaks.
 """
+
 import json
 import os
-from dataclasses import dataclass, field
-from typing import List, Dict, Optional, Tuple
-from enum import Enum
 from collections import defaultdict
+from dataclasses import dataclass, field
+from enum import Enum
 
-from .hand_parser import HandHistory, Action, ActionType as ParserActionType
+from .hand_parser import ActionType as ParserActionType
+from .hand_parser import HandHistory
 
 
 class PreflopScenario(Enum):
     """Preflop scenario types matching our GTO data."""
-    RFI = "rfi"                  # First to open
-    VS_RFI = "vs_rfi"            # Facing an open (3bet/call/fold)
-    VS_3BET = "vs_3bet"          # Opened, facing 3bet (4bet/call/fold)
-    VS_4BET = "vs_4bet"          # 3bet, facing 4bet (5bet/call/fold)
-    SQUEEZE = "squeeze"          # Open + caller, you 3bet
-    COLD_CALL = "cold_call"      # Facing open + 3bet, you call
+
+    RFI = "rfi"  # First to open
+    VS_RFI = "vs_rfi"  # Facing an open (3bet/call/fold)
+    VS_3BET = "vs_3bet"  # Opened, facing 3bet (4bet/call/fold)
+    VS_4BET = "vs_4bet"  # 3bet, facing 4bet (5bet/call/fold)
+    SQUEEZE = "squeeze"  # Open + caller, you 3bet
+    COLD_CALL = "cold_call"  # Facing open + 3bet, you call
     UNKNOWN = "unknown"
 
 
 class HeroAction(Enum):
     """Simplified hero action types for GTO comparison."""
+
     FOLD = "fold"
     CALL = "call"
     RAISE = "raise"  # Covers open, 3bet, 4bet, 5bet
@@ -34,15 +37,16 @@ class HeroAction(Enum):
 @dataclass
 class PreflopDecision:
     """Represents a single preflop decision by hero."""
+
     hand_id: str
     hero_position: str
     hero_hand: str  # Normalized notation like "AKo", "QQ"
     scenario: PreflopScenario
-    villain_position: Optional[str]  # For VS scenarios
+    villain_position: str | None  # For VS scenarios
     hero_action: HeroAction
 
     # For analysis
-    gto_frequencies: Dict[str, float] = field(default_factory=dict)
+    gto_frequencies: dict[str, float] = field(default_factory=dict)
     is_mistake: bool = False
     ev_loss: float = 0.0
 
@@ -50,6 +54,7 @@ class PreflopDecision:
 @dataclass
 class LeakReport:
     """Summary of preflop leaks."""
+
     total_hands: int = 0
     analyzed_hands: int = 0
 
@@ -58,16 +63,16 @@ class LeakReport:
     total_ev_loss: float = 0.0
 
     # By scenario
-    scenario_stats: Dict[str, Dict] = field(default_factory=dict)
+    scenario_stats: dict[str, dict] = field(default_factory=dict)
 
     # By position
-    position_stats: Dict[str, Dict] = field(default_factory=dict)
+    position_stats: dict[str, dict] = field(default_factory=dict)
 
     # Specific hand leaks
-    hand_leaks: Dict[str, Dict] = field(default_factory=dict)
+    hand_leaks: dict[str, dict] = field(default_factory=dict)
 
     # Top leaks (sorted by frequency/EV loss)
-    top_leaks: List[Dict] = field(default_factory=list)
+    top_leaks: list[dict] = field(default_factory=list)
 
 
 class PreflopAnalyzer:
@@ -84,7 +89,7 @@ class PreflopAnalyzer:
         self._load_gto_data()
 
         # Track all decisions
-        self.decisions: List[PreflopDecision] = []
+        self.decisions: list[PreflopDecision] = []
 
     def _load_gto_data(self):
         """Load all GTO frequency data."""
@@ -98,10 +103,10 @@ class PreflopAnalyzer:
         for scenario_type, filename in files.items():
             filepath = os.path.join(self.data_dir, filename)
             if os.path.exists(filepath):
-                with open(filepath, 'r', encoding='utf-8') as f:
+                with open(filepath, encoding="utf-8") as f:
                     self.gto_data[scenario_type] = json.load(f)
 
-    def analyze_hands(self, hands: List[HandHistory]) -> LeakReport:
+    def analyze_hands(self, hands: list[HandHistory]) -> LeakReport:
         """Analyze a list of hands and generate leak report."""
         self.decisions = []
 
@@ -112,7 +117,7 @@ class PreflopAnalyzer:
 
         return self._generate_report()
 
-    def _analyze_single_hand(self, hand: HandHistory) -> Optional[PreflopDecision]:
+    def _analyze_single_hand(self, hand: HandHistory) -> PreflopDecision | None:
         """Analyze a single hand's preflop action."""
         if not hand.hero or not hand.hero.hole_cards:
             return None
@@ -144,13 +149,11 @@ class PreflopAnalyzer:
 
         # Determine if this is a mistake
         if gto_freqs:
-            decision.is_mistake, decision.ev_loss = self._evaluate_decision(
-                hero_action, gto_freqs
-            )
+            decision.is_mistake, decision.ev_loss = self._evaluate_decision(hero_action, gto_freqs)
 
         return decision
 
-    def _normalize_hole_cards(self, cards_str: str) -> Optional[str]:
+    def _normalize_hole_cards(self, cards_str: str) -> str | None:
         """Convert hole cards to normalized notation.
 
         Examples:
@@ -159,7 +162,7 @@ class PreflopAnalyzer:
             "Th 9h" -> "T9s"
         """
         # Parse cards like "As Kh" or "As,Kh" or "[As Kh]"
-        cards_str = cards_str.replace('[', '').replace(']', '').replace(',', ' ')
+        cards_str = cards_str.replace("[", "").replace("]", "").replace(",", " ")
         parts = cards_str.split()
 
         if len(parts) != 2:
@@ -170,15 +173,15 @@ class PreflopAnalyzer:
             r2, s2 = parts[1][0].upper(), parts[1][1].lower()
 
             # Handle T for 10
-            if r1 == '1' and len(parts[0]) > 2:
-                r1 = 'T'
+            if r1 == "1" and len(parts[0]) > 2:
+                r1 = "T"
                 s1 = parts[0][2].lower()
-            if r2 == '1' and len(parts[1]) > 2:
-                r2 = 'T'
+            if r2 == "1" and len(parts[1]) > 2:
+                r2 = "T"
                 s2 = parts[1][2].lower()
 
             # Normalize rank order (higher first)
-            ranks = ['A', 'K', 'Q', 'J', 'T', '9', '8', '7', '6', '5', '4', '3', '2']
+            ranks = ["A", "K", "Q", "J", "T", "9", "8", "7", "6", "5", "4", "3", "2"]
 
             if r1 not in ranks or r2 not in ranks:
                 return None
@@ -198,7 +201,9 @@ class PreflopAnalyzer:
         except (IndexError, ValueError):
             return None
 
-    def _classify_scenario(self, hand: HandHistory) -> Tuple[PreflopScenario, Optional[str], Optional[HeroAction]]:
+    def _classify_scenario(
+        self, hand: HandHistory
+    ) -> tuple[PreflopScenario, str | None, HeroAction | None]:
         """Classify the preflop scenario and find hero's LAST meaningful action.
 
         Returns: (scenario, villain_position, hero_action)
@@ -253,8 +258,12 @@ class PreflopAnalyzer:
             return PreflopScenario.UNKNOWN, None, hero_final_action
 
         first_raiser, first_raiser_pos = raise_sequence[0]
-        three_bettor, three_bettor_pos = raise_sequence[1] if len(raise_sequence) > 1 else (None, None)
-        four_bettor, four_bettor_pos = raise_sequence[2] if len(raise_sequence) > 2 else (None, None)
+        three_bettor, three_bettor_pos = (
+            raise_sequence[1] if len(raise_sequence) > 1 else (None, None)
+        )
+        four_bettor, four_bettor_pos = (
+            raise_sequence[2] if len(raise_sequence) > 2 else (None, None)
+        )
 
         # Classify based on hero's role
         if len(hero_actions) == 1:
@@ -301,12 +310,8 @@ class PreflopAnalyzer:
         return PreflopScenario.UNKNOWN, None, hero_final_action
 
     def _get_gto_frequencies(
-        self,
-        scenario: PreflopScenario,
-        hero_pos: str,
-        villain_pos: Optional[str],
-        hand: str
-    ) -> Dict[str, float]:
+        self, scenario: PreflopScenario, hero_pos: str, villain_pos: str | None, hand: str
+    ) -> dict[str, float]:
         """Look up GTO frequencies for this situation."""
 
         if scenario == PreflopScenario.RFI:
@@ -335,10 +340,8 @@ class PreflopAnalyzer:
         return {}
 
     def _evaluate_decision(
-        self,
-        hero_action: HeroAction,
-        gto_freqs: Dict[str, float]
-    ) -> Tuple[bool, float]:
+        self, hero_action: HeroAction, gto_freqs: dict[str, float]
+    ) -> tuple[bool, float]:
         """Evaluate if hero's decision is a mistake.
 
         Returns: (is_mistake, estimated_ev_loss)
@@ -405,20 +408,26 @@ class PreflopAnalyzer:
         report.analyzed_hands = len([d for d in self.decisions if d.gto_frequencies])
 
         # Initialize tracking dicts
-        scenario_data = defaultdict(lambda: {
-            "total": 0, "mistakes": 0, "ev_loss": 0,
-            "actions": defaultdict(int),
-            "mistake_actions": defaultdict(int)
-        })
+        scenario_data = defaultdict(
+            lambda: {
+                "total": 0,
+                "mistakes": 0,
+                "ev_loss": 0,
+                "actions": defaultdict(int),
+                "mistake_actions": defaultdict(int),
+            }
+        )
 
-        position_data = defaultdict(lambda: {
-            "total": 0, "mistakes": 0, "ev_loss": 0
-        })
+        position_data = defaultdict(lambda: {"total": 0, "mistakes": 0, "ev_loss": 0})
 
-        hand_data = defaultdict(lambda: {
-            "total": 0, "mistakes": 0, "ev_loss": 0,
-            "scenarios": defaultdict(lambda: {"total": 0, "mistakes": 0})
-        })
+        hand_data = defaultdict(
+            lambda: {
+                "total": 0,
+                "mistakes": 0,
+                "ev_loss": 0,
+                "scenarios": defaultdict(lambda: {"total": 0, "mistakes": 0}),
+            }
+        )
 
         for decision in self.decisions:
             scenario_key = f"{decision.scenario.value}"
@@ -461,11 +470,7 @@ class PreflopAnalyzer:
 
         return report
 
-    def _calculate_top_leaks(
-        self,
-        scenario_data: Dict,
-        hand_data: Dict
-    ) -> List[Dict]:
+    def _calculate_top_leaks(self, scenario_data: dict, hand_data: dict) -> list[dict]:
         """Calculate top leaks sorted by EV loss."""
         leaks = []
 
@@ -529,7 +534,9 @@ def format_leak_report(report: LeakReport) -> str:
         if pos in report.position_stats:
             data = report.position_stats[pos]
             rate = data["mistakes"] / data["total"] * 100 if data["total"] > 0 else 0
-            lines.append(f"{pos}: {data['total']} 手 | 錯誤 {data['mistakes']} ({rate:.1f}%) | EV -{data['ev_loss']:.1f}bb")
+            lines.append(
+                f"{pos}: {data['total']} 手 | 錯誤 {data['mistakes']} ({rate:.1f}%) | EV -{data['ev_loss']:.1f}bb"
+            )
     lines.append("")
 
     # Top leaks
@@ -540,7 +547,9 @@ def format_leak_report(report: LeakReport) -> str:
 
         for i, leak in enumerate(report.top_leaks[:10], 1):
             lines.append(f"\n{i}. {leak['description']}")
-            lines.append(f"   樣本: {leak['total_hands']} 手 | 錯誤: {leak['mistakes']} ({leak['mistake_rate']:.0f}%)")
+            lines.append(
+                f"   樣本: {leak['total_hands']} 手 | 錯誤: {leak['mistakes']} ({leak['mistake_rate']:.0f}%)"
+            )
             lines.append(f"   EV 損失: {leak['ev_loss']:.1f} bb")
 
             if leak["type"] == "scenario" and leak.get("common_mistakes"):
@@ -553,6 +562,7 @@ def format_leak_report(report: LeakReport) -> str:
 # CLI interface
 if __name__ == "__main__":
     import sys
+
     from .hand_parser import GGPokerParser
 
     if len(sys.argv) < 2:

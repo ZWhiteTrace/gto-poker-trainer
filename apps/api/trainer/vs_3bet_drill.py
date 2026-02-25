@@ -2,15 +2,14 @@
 Facing 3bet drill engine for cash game training.
 Practice 4bet/call/fold decisions when facing a 3bet.
 """
-import random
+
 import json
+import random
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
-from typing import List, Optional, Set
 
-from core.hand import Hand, random_hand, ALL_HANDS
-
+from core.hand import ALL_HANDS, Hand, random_hand
 
 # Available scenarios for facing 3bet
 VS_3BET_SCENARIOS = [
@@ -45,7 +44,7 @@ def load_vs_3bet_data() -> dict:
     """Load facing 3bet ranges from JSON file."""
     data_path = Path(__file__).parent.parent / "data" / "ranges" / "cash" / "vs_3bet.json"
     try:
-        with open(data_path, 'r', encoding='utf-8') as f:
+        with open(data_path, encoding="utf-8") as f:
             return json.load(f)
     except Exception as e:
         print(f"Failed to load vs 3bet data: {e}")
@@ -59,6 +58,7 @@ _VS_3BET_DATA = load_vs_3bet_data()
 @dataclass
 class Vs3betSpot:
     """Represents a single facing 3bet training spot."""
+
     hand: Hand
     scenario: str  # e.g., "BTN_vs_BB_3bet"
     hero_position: str  # e.g., "BTN"
@@ -82,6 +82,7 @@ class Vs3betSpot:
 @dataclass
 class Vs3betResult:
     """Result of a facing 3bet evaluation."""
+
     is_correct: bool
     correct_action: str  # "4bet", "call", or "fold"
     explanation: str
@@ -115,15 +116,15 @@ class Vs3betDrill:
             self.fourbet_ranges[scenario] = set(scenario_data.get("4bet", []))
             self.call_ranges[scenario] = set(scenario_data.get("call", []))
 
-    def set_enabled_scenarios(self, scenarios: List[str]):
+    def set_enabled_scenarios(self, scenarios: list[str]):
         """Set which scenarios to practice."""
         self.enabled_scenarios = scenarios
 
-    def get_fourbet_range(self, scenario: str) -> Set[str]:
+    def get_fourbet_range(self, scenario: str) -> set[str]:
         """Get the 4bet range for a given scenario."""
         return self.fourbet_ranges.get(scenario, set())
 
-    def get_call_range(self, scenario: str) -> Set[str]:
+    def get_call_range(self, scenario: str) -> set[str]:
         """Get the call range for a given scenario."""
         return self.call_ranges.get(scenario, set())
 
@@ -138,7 +139,7 @@ class Vs3betDrill:
         else:
             return "fold"
 
-    def generate_spot(self) -> Optional[Vs3betSpot]:
+    def generate_spot(self) -> Vs3betSpot | None:
         """Generate a random facing 3bet spot."""
         if not self.enabled_scenarios:
             return None
@@ -167,7 +168,7 @@ class Vs3betDrill:
             villain_position=villain_pos,
         )
 
-    def _generate_edge_hand(self, fourbet_range: Set[str], call_range: Set[str]) -> Hand:
+    def _generate_edge_hand(self, fourbet_range: set[str], call_range: set[str]) -> Hand:
         """Generate a hand near decision boundaries for interesting practice."""
         all_hands = set(ALL_HANDS)
         edge_hands = []
@@ -216,7 +217,7 @@ class Vs3betDrill:
         elif player_action in ["fold", "muck"]:
             player_action = "fold"
 
-        is_correct = (player_action == correct_action)
+        is_correct = player_action == correct_action
 
         # Get range info for explanation
         fourbet_range = self.get_fourbet_range(spot.scenario)
@@ -242,8 +243,12 @@ class Vs3betDrill:
         )
 
     def _generate_explanation(
-        self, spot: Vs3betSpot, correct_action: str, is_correct: bool,
-        fourbet_pct: float, call_pct: float
+        self,
+        spot: Vs3betSpot,
+        correct_action: str,
+        is_correct: bool,
+        fourbet_pct: float,
+        call_pct: float,
     ) -> str:
         """Generate explanation for the result."""
         hand_str = str(spot.hand)
@@ -253,7 +258,7 @@ class Vs3betDrill:
         scenario_label = VS_3BET_SCENARIO_LABELS.get(scenario, {}).get("zh", scenario)
 
         action_labels = {"4bet": "4bet", "call": "Call", "fold": "Fold"}
-        correct_label = action_labels.get(correct_action, correct_action)
+        action_labels.get(correct_action, correct_action)
 
         if is_correct:
             if correct_action == "4bet":

@@ -3,13 +3,7 @@
 import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { RangeGrid } from "@/components/poker/RangeGrid";
 import { api, RangeResponse } from "@/lib/api";
@@ -101,10 +95,7 @@ export default function RangeViewerPage() {
             data = await api.getRfiRange(selectedPosition);
             break;
           case "vs_rfi":
-            data = await api.getVsRfiRange(
-              selectedVsRfiMatchup.hero,
-              selectedVsRfiMatchup.villain
-            );
+            data = await api.getVsRfiRange(selectedVsRfiMatchup.hero, selectedVsRfiMatchup.villain);
             break;
           case "vs_3bet":
             data = await api.getVs3betRange(
@@ -129,7 +120,14 @@ export default function RangeViewerPage() {
     };
 
     fetchRange();
-  }, [activeTab, selectedPosition, selectedVsRfiMatchup, selectedVs3betMatchup, selectedVs4betMatchup, t]);
+  }, [
+    activeTab,
+    selectedPosition,
+    selectedVsRfiMatchup,
+    selectedVs3betMatchup,
+    selectedVs4betMatchup,
+    t,
+  ]);
 
   return (
     <div className="container max-w-6xl py-8">
@@ -138,11 +136,8 @@ export default function RangeViewerPage() {
         <p className="text-muted-foreground">{t("range.description")}</p>
       </div>
 
-      <Tabs
-        value={activeTab}
-        onValueChange={(v) => setActiveTab(v as RangeTab)}
-      >
-        <TabsList className="mb-6 flex-wrap h-auto gap-1">
+      <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as RangeTab)}>
+        <TabsList className="mb-6 h-auto flex-wrap gap-1">
           <TabsTrigger value="rfi">{t("range.rfiRanges")}</TabsTrigger>
           <TabsTrigger value="vs_rfi">{t("range.vsRfiRanges")}</TabsTrigger>
           <TabsTrigger value="vs_3bet">{t("range.vs3betRanges")}</TabsTrigger>
@@ -314,9 +309,7 @@ export default function RangeViewerPage() {
       </Tabs>
 
       {/* Range Stats */}
-      {rangeData && (
-        <RangeStats rangeData={rangeData} />
-      )}
+      {rangeData && <RangeStats rangeData={rangeData} />}
     </div>
   );
 }
@@ -351,10 +344,10 @@ function RangeCard({
       <CardContent>
         {isLoading ? (
           <div className="flex items-center justify-center py-12">
-            <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+            <Loader2 className="text-muted-foreground h-8 w-8 animate-spin" />
           </div>
         ) : error ? (
-          <div className="text-center py-12 text-destructive">{error}</div>
+          <div className="text-destructive py-12 text-center">{error}</div>
         ) : rangeData ? (
           <RangeGrid
             hands={rangeData.hands}
@@ -362,9 +355,7 @@ function RangeCard({
             onHandClick={onHandClick}
           />
         ) : (
-          <div className="text-center py-12 text-muted-foreground">
-            {t("range.selectToView")}
-          </div>
+          <div className="text-muted-foreground py-12 text-center">{t("range.selectToView")}</div>
         )}
       </CardContent>
     </Card>
@@ -380,12 +371,9 @@ function RangeStats({ rangeData }: { rangeData: RangeResponse }) {
         <CardTitle>{t("range.stats.title")}</CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
           <StatItem label={t("range.stats.totalHands")} value={rangeData.total_hands} />
-          <StatItem
-            label={t("range.stats.drillableHands")}
-            value={rangeData.drillable.length}
-          />
+          <StatItem label={t("range.stats.drillableHands")} value={rangeData.drillable.length} />
           <StatItem label={t("range.stats.position")} value={rangeData.position} />
           <StatItem label={t("range.stats.actionType")} value={rangeData.action_type} />
         </div>
@@ -396,9 +384,9 @@ function RangeStats({ rangeData }: { rangeData: RangeResponse }) {
 
 function StatItem({ label, value }: { label: string; value: string | number }) {
   return (
-    <div className="text-center p-3 rounded-lg bg-muted/50">
+    <div className="bg-muted/50 rounded-lg p-3 text-center">
       <div className="text-2xl font-bold">{value}</div>
-      <div className="text-sm text-muted-foreground">{label}</div>
+      <div className="text-muted-foreground text-sm">{label}</div>
     </div>
   );
 }

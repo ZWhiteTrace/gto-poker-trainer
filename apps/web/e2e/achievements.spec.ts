@@ -24,9 +24,9 @@ test.describe("Achievements Page", () => {
     await page.waitForLoadState("domcontentloaded");
 
     // Wait for either login required or achievements content
-    await expect(
-      page.locator('text=/Login Required|Achievements|成就|登入/i').first()
-    ).toBeVisible({ timeout: 15000 });
+    await expect(page.locator("text=/Login Required|Achievements|成就|登入/i").first()).toBeVisible(
+      { timeout: 15000 }
+    );
 
     // Should show login required message or achievements list
     const loginRequired = page.locator('h2:has-text("Login Required")');
@@ -38,9 +38,7 @@ test.describe("Achievements Page", () => {
     expect(isLoginRequired || hasAchievements).toBeTruthy();
   });
 
-  test("check achievements button exists when authenticated", async ({
-    page,
-  }) => {
+  test("check achievements button exists when authenticated", async ({ page }) => {
     // This test will only pass when the user is authenticated
     // For now, we just verify the page structure
     await page.goto("/achievements");
@@ -57,9 +55,7 @@ test.describe("Achievements Page", () => {
 
     if (loginRequired === 0) {
       // User is logged in, check for button
-      const hasButton =
-        (await checkButtonEn.count()) > 0 ||
-        (await checkButtonZh.count()) > 0;
+      const hasButton = (await checkButtonEn.count()) > 0 || (await checkButtonZh.count()) > 0;
       expect(hasButton).toBeTruthy();
     } else {
       // Not authenticated - test passes (button only visible when logged in)

@@ -3,13 +3,7 @@
 import { useState, useMemo } from "react";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { Plus, Trash2, Calculator, Coins, Trophy, TrendingUp, TrendingDown } from "lucide-react";
@@ -24,11 +18,7 @@ function calculateICM(stacks: number[], payouts: number[]): number[] {
   const equities = new Array(n).fill(0);
 
   // Recursive probability calculation
-  function calculateEquity(
-    remaining: number[],
-    position: number,
-    probability: number
-  ): void {
+  function calculateEquity(remaining: number[], position: number, probability: number): void {
     if (position >= m || remaining.length === 0) return;
 
     const totalRemaining = remaining.reduce((a, b) => a + b, 0);
@@ -73,11 +63,11 @@ function calculateICM(stacks: number[], payouts: number[]): number[] {
 
 // Standard payout structures
 const PAYOUT_PRESETS = {
-  "top3": { label: "Top 3 (50/30/20)", payouts: [50, 30, 20] },
-  "top5": { label: "Top 5", payouts: [40, 25, 18, 10, 7] },
-  "top9": { label: "Final Table (9)", payouts: [30, 20, 14, 10, 8, 6, 5, 4, 3] },
-  "headsUp": { label: "Heads Up (60/40)", payouts: [60, 40] },
-  "winner": { label: "Winner Take All", payouts: [100] },
+  top3: { label: "Top 3 (50/30/20)", payouts: [50, 30, 20] },
+  top5: { label: "Top 5", payouts: [40, 25, 18, 10, 7] },
+  top9: { label: "Final Table (9)", payouts: [30, 20, 14, 10, 8, 6, 5, 4, 3] },
+  headsUp: { label: "Heads Up (60/40)", payouts: [60, 40] },
+  winner: { label: "Winner Take All", payouts: [100] },
 };
 
 export default function ICMCalculatorPage() {
@@ -179,7 +169,7 @@ export default function ICMCalculatorPage() {
           <CardContent className="space-y-3">
             {stacks.map((stack, i) => (
               <div key={i} className="flex items-center gap-2">
-                <span className="w-16 text-sm text-muted-foreground">
+                <span className="text-muted-foreground w-16 text-sm">
                   {t("mtt.icm.player")} {i + 1}
                 </span>
                 <Input
@@ -190,19 +180,15 @@ export default function ICMCalculatorPage() {
                   min={0}
                 />
                 {stacks.length > 2 && (
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => removePlayer(i)}
-                  >
-                    <Trash2 className="h-4 w-4 text-destructive" />
+                  <Button variant="ghost" size="icon" onClick={() => removePlayer(i)}>
+                    <Trash2 className="text-destructive h-4 w-4" />
                   </Button>
                 )}
               </div>
             ))}
             {stacks.length < 9 && (
               <Button variant="outline" onClick={addPlayer} className="w-full">
-                <Plus className="h-4 w-4 mr-2" />
+                <Plus className="mr-2 h-4 w-4" />
                 {t("mtt.icm.addPlayer")}
               </Button>
             )}
@@ -219,7 +205,7 @@ export default function ICMCalculatorPage() {
           </CardHeader>
           <CardContent>
             {/* Presets */}
-            <div className="flex flex-wrap gap-2 mb-4">
+            <div className="mb-4 flex flex-wrap gap-2">
               {Object.entries(PAYOUT_PRESETS).map(([key, preset]) => (
                 <Button
                   key={key}
@@ -235,9 +221,7 @@ export default function ICMCalculatorPage() {
             <div className="space-y-3">
               {payouts.map((payout, i) => (
                 <div key={i} className="flex items-center gap-2">
-                  <span className="w-12 text-sm text-muted-foreground">
-                    #{i + 1}
-                  </span>
+                  <span className="text-muted-foreground w-12 text-sm">#{i + 1}</span>
                   <Input
                     type="number"
                     value={payout}
@@ -246,21 +230,17 @@ export default function ICMCalculatorPage() {
                     min={0}
                     step={0.1}
                   />
-                  <span className="text-sm text-muted-foreground">%</span>
+                  <span className="text-muted-foreground text-sm">%</span>
                   {payouts.length > 1 && (
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => removePayout(i)}
-                    >
-                      <Trash2 className="h-4 w-4 text-destructive" />
+                    <Button variant="ghost" size="icon" onClick={() => removePayout(i)}>
+                      <Trash2 className="text-destructive h-4 w-4" />
                     </Button>
                   )}
                 </div>
               ))}
               {payouts.length < 9 && (
                 <Button variant="outline" onClick={addPayout} className="w-full">
-                  <Plus className="h-4 w-4 mr-2" />
+                  <Plus className="mr-2 h-4 w-4" />
                   Add Position
                 </Button>
               )}
@@ -286,11 +266,11 @@ export default function ICMCalculatorPage() {
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b">
-                    <th className="text-left py-2">{t("mtt.icm.player")}</th>
-                    <th className="text-right py-2">Chips</th>
-                    <th className="text-right py-2">{t("mtt.icm.chipEquity")}</th>
-                    <th className="text-right py-2">{t("mtt.icm.icmEquity")}</th>
-                    <th className="text-right py-2">{t("mtt.icm.difference")}</th>
+                    <th className="py-2 text-left">{t("mtt.icm.player")}</th>
+                    <th className="py-2 text-right">Chips</th>
+                    <th className="py-2 text-right">{t("mtt.icm.chipEquity")}</th>
+                    <th className="py-2 text-right">{t("mtt.icm.icmEquity")}</th>
+                    <th className="py-2 text-right">{t("mtt.icm.difference")}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -301,7 +281,7 @@ export default function ICMCalculatorPage() {
                       </td>
                       <td className="py-3 text-right">
                         <div>{r.stack.toLocaleString()}</div>
-                        <div className="text-xs text-muted-foreground">
+                        <div className="text-muted-foreground text-xs">
                           {r.chipPercent.toFixed(1)}%
                         </div>
                       </td>
@@ -310,7 +290,7 @@ export default function ICMCalculatorPage() {
                       </td>
                       <td className="py-3 text-right">
                         <div className="font-medium">{r.icmEV.toFixed(2)}%</div>
-                        <div className="text-xs text-muted-foreground">
+                        <div className="text-muted-foreground text-xs">
                           {r.icmPercent.toFixed(1)}% of pool
                         </div>
                       </td>
@@ -321,8 +301,8 @@ export default function ICMCalculatorPage() {
                             r.diff > 0.01
                               ? "text-green-500"
                               : r.diff < -0.01
-                              ? "text-red-500"
-                              : "text-muted-foreground"
+                                ? "text-red-500"
+                                : "text-muted-foreground"
                           )}
                         >
                           {r.diff > 0.01 ? (
@@ -335,7 +315,7 @@ export default function ICMCalculatorPage() {
                             {r.diff.toFixed(2)}%
                           </span>
                         </div>
-                        <div className="text-xs text-muted-foreground">
+                        <div className="text-muted-foreground text-xs">
                           {r.diffPercent >= 0 ? "+" : ""}
                           {r.diffPercent.toFixed(1)}%
                         </div>
@@ -352,12 +332,14 @@ export default function ICMCalculatorPage() {
               {results.map((r) => (
                 <div key={r.player} className="space-y-1">
                   <div className="flex justify-between text-xs">
-                    <span>{t("mtt.icm.player")} {r.player}</span>
+                    <span>
+                      {t("mtt.icm.player")} {r.player}
+                    </span>
                     <span>{r.icmEV.toFixed(1)}%</span>
                   </div>
-                  <div className="h-6 bg-muted rounded-full overflow-hidden flex">
+                  <div className="bg-muted flex h-6 overflow-hidden rounded-full">
                     <div
-                      className="bg-blue-500/50 h-full transition-all"
+                      className="h-full bg-blue-500/50 transition-all"
                       style={{ width: `${r.chipEV}%` }}
                       title={`Chip EV: ${r.chipEV.toFixed(2)}%`}
                     />
@@ -372,17 +354,17 @@ export default function ICMCalculatorPage() {
                   </div>
                 </div>
               ))}
-              <div className="flex gap-4 text-xs text-muted-foreground mt-2">
+              <div className="text-muted-foreground mt-2 flex gap-4 text-xs">
                 <div className="flex items-center gap-1">
-                  <div className="w-3 h-3 bg-blue-500/50 rounded" />
+                  <div className="h-3 w-3 rounded bg-blue-500/50" />
                   <span>Chip EV</span>
                 </div>
                 <div className="flex items-center gap-1">
-                  <div className="w-3 h-3 bg-green-500 rounded" />
+                  <div className="h-3 w-3 rounded bg-green-500" />
                   <span>ICM Gain</span>
                 </div>
                 <div className="flex items-center gap-1">
-                  <div className="w-3 h-3 bg-red-500 rounded" />
+                  <div className="h-3 w-3 rounded bg-red-500" />
                   <span>ICM Loss</span>
                 </div>
               </div>
@@ -396,7 +378,7 @@ export default function ICMCalculatorPage() {
         <CardHeader>
           <CardTitle className="text-base">{t("mtt.icm.tipsTitle")}</CardTitle>
         </CardHeader>
-        <CardContent className="text-sm text-muted-foreground space-y-2">
+        <CardContent className="text-muted-foreground space-y-2 text-sm">
           <p>{t("mtt.icm.tip1")}</p>
           <p>{t("mtt.icm.tip2")}</p>
           <p>{t("mtt.icm.tip3")}</p>

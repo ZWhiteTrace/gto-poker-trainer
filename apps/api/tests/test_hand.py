@@ -1,7 +1,6 @@
 """Tests for Hand class."""
-import pytest
 
-from core.hand import Hand, parse_range, ALL_HANDS, RANKS
+from core.hand import ALL_HANDS, Hand, parse_range
 
 
 def test_hand_creation():

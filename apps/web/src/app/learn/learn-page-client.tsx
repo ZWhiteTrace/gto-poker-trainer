@@ -3,13 +3,7 @@
 import { useState, useMemo } from "react";
 import Link from "next/link";
 import type { GuideMetadata, Difficulty } from "@/lib/guides";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import {
@@ -60,10 +54,7 @@ const categoryConfig: Record<
   },
 };
 
-const difficultyConfig: Record<
-  Difficulty,
-  { label: string; color: string; stars: number }
-> = {
+const difficultyConfig: Record<Difficulty, { label: string; color: string; stars: number }> = {
   beginner: {
     label: "初級",
     color: "bg-green-500/10 text-green-600 border-green-500/20",
@@ -100,20 +91,16 @@ function GuideCard({ guide }: { guide: GuideMetadata }) {
 
   return (
     <Link href={`/learn/${guide.slug}`}>
-      <Card className="hover:bg-muted/50 transition-colors cursor-pointer h-full">
+      <Card className="hover:bg-muted/50 h-full cursor-pointer transition-colors">
         <CardHeader className="pb-2">
           <div className="flex items-start justify-between gap-2">
             <CardTitle className="text-base leading-tight">{guide.title}</CardTitle>
             <DifficultyBadge difficulty={guide.difficulty} />
           </div>
-          <CardDescription className="text-sm line-clamp-2">
-            {guide.description}
-          </CardDescription>
+          <CardDescription className="line-clamp-2 text-sm">{guide.description}</CardDescription>
         </CardHeader>
         <CardContent className="pt-0">
-          <span className="text-sm text-primary hover:underline">
-            閱讀文章 →
-          </span>
+          <span className="text-primary text-sm hover:underline">閱讀文章 →</span>
         </CardContent>
       </Card>
     </Link>
@@ -139,31 +126,31 @@ function CategorySection({
   const Icon = config.icon;
 
   return (
-    <div className="border rounded-lg overflow-hidden">
+    <div className="overflow-hidden rounded-lg border">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full flex items-center justify-between p-4 hover:bg-muted/50 transition-colors"
+        className="hover:bg-muted/50 flex w-full items-center justify-between p-4 transition-colors"
       >
         <div className="flex items-center gap-3">
-          <div className={`p-2 rounded-lg ${config.color}`}>
+          <div className={`rounded-lg p-2 ${config.color}`}>
             <Icon className="h-5 w-5" />
           </div>
           <div className="text-left">
             <h2 className="text-lg font-semibold">{config.label}</h2>
-            <span className="text-sm text-muted-foreground">
+            <span className="text-muted-foreground text-sm">
               {config.labelEn} · {guides.length} 篇文章
             </span>
           </div>
         </div>
         {isOpen ? (
-          <ChevronDown className="h-5 w-5 text-muted-foreground" />
+          <ChevronDown className="text-muted-foreground h-5 w-5" />
         ) : (
-          <ChevronRight className="h-5 w-5 text-muted-foreground" />
+          <ChevronRight className="text-muted-foreground h-5 w-5" />
         )}
       </button>
 
       {isOpen && (
-        <div className="p-4 pt-0 grid gap-3 sm:grid-cols-2">
+        <div className="grid gap-3 p-4 pt-0 sm:grid-cols-2">
           {guides.map((guide) => (
             <GuideCard key={guide.slug} guide={guide} />
           ))}
@@ -179,11 +166,7 @@ interface LearnPageClientProps {
   featuredGuides: GuideMetadata[];
 }
 
-export function LearnPageClient({
-  guides,
-  categories,
-  featuredGuides,
-}: LearnPageClientProps) {
+export function LearnPageClient({ guides, categories, featuredGuides }: LearnPageClientProps) {
   const [searchQuery, setSearchQuery] = useState("");
 
   const filteredGuides = useMemo(() => {
@@ -191,8 +174,7 @@ export function LearnPageClient({
     const query = searchQuery.toLowerCase();
     return guides.filter(
       (guide) =>
-        guide.title.toLowerCase().includes(query) ||
-        guide.description.toLowerCase().includes(query)
+        guide.title.toLowerCase().includes(query) || guide.description.toLowerCase().includes(query)
     );
   }, [guides, searchQuery]);
 
@@ -203,14 +185,12 @@ export function LearnPageClient({
       {/* Header */}
       <div className="mb-8">
         <h1 className="text-3xl font-bold">學習中心</h1>
-        <p className="text-muted-foreground">
-          深入學習 GTO 撲克策略，從基礎到進階
-        </p>
+        <p className="text-muted-foreground">深入學習 GTO 撲克策略，從基礎到進階</p>
       </div>
 
       {/* Search */}
       <div className="relative mb-8">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+        <Search className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
         <Input
           type="text"
           placeholder="搜尋文章..."
@@ -223,9 +203,7 @@ export function LearnPageClient({
       {isSearching ? (
         /* Search Results */
         <div>
-          <h2 className="text-lg font-semibold mb-4">
-            搜尋結果 ({filteredGuides.length} 篇)
-          </h2>
+          <h2 className="mb-4 text-lg font-semibold">搜尋結果 ({filteredGuides.length} 篇)</h2>
           {filteredGuides.length > 0 ? (
             <div className="grid gap-3 sm:grid-cols-2">
               {filteredGuides.map((guide) => (
@@ -233,7 +211,7 @@ export function LearnPageClient({
               ))}
             </div>
           ) : (
-            <p className="text-muted-foreground text-center py-8">
+            <p className="text-muted-foreground py-8 text-center">
               找不到符合的文章，請嘗試其他關鍵字
             </p>
           )}
@@ -242,25 +220,23 @@ export function LearnPageClient({
         <>
           {/* Featured Section */}
           <div className="mb-8">
-            <div className="flex items-center gap-2 mb-4">
-              <div className="p-2 rounded-lg bg-yellow-500/10 text-yellow-500">
+            <div className="mb-4 flex items-center gap-2">
+              <div className="rounded-lg bg-yellow-500/10 p-2 text-yellow-500">
                 <Sparkles className="h-5 w-5" />
               </div>
               <h2 className="text-xl font-semibold">新手必讀</h2>
-              <span className="text-sm text-muted-foreground">
-                從這裡開始你的 GTO 之旅
-              </span>
+              <span className="text-muted-foreground text-sm">從這裡開始你的 GTO 之旅</span>
             </div>
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {featuredGuides.map((guide) => (
                 <Link key={guide.slug} href={`/learn/${guide.slug}`}>
-                  <Card className="hover:bg-muted/50 transition-colors cursor-pointer h-full border-yellow-500/20 bg-yellow-500/5">
+                  <Card className="hover:bg-muted/50 h-full cursor-pointer border-yellow-500/20 bg-yellow-500/5 transition-colors">
                     <CardHeader className="pb-2">
                       <div className="flex items-center gap-2">
                         <Star className="h-4 w-4 text-yellow-500" />
                         <CardTitle className="text-base">{guide.title}</CardTitle>
                       </div>
-                      <CardDescription className="text-sm line-clamp-2">
+                      <CardDescription className="line-clamp-2 text-sm">
                         {guide.description}
                       </CardDescription>
                     </CardHeader>
@@ -271,8 +247,8 @@ export function LearnPageClient({
           </div>
 
           {/* Difficulty Legend */}
-          <div className="flex flex-wrap gap-3 mb-6 p-3 bg-muted/30 rounded-lg">
-            <span className="text-sm text-muted-foreground">難度說明：</span>
+          <div className="bg-muted/30 mb-6 flex flex-wrap gap-3 rounded-lg p-3">
+            <span className="text-muted-foreground text-sm">難度說明：</span>
             <DifficultyBadge difficulty="beginner" />
             <DifficultyBadge difficulty="intermediate" />
             <DifficultyBadge difficulty="advanced" />
@@ -281,9 +257,7 @@ export function LearnPageClient({
           {/* Category Sections */}
           <div className="space-y-4">
             {categories.map((category, index) => {
-              const categoryGuides = filteredGuides.filter(
-                (g) => g.category === category
-              );
+              const categoryGuides = filteredGuides.filter((g) => g.category === category);
               if (categoryGuides.length === 0) return null;
 
               return (

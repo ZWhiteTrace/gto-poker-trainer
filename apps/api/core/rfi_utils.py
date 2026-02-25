@@ -4,13 +4,13 @@ RFI utilities - Single source of truth for RFI range calculations.
 All RFI-related logic should derive from rfi_frequencies.json through this module.
 This eliminates the need to maintain multiple hardcoded constants across files.
 """
+
 import json
-from pathlib import Path
-from typing import Dict, List, Set, Optional
 from functools import lru_cache
+from pathlib import Path
 
 # All 169 hands
-RANKS = ['A', 'K', 'Q', 'J', 'T', '9', '8', '7', '6', '5', '4', '3', '2']
+RANKS = ["A", "K", "Q", "J", "T", "9", "8", "7", "6", "5", "4", "3", "2"]
 ALL_HANDS = []
 for i, r1 in enumerate(RANKS):
     for j, r2 in enumerate(RANKS):
@@ -29,9 +29,17 @@ PREMIUM_HANDS = {"AA", "KK", "QQ", "AKs", "AKo"}
 
 # Absolute trash - always excluded (too far from any boundary)
 TRASH_HANDS = {
-    "T2s", "92s", "82s", "72s", "62s",
-    "93s", "83s", "73s", "94s",
-    "72o", "62o",
+    "T2s",
+    "92s",
+    "82s",
+    "72s",
+    "62s",
+    "93s",
+    "83s",
+    "73s",
+    "94s",
+    "72o",
+    "62o",
 }
 
 
@@ -39,7 +47,7 @@ TRASH_HANDS = {
 def _load_rfi_data() -> dict:
     """Load RFI frequency data from JSON (cached)."""
     data_path = Path(__file__).parent.parent / "data" / "ranges" / "6max" / "rfi_frequencies.json"
-    with open(data_path, 'r') as f:
+    with open(data_path) as f:
         return json.load(f)
 
 
@@ -48,7 +56,7 @@ def get_rfi_data() -> dict:
     return _load_rfi_data()
 
 
-def get_opening_hands(position: str, min_freq: int = 50) -> Set[str]:
+def get_opening_hands(position: str, min_freq: int = 50) -> set[str]:
     """
     Get all hands that open (raise) at a position.
 
@@ -61,26 +69,20 @@ def get_opening_hands(position: str, min_freq: int = 50) -> Set[str]:
     """
     data = get_rfi_data()
     pos_data = data.get(position.upper(), {}).get("frequencies", {})
-    return {
-        hand for hand, freqs in pos_data.items()
-        if freqs.get("raise", 0) >= min_freq
-    }
+    return {hand for hand, freqs in pos_data.items() if freqs.get("raise", 0) >= min_freq}
 
 
-def get_mixed_hands(position: str) -> Set[str]:
+def get_mixed_hands(position: str) -> set[str]:
     """
     Get hands with mixed frequencies (1-99%) at a position.
     These are the most important to practice.
     """
     data = get_rfi_data()
     pos_data = data.get(position.upper(), {}).get("frequencies", {})
-    return {
-        hand for hand, freqs in pos_data.items()
-        if 1 <= freqs.get("raise", 0) <= 99
-    }
+    return {hand for hand, freqs in pos_data.items() if 1 <= freqs.get("raise", 0) <= 99}
 
 
-def get_obvious_hands() -> Set[str]:
+def get_obvious_hands() -> set[str]:
     """
     Get hands that are "obvious" opens - all positions open them at 100%.
     These should be faded in visual displays.
@@ -92,8 +94,7 @@ def get_obvious_hands() -> Set[str]:
 
     # Start with UTG opens (tightest)
     utg_100 = {
-        hand for hand, freqs in data["UTG"]["frequencies"].items()
-        if freqs.get("raise", 0) == 100
+        hand for hand, freqs in data["UTG"]["frequencies"].items() if freqs.get("raise", 0) == 100
     }
 
     # Filter to hands that all positions also open at 100%
@@ -111,7 +112,7 @@ def get_obvious_hands() -> Set[str]:
     return obvious
 
 
-def get_utg_edge_hands() -> Set[str]:
+def get_utg_edge_hands() -> set[str]:
     """
     Get UTG edge hands - hands at the boundary of UTG's opening range.
     Includes:
@@ -136,52 +137,68 @@ def get_utg_edge_hands() -> Set[str]:
     opening_pairs = sorted(
         [h for h in utg_freqs if len(h) == 2 and utg_freqs[h].get("raise", 0) >= 50],
         key=lambda x: RANKS.index(x[0]),
-        reverse=True  # Lowest first
+        reverse=True,  # Lowest first
     )
     if opening_pairs:
         edges.add(opening_pairs[0])  # Lowest opening pair (e.g., 55)
 
     # Suited Ax: lowest opening
     ax_suited = sorted(
-        [h for h in utg_freqs if h.startswith('A') and h.endswith('s') and utg_freqs[h].get("raise", 0) >= 50],
+        [
+            h
+            for h in utg_freqs
+            if h.startswith("A") and h.endswith("s") and utg_freqs[h].get("raise", 0) >= 50
+        ],
         key=lambda x: RANKS.index(x[1]),
-        reverse=True
+        reverse=True,
     )
     if ax_suited:
         edges.add(ax_suited[0])  # Lowest Ax suited (e.g., A2s)
 
     # Suited Kx: lowest opening
     kx_suited = sorted(
-        [h for h in utg_freqs if h.startswith('K') and h.endswith('s') and utg_freqs[h].get("raise", 0) >= 50],
+        [
+            h
+            for h in utg_freqs
+            if h.startswith("K") and h.endswith("s") and utg_freqs[h].get("raise", 0) >= 50
+        ],
         key=lambda x: RANKS.index(x[1]),
-        reverse=True
+        reverse=True,
     )
     if kx_suited:
         edges.add(kx_suited[0])  # Lowest Kx suited (e.g., K8s)
 
     # Suited Qx: lowest opening
     qx_suited = sorted(
-        [h for h in utg_freqs if h.startswith('Q') and h.endswith('s') and utg_freqs[h].get("raise", 0) >= 50],
+        [
+            h
+            for h in utg_freqs
+            if h.startswith("Q") and h.endswith("s") and utg_freqs[h].get("raise", 0) >= 50
+        ],
         key=lambda x: RANKS.index(x[1]),
-        reverse=True
+        reverse=True,
     )
     if qx_suited:
         edges.add(qx_suited[0])  # Lowest Qx suited (e.g., Q9s)
 
     # Suited connectors: lowest opening (non-Ax/Kx/Qx)
     connectors = sorted(
-        [h for h in utg_freqs if h.endswith('s') and h[0] in 'JT98765' and utg_freqs[h].get("raise", 0) >= 50],
+        [
+            h
+            for h in utg_freqs
+            if h.endswith("s") and h[0] in "JT98765" and utg_freqs[h].get("raise", 0) >= 50
+        ],
         key=lambda x: RANKS.index(x[0]),
-        reverse=True
+        reverse=True,
     )
     for conn in connectors[:2]:  # Top 2 lowest connectors
         edges.add(conn)
 
     # Offsuit: lowest opening hands
     offsuit = sorted(
-        [h for h in utg_freqs if h.endswith('o') and utg_freqs[h].get("raise", 0) >= 50],
+        [h for h in utg_freqs if h.endswith("o") and utg_freqs[h].get("raise", 0) >= 50],
         key=lambda x: (RANKS.index(x[0]), RANKS.index(x[1])),
-        reverse=True
+        reverse=True,
     )
     for off in offsuit[:2]:  # Top 2 lowest offsuit
         edges.add(off)
@@ -189,14 +206,14 @@ def get_utg_edge_hands() -> Set[str]:
     return edges
 
 
-def get_btn_edge_hands() -> Set[str]:
+def get_btn_edge_hands() -> set[str]:
     """
     Get BTN edge hands - hands that BTN opens but earlier positions don't.
     These get white border in visual display (BTN-first hands).
 
     Focus on the lowest card in each category that BTN opens.
     """
-    data = get_rfi_data()
+    get_rfi_data()
 
     # Get what each position opens
     opens_by_pos = {}
@@ -209,20 +226,20 @@ def get_btn_edge_hands() -> Set[str]:
     edges = set()
 
     # Find the lowest in each suited category
-    for prefix in ['K', 'Q', 'J', 'T', '9', '8', '7', '6']:
+    for prefix in ["K", "Q", "J", "T", "9", "8", "7", "6"]:
         category = sorted(
-            [h for h in btn_first if h.startswith(prefix) and h.endswith('s')],
+            [h for h in btn_first if h.startswith(prefix) and h.endswith("s")],
             key=lambda x: RANKS.index(x[1]),
-            reverse=True
+            reverse=True,
         )
         if category:
             edges.add(category[0])  # Lowest in category
 
     # Offsuit edges
     offsuit = sorted(
-        [h for h in btn_first if h.endswith('o')],
+        [h for h in btn_first if h.endswith("o")],
         key=lambda x: (RANKS.index(x[0]), RANKS.index(x[1])),
-        reverse=True
+        reverse=True,
     )
     for off in offsuit[:6]:  # Top 6 lowest offsuit
         edges.add(off)
@@ -230,7 +247,7 @@ def get_btn_edge_hands() -> Set[str]:
     return edges
 
 
-def get_position_first_opens(position: str) -> Set[str]:
+def get_position_first_opens(position: str) -> set[str]:
     """
     Get hands that this position opens but earlier positions don't.
     Useful for highlighting "new" hands at each position.
@@ -250,7 +267,7 @@ def get_position_first_opens(position: str) -> Set[str]:
     return current_opens - earlier_opens
 
 
-def get_drillable_hands(position: str) -> List[str]:
+def get_drillable_hands(position: str) -> list[str]:
     """
     Get hands that should be drilled for a position.
 
@@ -296,7 +313,7 @@ def get_drillable_hands(position: str) -> List[str]:
 
     # Suited: find lowest opening in each prefix (A, K, Q, J, T, etc.)
     for prefix in RANKS:
-        prefix_suited = [h for h in opening if h.startswith(prefix) and h.endswith('s')]
+        prefix_suited = [h for h in opening if h.startswith(prefix) and h.endswith("s")]
         if prefix_suited:
             # Find lowest kicker that opens
             lowest_kicker_idx = max(RANKS.index(h[1]) for h in prefix_suited)
@@ -310,7 +327,7 @@ def get_drillable_hands(position: str) -> List[str]:
 
     # Offsuit: find lowest opening in each prefix
     for prefix in RANKS:
-        prefix_offsuit = [h for h in opening if h.startswith(prefix) and h.endswith('o')]
+        prefix_offsuit = [h for h in opening if h.startswith(prefix) and h.endswith("o")]
         if prefix_offsuit:
             lowest_kicker_idx = max(RANKS.index(h[1]) for h in prefix_offsuit)
             lowest_hand = f"{prefix}{RANKS[lowest_kicker_idx]}o"
@@ -322,8 +339,9 @@ def get_drillable_hands(position: str) -> List[str]:
                     drillable.add(fold_hand)
 
     # 3. Connector edges (for suited connectors like 54s, 65s, etc.)
-    connectors_opening = [h for h in opening if h.endswith('s') and
-                         RANKS.index(h[1]) - RANKS.index(h[0]) <= 2]  # gap ≤ 2
+    connectors_opening = [
+        h for h in opening if h.endswith("s") and RANKS.index(h[1]) - RANKS.index(h[0]) <= 2
+    ]  # gap ≤ 2
     if connectors_opening:
         # Find lowest connector that opens
         lowest_conn = max(connectors_opening, key=lambda h: RANKS.index(h[0]))
@@ -338,7 +356,7 @@ def get_drillable_hands(position: str) -> List[str]:
 
     # 4. Offsuit connector edges - only add FOLD edge (not opening edge)
     # e.g., UTG opens KQo but not QJo → add QJo as fold edge
-    all_offsuit_connectors = [f"{RANKS[i]}{RANKS[i+1]}o" for i in range(len(RANKS) - 1)]
+    all_offsuit_connectors = [f"{RANKS[i]}{RANKS[i + 1]}o" for i in range(len(RANKS) - 1)]
     for conn in all_offsuit_connectors:
         if conn not in opening and conn not in TRASH_HANDS:
             # This is the fold edge connector
@@ -350,7 +368,7 @@ def get_drillable_hands(position: str) -> List[str]:
     for hand, freqs in pos_data.items():
         if 1 <= freqs.get("raise", 0) <= 99:
             # Find the hand one step above (higher kicker, same prefix)
-            if hand.endswith('s') or hand.endswith('o'):
+            if hand.endswith("s") or hand.endswith("o"):
                 prefix = hand[0]
                 kicker = hand[1]
                 suffix = hand[2]
@@ -374,7 +392,7 @@ def get_drillable_hands(position: str) -> List[str]:
     return sorted(list(drillable))
 
 
-def get_excluded_hands(position: str) -> Set[str]:
+def get_excluded_hands(position: str) -> set[str]:
     """
     Get hands that should be EXCLUDED from drilling.
     This is the inverse of get_drillable_hands.

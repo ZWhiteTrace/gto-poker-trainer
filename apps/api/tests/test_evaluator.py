@@ -1,10 +1,11 @@
 """Tests for Evaluator class."""
+
 import pytest
 
+from core.evaluator import Evaluator
 from core.hand import Hand
 from core.position import Position
-from core.scenario import Scenario, ActionType
-from core.evaluator import Evaluator
+from core.scenario import ActionType, Scenario
 
 
 @pytest.fixture
@@ -44,7 +45,7 @@ def test_rfi_btn_wider(evaluator):
     btn_scenario = Scenario(hero_position=Position.BTN, action_type=ActionType.RFI)
 
     # K9s: fold from UTG, raise from BTN
-    utg_action = evaluator.get_correct_action(Hand("K9s"), utg_scenario)
+    evaluator.get_correct_action(Hand("K9s"), utg_scenario)
     btn_action = evaluator.get_correct_action(Hand("K9s"), btn_scenario)
 
     # BTN should open K9s

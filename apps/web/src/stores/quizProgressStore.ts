@@ -167,9 +167,7 @@ export const useQuizProgressStore = create<QuizProgressStoreState>()(
         const total = quizProgress.totalQuestionsInBank;
 
         const attempted = attempts.length;
-        const mastered = attempts.filter(
-          (a) => a.correctOnFirstTry || a.lastAttemptCorrect
-        ).length;
+        const mastered = attempts.filter((a) => a.correctOnFirstTry || a.lastAttemptCorrect).length;
         const needsReview = attempts.filter((a) => !a.lastAttemptCorrect).length;
 
         return {
@@ -178,8 +176,7 @@ export const useQuizProgressStore = create<QuizProgressStoreState>()(
           needsReview,
           total,
           completionRate: total > 0 ? Math.round((attempted / total) * 100) : 0,
-          masteryRate:
-            attempted > 0 ? Math.round((mastered / attempted) * 100) : 0,
+          masteryRate: attempted > 0 ? Math.round((mastered / attempted) * 100) : 0,
         };
       },
 
@@ -199,9 +196,7 @@ export const useQuizProgressStore = create<QuizProgressStoreState>()(
 
       getUnansweredQuestionIds: (allQuestionIds: string[]) => {
         const { quizProgress } = get();
-        const attemptedIds = new Set(
-          Object.keys(quizProgress.attemptedQuestions)
-        );
+        const attemptedIds = new Set(Object.keys(quizProgress.attemptedQuestions));
         return allQuestionIds.filter((id) => !attemptedIds.has(id));
       },
 

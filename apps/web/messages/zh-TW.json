@@ -434,17 +434,32 @@
           "noClearPurposeDesc": "說不出為什麼下注 = 不該下注"
         },
         "sc": {
-          "0": { "handType": "AK 高張空氣", "reason": "987 這類牌面，AK 沒有後門沒有 blocking，應該直接 check" },
+          "0": {
+            "handType": "AK 高張空氣",
+            "reason": "987 這類牌面，AK 沒有後門沒有 blocking，應該直接 check"
+          },
           "1": { "handType": "QJ 同花有後門", "reason": "有後門同花聽牌，可以作為 bluff 候選" },
           "2": { "handType": "AQ 高張", "reason": "952r 牌面，AQ 沒有 pair，下注目的不明確" },
           "3": { "handType": "TT Overpair", "reason": "TT 是 Overpair，可以下注獲取價值" },
-          "4": { "handType": "99 中對", "reason": "JT9 牌面 99 是中對，被 call 幾乎都是輸，應該 check" },
+          "4": {
+            "handType": "99 中對",
+            "reason": "JT9 牌面 99 是中對，被 call 幾乎都是輸，應該 check"
+          },
           "5": { "handType": "JJ 頂對", "reason": "JJ 是頂 set，強牌可以下注" },
-          "6": { "handType": "AK 無同花", "reason": "單花牌面沒有同花，下注容易被有同花的牌 raise" },
+          "6": {
+            "handType": "AK 無同花",
+            "reason": "單花牌面沒有同花，下注容易被有同花的牌 raise"
+          },
           "7": { "handType": "AK 帶堅果同花聽牌", "reason": "有堅果同花聽牌，可以下注作為半詐唬" },
-          "8": { "handType": "AA Overpair", "reason": "OOP 在動態牌面，即使是 AA 也要考慮 check 保護 range" },
+          "8": {
+            "handType": "AA Overpair",
+            "reason": "OOP 在動態牌面，即使是 AA 也要考慮 check 保護 range"
+          },
           "9": { "handType": "AA 頂 set", "reason": "乾燥 A 高牌面，AA 是頂 set，可以下注" },
-          "10": { "handType": "KQ 兩高張", "reason": "說不出「我下注是因為___，被 call 後我打算___」= 不該下注" },
+          "10": {
+            "handType": "KQ 兩高張",
+            "reason": "說不出「我下注是因為___，被 call 後我打算___」= 不該下注"
+          },
           "11": { "handType": "KQ 第二對", "reason": "A-K-x 牌面 KQ 是第二對，可以薄價值" }
         }
       },
@@ -550,26 +565,65 @@
           "11": { "hand": "A♣Q♦ (高牌)", "explanation": "配對牌面多路不碰" }
         },
         "dsSc": {
-          "0": { "action": "對手 Flop check-raise 你的 C-bet", "explanation": "ABB 牌面 check-raise = 兩對或 set，別硬拼" },
-          "1": { "action": "對手 River 對你的三條街 check-raise", "explanation": "River 被 check-raise 幾乎都是真貨" },
+          "0": {
+            "action": "對手 Flop check-raise 你的 C-bet",
+            "explanation": "ABB 牌面 check-raise = 兩對或 set，別硬拼"
+          },
+          "1": {
+            "action": "對手 River 對你的三條街 check-raise",
+            "explanation": "River 被 check-raise 幾乎都是真貨"
+          },
           "2": { "action": "緊凶玩家突然 donk bet", "explanation": "緊凶 donk = Ax 或更強" },
           "3": { "action": "對手 Turn 突然加大下注尺寸", "explanation": "突然大注 = 有牌想取值" },
-          "4": { "action": "魚玩家 River 小注", "explanation": "小注 = 詐唬迷思或弱價值，可以 raise" },
-          "5": { "action": "對手全程 check-call 後 River bet pot", "explanation": "這個 line 幾乎只有堅果" },
-          "6": { "action": "被動玩家突然 3-bet 你的 Turn bet", "explanation": "被動玩家主動出擊 = 極強牌" },
-          "7": { "action": "對手 Flop check，Turn donk pot", "explanation": "配對牌面 delayed donk = 通常是三條" },
-          "8": { "action": "對手快速 call 你的 Flop bet", "explanation": "快速 call = 聽牌或弱對子" },
+          "4": {
+            "action": "魚玩家 River 小注",
+            "explanation": "小注 = 詐唬迷思或弱價值，可以 raise"
+          },
+          "5": {
+            "action": "對手全程 check-call 後 River bet pot",
+            "explanation": "這個 line 幾乎只有堅果"
+          },
+          "6": {
+            "action": "被動玩家突然 3-bet 你的 Turn bet",
+            "explanation": "被動玩家主動出擊 = 極強牌"
+          },
+          "7": {
+            "action": "對手 Flop check，Turn donk pot",
+            "explanation": "配對牌面 delayed donk = 通常是三條"
+          },
+          "8": {
+            "action": "對手快速 call 你的 Flop bet",
+            "explanation": "快速 call = 聽牌或弱對子"
+          },
           "9": { "action": "對手長考後 all-in", "explanation": "長考 all-in = 極化，堅果或詐唬" }
         },
         "leSc": {
-          "0": { "leak": "對手用 1/3 pot 小注 C-bet", "explanation": "小注 C-bet = 弱牌試探，raise 把他趕走" },
-          "1": { "leak": "對手 Turn check 後 River 大注", "explanation": "這個 line 幾乎沒有詐唬，棄掉邊緣牌" },
-          "2": { "leak": "對手從不 check-raise", "explanation": "可以更薄價值下注，他不會 check-raise 你" },
-          "3": { "leak": "對手 River 總是 check 中等牌", "explanation": "他 check = 邊緣牌，你可以薄價值下注" },
-          "4": { "leak": "對手過度保護聽牌，不願棄牌", "explanation": "對不棄牌的人只打價值，不詐唬" },
+          "0": {
+            "leak": "對手用 1/3 pot 小注 C-bet",
+            "explanation": "小注 C-bet = 弱牌試探，raise 把他趕走"
+          },
+          "1": {
+            "leak": "對手 Turn check 後 River 大注",
+            "explanation": "這個 line 幾乎沒有詐唬，棄掉邊緣牌"
+          },
+          "2": {
+            "leak": "對手從不 check-raise",
+            "explanation": "可以更薄價值下注，他不會 check-raise 你"
+          },
+          "3": {
+            "leak": "對手 River 總是 check 中等牌",
+            "explanation": "他 check = 邊緣牌，你可以薄價值下注"
+          },
+          "4": {
+            "leak": "對手過度保護聽牌，不願棄牌",
+            "explanation": "對不棄牌的人只打價值，不詐唬"
+          },
           "5": { "leak": "對手配對牌面過度 bluff", "explanation": "他詐唬太多，用更寬範圍跟注" },
           "6": { "leak": "對手有 Ax 不棄牌", "explanation": "他們 call 太多，用堅果 overbet 取值" },
-          "7": { "leak": "對手面對 check-raise 過度棄牌", "explanation": "用更多聽牌 check-raise 詐唬" }
+          "7": {
+            "leak": "對手面對 check-raise 過度棄牌",
+            "explanation": "用更多聽牌 check-raise 詐唬"
+          }
         }
       },
       "referenceTable": "質地參考表",

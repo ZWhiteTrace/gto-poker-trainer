@@ -8,6 +8,7 @@ import subprocess
 import sys
 import os
 
+
 def main():
     # Change to the web app directory
     web_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -15,12 +16,19 @@ def main():
 
     # Run Playwright tests
     result = subprocess.run(
-        ["npx", "playwright", "test", "--config=e2e/playwright.config.ts", "--reporter=list"],
+        [
+            "npx",
+            "playwright",
+            "test",
+            "--config=e2e/playwright.config.ts",
+            "--reporter=list",
+        ],
         capture_output=False,
-        text=True
+        text=True,
     )
 
     sys.exit(result.returncode)
+
 
 if __name__ == "__main__":
     main()

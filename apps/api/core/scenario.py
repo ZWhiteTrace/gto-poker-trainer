@@ -1,19 +1,21 @@
 """
 Scenario definitions for preflop training.
 """
+
 from dataclasses import dataclass
 from enum import Enum
-from typing import Optional, List
+
 from .position import Position
 
 
 class ActionType(Enum):
     """Types of preflop scenarios."""
-    RFI = "rfi"              # Raise First In (everyone folded to you)
-    VS_RFI = "vs_rfi"        # Facing an open raise
-    VS_3BET = "vs_3bet"      # You opened, facing a 3-bet
-    VS_4BET = "vs_4bet"      # You 3-bet, facing a 4-bet
-    BLINDS = "blinds"        # Special blind vs blind scenarios
+
+    RFI = "rfi"  # Raise First In (everyone folded to you)
+    VS_RFI = "vs_rfi"  # Facing an open raise
+    VS_3BET = "vs_3bet"  # You opened, facing a 3-bet
+    VS_4BET = "vs_4bet"  # You 3-bet, facing a 4-bet
+    BLINDS = "blinds"  # Special blind vs blind scenarios
 
 
 @dataclass
@@ -26,12 +28,13 @@ class Scenario:
     - BTN vs UTG open: hero_position=BTN, villain_position=UTG, action_type=VS_RFI
     - UTG vs HJ 3bet: hero_position=UTG, villain_position=HJ, action_type=VS_3BET
     """
+
     hero_position: Position
     action_type: ActionType
-    villain_position: Optional[Position] = None
+    villain_position: Position | None = None
 
     @property
-    def available_actions(self) -> List[str]:
+    def available_actions(self) -> list[str]:
         """Return available actions for this scenario."""
         if self.action_type == ActionType.RFI:
             # SB has call (limp) option in GTO

@@ -2,20 +2,10 @@
 
 import { useTranslations } from "next-intl";
 import Link from "next/link";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Grid3X3 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import {
-  TrackedDrillType,
-  DRILL_LABELS as FULL_LABELS,
-  POSITIONS,
-} from "@/lib/constants/drills";
+import { TrackedDrillType, DRILL_LABELS as FULL_LABELS, POSITIONS } from "@/lib/constants/drills";
 
 type DrillType = TrackedDrillType;
 
@@ -81,18 +71,14 @@ export function WeaknessHeatmap({ stats }: WeaknessHeatmapProps) {
   const t = useTranslations();
 
   // Build position × drill matrix
-  const matrix: Record<
-    string,
-    Record<DrillType, { total: number; accuracy: number }>
-  > = {};
+  const matrix: Record<string, Record<DrillType, { total: number; accuracy: number }>> = {};
 
   POSITIONS.forEach((pos) => {
     matrix[pos] = {} as Record<DrillType, { total: number; accuracy: number }>;
     HEATMAP_DRILLS.forEach((drill) => {
       const posStats = stats[drill]?.byPosition[pos];
       if (posStats && posStats.total > 0) {
-        const accuracy =
-          ((posStats.correct + posStats.acceptable) / posStats.total) * 100;
+        const accuracy = ((posStats.correct + posStats.acceptable) / posStats.total) * 100;
         matrix[pos][drill] = { total: posStats.total, accuracy };
       } else {
         matrix[pos][drill] = { total: 0, accuracy: 0 };
@@ -119,7 +105,7 @@ export function WeaknessHeatmap({ stats }: WeaknessHeatmapProps) {
       </CardHeader>
       <CardContent>
         {!hasData ? (
-          <div className="text-center py-8 text-muted-foreground">
+          <div className="text-muted-foreground py-8 text-center">
             {t("stats.noDataYet") || "No data yet. Start practicing!"}
           </div>
         ) : (
@@ -127,12 +113,12 @@ export function WeaknessHeatmap({ stats }: WeaknessHeatmapProps) {
             <div className="overflow-x-auto">
               <div className="min-w-[500px]">
                 {/* Header row */}
-                <div className="flex gap-1 mb-1">
+                <div className="mb-1 flex gap-1">
                   <div className="w-12 shrink-0" /> {/* Empty corner */}
                   {HEATMAP_DRILLS.map((drill) => (
                     <div
                       key={drill}
-                      className="flex-1 text-center text-xs font-medium text-muted-foreground truncate px-1"
+                      className="text-muted-foreground flex-1 truncate px-1 text-center text-xs font-medium"
                       title={HEATMAP_LABELS[drill].short}
                     >
                       {HEATMAP_LABELS[drill].short}
@@ -142,16 +128,13 @@ export function WeaknessHeatmap({ stats }: WeaknessHeatmapProps) {
 
                 {/* Data rows */}
                 {POSITIONS.map((pos) => (
-                  <div key={pos} className="flex gap-1 mb-1">
-                    <div className="w-12 shrink-0 flex items-center justify-center text-xs font-medium">
+                  <div key={pos} className="mb-1 flex gap-1">
+                    <div className="flex w-12 shrink-0 items-center justify-center text-xs font-medium">
                       {pos}
                     </div>
                     {HEATMAP_DRILLS.map((drill) => {
                       const data = matrix[pos][drill];
-                      const colorClass = getAccuracyColor(
-                        data.accuracy,
-                        data.total
-                      );
+                      const colorClass = getAccuracyColor(data.accuracy, data.total);
                       const tooltipText =
                         data.total > 0
                           ? `${pos} - ${HEATMAP_LABELS[drill].short}\nAccuracy: ${data.accuracy.toFixed(1)}%\nHands: ${data.total}\nClick to practice`
@@ -163,14 +146,12 @@ export function WeaknessHeatmap({ stats }: WeaknessHeatmapProps) {
                           href={HEATMAP_LABELS[drill].href}
                           title={tooltipText}
                           className={cn(
-                            "flex-1 h-10 rounded flex items-center justify-center text-xs font-medium transition-all hover:scale-105 hover:shadow-md cursor-pointer border",
+                            "flex h-10 flex-1 cursor-pointer items-center justify-center rounded border text-xs font-medium transition-all hover:scale-105 hover:shadow-md",
                             colorClass,
                             getAccuracyBorderColor(data.accuracy, data.total)
                           )}
                         >
-                          {data.total > 0
-                            ? `${Math.round(data.accuracy)}%`
-                            : "-"}
+                          {data.total > 0 ? `${Math.round(data.accuracy)}%` : "-"}
                         </Link>
                       );
                     })}
@@ -180,21 +161,21 @@ export function WeaknessHeatmap({ stats }: WeaknessHeatmapProps) {
             </div>
 
             {/* Legend */}
-            <div className="flex items-center justify-center gap-4 mt-4 text-xs">
+            <div className="mt-4 flex items-center justify-center gap-4 text-xs">
               <div className="flex items-center gap-1">
-                <div className="w-4 h-4 rounded bg-red-500/70 border border-red-500" />
+                <div className="h-4 w-4 rounded border border-red-500 bg-red-500/70" />
                 <span>&lt;60%</span>
               </div>
               <div className="flex items-center gap-1">
-                <div className="w-4 h-4 rounded bg-yellow-500/70 border border-yellow-500" />
+                <div className="h-4 w-4 rounded border border-yellow-500 bg-yellow-500/70" />
                 <span>60-80%</span>
               </div>
               <div className="flex items-center gap-1">
-                <div className="w-4 h-4 rounded bg-green-500/70 border border-green-500" />
+                <div className="h-4 w-4 rounded border border-green-500 bg-green-500/70" />
                 <span>&gt;80%</span>
               </div>
               <div className="flex items-center gap-1">
-                <div className="w-4 h-4 rounded bg-muted/30 border border-muted" />
+                <div className="bg-muted/30 border-muted h-4 w-4 rounded border" />
                 <span>{t("stats.noData") || "No data"}</span>
               </div>
             </div>

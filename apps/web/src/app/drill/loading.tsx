@@ -7,7 +7,7 @@ export default function DrillLoading() {
       {/* Header */}
       <div className="mb-8 flex items-center justify-between">
         <div>
-          <Skeleton className="h-9 w-48 mb-2" />
+          <Skeleton className="mb-2 h-9 w-48" />
           <Skeleton className="h-5 w-72" />
         </div>
         <div className="flex gap-2">
@@ -20,9 +20,9 @@ export default function DrillLoading() {
       <div className="mb-4 grid grid-cols-4 gap-2 sm:gap-4">
         {[1, 2, 3, 4].map((i) => (
           <Card key={i}>
-            <CardContent className="p-3 sm:p-4 text-center">
-              <Skeleton className="h-7 w-12 mx-auto mb-1" />
-              <Skeleton className="h-4 w-16 mx-auto" />
+            <CardContent className="p-3 text-center sm:p-4">
+              <Skeleton className="mx-auto mb-1 h-7 w-12" />
+              <Skeleton className="mx-auto h-4 w-16" />
             </CardContent>
           </Card>
         ))}
@@ -31,7 +31,7 @@ export default function DrillLoading() {
       {/* Main Drill Area */}
       <Card className="mb-8">
         <CardHeader>
-          <Skeleton className="h-6 w-40 mb-1" />
+          <Skeleton className="mb-1 h-6 w-40" />
           <Skeleton className="h-4 w-56" />
         </CardHeader>
         <CardContent>
@@ -39,18 +39,18 @@ export default function DrillLoading() {
             {/* Hand display skeleton */}
             <div className="flex items-center justify-center gap-6 sm:gap-8">
               <div className="text-center">
-                <Skeleton className="h-16 w-24 mx-auto mb-2" />
-                <Skeleton className="h-4 w-16 mx-auto" />
+                <Skeleton className="mx-auto mb-2 h-16 w-24" />
+                <Skeleton className="mx-auto h-4 w-16" />
               </div>
               <div className="text-center">
-                <Skeleton className="h-10 w-16 mx-auto mb-2" />
-                <Skeleton className="h-4 w-12 mx-auto" />
+                <Skeleton className="mx-auto mb-2 h-10 w-16" />
+                <Skeleton className="mx-auto h-4 w-12" />
               </div>
             </div>
             {/* Action buttons skeleton */}
             <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-4">
               {[1, 2, 3, 4].map((i) => (
-                <Skeleton key={i} className="h-14 sm:h-16 w-full" />
+                <Skeleton key={i} className="h-14 w-full sm:h-16" />
               ))}
             </div>
           </div>

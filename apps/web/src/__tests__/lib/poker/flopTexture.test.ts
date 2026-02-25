@@ -187,9 +187,18 @@ describe("analyzeFlop", () => {
 
 describe("generateFlopOfTexture", () => {
   const textureTypes: FlopTextureType[] = [
-    "ABB", "ABx", "Axx", "BBB", "BBx", "KQx",
-    "JTx", "JT_conn", "Low_conn", "Low_unconn",
-    "Paired", "Trips"
+    "ABB",
+    "ABx",
+    "Axx",
+    "BBB",
+    "BBx",
+    "KQx",
+    "JTx",
+    "JT_conn",
+    "Low_conn",
+    "Low_unconn",
+    "Paired",
+    "Trips",
   ];
 
   textureTypes.forEach((texture) => {
@@ -242,8 +251,10 @@ describe("FLOP_TEXTURE_CATEGORIES", () => {
   });
 
   it("should have frequency percentages that sum to ~100%", () => {
-    const totalFreq = Object.values(FLOP_TEXTURE_CATEGORIES)
-      .reduce((sum, cat) => sum + cat.frequencyPct, 0);
+    const totalFreq = Object.values(FLOP_TEXTURE_CATEGORIES).reduce(
+      (sum, cat) => sum + cat.frequencyPct,
+      0
+    );
     // Should be approximately 100% (allow some margin for rounding)
     expect(totalFreq).toBeGreaterThan(90);
     expect(totalFreq).toBeLessThan(110);

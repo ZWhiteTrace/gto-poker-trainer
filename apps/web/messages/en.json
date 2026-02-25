@@ -435,18 +435,45 @@
           "noClearPurposeDesc": "Can't explain why betting = shouldn't bet"
         },
         "sc": {
-          "0": { "handType": "AK high cards air", "reason": "On 987 boards, AK has no backdoors or blockers, should check directly" },
-          "1": { "handType": "QJ suited with backdoor", "reason": "Has backdoor flush draw, can be a bluff candidate" },
-          "2": { "handType": "AQ high cards", "reason": "On 952r board, AQ has no pair, unclear betting purpose" },
+          "0": {
+            "handType": "AK high cards air",
+            "reason": "On 987 boards, AK has no backdoors or blockers, should check directly"
+          },
+          "1": {
+            "handType": "QJ suited with backdoor",
+            "reason": "Has backdoor flush draw, can be a bluff candidate"
+          },
+          "2": {
+            "handType": "AQ high cards",
+            "reason": "On 952r board, AQ has no pair, unclear betting purpose"
+          },
           "3": { "handType": "TT Overpair", "reason": "TT is overpair, can bet for value" },
-          "4": { "handType": "99 mid pair", "reason": "On JT9 board, 99 is mid pair, almost always loses when called, should check" },
+          "4": {
+            "handType": "99 mid pair",
+            "reason": "On JT9 board, 99 is mid pair, almost always loses when called, should check"
+          },
           "5": { "handType": "JJ top set", "reason": "JJ is top set, strong hand can bet" },
-          "6": { "handType": "AK no flush", "reason": "On monotone board without flush, betting easily gets raised by flush hands" },
-          "7": { "handType": "AK with nut flush draw", "reason": "Has nut flush draw, can bet as semi-bluff" },
-          "8": { "handType": "AA Overpair", "reason": "OOP on dynamic board, even AA should consider checking to protect range" },
+          "6": {
+            "handType": "AK no flush",
+            "reason": "On monotone board without flush, betting easily gets raised by flush hands"
+          },
+          "7": {
+            "handType": "AK with nut flush draw",
+            "reason": "Has nut flush draw, can bet as semi-bluff"
+          },
+          "8": {
+            "handType": "AA Overpair",
+            "reason": "OOP on dynamic board, even AA should consider checking to protect range"
+          },
           "9": { "handType": "AA top set", "reason": "Dry A-high board, AA is top set, can bet" },
-          "10": { "handType": "KQ two high cards", "reason": "Can't explain 'I'm betting because ___, after called I plan ___' = shouldn't bet" },
-          "11": { "handType": "KQ second pair", "reason": "On A-K-x board, KQ is second pair, can thin value bet" }
+          "10": {
+            "handType": "KQ two high cards",
+            "reason": "Can't explain 'I'm betting because ___, after called I plan ___' = shouldn't bet"
+          },
+          "11": {
+            "handType": "KQ second pair",
+            "reason": "On A-K-x board, KQ is second pair, can thin value bet"
+          }
         }
       },
       "checkFirst": {
@@ -537,40 +564,115 @@
           "betThin": "Thinner Bets"
         },
         "mwSc": {
-          "0": { "hand": "A♠K♥ (Top Pair Top Kicker)", "explanation": "Strong Ax can still value bet large in multiway" },
+          "0": {
+            "hand": "A♠K♥ (Top Pair Top Kicker)",
+            "explanation": "Strong Ax can still value bet large in multiway"
+          },
           "1": { "hand": "K♣Q♦ (Air)", "explanation": "Cannot bluff multiway, give up air" },
-          "2": { "hand": "A♠9♥ (Top Pair Weak Kicker)", "explanation": "Top pair can probe small, but don't bloat the pot" },
-          "3": { "hand": "K♣K♦ (Second Pair)", "explanation": "Mid pair too weak multiway, check for pot control" },
+          "2": {
+            "hand": "A♠9♥ (Top Pair Weak Kicker)",
+            "explanation": "Top pair can probe small, but don't bloat the pot"
+          },
+          "3": {
+            "hand": "K♣K♦ (Second Pair)",
+            "explanation": "Mid pair too weak multiway, check for pot control"
+          },
           "4": { "hand": "Q♠Q♥ (Set)", "explanation": "Nuts can bet large to build pot multiway" },
-          "5": { "hand": "A♣K♦ (Draw)", "explanation": "Multiway draws check is the better option" },
-          "6": { "hand": "A♠A♥ (Overpair)", "explanation": "Connected low board overpair bets small for protection" },
+          "5": {
+            "hand": "A♣K♦ (Draw)",
+            "explanation": "Multiway draws check is the better option"
+          },
+          "6": {
+            "hand": "A♠A♥ (Overpair)",
+            "explanation": "Connected low board overpair bets small for protection"
+          },
           "7": { "hand": "K♣Q♦ (Air)", "explanation": "Don't bluff multiway, just give up" },
-          "8": { "hand": "9♠8♥ (Straight)", "explanation": "Slow-playing nuts is pointless, bet for value directly" },
-          "9": { "hand": "A♣A♦ (Overpair)", "explanation": "Multiway wet board AA is dangerous, check for pot control" },
+          "8": {
+            "hand": "9♠8♥ (Straight)",
+            "explanation": "Slow-playing nuts is pointless, bet for value directly"
+          },
+          "9": {
+            "hand": "A♣A♦ (Overpair)",
+            "explanation": "Multiway wet board AA is dangerous, check for pot control"
+          },
           "10": { "hand": "K♠K♥ (Full House)", "explanation": "Full house bets small to induce" },
           "11": { "hand": "A♣Q♦ (High Card)", "explanation": "Paired board multiway don't touch" }
         },
         "dsSc": {
-          "0": { "action": "Opponent flop check-raises your C-bet", "explanation": "Check-raise on ABB board = two pair or set, don't fight" },
-          "1": { "action": "Opponent river check-raises your triple barrel", "explanation": "River check-raise is almost always the real deal" },
-          "2": { "action": "Tight-aggressive player suddenly donk bets", "explanation": "TAG donk = Ax or stronger" },
-          "3": { "action": "Opponent suddenly increases bet size on turn", "explanation": "Sudden large bet = has a hand wants value" },
-          "4": { "action": "Fish player makes small river bet", "explanation": "Small bet = bluff myth or weak value, can raise" },
-          "5": { "action": "Opponent check-calls throughout then bets pot on river", "explanation": "This line is almost exclusively the nuts" },
-          "6": { "action": "Passive player suddenly 3-bets your turn bet", "explanation": "Passive player initiating aggression = very strong hand" },
-          "7": { "action": "Opponent checks flop, donk-bets pot on turn", "explanation": "Paired board delayed donk = usually trips" },
-          "8": { "action": "Opponent snap-calls your flop bet", "explanation": "Quick call = draw or weak pair" },
-          "9": { "action": "Opponent tanks then goes all-in", "explanation": "Tank all-in = polarized, nuts or bluff" }
+          "0": {
+            "action": "Opponent flop check-raises your C-bet",
+            "explanation": "Check-raise on ABB board = two pair or set, don't fight"
+          },
+          "1": {
+            "action": "Opponent river check-raises your triple barrel",
+            "explanation": "River check-raise is almost always the real deal"
+          },
+          "2": {
+            "action": "Tight-aggressive player suddenly donk bets",
+            "explanation": "TAG donk = Ax or stronger"
+          },
+          "3": {
+            "action": "Opponent suddenly increases bet size on turn",
+            "explanation": "Sudden large bet = has a hand wants value"
+          },
+          "4": {
+            "action": "Fish player makes small river bet",
+            "explanation": "Small bet = bluff myth or weak value, can raise"
+          },
+          "5": {
+            "action": "Opponent check-calls throughout then bets pot on river",
+            "explanation": "This line is almost exclusively the nuts"
+          },
+          "6": {
+            "action": "Passive player suddenly 3-bets your turn bet",
+            "explanation": "Passive player initiating aggression = very strong hand"
+          },
+          "7": {
+            "action": "Opponent checks flop, donk-bets pot on turn",
+            "explanation": "Paired board delayed donk = usually trips"
+          },
+          "8": {
+            "action": "Opponent snap-calls your flop bet",
+            "explanation": "Quick call = draw or weak pair"
+          },
+          "9": {
+            "action": "Opponent tanks then goes all-in",
+            "explanation": "Tank all-in = polarized, nuts or bluff"
+          }
         },
         "leSc": {
-          "0": { "leak": "Opponent uses 1/3 pot small C-bet", "explanation": "Small C-bet = weak hand probing, raise to push them out" },
-          "1": { "leak": "Opponent checks turn then bets big on river", "explanation": "This line has almost no bluffs, fold marginal hands" },
-          "2": { "leak": "Opponent never check-raises", "explanation": "Can thin value bet more, they won't check-raise you" },
-          "3": { "leak": "Opponent always checks medium hands on river", "explanation": "Their check = marginal hand, you can thin value bet" },
-          "4": { "leak": "Opponent overprotects draws, never folds", "explanation": "Against non-folders only play for value, no bluffs" },
-          "5": { "leak": "Opponent over-bluffs on paired boards", "explanation": "They bluff too much, call with wider range" },
-          "6": { "leak": "Opponent has Ax and never folds", "explanation": "They call too much, overbet value with nuts" },
-          "7": { "leak": "Opponent overfolds to check-raises", "explanation": "Check-raise bluff more with draws" }
+          "0": {
+            "leak": "Opponent uses 1/3 pot small C-bet",
+            "explanation": "Small C-bet = weak hand probing, raise to push them out"
+          },
+          "1": {
+            "leak": "Opponent checks turn then bets big on river",
+            "explanation": "This line has almost no bluffs, fold marginal hands"
+          },
+          "2": {
+            "leak": "Opponent never check-raises",
+            "explanation": "Can thin value bet more, they won't check-raise you"
+          },
+          "3": {
+            "leak": "Opponent always checks medium hands on river",
+            "explanation": "Their check = marginal hand, you can thin value bet"
+          },
+          "4": {
+            "leak": "Opponent overprotects draws, never folds",
+            "explanation": "Against non-folders only play for value, no bluffs"
+          },
+          "5": {
+            "leak": "Opponent over-bluffs on paired boards",
+            "explanation": "They bluff too much, call with wider range"
+          },
+          "6": {
+            "leak": "Opponent has Ax and never folds",
+            "explanation": "They call too much, overbet value with nuts"
+          },
+          "7": {
+            "leak": "Opponent overfolds to check-raises",
+            "explanation": "Check-raise bluff more with draws"
+          }
         }
       },
       "referenceTable": "Texture Reference Table",

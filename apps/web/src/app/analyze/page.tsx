@@ -3,13 +3,7 @@
 import { useState, useCallback } from "react";
 import { useTranslations, useLocale } from "next-intl";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import {
   Upload,
@@ -211,13 +205,13 @@ export default function AnalyzePage() {
   const getCategoryIcon = (category: string) => {
     switch (category) {
       case "weakness":
-        return <AlertTriangle className="h-5 w-5 text-destructive" />;
+        return <AlertTriangle className="text-destructive h-5 w-5" />;
       case "strength":
         return <CheckCircle className="h-5 w-5 text-green-500" />;
       case "recommendation":
         return <Lightbulb className="h-5 w-5 text-yellow-500" />;
       case "drill":
-        return <Target className="h-5 w-5 text-primary" />;
+        return <Target className="text-primary h-5 w-5" />;
       default:
         return <Brain className="h-5 w-5" />;
     }
@@ -239,7 +233,12 @@ export default function AnalyzePage() {
       insufficient_data: t("analyze.ai.levelInsufficient"),
     };
     return (
-      <span className={cn("px-3 py-1 rounded-full text-sm border", styles[level] || styles.intermediate)}>
+      <span
+        className={cn(
+          "rounded-full border px-3 py-1 text-sm",
+          styles[level] || styles.intermediate
+        )}
+      >
         {labels[level] || level}
       </span>
     );
@@ -268,7 +267,7 @@ export default function AnalyzePage() {
               onDrop={handleDrop}
               onDragOver={handleDragOver}
               className={cn(
-                "border-2 border-dashed rounded-lg p-8 text-center transition-colors",
+                "rounded-lg border-2 border-dashed p-8 text-center transition-colors",
                 "hover:border-primary hover:bg-primary/5",
                 file ? "border-primary bg-primary/5" : "border-muted"
               )}
@@ -283,37 +282,29 @@ export default function AnalyzePage() {
               <label htmlFor="file-upload" className="cursor-pointer">
                 {file ? (
                   <div className="flex flex-col items-center gap-2">
-                    <FileText className="h-12 w-12 text-primary" />
+                    <FileText className="text-primary h-12 w-12" />
                     <p className="font-medium">{file.name}</p>
-                    <p className="text-sm text-muted-foreground">
-                      {t("analyze.clickToChange")}
-                    </p>
+                    <p className="text-muted-foreground text-sm">{t("analyze.clickToChange")}</p>
                   </div>
                 ) : (
                   <div className="flex flex-col items-center gap-2">
-                    <Upload className="h-12 w-12 text-muted-foreground" />
+                    <Upload className="text-muted-foreground h-12 w-12" />
                     <p className="font-medium">{t("analyze.dropOrClick")}</p>
-                    <p className="text-sm text-muted-foreground">
-                      {t("analyze.supportedFormat")}
-                    </p>
+                    <p className="text-muted-foreground text-sm">{t("analyze.supportedFormat")}</p>
                   </div>
                 )}
               </label>
             </div>
 
             {error && (
-              <div className="mt-4 p-3 bg-destructive/10 text-destructive rounded-lg flex items-center gap-2">
+              <div className="bg-destructive/10 text-destructive mt-4 flex items-center gap-2 rounded-lg p-3">
                 <AlertCircle className="h-4 w-4" />
                 {error}
               </div>
             )}
 
-            <div className="mt-6 flex flex-col sm:flex-row gap-3">
-              <Button
-                onClick={analyzeFile}
-                disabled={!file || loading}
-                className="flex-1"
-              >
+            <div className="mt-6 flex flex-col gap-3 sm:flex-row">
+              <Button onClick={analyzeFile} disabled={!file || loading} className="flex-1">
                 {loading ? t("common.loading") : t("analyze.analyzeButton")}
               </Button>
               <Button variant="outline" onClick={loadDemo} disabled={loading}>
@@ -330,14 +321,12 @@ export default function AnalyzePage() {
           <CardHeader>
             <CardTitle className="text-base">{t("analyze.instructionsTitle")}</CardTitle>
           </CardHeader>
-          <CardContent className="text-sm text-muted-foreground space-y-2">
+          <CardContent className="text-muted-foreground space-y-2 text-sm">
             <p>{t("analyze.instruction1")}</p>
             <p>{t("analyze.instruction2")}</p>
             <p>{t("analyze.instruction3")}</p>
-            <p className="pt-2 font-medium text-foreground">
-              {t("analyze.analysisIncludes")}
-            </p>
-            <ul className="list-disc list-inside space-y-1">
+            <p className="text-foreground pt-2 font-medium">{t("analyze.analysisIncludes")}</p>
+            <ul className="list-inside list-disc space-y-1">
               <li>{t("analyze.analysis1")}</li>
               <li>{t("analyze.analysis2")}</li>
               <li>{t("analyze.analysis3")}</li>
@@ -368,34 +357,26 @@ export default function AnalyzePage() {
               </div>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <div className="text-center p-4 bg-muted/50 rounded-lg">
+              <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+                <div className="bg-muted/50 rounded-lg p-4 text-center">
                   <div className="text-2xl font-bold">{result.total_hands}</div>
-                  <div className="text-sm text-muted-foreground">
-                    {t("analyze.totalHands")}
-                  </div>
+                  <div className="text-muted-foreground text-sm">{t("analyze.totalHands")}</div>
                 </div>
-                <div className="text-center p-4 bg-muted/50 rounded-lg">
+                <div className="bg-muted/50 rounded-lg p-4 text-center">
                   <div className="text-2xl font-bold">{result.analyzed_hands}</div>
-                  <div className="text-sm text-muted-foreground">
-                    {t("analyze.analyzedHands")}
-                  </div>
+                  <div className="text-muted-foreground text-sm">{t("analyze.analyzedHands")}</div>
                 </div>
-                <div className="text-center p-4 bg-muted/50 rounded-lg">
-                  <div className="text-2xl font-bold text-destructive">
+                <div className="bg-muted/50 rounded-lg p-4 text-center">
+                  <div className="text-destructive text-2xl font-bold">
                     {result.mistakes} ({result.mistake_rate}%)
                   </div>
-                  <div className="text-sm text-muted-foreground">
-                    {t("analyze.mistakes")}
-                  </div>
+                  <div className="text-muted-foreground text-sm">{t("analyze.mistakes")}</div>
                 </div>
-                <div className="text-center p-4 bg-muted/50 rounded-lg">
-                  <div className="text-2xl font-bold text-destructive">
+                <div className="bg-muted/50 rounded-lg p-4 text-center">
+                  <div className="text-destructive text-2xl font-bold">
                     {result.total_ev_loss} bb
                   </div>
-                  <div className="text-sm text-muted-foreground">
-                    {t("analyze.evLoss")}
-                  </div>
+                  <div className="text-muted-foreground text-sm">{t("analyze.evLoss")}</div>
                 </div>
               </div>
             </CardContent>
@@ -414,11 +395,11 @@ export default function AnalyzePage() {
                 <table className="w-full">
                   <thead>
                     <tr className="border-b">
-                      <th className="text-left py-2 px-3">{t("analyze.position")}</th>
-                      <th className="text-right py-2 px-3">{t("analyze.hands")}</th>
-                      <th className="text-right py-2 px-3">{t("analyze.mistakesCol")}</th>
-                      <th className="text-right py-2 px-3">{t("analyze.rate")}</th>
-                      <th className="text-right py-2 px-3">{t("analyze.evLossCol")}</th>
+                      <th className="px-3 py-2 text-left">{t("analyze.position")}</th>
+                      <th className="px-3 py-2 text-right">{t("analyze.hands")}</th>
+                      <th className="px-3 py-2 text-right">{t("analyze.mistakesCol")}</th>
+                      <th className="px-3 py-2 text-right">{t("analyze.rate")}</th>
+                      <th className="px-3 py-2 text-right">{t("analyze.evLossCol")}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -427,23 +408,23 @@ export default function AnalyzePage() {
                       if (!stat) return null;
                       return (
                         <tr key={pos} className="border-b last:border-0">
-                          <td className="py-2 px-3 font-medium">{pos}</td>
-                          <td className="text-right py-2 px-3">{stat.total}</td>
-                          <td className="text-right py-2 px-3">{stat.mistakes}</td>
-                          <td className="text-right py-2 px-3">
+                          <td className="px-3 py-2 font-medium">{pos}</td>
+                          <td className="px-3 py-2 text-right">{stat.total}</td>
+                          <td className="px-3 py-2 text-right">{stat.mistakes}</td>
+                          <td className="px-3 py-2 text-right">
                             <Badge
                               variant={
                                 stat.mistake_rate > 15
                                   ? "destructive"
                                   : stat.mistake_rate > 8
-                                  ? "secondary"
-                                  : "default"
+                                    ? "secondary"
+                                    : "default"
                               }
                             >
                               {stat.mistake_rate}%
                             </Badge>
                           </td>
-                          <td className="text-right py-2 px-3 text-destructive">
+                          <td className="text-destructive px-3 py-2 text-right">
                             -{stat.ev_loss} bb
                           </td>
                         </tr>
@@ -460,19 +441,16 @@ export default function AnalyzePage() {
             <Card className="mb-6">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <TrendingDown className="h-5 w-5 text-destructive" />
+                  <TrendingDown className="text-destructive h-5 w-5" />
                   {t("analyze.topLeaksTitle")}
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-2">
                 {result.top_leaks.map((leak, index) => (
-                  <div
-                    key={index}
-                    className="border rounded-lg overflow-hidden"
-                  >
+                  <div key={index} className="overflow-hidden rounded-lg border">
                     <button
                       onClick={() => toggleLeak(index)}
-                      className="w-full p-4 flex items-center justify-between hover:bg-muted/50 transition-colors"
+                      className="hover:bg-muted/50 flex w-full items-center justify-between p-4 transition-colors"
                     >
                       <div className="flex items-center gap-3">
                         {expandedLeaks.has(index) ? (
@@ -487,14 +465,18 @@ export default function AnalyzePage() {
                       <Badge variant="destructive">-{leak.ev_loss} bb</Badge>
                     </button>
                     {expandedLeaks.has(index) && (
-                      <div className="px-4 pb-4 pt-0 border-t bg-muted/30">
-                        <div className="grid grid-cols-2 gap-4 mt-3 text-sm">
+                      <div className="bg-muted/30 border-t px-4 pt-0 pb-4">
+                        <div className="mt-3 grid grid-cols-2 gap-4 text-sm">
                           <div>
-                            <span className="text-muted-foreground">{t("analyze.sampleSize")}:</span>
+                            <span className="text-muted-foreground">
+                              {t("analyze.sampleSize")}:
+                            </span>
                             <span className="ml-2 font-medium">{leak.total_hands}</span>
                           </div>
                           <div>
-                            <span className="text-muted-foreground">{t("analyze.mistakesCol")}:</span>
+                            <span className="text-muted-foreground">
+                              {t("analyze.mistakesCol")}:
+                            </span>
                             <span className="ml-2 font-medium">
                               {leak.mistakes} ({leak.mistake_rate}%)
                             </span>
@@ -502,17 +484,15 @@ export default function AnalyzePage() {
                         </div>
                         {leak.common_mistakes && (
                           <div className="mt-3">
-                            <span className="text-sm text-muted-foreground">
+                            <span className="text-muted-foreground text-sm">
                               {t("analyze.commonMistakes")}:
                             </span>
-                            <div className="flex flex-wrap gap-2 mt-2">
-                              {Object.entries(leak.common_mistakes).map(
-                                ([action, count]) => (
-                                  <Badge key={action} variant="outline">
-                                    {action}: {count}
-                                  </Badge>
-                                )
-                              )}
+                            <div className="mt-2 flex flex-wrap gap-2">
+                              {Object.entries(leak.common_mistakes).map(([action, count]) => (
+                                <Badge key={action} variant="outline">
+                                  {action}: {count}
+                                </Badge>
+                              ))}
                             </div>
                           </div>
                         )}
@@ -529,15 +509,11 @@ export default function AnalyzePage() {
             <CardHeader>
               <div className="flex items-center justify-between">
                 <CardTitle className="flex items-center gap-2">
-                  <Sparkles className="h-5 w-5 text-primary" />
+                  <Sparkles className="text-primary h-5 w-5" />
                   {t("analyze.ai.title")}
                 </CardTitle>
                 {!aiReview && (
-                  <Button
-                    onClick={fetchAiReview}
-                    disabled={aiLoading}
-                    size="sm"
-                  >
+                  <Button onClick={fetchAiReview} disabled={aiLoading} size="sm">
                     {aiLoading ? t("common.loading") : t("analyze.ai.generate")}
                   </Button>
                 )}
@@ -548,9 +524,9 @@ export default function AnalyzePage() {
             {aiReview && (
               <CardContent className="space-y-6">
                 {/* Overall Assessment */}
-                <div className="p-4 bg-muted/50 rounded-lg">
-                  <div className="flex items-center justify-between mb-3">
-                    <span className="text-sm text-muted-foreground">
+                <div className="bg-muted/50 rounded-lg p-4">
+                  <div className="mb-3 flex items-center justify-between">
+                    <span className="text-muted-foreground text-sm">
                       {t("analyze.ai.skillLevel")}
                     </span>
                     {getSkillLevelBadge(aiReview.skill_level)}
@@ -568,23 +544,21 @@ export default function AnalyzePage() {
                   {aiReview.insights.map((insight, index) => (
                     <div
                       key={index}
-                      className="border rounded-lg p-4 hover:bg-muted/30 transition-colors"
+                      className="hover:bg-muted/30 rounded-lg border p-4 transition-colors"
                     >
                       <div className="flex items-start gap-3">
                         <div className="mt-0.5">{getCategoryIcon(insight.category)}</div>
-                        <div className="flex-1 min-w-0">
-                          <h5 className="font-medium mb-1">
+                        <div className="min-w-0 flex-1">
+                          <h5 className="mb-1 font-medium">
                             {locale === "zh-TW" ? insight.title_zh : insight.title}
                           </h5>
-                          <p className="text-sm text-muted-foreground">
-                            {locale === "zh-TW"
-                              ? insight.description_zh
-                              : insight.description}
+                          <p className="text-muted-foreground text-sm">
+                            {locale === "zh-TW" ? insight.description_zh : insight.description}
                           </p>
                           {insight.drill_link && (
                             <Link
                               href={insight.drill_link}
-                              className="inline-flex items-center gap-1 mt-2 text-sm text-primary hover:underline"
+                              className="text-primary mt-2 inline-flex items-center gap-1 text-sm hover:underline"
                             >
                               {t("analyze.ai.practiceNow")}
                               <ArrowRight className="h-3 w-3" />
@@ -599,11 +573,11 @@ export default function AnalyzePage() {
                 {/* Focus Areas */}
                 {aiReview.focus_areas.length > 0 && (
                   <div>
-                    <h4 className="font-medium mb-3">{t("analyze.ai.focusAreas")}</h4>
+                    <h4 className="mb-3 font-medium">{t("analyze.ai.focusAreas")}</h4>
                     <div className="flex flex-wrap gap-2">
                       {aiReview.focus_areas.map((area, index) => (
                         <Link key={index} href={area}>
-                          <Badge variant="outline" className="cursor-pointer hover:bg-primary/10">
+                          <Badge variant="outline" className="hover:bg-primary/10 cursor-pointer">
                             {area.replace("/drill/", "").replace("/quiz/", "").toUpperCase()}
                           </Badge>
                         </Link>
@@ -632,23 +606,17 @@ export default function AnalyzePage() {
               </CardHeader>
               {showDetailed && (
                 <CardContent>
-                  <div className="space-y-2 max-h-[400px] overflow-y-auto">
+                  <div className="max-h-[400px] space-y-2 overflow-y-auto">
                     {result.decisions
                       .filter((d) => d.is_mistake)
                       .slice(0, 50)
                       .map((decision, index) => (
-                        <div
-                          key={index}
-                          className="p-3 border rounded-lg text-sm"
-                        >
-                          <div className="flex items-center justify-between mb-2">
+                        <div key={index} className="rounded-lg border p-3 text-sm">
+                          <div className="mb-2 flex items-center justify-between">
                             <span className="font-medium">
-                              #{decision.hand_id} | {decision.hero_position}{" "}
-                              {decision.hero_hand}
+                              #{decision.hand_id} | {decision.hero_position} {decision.hero_hand}
                             </span>
-                            <Badge variant="destructive">
-                              -{decision.ev_loss} bb
-                            </Badge>
+                            <Badge variant="destructive">-{decision.ev_loss} bb</Badge>
                           </div>
                           <div className="text-muted-foreground">
                             <span>{decision.scenario}</span>

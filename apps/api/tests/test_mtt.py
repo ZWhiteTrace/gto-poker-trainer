@@ -1,7 +1,6 @@
 """
 Tests for MTT push/fold endpoints.
 """
-import pytest
 
 
 class TestMttRanges:
@@ -39,11 +38,14 @@ class TestMttDrill:
 
     def test_generate_push_drill(self, client):
         """Test generating a push drill spot."""
-        response = client.post("/api/mtt/drill/generate", json={
-            "mode": "push",
-            "enabled_positions": ["BTN", "SB"],
-            "enabled_stack_depths": ["10bb", "15bb"]
-        })
+        response = client.post(
+            "/api/mtt/drill/generate",
+            json={
+                "mode": "push",
+                "enabled_positions": ["BTN", "SB"],
+                "enabled_stack_depths": ["10bb", "15bb"],
+            },
+        )
         assert response.status_code == 200
         data = response.json()
         assert "hand" in data
@@ -56,10 +58,9 @@ class TestMttDrill:
 
     def test_generate_defense_drill(self, client):
         """Test generating a defense drill spot."""
-        response = client.post("/api/mtt/drill/generate", json={
-            "mode": "defense",
-            "enabled_stack_depths": ["10bb"]
-        })
+        response = client.post(
+            "/api/mtt/drill/generate", json={"mode": "defense", "enabled_stack_depths": ["10bb"]}
+        )
         assert response.status_code == 200
         data = response.json()
         assert data["mode"] == "defense"
@@ -68,39 +69,48 @@ class TestMttDrill:
 
     def test_evaluate_push_aa(self, client):
         """Test evaluating push with AA - should always be correct."""
-        response = client.post("/api/mtt/drill/evaluate", json={
-            "hand": "AA",
-            "position": "BTN",
-            "stack_depth": "10bb",
-            "mode": "push",
-            "action": "push"
-        })
+        response = client.post(
+            "/api/mtt/drill/evaluate",
+            json={
+                "hand": "AA",
+                "position": "BTN",
+                "stack_depth": "10bb",
+                "mode": "push",
+                "action": "push",
+            },
+        )
         assert response.status_code == 200
         data = response.json()
-        assert data["is_correct"] == True
+        assert data["is_correct"]
 
     def test_evaluate_fold_72o(self, client):
         """Test evaluating fold with 72o - should be correct from UTG."""
-        response = client.post("/api/mtt/drill/evaluate", json={
-            "hand": "72o",
-            "position": "UTG",
-            "stack_depth": "15bb",
-            "mode": "push",
-            "action": "fold"
-        })
+        response = client.post(
+            "/api/mtt/drill/evaluate",
+            json={
+                "hand": "72o",
+                "position": "UTG",
+                "stack_depth": "15bb",
+                "mode": "push",
+                "action": "fold",
+            },
+        )
         assert response.status_code == 200
         data = response.json()
-        assert data["is_correct"] == True
+        assert data["is_correct"]
 
     def test_evaluate_includes_explanation(self, client):
         """Test that evaluation includes bilingual explanation."""
-        response = client.post("/api/mtt/drill/evaluate", json={
-            "hand": "AKs",
-            "position": "CO",
-            "stack_depth": "12bb",
-            "mode": "push",
-            "action": "push"
-        })
+        response = client.post(
+            "/api/mtt/drill/evaluate",
+            json={
+                "hand": "AKs",
+                "position": "CO",
+                "stack_depth": "12bb",
+                "mode": "push",
+                "action": "push",
+            },
+        )
         assert response.status_code == 200
         data = response.json()
         assert "explanation" in data

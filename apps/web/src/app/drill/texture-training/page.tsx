@@ -81,10 +81,13 @@ const API_BASE = API_BASE_URL;
 
 const CATEGORY_COLORS: Record<string, string> = {
   dry: "bg-amber-100 text-amber-800 border-amber-200 dark:bg-amber-900 dark:text-amber-200 dark:border-amber-700",
-  paired: "bg-purple-100 text-purple-800 border-purple-200 dark:bg-purple-900 dark:text-purple-200 dark:border-purple-700",
+  paired:
+    "bg-purple-100 text-purple-800 border-purple-200 dark:bg-purple-900 dark:text-purple-200 dark:border-purple-700",
   wet: "bg-blue-100 text-blue-800 border-blue-200 dark:bg-blue-900 dark:text-blue-200 dark:border-blue-700",
-  connected: "bg-green-100 text-green-800 border-green-200 dark:bg-green-900 dark:text-green-200 dark:border-green-700",
-  broadway: "bg-rose-100 text-rose-800 border-rose-200 dark:bg-rose-900 dark:text-rose-200 dark:border-rose-700",
+  connected:
+    "bg-green-100 text-green-800 border-green-200 dark:bg-green-900 dark:text-green-200 dark:border-green-700",
+  broadway:
+    "bg-rose-100 text-rose-800 border-rose-200 dark:bg-rose-900 dark:text-rose-200 dark:border-rose-700",
 };
 
 const DIFFICULTY_COLORS: Record<number, string> = {
@@ -114,7 +117,7 @@ function renderCard(card: string): React.ReactElement {
     <span
       key={card}
       className={cn(
-        "inline-flex items-center justify-center w-10 h-14 rounded-lg border-2 border-slate-300 bg-white shadow-sm font-bold text-lg",
+        "inline-flex h-14 w-10 items-center justify-center rounded-lg border-2 border-slate-300 bg-white text-lg font-bold shadow-sm",
         SUIT_CARD_COLORS[suit]
       )}
     >
@@ -126,7 +129,7 @@ function renderCard(card: string): React.ReactElement {
 
 function renderBoard(board: string[]): React.ReactElement {
   return (
-    <div className="flex gap-2 justify-center">
+    <div className="flex justify-center gap-2">
       {board.map((card, i) => (
         <span key={i}>{renderCard(card)}</span>
       ))}
@@ -148,14 +151,15 @@ function TextureCard({
   onClick: () => void;
 }) {
   const t = useTranslations("drill");
-  const accuracy = progress && progress.attempts > 0
-    ? Math.round((progress.correct / progress.attempts) * 100)
-    : 0;
+  const accuracy =
+    progress && progress.attempts > 0
+      ? Math.round((progress.correct / progress.attempts) * 100)
+      : 0;
 
   return (
     <Card
       className={cn(
-        "cursor-pointer transition-all hover:shadow-lg hover:scale-[1.02]",
+        "cursor-pointer transition-all hover:scale-[1.02] hover:shadow-lg",
         progress?.mastered && "ring-2 ring-green-500"
       )}
       onClick={onClick}
@@ -170,21 +174,19 @@ function TextureCard({
               <div
                 key={d}
                 className={cn(
-                  "w-2 h-2 rounded-full",
-                  d <= texture.difficulty
-                    ? DIFFICULTY_COLORS[texture.difficulty]
-                    : "bg-slate-200"
+                  "h-2 w-2 rounded-full",
+                  d <= texture.difficulty ? DIFFICULTY_COLORS[texture.difficulty] : "bg-slate-200"
                 )}
               />
             ))}
           </div>
         </div>
-        <CardTitle className="text-lg mt-2">{texture.texture_zh}</CardTitle>
+        <CardTitle className="mt-2 text-lg">{texture.texture_zh}</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="mb-3">{renderBoard(texture.representative_board)}</div>
         {texture.concept?.summary && (
-          <p className="text-sm text-muted-foreground line-clamp-2 mb-3">
+          <p className="text-muted-foreground mb-3 line-clamp-2 text-sm">
             {texture.concept.summary}
           </p>
         )}
@@ -192,14 +194,16 @@ function TextureCard({
           <div className="space-y-1">
             <div className="flex justify-between text-xs">
               <span>{t("textureTraining.accuracy", { pct: String(accuracy) })}</span>
-              <span>{progress.correct}/{progress.attempts}</span>
+              <span>
+                {progress.correct}/{progress.attempts}
+              </span>
             </div>
             <Progress value={accuracy} className="h-1" />
           </div>
         )}
         {progress?.mastered && (
-          <div className="flex items-center gap-1 text-green-600 text-sm mt-2">
-            <Trophy className="w-4 h-4" />
+          <div className="mt-2 flex items-center gap-1 text-sm text-green-600">
+            <Trophy className="h-4 w-4" />
             <span>{t("textureTraining.mastered")}</span>
           </div>
         )}
@@ -230,14 +234,10 @@ function TextureDetail({
             <Badge className={cn("border", CATEGORY_COLORS[texture.category])}>
               {t("textureTraining.categoryNames." + texture.category)}
             </Badge>
-            <Badge variant="outline">
-              {t("textureTraining.difficulty." + texture.difficulty)}
-            </Badge>
+            <Badge variant="outline">{t("textureTraining.difficulty." + texture.difficulty)}</Badge>
           </div>
           <CardTitle className="text-2xl">{texture.texture_zh}</CardTitle>
-          {texture.concept?.title && (
-            <CardDescription>{texture.concept.title}</CardDescription>
-          )}
+          {texture.concept?.title && <CardDescription>{texture.concept.title}</CardDescription>}
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="flex justify-center py-4">
@@ -245,21 +245,21 @@ function TextureDetail({
           </div>
 
           {texture.concept?.summary && (
-            <div className="bg-slate-50 dark:bg-slate-800 rounded-lg p-4">
+            <div className="rounded-lg bg-slate-50 p-4 dark:bg-slate-800">
               <p className="text-lg">{texture.concept.summary}</p>
             </div>
           )}
 
           {texture.concept?.key_points && texture.concept.key_points.length > 0 && (
             <div>
-              <h3 className="flex items-center gap-2 font-semibold mb-3">
-                <Lightbulb className="w-5 h-5 text-yellow-500" />
+              <h3 className="mb-3 flex items-center gap-2 font-semibold">
+                <Lightbulb className="h-5 w-5 text-yellow-500" />
                 {t("textureTraining.keyPoints")}
               </h3>
               <ul className="space-y-2">
                 {texture.concept.key_points.map((point, i) => (
                   <li key={i} className="flex items-start gap-2">
-                    <CheckCircle2 className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
+                    <CheckCircle2 className="mt-0.5 h-5 w-5 flex-shrink-0 text-green-500" />
                     <span>{point}</span>
                   </li>
                 ))}
@@ -269,14 +269,14 @@ function TextureDetail({
 
           {texture.concept?.common_mistakes && texture.concept.common_mistakes.length > 0 && (
             <div>
-              <h3 className="flex items-center gap-2 font-semibold mb-3">
-                <AlertTriangle className="w-5 h-5 text-orange-500" />
+              <h3 className="mb-3 flex items-center gap-2 font-semibold">
+                <AlertTriangle className="h-5 w-5 text-orange-500" />
                 {t("textureTraining.commonMistakes")}
               </h3>
               <ul className="space-y-2">
                 {texture.concept.common_mistakes.map((mistake, i) => (
                   <li key={i} className="flex items-start gap-2">
-                    <XCircle className="w-5 h-5 text-red-500 mt-0.5 flex-shrink-0" />
+                    <XCircle className="mt-0.5 h-5 w-5 flex-shrink-0 text-red-500" />
                     <span>{mistake}</span>
                   </li>
                 ))}
@@ -285,7 +285,7 @@ function TextureDetail({
           )}
 
           <Button onClick={onStartDrill} className="w-full" size="lg">
-            <Target className="w-5 h-5 mr-2" />
+            <Target className="mr-2 h-5 w-5" />
             {t("textureTraining.startDrill")}
           </Button>
         </CardContent>
@@ -374,8 +374,8 @@ function DrillMode({
 
   if (loading && !question) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
+      <div className="flex h-64 items-center justify-center">
+        <div className="border-primary h-8 w-8 animate-spin rounded-full border-b-2" />
       </div>
     );
   }
@@ -395,8 +395,8 @@ function DrillMode({
               stats.total > 0 && stats.correct / stats.total >= 0.8
                 ? "bg-green-500"
                 : stats.total > 0 && stats.correct / stats.total >= 0.5
-                ? "bg-yellow-500"
-                : "bg-slate-500"
+                  ? "bg-yellow-500"
+                  : "bg-slate-500"
             )}
           >
             {t("textureTraining.correctCount", { count: `${stats.correct}/${stats.total}` })}
@@ -415,19 +415,17 @@ function DrillMode({
                 {t("textureTraining.difficulty." + question.difficulty)}
               </Badge>
             </div>
-            <CardDescription className="mt-2">
-              {question.concept_hint}
-            </CardDescription>
+            <CardDescription className="mt-2">{question.concept_hint}</CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
-            <div className="text-center space-y-4">
-              <div className="text-sm text-muted-foreground">Board</div>
+            <div className="space-y-4 text-center">
+              <div className="text-muted-foreground text-sm">Board</div>
               {renderBoard(question.board)}
             </div>
 
             <div className="text-center">
-              <div className="text-sm text-muted-foreground mb-2">Your Hand</div>
-              <div className="inline-flex items-center gap-2 px-6 py-3 bg-slate-100 dark:bg-slate-800 rounded-lg">
+              <div className="text-muted-foreground mb-2 text-sm">Your Hand</div>
+              <div className="inline-flex items-center gap-2 rounded-lg bg-slate-100 px-6 py-3 dark:bg-slate-800">
                 <span className="text-2xl font-bold">{question.hand}</span>
               </div>
             </div>
@@ -469,60 +467,63 @@ function DrillMode({
               <div className="space-y-4">
                 <div
                   className={cn(
-                    "flex items-center gap-3 p-4 rounded-lg",
+                    "flex items-center gap-3 rounded-lg p-4",
                     result.correct
-                      ? "bg-green-50 border border-green-200 dark:bg-green-950 dark:border-green-800"
-                      : "bg-red-50 border border-red-200 dark:bg-red-950 dark:border-red-800"
+                      ? "border border-green-200 bg-green-50 dark:border-green-800 dark:bg-green-950"
+                      : "border border-red-200 bg-red-50 dark:border-red-800 dark:bg-red-950"
                   )}
                 >
                   {result.correct ? (
-                    <CheckCircle2 className="w-8 h-8 text-green-500" />
+                    <CheckCircle2 className="h-8 w-8 text-green-500" />
                   ) : (
-                    <XCircle className="w-8 h-8 text-red-500" />
+                    <XCircle className="h-8 w-8 text-red-500" />
                   )}
                   <div>
                     <div className="font-semibold">
                       {result.correct ? t("result.correct") : t("result.incorrect")}
                     </div>
-                    <div className="text-sm text-muted-foreground">
-                      {t("textureTraining.bestChoice", { action: ACTION_LABELS[result.best_action], frequency: String(result.best_frequency) })}
+                    <div className="text-muted-foreground text-sm">
+                      {t("textureTraining.bestChoice", {
+                        action: ACTION_LABELS[result.best_action],
+                        frequency: String(result.best_frequency),
+                      })}
                     </div>
                   </div>
                 </div>
 
-                <div className="bg-slate-50 dark:bg-slate-800 rounded-lg p-4">
-                  <div className="text-sm font-medium mb-2">{t("textureTraining.fullStrategy")}</div>
+                <div className="rounded-lg bg-slate-50 p-4 dark:bg-slate-800">
+                  <div className="mb-2 text-sm font-medium">
+                    {t("textureTraining.fullStrategy")}
+                  </div>
                   <div className="space-y-2">
                     {Object.entries(result.full_strategy)
                       .sort(([, a], [, b]) => b - a)
                       .map(([action, freq]) => (
                         <div key={action} className="flex items-center gap-2">
-                          <div className="w-24 text-sm">
-                            {ACTION_LABELS[action] || action}
-                          </div>
+                          <div className="w-24 text-sm">{ACTION_LABELS[action] || action}</div>
                           <div className="flex-1">
                             <Progress value={freq} className="h-2" />
                           </div>
-                          <div className="w-12 text-sm text-right">{freq}%</div>
+                          <div className="w-12 text-right text-sm">{freq}%</div>
                         </div>
                       ))}
                   </div>
                 </div>
 
                 {result.note && (
-                  <div className="text-sm text-muted-foreground italic">
-                    {result.note}
-                  </div>
+                  <div className="text-muted-foreground text-sm italic">{result.note}</div>
                 )}
 
-                <div className="bg-blue-50 dark:bg-blue-950 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
-                  <div className="font-medium mb-2">{t("textureTraining.conceptReminder")}</div>
+                <div className="rounded-lg border border-blue-200 bg-blue-50 p-4 dark:border-blue-800 dark:bg-blue-950">
+                  <div className="mb-2 font-medium">{t("textureTraining.conceptReminder")}</div>
                   <p className="text-sm">{result.concept_summary}</p>
                 </div>
 
                 <Button className="w-full" size="lg" onClick={handleNext}>
-                  {questionCount >= maxQuestions ? t("textureTraining.finishDrill") : t("textureTraining.nextQuestion")}
-                  <ChevronRight className="w-5 h-5 ml-2" />
+                  {questionCount >= maxQuestions
+                    ? t("textureTraining.finishDrill")
+                    : t("textureTraining.nextQuestion")}
+                  <ChevronRight className="ml-2 h-5 w-5" />
                 </Button>
               </div>
             )}
@@ -530,10 +531,7 @@ function DrillMode({
         </Card>
       )}
 
-      <Progress
-        value={(questionCount / maxQuestions) * 100}
-        className="h-2"
-      />
+      <Progress value={(questionCount / maxQuestions) * 100} className="h-2" />
     </div>
   );
 }
@@ -563,14 +561,14 @@ function ResultsSummary({
       <CardContent className="space-y-6">
         <div
           className={cn(
-            "w-32 h-32 rounded-full mx-auto flex items-center justify-center",
+            "mx-auto flex h-32 w-32 items-center justify-center rounded-full",
             passed ? "bg-green-100 dark:bg-green-900" : "bg-yellow-100 dark:bg-yellow-900"
           )}
         >
           {passed ? (
-            <Trophy className="w-16 h-16 text-green-500" />
+            <Trophy className="h-16 w-16 text-green-500" />
           ) : (
-            <Target className="w-16 h-16 text-yellow-500" />
+            <Target className="h-16 w-16 text-yellow-500" />
           )}
         </div>
 
@@ -580,13 +578,9 @@ function ResultsSummary({
         </div>
 
         {passed ? (
-          <p className="text-green-600">
-            {t("textureTraining.masteredText")}
-          </p>
+          <p className="text-green-600">{t("textureTraining.masteredText")}</p>
         ) : (
-          <p className="text-muted-foreground">
-            {t("textureTraining.need80")}
-          </p>
+          <p className="text-muted-foreground">{t("textureTraining.need80")}</p>
         )}
 
         <div className="flex gap-3">
@@ -637,16 +631,23 @@ export default function TextureTrainingPage() {
       if (savedProgress) {
         setProgress(JSON.parse(savedProgress));
       }
-    } catch { /* ignore corrupted data */ }
+    } catch {
+      /* ignore corrupted data */
+    }
   }, []);
 
   const saveProgress = (textureId: string, correct: number, total: number) => {
-    const existing = progress[textureId] || { texture_id: textureId, attempts: 0, correct: 0, mastered: false };
+    const existing = progress[textureId] || {
+      texture_id: textureId,
+      attempts: 0,
+      correct: 0,
+      mastered: false,
+    };
     const newProgress = {
       ...existing,
       attempts: existing.attempts + total,
       correct: existing.correct + correct,
-      mastered: existing.mastered || (correct / total >= 0.8),
+      mastered: existing.mastered || correct / total >= 0.8,
     };
 
     const updated = { ...progress, [textureId]: newProgress };
@@ -682,42 +683,42 @@ export default function TextureTrainingPage() {
     setDrillResults(null);
   };
 
-  const filteredTextures = activeTab === "all"
-    ? textures
-    : textures.filter((tex) => tex.category === activeTab);
+  const filteredTextures =
+    activeTab === "all" ? textures : textures.filter((tex) => tex.category === activeTab);
 
   const masteredCount = Object.values(progress).filter((p) => p.mastered).length;
 
   if (loading) {
     return (
       <div className="container mx-auto px-4 py-8">
-        <div className="flex items-center justify-center h-64">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
+        <div className="flex h-64 items-center justify-center">
+          <div className="border-primary h-8 w-8 animate-spin rounded-full border-b-2" />
         </div>
       </div>
     );
   }
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-6xl">
+    <div className="container mx-auto max-w-6xl px-4 py-8">
       {view === "list" && (
         <>
           <div className="mb-8">
-            <h1 className="text-3xl font-bold mb-2">{t("textureTraining.title")}</h1>
-            <p className="text-muted-foreground">
-              {t("textureTraining.description")}
-            </p>
+            <h1 className="mb-2 text-3xl font-bold">{t("textureTraining.title")}</h1>
+            <p className="text-muted-foreground">{t("textureTraining.description")}</p>
 
             <div className="mt-4 flex items-center gap-4">
               <div className="flex items-center gap-2">
-                <Trophy className="w-5 h-5 text-yellow-500" />
+                <Trophy className="h-5 w-5 text-yellow-500" />
                 <span>
-                  {t("textureTraining.masteredCount", { mastered: String(masteredCount), total: String(textures.length) })}
+                  {t("textureTraining.masteredCount", {
+                    mastered: String(masteredCount),
+                    total: String(textures.length),
+                  })}
                 </span>
               </div>
               <Progress
                 value={(masteredCount / textures.length) * 100}
-                className="flex-1 max-w-xs h-2"
+                className="h-2 max-w-xs flex-1"
               />
             </div>
           </div>
@@ -732,7 +733,7 @@ export default function TextureTrainingPage() {
             </TabsList>
           </Tabs>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
             {filteredTextures.map((texture) => (
               <TextureCard
                 key={texture.texture_id}
@@ -751,7 +752,7 @@ export default function TextureTrainingPage() {
                 setView("drill");
               }}
             >
-              <Target className="w-5 h-5 mr-2" />
+              <Target className="mr-2 h-5 w-5" />
               {t("textureTraining.randomDrill")}
             </Button>
           </div>

@@ -2,11 +2,11 @@
 GGPoker Hand History Parser
 Parses GGPoker hand history files into structured data.
 """
+
 import re
 from dataclasses import dataclass, field
-from typing import List, Optional, Dict, Tuple
-from enum import Enum
 from datetime import datetime
+from enum import Enum
 
 
 class Street(Enum):
@@ -33,8 +33,8 @@ class ActionType(Enum):
 class Action:
     player: str
     action_type: ActionType
-    amount: Optional[float] = None
-    to_amount: Optional[float] = None  # For raises "raises $X to $Y"
+    amount: float | None = None
+    to_amount: float | None = None  # For raises "raises $X to $Y"
 
 
 @dataclass
@@ -43,8 +43,8 @@ class Player:
     seat: int
     stack: float
     is_hero: bool = False
-    hole_cards: Optional[str] = None
-    position: Optional[str] = None  # BTN, SB, BB, UTG, etc.
+    hole_cards: str | None = None
+    position: str | None = None  # BTN, SB, BB, UTG, etc.
 
 
 @dataclass
@@ -53,28 +53,28 @@ class HandHistory:
     timestamp: datetime
     table_name: str
     game_type: str
-    stakes: Tuple[float, float]  # (small_blind, big_blind)
+    stakes: tuple[float, float]  # (small_blind, big_blind)
     max_players: int
     button_seat: int
 
-    players: List[Player] = field(default_factory=list)
-    hero: Optional[Player] = None
+    players: list[Player] = field(default_factory=list)
+    hero: Player | None = None
 
     # Actions by street
-    preflop_actions: List[Action] = field(default_factory=list)
-    flop_actions: List[Action] = field(default_factory=list)
-    turn_actions: List[Action] = field(default_factory=list)
-    river_actions: List[Action] = field(default_factory=list)
+    preflop_actions: list[Action] = field(default_factory=list)
+    flop_actions: list[Action] = field(default_factory=list)
+    turn_actions: list[Action] = field(default_factory=list)
+    river_actions: list[Action] = field(default_factory=list)
 
     # Board cards
-    flop: Optional[str] = None
-    turn: Optional[str] = None
-    river: Optional[str] = None
+    flop: str | None = None
+    turn: str | None = None
+    river: str | None = None
 
     # Results
     pot: float = 0
     rake: float = 0
-    winners: Dict[str, float] = field(default_factory=dict)
+    winners: dict[str, float] = field(default_factory=dict)
 
     # Raw text for reference
     raw_text: str = ""
@@ -94,18 +94,18 @@ class GGPokerParser:
     }
 
     def __init__(self):
-        self.hands: List[HandHistory] = []
+        self.hands: list[HandHistory] = []
 
-    def parse_file(self, filepath: str) -> List[HandHistory]:
+    def parse_file(self, filepath: str) -> list[HandHistory]:
         """Parse a GGPoker hand history file."""
-        with open(filepath, 'r', encoding='utf-8') as f:
+        with open(filepath, encoding="utf-8") as f:
             content = f.read()
         return self.parse_content(content)
 
-    def parse_content(self, content: str) -> List[HandHistory]:
+    def parse_content(self, content: str) -> list[HandHistory]:
         """Parse hand history content string."""
         # Split by hand separator (double newline before "Poker Hand #")
-        hand_texts = re.split(r'\n\n+(?=Poker Hand #)', content.strip())
+        hand_texts = re.split(r"\n\n+(?=Poker Hand #)", content.strip())
 
         hands = []
         for hand_text in hand_texts:
@@ -121,9 +121,9 @@ class GGPokerParser:
         self.hands = hands
         return hands
 
-    def _parse_single_hand(self, text: str) -> Optional[HandHistory]:
+    def _parse_single_hand(self, text: str) -> HandHistory | None:
         """Parse a single hand history."""
-        lines = text.strip().split('\n')
+        lines = text.strip().split("\n")
         if not lines:
             return None
 
@@ -131,7 +131,7 @@ class GGPokerParser:
         # Poker Hand #HD2689368869: Hold'em No Limit ($0.01/$0.02) - 2026/01/19 13:34:25
         header_match = re.match(
             r"Poker Hand #(\w+): (.+?) \(\$?([\d.]+)/\$?([\d.]+)\) - (\d{4}/\d{2}/\d{2} \d{2}:\d{2}:\d{2})",
-            lines[0]
+            lines[0],
         )
         if not header_match:
             return None
@@ -190,19 +190,19 @@ class GGPokerParser:
                 continue
             elif line.startswith("*** FLOP ***"):
                 current_street = Street.FLOP
-                flop_match = re.search(r'\[(.+?)\]', line)
+                flop_match = re.search(r"\[(.+?)\]", line)
                 if flop_match:
                     hand.flop = flop_match.group(1)
                 continue
             elif line.startswith("*** TURN ***"):
                 current_street = Street.TURN
-                turn_match = re.search(r'\] \[(.+?)\]$', line)
+                turn_match = re.search(r"\] \[(.+?)\]$", line)
                 if turn_match:
                     hand.turn = turn_match.group(1)
                 continue
             elif line.startswith("*** RIVER ***"):
                 current_street = Street.RIVER
-                river_match = re.search(r'\] \[(.+?)\]$', line)
+                river_match = re.search(r"\] \[(.+?)\]$", line)
                 if river_match:
                     hand.river = river_match.group(1)
                 continue
@@ -212,7 +212,7 @@ class GGPokerParser:
 
             # Parse dealt cards
             if line.startswith("Dealt to Hero"):
-                cards_match = re.search(r'\[(.+?)\]', line)
+                cards_match = re.search(r"\[(.+?)\]", line)
                 if cards_match and hand.hero:
                     hand.hero.hole_cards = cards_match.group(1)
                 continue
@@ -231,8 +231,8 @@ class GGPokerParser:
 
             # Parse pot/rake from summary
             if "Total pot" in line:
-                pot_match = re.search(r'Total pot \$?([\d.]+)', line)
-                rake_match = re.search(r'Rake \$?([\d.]+)', line)
+                pot_match = re.search(r"Total pot \$?([\d.]+)", line)
+                rake_match = re.search(r"Rake \$?([\d.]+)", line)
                 if pot_match:
                     hand.pot = float(pot_match.group(1))
                 if rake_match:
@@ -240,17 +240,17 @@ class GGPokerParser:
 
             # Parse winners
             if "collected" in line and "from pot" in line:
-                win_match = re.match(r'(\w+) collected \$?([\d.]+)', line)
+                win_match = re.match(r"(\w+) collected \$?([\d.]+)", line)
                 if win_match:
                     hand.winners[win_match.group(1)] = float(win_match.group(2))
             elif " won " in line:
-                win_match = re.search(r'(\w+) .*won \(\$?([\d.]+)\)', line)
+                win_match = re.search(r"(\w+) .*won \(\$?([\d.]+)\)", line)
                 if win_match:
                     hand.winners[win_match.group(1)] = float(win_match.group(2))
 
         return hand
 
-    def _parse_player_line(self, line: str) -> Optional[Player]:
+    def _parse_player_line(self, line: str) -> Player | None:
         """Parse a player seat line."""
         # Seat 5: Hero ($3.49 in chips)
         match = re.match(r"Seat (\d+): (\w+) \(\$?([\d.]+) in chips\)", line)
@@ -258,11 +258,11 @@ class GGPokerParser:
             seat = int(match.group(1))
             name = match.group(2)
             stack = float(match.group(3))
-            is_hero = (name == "Hero")
+            is_hero = name == "Hero"
             return Player(name=name, seat=seat, stack=stack, is_hero=is_hero)
         return None
 
-    def _parse_action_line(self, line: str) -> Optional[Action]:
+    def _parse_action_line(self, line: str) -> Action | None:
         """Parse an action line."""
         # Skip non-action lines
         if ":" not in line:
@@ -286,29 +286,29 @@ class GGPokerParser:
         elif action_str == "checks":
             return Action(player=player, action_type=ActionType.CHECK)
         elif action_str.startswith("calls"):
-            amount_match = re.search(r'\$?([\d.]+)', action_str)
+            amount_match = re.search(r"\$?([\d.]+)", action_str)
             amount = float(amount_match.group(1)) if amount_match else None
             return Action(player=player, action_type=ActionType.CALL, amount=amount)
         elif action_str.startswith("bets"):
-            amount_match = re.search(r'\$?([\d.]+)', action_str)
+            amount_match = re.search(r"\$?([\d.]+)", action_str)
             amount = float(amount_match.group(1)) if amount_match else None
             return Action(player=player, action_type=ActionType.BET, amount=amount)
         elif action_str.startswith("raises"):
             # raises $0.04 to $0.06
-            raise_match = re.search(r'raises \$?([\d.]+) to \$?([\d.]+)', action_str)
+            raise_match = re.search(r"raises \$?([\d.]+) to \$?([\d.]+)", action_str)
             if raise_match:
                 return Action(
                     player=player,
                     action_type=ActionType.RAISE,
                     amount=float(raise_match.group(1)),
-                    to_amount=float(raise_match.group(2))
+                    to_amount=float(raise_match.group(2)),
                 )
         elif "posts small blind" in action_str:
-            amount_match = re.search(r'\$?([\d.]+)', action_str)
+            amount_match = re.search(r"\$?([\d.]+)", action_str)
             amount = float(amount_match.group(1)) if amount_match else None
             return Action(player=player, action_type=ActionType.POST_SB, amount=amount)
         elif "posts big blind" in action_str:
-            amount_match = re.search(r'\$?([\d.]+)', action_str)
+            amount_match = re.search(r"\$?([\d.]+)", action_str)
             amount = float(amount_match.group(1)) if amount_match else None
             return Action(player=player, action_type=ActionType.POST_BB, amount=amount)
 
@@ -368,7 +368,9 @@ def format_hand_summary(hand: HandHistory) -> str:
     lines.append("")
 
     if hand.hero:
-        lines.append(f"Hero: {hand.hero.position} | {hand.hero.hole_cards} | Stack: ${hand.hero.stack:.2f}")
+        lines.append(
+            f"Hero: {hand.hero.position} | {hand.hero.hole_cards} | Stack: ${hand.hero.stack:.2f}"
+        )
 
     lines.append("")
     lines.append("Players:")
@@ -381,33 +383,41 @@ def format_hand_summary(hand: HandHistory) -> str:
         lines.append("")
         lines.append("Preflop:")
         for action in hand.preflop_actions:
-            lines.append(f"  {action.player}: {action.action_type.value}" +
-                        (f" ${action.amount:.2f}" if action.amount else "") +
-                        (f" to ${action.to_amount:.2f}" if action.to_amount else ""))
+            lines.append(
+                f"  {action.player}: {action.action_type.value}"
+                + (f" ${action.amount:.2f}" if action.amount else "")
+                + (f" to ${action.to_amount:.2f}" if action.to_amount else "")
+            )
 
     # Flop
     if hand.flop:
         lines.append("")
         lines.append(f"Flop: [{hand.flop}]")
         for action in hand.flop_actions:
-            lines.append(f"  {action.player}: {action.action_type.value}" +
-                        (f" ${action.amount:.2f}" if action.amount else ""))
+            lines.append(
+                f"  {action.player}: {action.action_type.value}"
+                + (f" ${action.amount:.2f}" if action.amount else "")
+            )
 
     # Turn
     if hand.turn:
         lines.append("")
         lines.append(f"Turn: [{hand.flop}] [{hand.turn}]")
         for action in hand.turn_actions:
-            lines.append(f"  {action.player}: {action.action_type.value}" +
-                        (f" ${action.amount:.2f}" if action.amount else ""))
+            lines.append(
+                f"  {action.player}: {action.action_type.value}"
+                + (f" ${action.amount:.2f}" if action.amount else "")
+            )
 
     # River
     if hand.river:
         lines.append("")
         lines.append(f"River: [{hand.flop}] [{hand.turn}] [{hand.river}]")
         for action in hand.river_actions:
-            lines.append(f"  {action.player}: {action.action_type.value}" +
-                        (f" ${action.amount:.2f}" if action.amount else ""))
+            lines.append(
+                f"  {action.player}: {action.action_type.value}"
+                + (f" ${action.amount:.2f}" if action.amount else "")
+            )
 
     # Results
     lines.append("")
@@ -422,10 +432,11 @@ def format_hand_summary(hand: HandHistory) -> str:
 # Test function
 if __name__ == "__main__":
     import sys
+
     if len(sys.argv) > 1:
         parser = GGPokerParser()
         hands = parser.parse_file(sys.argv[1])
         print(f"Parsed {len(hands)} hands")
         for hand in hands[:3]:  # Print first 3
             print(format_hand_summary(hand))
-            print("\n" + "="*50 + "\n")
+            print("\n" + "=" * 50 + "\n")

@@ -2,23 +2,24 @@
 Preflop equity quiz module.
 Generates multiple choice questions about hand vs hand equity.
 """
+
 import json
 import random
 from dataclasses import dataclass
 from pathlib import Path
-from typing import List, Tuple, Optional
 
 
 @dataclass
 class EquityQuestion:
     """A single equity quiz question."""
+
     hand1: str
     hand2: str
     correct_equity1: int
     correct_equity2: int
     category: str
     difficulty: str
-    note: Optional[str] = None
+    note: str | None = None
 
     @property
     def display_hand1(self) -> str:
@@ -34,6 +35,7 @@ class EquityQuestion:
 @dataclass
 class EquityChoice:
     """A multiple choice option."""
+
     equity1: int
     equity2: int
     is_correct: bool
@@ -41,10 +43,10 @@ class EquityChoice:
 
 def _add_suit_symbols(hand: str) -> str:
     """Add suit symbols to hand string for display."""
-    if hand.endswith('s'):
+    if hand.endswith("s"):
         # Suited - use same suit
         return f"{hand[0]}♠ {hand[1]}♠"
-    elif hand.endswith('o'):
+    elif hand.endswith("o"):
         # Offsuit - use different suits
         return f"{hand[0]}♠ {hand[1]}♥"
     else:
@@ -63,13 +65,11 @@ class EquityQuiz:
     def _load_data(self) -> dict:
         """Load equity data from JSON file."""
         data_path = Path(__file__).parent.parent / "data" / "equity.json"
-        with open(data_path, "r", encoding="utf-8") as f:
+        with open(data_path, encoding="utf-8") as f:
             return json.load(f)
 
     def generate_question(
-        self,
-        difficulty: Optional[str] = None,
-        category: Optional[str] = None
+        self, difficulty: str | None = None, category: str | None = None
     ) -> EquityQuestion:
         """Generate a random equity question."""
         matchups = self.data.get("matchups", {})
@@ -117,10 +117,8 @@ class EquityQuiz:
         )
 
     def generate_choices(
-        self,
-        question: EquityQuestion,
-        num_choices: int = 4
-    ) -> List[EquityChoice]:
+        self, question: EquityQuestion, num_choices: int = 4
+    ) -> list[EquityChoice]:
         """
         Generate multiple choice options for a question.
         Uses tight variance: -10%, -5%, correct, +5%, +10%
@@ -161,11 +159,8 @@ class EquityQuiz:
         return choices
 
     def check_answer(
-        self,
-        question: EquityQuestion,
-        player_equity1: int,
-        use_tolerance: bool = True
-    ) -> Tuple[bool, int]:
+        self, question: EquityQuestion, player_equity1: int, use_tolerance: bool = True
+    ) -> tuple[bool, int]:
         """
         Check if player's answer is correct.
 
@@ -181,15 +176,12 @@ class EquityQuiz:
 
         return is_correct, diff
 
-    def get_categories(self) -> List[Tuple[str, str]]:
+    def get_categories(self) -> list[tuple[str, str]]:
         """Get list of (category_key, description) tuples."""
         matchups = self.data.get("matchups", {})
-        return [
-            (key, data.get("description", key))
-            for key, data in matchups.items()
-        ]
+        return [(key, data.get("description", key)) for key, data in matchups.items()]
 
-    def get_difficulties(self) -> List[str]:
+    def get_difficulties(self) -> list[str]:
         """Get list of available difficulty levels."""
         return ["easy", "medium", "hard"]
 

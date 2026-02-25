@@ -12,10 +12,7 @@ export default defineConfig({
     exclude: ["node_modules", "e2e"],
     coverage: {
       reporter: ["text", "json", "html"],
-      exclude: [
-        "node_modules/",
-        "src/__tests__/setup.ts",
-      ],
+      exclude: ["node_modules/", "src/__tests__/setup.ts"],
     },
   },
   resolve: {

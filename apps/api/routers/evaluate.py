@@ -1,15 +1,16 @@
 """
 Evaluation endpoints for checking player actions.
 """
-from fastapi import APIRouter, HTTPException
-from pydantic import BaseModel
-from typing import Optional, Dict
+
 from pathlib import Path
 
+from fastapi import APIRouter, HTTPException
+from pydantic import BaseModel
+
+from core.evaluator import EvalResult, Evaluator
 from core.hand import Hand
 from core.position import Position
-from core.scenario import Scenario, ActionType
-from core.evaluator import Evaluator, EvalResult
+from core.scenario import ActionType, Scenario
 
 router = APIRouter()
 
@@ -72,7 +73,9 @@ def evaluate_action(request: EvaluateRequest):
                 hero_position = Position[parts[2]]
                 villain_position = Position[parts[4]] if len(parts) > 4 else None
             else:
-                raise HTTPException(status_code=422, detail=f"Unknown scenario key format: {request.scenario_key}")
+                raise HTTPException(
+                    status_code=422, detail=f"Unknown scenario key format: {request.scenario_key}"
+                )
         except KeyError as e:
             raise HTTPException(status_code=422, detail=f"Invalid position in scenario key: {e}")
 

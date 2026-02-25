@@ -1,17 +1,18 @@
 """
 MTT Push/Fold range endpoints and drill mode.
 """
-from fastapi import APIRouter, HTTPException, Query
-from pydantic import BaseModel
-from typing import Dict, List, Optional, Set
-from pathlib import Path
+
 import json
 import random
+from pathlib import Path
+
+from fastapi import APIRouter, HTTPException, Query
+from pydantic import BaseModel
 
 router = APIRouter()
 
 # Cache for MTT data
-_mtt_cache: Dict[str, Dict] = {}
+_mtt_cache: dict[str, dict] = {}
 
 # All possible hands for edge hand generation
 ALL_HANDS = []
@@ -28,23 +29,23 @@ ALL_HANDS = list(set(ALL_HANDS))
 class PushFoldResponse(BaseModel):
     position: str
     stack_depth: str
-    hands: List[str]  # List of hands that should push
+    hands: list[str]  # List of hands that should push
     total_combos: int
 
 
 class DefenseResponse(BaseModel):
     scenario: str
     stack_depth: str
-    hands: List[str]  # List of hands that should call
+    hands: list[str]  # List of hands that should call
     total_combos: int
 
 
 class MTTRangesResponse(BaseModel):
-    stack_depths: List[str]
-    positions: List[str]
+    stack_depths: list[str]
+    positions: list[str]
 
 
-def get_mtt_data(data_type: str) -> Dict:
+def get_mtt_data(data_type: str) -> dict:
     """Load MTT range data from JSON files."""
     if data_type in _mtt_cache:
         return _mtt_cache[data_type]
@@ -270,11 +271,12 @@ def list_mtt_ranges(format: str = Query(default="6max", description="Game format
 # Drill Mode Endpoints
 # =====================
 
+
 class DrillSpotRequest(BaseModel):
     mode: str = "push"  # push, defense, resteal, hu
-    enabled_positions: List[str] = ["UTG", "HJ", "CO", "BTN", "SB"]
-    enabled_stack_depths: List[str] = ["5bb", "8bb", "10bb", "12bb", "15bb"]
-    enabled_scenarios: Optional[List[str]] = None  # For defense/resteal/hu
+    enabled_positions: list[str] = ["UTG", "HJ", "CO", "BTN", "SB"]
+    enabled_stack_depths: list[str] = ["5bb", "8bb", "10bb", "12bb", "15bb"]
+    enabled_scenarios: list[str] | None = None  # For defense/resteal/hu
 
 
 class DrillSpotResponse(BaseModel):
@@ -282,9 +284,9 @@ class DrillSpotResponse(BaseModel):
     position: str
     stack_depth: str
     mode: str
-    scenario: Optional[str] = None  # For defense/resteal/hu
-    scenario_display: Optional[str] = None  # Human readable scenario
-    available_actions: List[str]
+    scenario: str | None = None  # For defense/resteal/hu
+    scenario_display: str | None = None  # Human readable scenario
+    available_actions: list[str]
 
 
 class DrillEvaluateRequest(BaseModel):
@@ -293,7 +295,7 @@ class DrillEvaluateRequest(BaseModel):
     stack_depth: str
     mode: str
     action: str  # push/fold or call/fold
-    scenario: Optional[str] = None
+    scenario: str | None = None
 
 
 class DrillEvaluateResponse(BaseModel):
@@ -310,7 +312,7 @@ def get_random_hand() -> str:
     return random.choice(ALL_HANDS)
 
 
-def generate_edge_hand(range_set: Set[str]) -> str:
+def generate_edge_hand(range_set: set[str]) -> str:
     """Generate a hand near the push/fold edge for interesting decisions."""
     edge_hands = []
 
@@ -369,7 +371,7 @@ def generate_drill_spot(request: DrillSpotRequest):
                 position=position,
                 stack_depth=stack_depth,
                 mode=mode,
-                available_actions=["push", "fold"]
+                available_actions=["push", "fold"],
             )
 
         elif mode == "defense":
@@ -402,7 +404,9 @@ def generate_drill_spot(request: DrillSpotRequest):
                 hand = get_random_hand()
 
             # Format scenario display
-            scenario_display = scenario.replace("_", " ").replace("vs", "vs").replace("shove", "Shove")
+            scenario_display = (
+                scenario.replace("_", " ").replace("vs", "vs").replace("shove", "Shove")
+            )
 
             return DrillSpotResponse(
                 hand=hand,
@@ -411,7 +415,7 @@ def generate_drill_spot(request: DrillSpotRequest):
                 mode=mode,
                 scenario=scenario,
                 scenario_display=scenario_display,
-                available_actions=["call", "fold"]
+                available_actions=["call", "fold"],
             )
 
         elif mode == "resteal":
@@ -443,7 +447,9 @@ def generate_drill_spot(request: DrillSpotRequest):
                 hand = get_random_hand()
 
             # Format scenario display
-            scenario_display = scenario.replace("_", " ").replace("resteal", "3bet Shove").replace("vs", "vs")
+            scenario_display = (
+                scenario.replace("_", " ").replace("resteal", "3bet Shove").replace("vs", "vs")
+            )
 
             return DrillSpotResponse(
                 hand=hand,
@@ -452,7 +458,7 @@ def generate_drill_spot(request: DrillSpotRequest):
                 mode=mode,
                 scenario=scenario,
                 scenario_display=scenario_display,
-                available_actions=["shove", "fold"]
+                available_actions=["shove", "fold"],
             )
 
         elif mode == "hu":
@@ -497,7 +503,7 @@ def generate_drill_spot(request: DrillSpotRequest):
                 mode=mode,
                 scenario=scenario,
                 scenario_display=scenario_display,
-                available_actions=available_actions
+                available_actions=available_actions,
             )
 
         else:
@@ -520,7 +526,7 @@ def evaluate_drill_answer(request: DrillEvaluateRequest):
         action = request.action
         scenario = request.scenario
 
-        range_set: Set[str] = set()
+        range_set: set[str] = set()
 
         if mode == "push":
             data = get_mtt_data("push_fold")
@@ -538,7 +544,9 @@ def evaluate_drill_answer(request: DrillEvaluateRequest):
                 explanation = f"{hand} is in the {position} push range at {stack_depth}. Push range is {range_pct}% of hands."
                 explanation_zh = f"{hand} 在 {position} {stack_depth} 的推入範圍內。推入範圍為 {range_pct}% 的手牌。"
             else:
-                explanation = f"{hand} is outside the {position} push range at {stack_depth}. Fold this hand."
+                explanation = (
+                    f"{hand} is outside the {position} push range at {stack_depth}. Fold this hand."
+                )
                 explanation_zh = f"{hand} 在 {position} {stack_depth} 的推入範圍外。棄掉這手牌。"
 
         elif mode == "defense":
@@ -555,7 +563,9 @@ def evaluate_drill_answer(request: DrillEvaluateRequest):
 
             if should_action:
                 explanation = f"{hand} is in the call range for {scenario} at {stack_depth}. Call range is {range_pct}%."
-                explanation_zh = f"{hand} 在 {scenario} {stack_depth} 的跟注範圍內。跟注範圍為 {range_pct}%。"
+                explanation_zh = (
+                    f"{hand} 在 {scenario} {stack_depth} 的跟注範圍內。跟注範圍為 {range_pct}%。"
+                )
             else:
                 explanation = f"{hand} is outside the call range. Fold against the shove."
                 explanation_zh = f"{hand} 在跟注範圍外。面對全下應棄牌。"
@@ -595,8 +605,12 @@ def evaluate_drill_answer(request: DrillEvaluateRequest):
             range_pct = round(len(range_set) / 169 * 100, 1)
 
             if should_action:
-                explanation = f"{hand} is in the {scenario} range at {stack_depth}. Range is {range_pct}%."
-                explanation_zh = f"{hand} 在 {scenario} {stack_depth} 的範圍內。範圍為 {range_pct}%。"
+                explanation = (
+                    f"{hand} is in the {scenario} range at {stack_depth}. Range is {range_pct}%."
+                )
+                explanation_zh = (
+                    f"{hand} 在 {scenario} {stack_depth} 的範圍內。範圍為 {range_pct}%。"
+                )
             else:
                 explanation = f"{hand} is outside the range for this HU scenario."
                 explanation_zh = f"{hand} 在此單挑場景的範圍外。"
@@ -610,7 +624,7 @@ def evaluate_drill_answer(request: DrillEvaluateRequest):
             explanation=explanation,
             explanation_zh=explanation_zh,
             range_count=len(range_set),
-            range_pct=range_pct
+            range_pct=range_pct,
         )
 
     except HTTPException:

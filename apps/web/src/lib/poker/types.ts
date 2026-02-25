@@ -39,16 +39,16 @@ export interface Player {
   id: string;
   name: string;
   position: Position;
-  stack: number;           // In BB
+  stack: number; // In BB
   holeCards: HoleCards | null;
-  currentBet: number;      // Current street bet
-  totalInvested: number;   // Total invested this hand
-  isActive: boolean;       // Still in hand (not folded)
+  currentBet: number; // Current street bet
+  totalInvested: number; // Total invested this hand
+  isActive: boolean; // Still in hand (not folded)
   isFolded: boolean;
   isAllIn: boolean;
   isHero: boolean;
   isDealer: boolean;
-  seatIndex: number;       // 0-5 for table position
+  seatIndex: number; // 0-5 for table position
 }
 
 // ============================================
@@ -101,10 +101,10 @@ export type HandRank =
 
 export interface HandEvaluation {
   rank: HandRank;
-  rankValue: number;      // Numeric value for comparison
+  rankValue: number; // Numeric value for comparison
   description: string;
   descriptionZh: string;
-  kickers: Rank[];        // For tiebreaking
+  kickers: Rank[]; // For tiebreaking
 }
 
 // ============================================
@@ -113,13 +113,13 @@ export interface HandEvaluation {
 
 export interface GameConfig {
   tableSize: 6;
-  startingStack: number;  // In BB, default 100
+  startingStack: number; // In BB, default 100
   blinds: {
     sb: number;
     bb: number;
   };
   ante: number;
-  timeBank: number;       // Seconds per decision
+  timeBank: number; // Seconds per decision
 }
 
 // ============================================
@@ -145,8 +145,8 @@ export interface ScenarioPreset {
 
   // Setup configuration
   heroPosition: Position;
-  numPlayers: number;           // 2-6
-  effectiveStack: number;       // In BB
+  numPlayers: number; // 2-6
+  effectiveStack: number; // In BB
 
   // Preflop action sequence (optional)
   preflopActions?: ActionRecord[];
@@ -175,7 +175,7 @@ export type AIStyle = "GTO" | "LAG" | "TAG" | "Loose_Passive" | "Tight_Passive" 
 export interface AIOpponentStat {
   handsPlayed: number;
   handsWon: number;
-  totalProfit: number;  // BB
+  totalProfit: number; // BB
 }
 
 // 雙層追蹤：按類型 + 按個體
@@ -208,11 +208,11 @@ export interface AIProfile {
   style: AIStyle;
 
   // Adjustment factors (1.0 = GTO baseline)
-  vpipModifier: number;        // Voluntarily put money in pot
-  pfrModifier: number;         // Preflop raise frequency
-  aggressionFactor: number;    // Postflop aggression
-  bluffFrequency: number;      // Bluff to value ratio
-  foldToAggression: number;    // Fold to bets/raises
+  vpipModifier: number; // Voluntarily put money in pot
+  pfrModifier: number; // Preflop raise frequency
+  aggressionFactor: number; // Postflop aggression
+  bluffFrequency: number; // Bluff to value ratio
+  foldToAggression: number; // Fold to bets/raises
 
   // Position awareness (0-1, 1 = fully positional)
   positionAwareness: number;
@@ -225,21 +225,21 @@ export interface AIProfile {
 export interface HeroStats {
   // Basic stats
   handsPlayed: number;
-  handsVPIP: number;        // Voluntarily put money in pot
-  handsPFR: number;         // Preflop raise
+  handsVPIP: number; // Voluntarily put money in pot
+  handsPFR: number; // Preflop raise
 
   // 3-Bet stats
-  threeBetCount: number;    // Times hero 3-bet
+  threeBetCount: number; // Times hero 3-bet
   threeBetOpportunity: number; // Times hero could 3-bet
-  foldTo3BetCount: number;  // Times hero folded to 3-bet
-  faced3BetCount: number;   // Times hero faced 3-bet
+  foldTo3BetCount: number; // Times hero folded to 3-bet
+  faced3BetCount: number; // Times hero faced 3-bet
 
   // Steal stats (ATS)
-  stealAttempts: number;    // Raise from CO/BTN/SB when folded to
+  stealAttempts: number; // Raise from CO/BTN/SB when folded to
   stealOpportunities: number;
 
   // Continuation bet stats (by street)
-  flopCBet: number;         // Times c-bet on flop
+  flopCBet: number; // Times c-bet on flop
   flopCBetOpportunity: number;
   turnCBet: number;
   turnCBetOpportunity: number;
@@ -247,19 +247,19 @@ export interface HeroStats {
   riverCBetOpportunity: number;
 
   // Facing c-bet stats
-  foldToCBet: number;       // Times folded to c-bet
-  callCBet: number;         // Times called c-bet
-  raiseCBet: number;        // Times raised c-bet
-  facedCBet: number;        // Total times faced c-bet
+  foldToCBet: number; // Times folded to c-bet
+  callCBet: number; // Times called c-bet
+  raiseCBet: number; // Times raised c-bet
+  facedCBet: number; // Total times faced c-bet
 
   // Showdown stats
-  wentToShowdown: number;   // Times reached showdown
-  wonAtShowdown: number;    // Times won at showdown
+  wentToShowdown: number; // Times reached showdown
+  wonAtShowdown: number; // Times won at showdown
 
   // Aggression tracking
-  totalBets: number;        // Total bets made
-  totalRaises: number;      // Total raises made
-  totalCalls: number;       // Total calls made
+  totalBets: number; // Total bets made
+  totalRaises: number; // Total raises made
+  totalCalls: number; // Total calls made
 
   // Check-raise stats
   checkRaiseCount: number;
@@ -303,28 +303,28 @@ export const DEFAULT_HERO_STATS: HeroStats = {
 export type HintMode = "off" | "after" | "before" | "detailed";
 
 export type BoardTexture =
-  | "dry"           // 乾燥：無聯繫、無同花聽牌
-  | "semi_wet"      // 半濕潤：有一些聽牌可能
-  | "wet"           // 濕潤：多重聽牌可能
-  | "monotone"      // 單花：三張同花
-  | "paired"        // 對子公牌
-  | "connected";    // 連接：順子可能
+  | "dry" // 乾燥：無聯繫、無同花聽牌
+  | "semi_wet" // 半濕潤：有一些聽牌可能
+  | "wet" // 濕潤：多重聽牌可能
+  | "monotone" // 單花：三張同花
+  | "paired" // 對子公牌
+  | "connected"; // 連接：順子可能
 
 export type HandStrengthCategory =
-  | "nuts"          // 堅果：最強牌
-  | "strong"        // 強牌：頂對好踢腳、兩對、暗三
-  | "medium"        // 中等：中對、弱頂對
-  | "weak"          // 弱牌：底對、A高
-  | "draw"          // 聽牌：同花聽、順子聽
-  | "air";          // 空氣：無牌力
+  | "nuts" // 堅果：最強牌
+  | "strong" // 強牌：頂對好踢腳、兩對、暗三
+  | "medium" // 中等：中對、弱頂對
+  | "weak" // 弱牌：底對、A高
+  | "draw" // 聽牌：同花聽、順子聽
+  | "air"; // 空氣：無牌力
 
 export interface GTOHint {
   // Recommended actions with frequencies
   recommendations: {
     action: ActionType;
-    frequency: number;      // 0-100%
-    sizing?: number;        // Bet size in % of pot
-    isPrimary: boolean;     // Is this the main recommended action
+    frequency: number; // 0-100%
+    sizing?: number; // Bet size in % of pot
+    isPrimary: boolean; // Is this the main recommended action
   }[];
 
   // Explanation
@@ -334,7 +334,7 @@ export interface GTOHint {
     handStrength: HandStrengthCategory;
     handStrengthZh: string;
     positionAdvantage: "IP" | "OOP";
-    keyFactors: string[];   // Key decision factors
+    keyFactors: string[]; // Key decision factors
     keyFactorsZh: string[];
     // Solver data (if available)
     solverData?: {
@@ -403,7 +403,7 @@ export interface TableState {
     scenario: ScenarioPreset | null;
     showGTOHints: boolean;
     showEV: boolean;
-    hintMode: HintMode;  // off | after | before | detailed
+    hintMode: HintMode; // off | after | before | detailed
   };
 
   // Session Statistics
@@ -415,11 +415,14 @@ export interface TableState {
   };
 
   // Position-based Statistics
-  positionStats: Record<Position, {
-    handsPlayed: number;
-    handsWon: number;
-    totalProfit: number;
-  }>;
+  positionStats: Record<
+    Position,
+    {
+      handsPlayed: number;
+      handsWon: number;
+      totalProfit: number;
+    }
+  >;
 
   // Hero Statistics (for AI adaptation and detailed tracking)
   heroStats: HeroStats;
@@ -457,7 +460,13 @@ export interface TableActions {
   // Player Actions
   handleAction: (action: ActionType, amount?: number) => void;
   getAvailableActions: () => AvailableAction[];
-  checkBettingRoundComplete: (players: Player[], nextIndex: number, lastAggressor: number | null, currentBet: number, actionsThisRound: number) => boolean;
+  checkBettingRoundComplete: (
+    players: Player[],
+    nextIndex: number,
+    lastAggressor: number | null,
+    currentBet: number,
+    actionsThisRound: number
+  ) => boolean;
 
   // AI
   processAITurn: () => Promise<void>;
@@ -508,18 +517,18 @@ export const SUIT_SYMBOLS: Record<string, string> = {
 
 // For inline text on page background (supports dark mode)
 export const SUIT_COLORS: Record<string, string> = {
-  s: "text-slate-900 dark:text-slate-100",  // 黑桃：黑色
-  h: "text-red-600 dark:text-red-400",      // 紅心：紅色
-  d: "text-blue-600 dark:text-blue-400",    // 方塊：藍色（四色牌）
-  c: "text-green-600 dark:text-green-400",  // 梅花：綠色（四色牌）
+  s: "text-slate-900 dark:text-slate-100", // 黑桃：黑色
+  h: "text-red-600 dark:text-red-400", // 紅心：紅色
+  d: "text-blue-600 dark:text-blue-400", // 方塊：藍色（四色牌）
+  c: "text-green-600 dark:text-green-400", // 梅花：綠色（四色牌）
 };
 
 // For text on card backgrounds (always light/white bg, no dark mode override)
 export const SUIT_CARD_COLORS: Record<string, string> = {
-  s: "text-slate-900",   // 黑桃：黑色
-  h: "text-red-600",     // 紅心：紅色
-  d: "text-blue-600",    // 方塊：藍色（四色牌）
-  c: "text-green-600",   // 梅花：綠色（四色牌）
+  s: "text-slate-900", // 黑桃：黑色
+  h: "text-red-600", // 紅心：紅色
+  d: "text-blue-600", // 方塊：藍色（四色牌）
+  c: "text-green-600", // 梅花：綠色（四色牌）
 };
 
 export const HAND_RANK_VALUES: Record<HandRank, number> = {
@@ -550,12 +559,12 @@ export const DEFAULT_CONFIG: GameConfig = {
 export interface HandHistoryPlayer {
   name: string;
   position: Position;
-  stack: number;           // Starting stack for this hand
-  holeCards: HoleCards | null;  // null if not shown
+  stack: number; // Starting stack for this hand
+  holeCards: HoleCards | null; // null if not shown
   seatIndex: number;
   isHero: boolean;
-  aiStyle?: AIStyle;       // AI 玩家風格 (非 Hero)
-  aiProfileId?: string;    // AI profile ID (如 "lag-larry")
+  aiStyle?: AIStyle; // AI 玩家風格 (非 Hero)
+  aiProfileId?: string; // AI profile ID (如 "lag-larry")
 }
 
 export interface HandHistoryAction {
@@ -617,5 +626,5 @@ export interface HandHistory {
 
   // Hero specific
   heroPosition: Position;
-  heroProfit: number;  // BB won/lost
+  heroProfit: number; // BB won/lost
 }

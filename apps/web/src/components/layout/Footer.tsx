@@ -3,16 +3,16 @@ import { Spade } from "lucide-react";
 
 export function Footer() {
   return (
-    <footer className="border-t bg-background">
+    <footer className="bg-background border-t">
       <div className="container py-8 md:py-12">
         <div className="grid grid-cols-2 gap-8 md:grid-cols-4">
           {/* Brand */}
           <div className="col-span-2 md:col-span-1">
             <Link href="/" className="flex items-center space-x-2">
-              <Spade className="h-6 w-6 text-primary" />
+              <Spade className="text-primary h-6 w-6" />
               <span className="font-bold">GTO Trainer</span>
             </Link>
-            <p className="mt-4 text-sm text-muted-foreground">
+            <p className="text-muted-foreground mt-4 text-sm">
               Master GTO poker strategy with AI-powered training.
             </p>
           </div>
@@ -20,7 +20,7 @@ export function Footer() {
           {/* Practice */}
           <div>
             <h3 className="font-semibold">Practice</h3>
-            <ul className="mt-4 space-y-2 text-sm text-muted-foreground">
+            <ul className="text-muted-foreground mt-4 space-y-2 text-sm">
               <li>
                 <Link href="/drill/rfi" className="hover:text-primary">
                   RFI Drill
@@ -52,7 +52,7 @@ export function Footer() {
           {/* Learn */}
           <div>
             <h3 className="font-semibold">Learn</h3>
-            <ul className="mt-4 space-y-2 text-sm text-muted-foreground">
+            <ul className="text-muted-foreground mt-4 space-y-2 text-sm">
               <li>
                 <Link href="/learn" className="hover:text-primary">
                   GTO Basics
@@ -74,7 +74,7 @@ export function Footer() {
           {/* Legal */}
           <div>
             <h3 className="font-semibold">Legal</h3>
-            <ul className="mt-4 space-y-2 text-sm text-muted-foreground">
+            <ul className="text-muted-foreground mt-4 space-y-2 text-sm">
               <li>
                 <Link href="/privacy" className="hover:text-primary">
                   Privacy Policy
@@ -89,7 +89,7 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="mt-8 border-t pt-8 text-center text-sm text-muted-foreground">
+        <div className="text-muted-foreground mt-8 border-t pt-8 text-center text-sm">
           <p>&copy; {new Date().getFullYear()} GTO Poker Trainer. All rights reserved.</p>
         </div>
       </div>

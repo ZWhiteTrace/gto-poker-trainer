@@ -38,31 +38,25 @@ export class ErrorBoundary extends Component<Props, State> {
       }
 
       return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-900 p-4">
-          <div className="max-w-md w-full bg-gray-800 rounded-xl border border-gray-700 p-6 text-center">
-            <div className="text-6xl mb-4">💥</div>
-            <h2 className="text-xl font-bold text-white mb-2">
-              Oops! Something went wrong
-            </h2>
-            <p className="text-gray-400 mb-4">
+        <div className="flex min-h-screen items-center justify-center bg-gray-900 p-4">
+          <div className="w-full max-w-md rounded-xl border border-gray-700 bg-gray-800 p-6 text-center">
+            <div className="mb-4 text-6xl">💥</div>
+            <h2 className="mb-2 text-xl font-bold text-white">Oops! Something went wrong</h2>
+            <p className="mb-4 text-gray-400">
               The game encountered an unexpected error. Please try restarting.
             </p>
             {this.state.error && (
               <details className="mb-4 text-left">
-                <summary className="text-sm text-gray-500 cursor-pointer hover:text-gray-400">
+                <summary className="cursor-pointer text-sm text-gray-500 hover:text-gray-400">
                   Technical details
                 </summary>
-                <pre className="mt-2 p-2 bg-gray-900 rounded text-xs text-red-400 overflow-auto max-h-32">
+                <pre className="mt-2 max-h-32 overflow-auto rounded bg-gray-900 p-2 text-xs text-red-400">
                   {this.state.error.message}
                 </pre>
               </details>
             )}
-            <div className="flex gap-3 justify-center">
-              <Button
-                variant="outline"
-                onClick={this.handleReset}
-                className="border-gray-600"
-              >
+            <div className="flex justify-center gap-3">
+              <Button variant="outline" onClick={this.handleReset} className="border-gray-600">
                 Try Again
               </Button>
               <Button

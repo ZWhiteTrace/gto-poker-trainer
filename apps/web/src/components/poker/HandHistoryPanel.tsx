@@ -24,7 +24,8 @@ interface HandHistoryPanelProps {
 function formatCard(card: Card): ReactNode {
   return (
     <span className={cn("font-mono", SUIT_COLORS[card.suit])}>
-      {card.rank}{SUIT_SYMBOLS[card.suit]}
+      {card.rank}
+      {SUIT_SYMBOLS[card.suit]}
     </span>
   );
 }
@@ -32,10 +33,12 @@ function formatCard(card: Card): ReactNode {
 function formatProfit(profit: number): ReactNode {
   const formatted = profit >= 0 ? `+${profit.toFixed(1)}` : profit.toFixed(1);
   return (
-    <span className={cn(
-      "font-semibold",
-      profit > 0 ? "text-green-500" : profit < 0 ? "text-red-500" : "text-gray-400"
-    )}>
+    <span
+      className={cn(
+        "font-semibold",
+        profit > 0 ? "text-green-500" : profit < 0 ? "text-red-500" : "text-gray-400"
+      )}
+    >
       {formatted} BB
     </span>
   );
@@ -50,20 +53,20 @@ function HandHistoryRow({
   onSelect: () => void;
   isSelected: boolean;
 }) {
-  const heroPlayer = history.players.find(p => p.isHero);
+  const heroPlayer = history.players.find((p) => p.isHero);
   const heroCards = heroPlayer?.holeCards;
 
   return (
     <div
       onClick={onSelect}
       className={cn(
-        "flex items-center justify-between p-2 rounded-lg cursor-pointer transition-colors",
+        "flex cursor-pointer items-center justify-between rounded-lg p-2 transition-colors",
         isSelected ? "bg-blue-600/30" : "hover:bg-gray-700/50"
       )}
     >
       <div className="flex items-center gap-3">
         {/* Hand number */}
-        <span className="text-xs text-gray-500 w-8">#{history.handNumber}</span>
+        <span className="w-8 text-xs text-gray-500">#{history.handNumber}</span>
 
         {/* Hero cards */}
         <div className="flex gap-0.5 font-mono text-sm">
@@ -78,9 +81,7 @@ function HandHistoryRow({
         </div>
 
         {/* Position */}
-        <span className="text-xs px-1.5 py-0.5 bg-gray-700 rounded">
-          {history.heroPosition}
-        </span>
+        <span className="rounded bg-gray-700 px-1.5 py-0.5 text-xs">{history.heroPosition}</span>
       </div>
 
       {/* Profit */}
@@ -107,11 +108,13 @@ function GTOAnalysisDisplay({ analysis }: { analysis: HandAnalysis }) {
   };
 
   return (
-    <div className="space-y-3 p-3 bg-gray-800/50 rounded-lg text-sm">
+    <div className="space-y-3 rounded-lg bg-gray-800/50 p-3 text-sm">
       {/* Grade */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <span className={cn("px-2 py-1 rounded font-bold text-white", gradeColors[analysis.grade])}>
+          <span
+            className={cn("rounded px-2 py-1 font-bold text-white", gradeColors[analysis.grade])}
+          >
             {analysis.grade}
           </span>
           <span className="text-gray-300">{analysis.gradeDescriptionZh}</span>
@@ -124,15 +127,17 @@ function GTOAnalysisDisplay({ analysis }: { analysis: HandAnalysis }) {
       {/* Decisions */}
       {analysis.decisions.length > 0 && (
         <div className="space-y-2">
-          <div className="text-xs text-gray-400 font-semibold">決策分析：</div>
+          <div className="text-xs font-semibold text-gray-400">決策分析：</div>
           {analysis.decisions.map((d, i) => (
-            <div key={i} className="flex items-start gap-2 p-2 bg-gray-900/50 rounded">
-              <span className="text-xs px-1.5 py-0.5 bg-gray-700 rounded capitalize">
+            <div key={i} className="flex items-start gap-2 rounded bg-gray-900/50 p-2">
+              <span className="rounded bg-gray-700 px-1.5 py-0.5 text-xs capitalize">
                 {d.decisionPoint.street}
               </span>
               <div className="flex-1">
                 <div className="flex items-center gap-2">
-                  <span className={cn("font-semibold capitalize", deviationColors[d.deviationType])}>
+                  <span
+                    className={cn("font-semibold capitalize", deviationColors[d.deviationType])}
+                  >
                     {d.heroAction}
                     {d.heroAmount && ` ${d.heroAmount.toFixed(1)}`}
                   </span>
@@ -140,9 +145,7 @@ function GTOAnalysisDisplay({ analysis }: { analysis: HandAnalysis }) {
                     (GTO: {d.heroActionFrequency.toFixed(0)}%)
                   </span>
                 </div>
-                <div className="text-xs text-gray-400 mt-1">
-                  {d.analysisZh}
-                </div>
+                <div className="mt-1 text-xs text-gray-400">{d.analysisZh}</div>
               </div>
             </div>
           ))}
@@ -151,12 +154,14 @@ function GTOAnalysisDisplay({ analysis }: { analysis: HandAnalysis }) {
 
       {/* Biggest Mistake */}
       {analysis.biggestMistake && analysis.biggestMistake.deviationType !== "correct" && (
-        <div className="p-2 bg-red-900/30 border border-red-800/50 rounded">
-          <div className="text-xs text-red-400 font-semibold mb-1">最大錯誤：</div>
+        <div className="rounded border border-red-800/50 bg-red-900/30 p-2">
+          <div className="mb-1 text-xs font-semibold text-red-400">最大錯誤：</div>
           <div className="text-sm text-gray-300">
-            {analysis.biggestMistake.decisionPoint.street} 街：
-            應 {analysis.biggestMistake.recommendedAction} ({analysis.biggestMistake.recommendedFrequency.toFixed(0)}%)
-            而非 {analysis.biggestMistake.heroAction} ({analysis.biggestMistake.heroActionFrequency.toFixed(0)}%)
+            {analysis.biggestMistake.decisionPoint.street} 街： 應{" "}
+            {analysis.biggestMistake.recommendedAction} (
+            {analysis.biggestMistake.recommendedFrequency.toFixed(0)}%) 而非{" "}
+            {analysis.biggestMistake.heroAction} (
+            {analysis.biggestMistake.heroActionFrequency.toFixed(0)}%)
           </div>
         </div>
       )}
@@ -165,14 +170,16 @@ function GTOAnalysisDisplay({ analysis }: { analysis: HandAnalysis }) {
 }
 
 // Session Analysis Summary
-function SessionAnalysisSummary({ summary }: {
+function SessionAnalysisSummary({
+  summary,
+}: {
   summary: {
     totalHands: number;
     averageGrade: string;
     averageDeviationScore: number;
     mostCommonMistake: string;
     improvementAreas: string[];
-  }
+  };
 }) {
   const gradeColors: Record<string, string> = {
     A: "bg-green-600",
@@ -183,36 +190,43 @@ function SessionAnalysisSummary({ summary }: {
   };
 
   return (
-    <div className="space-y-3 p-3 bg-gradient-to-br from-gray-800/80 to-gray-900/80 rounded-lg text-sm border border-gray-700/50">
+    <div className="space-y-3 rounded-lg border border-gray-700/50 bg-gradient-to-br from-gray-800/80 to-gray-900/80 p-3 text-sm">
       <div className="flex items-center justify-between">
-        <div className="text-gray-300 font-semibold">Session 分析</div>
-        <span className={cn("px-2 py-1 rounded font-bold text-white", gradeColors[summary.averageGrade])}>
+        <div className="font-semibold text-gray-300">Session 分析</div>
+        <span
+          className={cn(
+            "rounded px-2 py-1 font-bold text-white",
+            gradeColors[summary.averageGrade]
+          )}
+        >
           平均 {summary.averageGrade}
         </span>
       </div>
 
       <div className="grid grid-cols-2 gap-2 text-xs">
-        <div className="p-2 bg-gray-900/50 rounded">
+        <div className="rounded bg-gray-900/50 p-2">
           <div className="text-gray-500">總手數</div>
           <div className="text-lg font-bold text-gray-200">{summary.totalHands}</div>
         </div>
-        <div className="p-2 bg-gray-900/50 rounded">
+        <div className="rounded bg-gray-900/50 p-2">
           <div className="text-gray-500">平均偏離</div>
-          <div className="text-lg font-bold text-gray-200">{summary.averageDeviationScore.toFixed(1)}</div>
+          <div className="text-lg font-bold text-gray-200">
+            {summary.averageDeviationScore.toFixed(1)}
+          </div>
         </div>
       </div>
 
       {summary.mostCommonMistake !== "None" && (
-        <div className="p-2 bg-orange-900/30 border border-orange-800/50 rounded">
-          <div className="text-xs text-orange-400 font-semibold">最常見錯誤：</div>
+        <div className="rounded border border-orange-800/50 bg-orange-900/30 p-2">
+          <div className="text-xs font-semibold text-orange-400">最常見錯誤：</div>
           <div className="text-gray-300">{summary.mostCommonMistake}</div>
         </div>
       )}
 
       {summary.improvementAreas.length > 0 && (
-        <div className="p-2 bg-blue-900/30 border border-blue-800/50 rounded">
-          <div className="text-xs text-blue-400 font-semibold mb-1">改進建議：</div>
-          <ul className="text-xs text-gray-300 space-y-1">
+        <div className="rounded border border-blue-800/50 bg-blue-900/30 p-2">
+          <div className="mb-1 text-xs font-semibold text-blue-400">改進建議：</div>
+          <ul className="space-y-1 text-xs text-gray-300">
             {summary.improvementAreas.map((area, i) => (
               <li key={i}>• {area}</li>
             ))}
@@ -246,11 +260,11 @@ function HandHistoryDetail({ history }: { history: HandHistory }) {
     setIsAnalyzing(false);
   };
 
-  const heroPlayer = history.players.find(p => p.isHero);
+  const heroPlayer = history.players.find((p) => p.isHero);
   const heroCards = heroPlayer?.holeCards;
 
   return (
-    <div className="space-y-3 p-3 bg-gray-800/50 rounded-lg text-sm">
+    <div className="space-y-3 rounded-lg bg-gray-800/50 p-3 text-sm">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
@@ -264,10 +278,10 @@ function HandHistoryDetail({ history }: { history: HandHistory }) {
             onClick={handleAnalyze}
             disabled={isAnalyzing}
             className={cn(
-              "px-2 py-1 text-xs rounded transition-colors",
+              "rounded px-2 py-1 text-xs transition-colors",
               isAnalyzing
                 ? "bg-gray-600 text-gray-400"
-                : "bg-purple-600 hover:bg-purple-500 text-white"
+                : "bg-purple-600 text-white hover:bg-purple-500"
             )}
           >
             {isAnalyzing ? "分析中..." : "GTO 分析"}
@@ -275,10 +289,8 @@ function HandHistoryDetail({ history }: { history: HandHistory }) {
           <button
             onClick={handleCopy}
             className={cn(
-              "px-2 py-1 text-xs rounded transition-colors",
-              copied
-                ? "bg-green-600 text-white"
-                : "bg-gray-700 hover:bg-gray-600 text-gray-300"
+              "rounded px-2 py-1 text-xs transition-colors",
+              copied ? "bg-green-600 text-white" : "bg-gray-700 text-gray-300 hover:bg-gray-600"
             )}
           >
             {copied ? "Copied!" : "Copy"}
@@ -289,7 +301,7 @@ function HandHistoryDetail({ history }: { history: HandHistory }) {
       {/* Hero info */}
       <div className="flex items-center gap-3">
         <span className="text-gray-400">Hero:</span>
-        <span className="px-1.5 py-0.5 bg-yellow-600/30 text-yellow-400 rounded text-xs font-semibold">
+        <span className="rounded bg-yellow-600/30 px-1.5 py-0.5 text-xs font-semibold text-yellow-400">
           {history.heroPosition}
         </span>
         {heroCards && (
@@ -327,40 +339,44 @@ function HandHistoryDetail({ history }: { history: HandHistory }) {
       </div>
 
       {/* Action summary */}
-      <div className="text-xs text-gray-500 space-y-1">
+      <div className="space-y-1 text-xs text-gray-500">
         {history.actions.preflop.length > 0 && (
           <div>
-            Preflop: {history.actions.preflop.map(a =>
-              `${a.position} ${a.action}${a.amount ? ` ${a.amount.toFixed(1)}` : ""}`
-            ).join(" → ")}
+            Preflop:{" "}
+            {history.actions.preflop
+              .map((a) => `${a.position} ${a.action}${a.amount ? ` ${a.amount.toFixed(1)}` : ""}`)
+              .join(" → ")}
           </div>
         )}
         {history.actions.flop.length > 0 && (
           <div>
-            Flop: {history.actions.flop.map(a =>
-              `${a.position} ${a.action}${a.amount ? ` ${a.amount.toFixed(1)}` : ""}`
-            ).join(" → ")}
+            Flop:{" "}
+            {history.actions.flop
+              .map((a) => `${a.position} ${a.action}${a.amount ? ` ${a.amount.toFixed(1)}` : ""}`)
+              .join(" → ")}
           </div>
         )}
         {history.actions.turn.length > 0 && (
           <div>
-            Turn: {history.actions.turn.map(a =>
-              `${a.position} ${a.action}${a.amount ? ` ${a.amount.toFixed(1)}` : ""}`
-            ).join(" → ")}
+            Turn:{" "}
+            {history.actions.turn
+              .map((a) => `${a.position} ${a.action}${a.amount ? ` ${a.amount.toFixed(1)}` : ""}`)
+              .join(" → ")}
           </div>
         )}
         {history.actions.river.length > 0 && (
           <div>
-            River: {history.actions.river.map(a =>
-              `${a.position} ${a.action}${a.amount ? ` ${a.amount.toFixed(1)}` : ""}`
-            ).join(" → ")}
+            River:{" "}
+            {history.actions.river
+              .map((a) => `${a.position} ${a.action}${a.amount ? ` ${a.amount.toFixed(1)}` : ""}`)
+              .join(" → ")}
           </div>
         )}
       </div>
 
       {/* GTO Analysis Result */}
       {analysis && (
-        <div className="mt-3 pt-3 border-t border-gray-700">
+        <div className="mt-3 border-t border-gray-700 pt-3">
           <GTOAnalysisDisplay analysis={analysis} />
         </div>
       )}
@@ -372,7 +388,9 @@ export function HandHistoryPanel({ className }: HandHistoryPanelProps) {
   const [histories, setHistories] = useState<HandHistory[]>([]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [isExporting, setIsExporting] = useState(false);
-  const [sessionAnalysis, setSessionAnalysis] = useState<Awaited<ReturnType<typeof analyzeMultipleHands>> | null>(null);
+  const [sessionAnalysis, setSessionAnalysis] = useState<Awaited<
+    ReturnType<typeof analyzeMultipleHands>
+  > | null>(null);
   const [isAnalyzingSession, setIsAnalyzingSession] = useState(false);
 
   useEffect(() => {
@@ -387,7 +405,7 @@ export function HandHistoryPanel({ className }: HandHistoryPanelProps) {
     return () => clearInterval(interval);
   }, []);
 
-  const selectedHistory = histories.find(h => h.id === selectedId);
+  const selectedHistory = histories.find((h) => h.id === selectedId);
 
   const handleExportAll = async () => {
     if (histories.length === 0) return;
@@ -433,9 +451,9 @@ export function HandHistoryPanel({ className }: HandHistoryPanelProps) {
   const totalProfit = histories.reduce((sum, h) => sum + h.heroProfit, 0);
 
   return (
-    <div className={cn("flex flex-col bg-gray-900/90 rounded-xl p-4", className)}>
+    <div className={cn("flex flex-col rounded-xl bg-gray-900/90 p-4", className)}>
       {/* Header */}
-      <div className="flex items-center justify-between mb-3">
+      <div className="mb-3 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <h3 className="text-sm font-semibold text-gray-200">Hand History</h3>
           <span className="text-xs text-gray-500">({histories.length} hands)</span>
@@ -446,20 +464,20 @@ export function HandHistoryPanel({ className }: HandHistoryPanelProps) {
               <button
                 onClick={handleAnalyzeSession}
                 disabled={isAnalyzingSession}
-                className="px-2 py-1 text-xs bg-purple-600 hover:bg-purple-500 rounded transition-colors disabled:opacity-50"
+                className="rounded bg-purple-600 px-2 py-1 text-xs transition-colors hover:bg-purple-500 disabled:opacity-50"
               >
                 {isAnalyzingSession ? "分析中..." : "GTO 分析"}
               </button>
               <button
                 onClick={handleExportAll}
                 disabled={isExporting}
-                className="px-2 py-1 text-xs bg-blue-600 hover:bg-blue-500 rounded transition-colors disabled:opacity-50"
+                className="rounded bg-blue-600 px-2 py-1 text-xs transition-colors hover:bg-blue-500 disabled:opacity-50"
               >
                 {isExporting ? "Exporting..." : "Export"}
               </button>
               <button
                 onClick={handleClear}
-                className="px-2 py-1 text-xs bg-red-600/50 hover:bg-red-600 rounded transition-colors"
+                className="rounded bg-red-600/50 px-2 py-1 text-xs transition-colors hover:bg-red-600"
               >
                 Clear
               </button>
@@ -470,7 +488,7 @@ export function HandHistoryPanel({ className }: HandHistoryPanelProps) {
 
       {/* Total profit */}
       {histories.length > 0 && (
-        <div className="flex items-center gap-2 mb-3 px-2 py-1.5 bg-gray-800/50 rounded">
+        <div className="mb-3 flex items-center gap-2 rounded bg-gray-800/50 px-2 py-1.5">
           <span className="text-xs text-gray-400">Session:</span>
           {formatProfit(totalProfit)}
         </div>
@@ -484,11 +502,9 @@ export function HandHistoryPanel({ className }: HandHistoryPanelProps) {
       )}
 
       {/* History list */}
-      <div className="flex-1 overflow-y-auto space-y-1 max-h-[300px] min-h-[100px]">
+      <div className="max-h-[300px] min-h-[100px] flex-1 space-y-1 overflow-y-auto">
         {histories.length === 0 ? (
-          <div className="text-center text-gray-500 text-sm py-8">
-            No hands played yet
-          </div>
+          <div className="py-8 text-center text-sm text-gray-500">No hands played yet</div>
         ) : (
           histories.map((h) => (
             <HandHistoryRow

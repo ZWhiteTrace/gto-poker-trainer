@@ -57,7 +57,7 @@ export function createHandHistory(
   }
 
   // Create player snapshots
-  const playerSnapshots: HandHistoryPlayer[] = players.map(p => {
+  const playerSnapshots: HandHistoryPlayer[] = players.map((p) => {
     const aiProfile = aiProfileMap.get(p.seatIndex);
     return {
       name: p.name,
@@ -67,10 +67,12 @@ export function createHandHistory(
       seatIndex: p.seatIndex,
       isHero: p.isHero,
       // Add AI info for non-hero players
-      ...(aiProfile && !p.isHero ? {
-        aiStyle: aiProfile.style,
-        aiProfileId: aiProfile.profileId,
-      } : {}),
+      ...(aiProfile && !p.isHero
+        ? {
+            aiStyle: aiProfile.style,
+            aiProfileId: aiProfile.profileId,
+          }
+        : {}),
     };
   });
 
@@ -109,7 +111,7 @@ export function createHandHistory(
 
   // Create result
   const result: HandHistoryResult = {
-    winners: winners.map(w => ({
+    winners: winners.map((w) => ({
       position: w.position,
       amount: pot / winners.length,
       handRank: handEvaluations.get(w.id)?.rank,
@@ -119,9 +121,9 @@ export function createHandHistory(
 
   // Add showdown hands if we went to showdown
   if (communityCards.length === 5 && winners.length > 0) {
-    const showdownPlayers = players.filter(p => !p.isFolded && p.holeCards);
+    const showdownPlayers = players.filter((p) => !p.isFolded && p.holeCards);
     if (showdownPlayers.length > 1) {
-      result.showdownHands = showdownPlayers.map(p => ({
+      result.showdownHands = showdownPlayers.map((p) => ({
         position: p.position,
         cards: p.holeCards!,
         handRank: handEvaluations.get(p.id)?.rank || "high_card",
@@ -177,11 +179,7 @@ function formatAmount(amount: number, bb: number): string {
   return `$${dollars.toFixed(2)}`;
 }
 
-function formatActionForGGPoker(
-  action: HandHistoryAction,
-  bb: number,
-  playerName: string
-): string {
+function formatActionForGGPoker(action: HandHistoryAction, bb: number, playerName: string): string {
   switch (action.action) {
     case "fold":
       return `${playerName}: folds`;
@@ -201,7 +199,7 @@ function formatActionForGGPoker(
 }
 
 function getPlayerNameByPosition(players: HandHistoryPlayer[], position: Position): string {
-  const player = players.find(p => p.position === position);
+  const player = players.find((p) => p.position === position);
   return player?.isHero ? "Hero" : player?.name || position;
 }
 
@@ -226,21 +224,25 @@ export function exportToGGPokerFormat(history: HandHistory): string {
   );
 
   // Find dealer seat
-  const dealerPlayer = history.players.find(p => p.position === history.dealerPosition);
+  const dealerPlayer = history.players.find((p) => p.position === history.dealerPosition);
   const dealerSeat = dealerPlayer?.seatIndex ?? 0;
 
-  lines.push(`Table '${history.tableName}' ${history.tableSize}-max Seat #${dealerSeat + 1} is the button`);
+  lines.push(
+    `Table '${history.tableName}' ${history.tableSize}-max Seat #${dealerSeat + 1} is the button`
+  );
 
   // Seats
   for (const player of history.players) {
     const name = player.isHero ? "Hero" : player.name;
     const aiInfo = player.aiStyle ? ` [${player.aiStyle}]` : "";
-    lines.push(`Seat ${player.seatIndex + 1}: ${name}${aiInfo} (${formatAmount(player.stack, bb)} in chips)`);
+    lines.push(
+      `Seat ${player.seatIndex + 1}: ${name}${aiInfo} (${formatAmount(player.stack, bb)} in chips)`
+    );
   }
 
   // Blinds
-  const sbPlayer = history.players.find(p => p.position === "SB");
-  const bbPlayer = history.players.find(p => p.position === "BB");
+  const sbPlayer = history.players.find((p) => p.position === "SB");
+  const bbPlayer = history.players.find((p) => p.position === "BB");
 
   if (sbPlayer) {
     const sbName = sbPlayer.isHero ? "Hero" : sbPlayer.name;
@@ -253,7 +255,7 @@ export function exportToGGPokerFormat(history: HandHistory): string {
 
   // Hole cards
   lines.push("*** HOLE CARDS ***");
-  const hero = history.players.find(p => p.isHero);
+  const hero = history.players.find((p) => p.isHero);
   if (hero?.holeCards) {
     lines.push(`Dealt to Hero ${formatHoleCards(hero.holeCards)}`);
   }
@@ -335,7 +337,7 @@ export function exportToGGPokerFormat(history: HandHistory): string {
 // ============================================
 
 export function exportHandsToGGPokerFormat(histories: HandHistory[]): string {
-  return histories.map(h => exportToGGPokerFormat(h)).join("\n");
+  return histories.map((h) => exportToGGPokerFormat(h)).join("\n");
 }
 
 // ============================================
@@ -376,5 +378,5 @@ export function clearHandHistories(): void {
 
 export function getHandHistoryById(id: string): HandHistory | null {
   const histories = getStoredHandHistories();
-  return histories.find(h => h.id === id) || null;
+  return histories.find((h) => h.id === id) || null;
 }

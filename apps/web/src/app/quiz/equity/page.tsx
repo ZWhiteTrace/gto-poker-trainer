@@ -3,13 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { RefreshCw, CheckCircle2, XCircle, Trophy } from "lucide-react";
@@ -132,11 +126,8 @@ function generateChoices(correct: Question): Choice[] {
 }
 
 function getRandomQuestion(category?: Category): Question {
-  const categories = category
-    ? [category]
-    : (Object.keys(EQUITY_DATA) as Category[]);
-  const randomCategory =
-    categories[Math.floor(Math.random() * categories.length)];
+  const categories = category ? [category] : (Object.keys(EQUITY_DATA) as Category[]);
+  const randomCategory = categories[Math.floor(Math.random() * categories.length)];
   const examples = EQUITY_DATA[randomCategory].examples;
   const example = examples[Math.floor(Math.random() * examples.length)];
 
@@ -160,7 +151,7 @@ function HandDisplay({ hand, label }: { hand: string; label: string }) {
 
   return (
     <div className="text-center">
-      <div className="text-xs text-muted-foreground mb-1">{label}</div>
+      <div className="text-muted-foreground mb-1 text-xs">{label}</div>
       <div className="text-4xl font-bold">
         {ranks}
         {suit && <span className={getSuitColor(suit)}>{suit}</span>}
@@ -208,14 +199,13 @@ export default function EquityQuizPage() {
     }
   };
 
-  const accuracy =
-    score.total > 0 ? Math.round((score.correct / score.total) * 100) : 0;
+  const accuracy = score.total > 0 ? Math.round((score.correct / score.total) * 100) : 0;
 
   if (!question) {
     return (
       <div className="container max-w-2xl py-8">
         <div className="flex items-center justify-center py-12">
-          <RefreshCw className="h-8 w-8 animate-spin text-muted-foreground" />
+          <RefreshCw className="text-muted-foreground h-8 w-8 animate-spin" />
         </div>
       </div>
     );
@@ -232,21 +222,21 @@ export default function EquityQuizPage() {
       </div>
 
       {/* Score */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="mb-6 flex items-center justify-between">
         <div className="flex items-center gap-4">
-          <Badge variant="outline" className="text-lg px-3 py-1">
-            <Trophy className="h-4 w-4 mr-1" />
+          <Badge variant="outline" className="px-3 py-1 text-lg">
+            <Trophy className="mr-1 h-4 w-4" />
             {score.correct}/{score.total}
           </Badge>
           <span className="text-muted-foreground">{accuracy}%</span>
           {cumulativeStats.total > 0 && (
-            <span className="text-xs text-muted-foreground">
+            <span className="text-muted-foreground text-xs">
               ({t("drill.allTime")}: {cumulativeStats.correct}/{cumulativeStats.total})
             </span>
           )}
         </div>
         <select
-          className="bg-muted px-3 py-1.5 rounded-md text-sm"
+          className="bg-muted rounded-md px-3 py-1.5 text-sm"
           value={category || "all"}
           onChange={(e) => {
             const val = e.target.value;
@@ -272,8 +262,8 @@ export default function EquityQuizPage() {
                 categoryData.difficulty === "easy"
                   ? "default"
                   : categoryData.difficulty === "medium"
-                  ? "secondary"
-                  : "destructive"
+                    ? "secondary"
+                    : "destructive"
               }
             >
               {categoryData.descriptionZh}
@@ -283,9 +273,9 @@ export default function EquityQuizPage() {
         </CardHeader>
         <CardContent>
           {/* Hands Display */}
-          <div className="flex items-center justify-center gap-8 py-6 bg-muted/30 rounded-lg mb-6">
+          <div className="bg-muted/30 mb-6 flex items-center justify-center gap-8 rounded-lg py-6">
             <HandDisplay hand={question.hand1} label="Hand 1" />
-            <div className="text-2xl font-bold text-muted-foreground">vs</div>
+            <div className="text-muted-foreground text-2xl font-bold">vs</div>
             <HandDisplay hand={question.hand2} label="Hand 2" />
           </div>
 
@@ -304,12 +294,12 @@ export default function EquityQuizPage() {
                       ? isCorrect
                         ? "default"
                         : isSelected
-                        ? "destructive"
-                        : "outline"
+                          ? "destructive"
+                          : "outline"
                       : "outline"
                   }
                   className={cn(
-                    "h-auto py-4 flex flex-col gap-1",
+                    "flex h-auto flex-col gap-1 py-4",
                     showResult && isCorrect && "bg-green-600 hover:bg-green-600",
                     showResult && isSelected && !isCorrect && "bg-red-600"
                   )}
@@ -319,12 +309,8 @@ export default function EquityQuizPage() {
                   <span className="text-lg font-bold">
                     {choice.equity1}% vs {choice.equity2}%
                   </span>
-                  {showResult && isCorrect && (
-                    <CheckCircle2 className="h-4 w-4" />
-                  )}
-                  {showResult && isSelected && !isCorrect && (
-                    <XCircle className="h-4 w-4" />
-                  )}
+                  {showResult && isCorrect && <CheckCircle2 className="h-4 w-4" />}
+                  {showResult && isSelected && !isCorrect && <XCircle className="h-4 w-4" />}
                 </Button>
               );
             })}
@@ -334,13 +320,11 @@ export default function EquityQuizPage() {
           {selectedIndex !== null && (
             <div className="mt-6 text-center">
               {choices[selectedIndex].isCorrect ? (
-                <p className="text-green-500 font-medium">
-                  {t("drill.result.correct")}
-                </p>
+                <p className="font-medium text-green-500">{t("drill.result.correct")}</p>
               ) : (
-                <p className="text-red-500 font-medium">
-                  {t("drill.result.incorrect")} - {t("quiz.correctAnswer")}:{" "}
-                  {question.equity1}% vs {question.equity2}%
+                <p className="font-medium text-red-500">
+                  {t("drill.result.incorrect")} - {t("quiz.correctAnswer")}: {question.equity1}% vs{" "}
+                  {question.equity2}%
                 </p>
               )}
               <Button onClick={generateNewQuestion} className="mt-4">
@@ -356,7 +340,7 @@ export default function EquityQuizPage() {
         <CardHeader>
           <CardTitle className="text-base">{t("quiz.tips.title")}</CardTitle>
         </CardHeader>
-        <CardContent className="text-sm text-muted-foreground space-y-2">
+        <CardContent className="text-muted-foreground space-y-2 text-sm">
           <p>{t("quiz.tips.overpair")}</p>
           <p>{t("quiz.tips.coinflip")}</p>
           <p>{t("quiz.tips.domination")}</p>

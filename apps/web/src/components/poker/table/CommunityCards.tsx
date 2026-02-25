@@ -47,11 +47,12 @@ export function CommunityCards({ cards, size = "md", className }: CommunityCards
         return (
           <div
             key={`${card.rank}${card.suit}-${index}`}
-            className={cn(
-              isNew && "animate-card-deal",
-              isNew && "animate-card-highlight"
-            )}
-            style={{ animationDelay: isNew ? `${(index - (cards.length - newCardIndices.length)) * 100}ms` : undefined }}
+            className={cn(isNew && "animate-card-deal", isNew && "animate-card-highlight")}
+            style={{
+              animationDelay: isNew
+                ? `${(index - (cards.length - newCardIndices.length)) * 100}ms`
+                : undefined,
+            }}
           >
             <PlayingCard card={card} size={size} />
           </div>
@@ -120,7 +121,7 @@ export function StreetCards({ street, cards, size = "sm", className }: StreetCar
 
   return (
     <div className={cn("flex items-center gap-2", className)}>
-      <span className="text-xs text-gray-400 w-12">{streetLabels[street]}</span>
+      <span className="w-12 text-xs text-gray-400">{streetLabels[street]}</span>
       <div className="flex gap-1">
         {cards.map((card, index) => (
           <PlayingCard key={`${card.rank}${card.suit}-${index}`} card={card} size={size} />

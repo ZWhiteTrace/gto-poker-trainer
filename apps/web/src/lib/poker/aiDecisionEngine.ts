@@ -8,13 +8,7 @@ import type { PlayerStats } from "./playerStats";
 import { getPlayerVPIP } from "./playerStats";
 import { evaluateHand } from "./handEvaluator";
 import { analyzeBoardTexture, type BoardAnalysis } from "./boardTexture";
-import {
-  clamp,
-  getFourBetSize,
-  getOpenRaiseSize,
-  getThreeBetSize,
-  roundToHalf,
-} from "./sizing";
+import { clamp, getFourBetSize, getOpenRaiseSize, getThreeBetSize, roundToHalf } from "./sizing";
 
 // ============================================
 // Import GTO Range Data (will be loaded dynamically)
@@ -55,16 +49,16 @@ export interface AIPlayerProfile {
   descriptionZh: string;
   avatar: string;
   // Realistic tendencies based on real player pools
-  vpip: number;        // Voluntarily Put $ In Pot (0.11-0.60 realistic range)
-  pfr: number;         // Preflop Raise Frequency
-  aggression: number;  // Postflop aggression factor (0.3-3.0 realistic)
-  bluffFreq: number;   // Bluff frequency (0.1-0.5)
-  foldToBet: number;   // Fold to C-bet frequency
+  vpip: number; // Voluntarily Put $ In Pot (0.11-0.60 realistic range)
+  pfr: number; // Preflop Raise Frequency
+  aggression: number; // Postflop aggression factor (0.3-3.0 realistic)
+  bluffFreq: number; // Bluff frequency (0.1-0.5)
+  foldToBet: number; // Fold to C-bet frequency
   threeBetFreq: number; // 3-bet frequency (0.02-0.12 realistic)
-  fourBetFreq: number;  // 4-bet frequency
-  foldTo3Bet: number;   // Fold to 3-bet frequency
-  cbetFreq: number;     // C-bet frequency
-  foldToCbet: number;   // Fold to C-bet frequency
+  fourBetFreq: number; // 4-bet frequency
+  foldTo3Bet: number; // Fold to 3-bet frequency
+  cbetFreq: number; // C-bet frequency
+  foldToCbet: number; // Fold to C-bet frequency
 }
 
 export const AI_PROFILES: AIPlayerProfile[] = [
@@ -78,7 +72,7 @@ export const AI_PROFILES: AIPlayerProfile[] = [
     avatar: "🤖",
     // GTO baseline stats
     vpip: 0.24,
-    pfr: 0.20,
+    pfr: 0.2,
     aggression: 0.5,
     bluffFreq: 0.33,
     foldToBet: 0.45,
@@ -97,14 +91,14 @@ export const AI_PROFILES: AIPlayerProfile[] = [
     descriptionZh: "鬆凶型：玩很多牌，非常激進",
     avatar: "🔥",
     // LAG stats: VPIP 28-32%, PFR 22-26%, 3bet 10-12%
-    vpip: 0.30,
+    vpip: 0.3,
     pfr: 0.24,
     aggression: 0.7,
     bluffFreq: 0.45,
-    foldToBet: 0.30,
+    foldToBet: 0.3,
     threeBetFreq: 0.11,
     fourBetFreq: 0.05,
-    foldTo3Bet: 0.40,
+    foldTo3Bet: 0.4,
     cbetFreq: 0.75,
     foldToCbet: 0.35,
   },
@@ -120,12 +114,12 @@ export const AI_PROFILES: AIPlayerProfile[] = [
     vpip: 0.21,
     pfr: 0.18,
     aggression: 0.6,
-    bluffFreq: 0.30,
-    foldToBet: 0.40,
+    bluffFreq: 0.3,
+    foldToBet: 0.4,
     threeBetFreq: 0.08,
     fourBetFreq: 0.03,
     foldTo3Bet: 0.55,
-    cbetFreq: 0.70,
+    cbetFreq: 0.7,
     foldToCbet: 0.42,
   },
   {
@@ -138,14 +132,14 @@ export const AI_PROFILES: AIPlayerProfile[] = [
     avatar: "🐟",
     // Calling station stats: VPIP 45-55%, PFR 8-12%, rarely 3bets
     vpip: 0.48,
-    pfr: 0.10,
+    pfr: 0.1,
     aggression: 0.25,
-    bluffFreq: 0.10,
-    foldToBet: 0.20,
+    bluffFreq: 0.1,
+    foldToBet: 0.2,
     threeBetFreq: 0.03,
     fourBetFreq: 0.01,
-    foldTo3Bet: 0.70,
-    cbetFreq: 0.40,
+    foldTo3Bet: 0.7,
+    cbetFreq: 0.4,
     foldToCbet: 0.25,
   },
   {
@@ -158,10 +152,10 @@ export const AI_PROFILES: AIPlayerProfile[] = [
     avatar: "🐢",
     // Nit stats: VPIP 11-15%, PFR 8-12%, folds to everything
     vpip: 0.13,
-    pfr: 0.10,
+    pfr: 0.1,
     aggression: 0.35,
     bluffFreq: 0.08,
-    foldToBet: 0.70,
+    foldToBet: 0.7,
     threeBetFreq: 0.04,
     fourBetFreq: 0.02,
     foldTo3Bet: 0.75,
@@ -184,18 +178,18 @@ export const AI_PROFILES: AIPlayerProfile[] = [
     foldToBet: 0.25,
     threeBetFreq: 0.15,
     fourBetFreq: 0.08,
-    foldTo3Bet: 0.30,
+    foldTo3Bet: 0.3,
     cbetFreq: 0.85,
-    foldToCbet: 0.20,
+    foldToCbet: 0.2,
   },
 ];
 
 export function getAIProfile(id: string): AIPlayerProfile {
-  return AI_PROFILES.find(p => p.id === id) || AI_PROFILES[0];
+  return AI_PROFILES.find((p) => p.id === id) || AI_PROFILES[0];
 }
 
 export function getProfileByStyle(style: AIStyle): AIPlayerProfile {
-  return AI_PROFILES.find(p => p.style === style) || AI_PROFILES[0];
+  return AI_PROFILES.find((p) => p.style === style) || AI_PROFILES[0];
 }
 
 // ============================================
@@ -326,10 +320,10 @@ interface GameContext {
   communityCards: Card[];
   isAllInSituation?: boolean;
   // New fields for improved postflop logic
-  isInPosition?: boolean;           // Is AI in position vs remaining players
-  villainChecked?: boolean;         // Did villain check to us (for probe betting)
+  isInPosition?: boolean; // Is AI in position vs remaining players
+  villainChecked?: boolean; // Did villain check to us (for probe betting)
   wasLastStreetAggressor?: boolean; // Were we the aggressor on previous street
-  preflopAggressor?: Position;      // Who raised preflop (for c-bet logic)
+  preflopAggressor?: Position; // Who raised preflop (for c-bet logic)
 }
 
 /**
@@ -365,9 +359,8 @@ export function getAIDecision(
   const toCall = currentBet - playerBet;
 
   // Adapt profile based on hero stats (if available and enough sample size)
-  const adaptedProfile = heroStats && heroStats.handsPlayed >= 10
-    ? adaptProfileToHero(profile, heroStats)
-    : profile;
+  const adaptedProfile =
+    heroStats && heroStats.handsPlayed >= 10 ? adaptProfileToHero(profile, heroStats) : profile;
 
   // Check if we're facing an all-in
   if (toCall >= stack) {
@@ -386,10 +379,7 @@ export function getAIDecision(
  * If hero plays too loose, AI increases 3-bet frequency.
  * If hero plays too tight, AI increases steal frequency.
  */
-function adaptProfileToHero(
-  profile: AIPlayerProfile,
-  heroStats: PlayerStats
-): AIPlayerProfile {
+function adaptProfileToHero(profile: AIPlayerProfile, heroStats: PlayerStats): AIPlayerProfile {
   const heroVPIP = getPlayerVPIP(heroStats);
   const adapted = { ...profile };
 
@@ -400,7 +390,7 @@ function adaptProfileToHero(
 
   // If hero plays too tight (VPIP < 15%), AI steals more
   if (heroVPIP < 0.15) {
-    adapted.vpip = Math.min(0.40, profile.vpip * 1.2);
+    adapted.vpip = Math.min(0.4, profile.vpip * 1.2);
     adapted.pfr = Math.min(0.35, profile.pfr * 1.2);
   }
 
@@ -421,9 +411,10 @@ function getAllInResponse(
 
   // Calculate hand strength
   const opponents = Math.max(1, context.numActivePlayers - 1);
-  const handStrength = communityCards.length > 0
-    ? estimateHandStrengthVsOpponents(context.holeCards, communityCards, opponents)
-    : estimatePreflopStrength(handNotation);
+  const handStrength =
+    communityCards.length > 0
+      ? estimateHandStrengthVsOpponents(context.holeCards, communityCards, opponents)
+      : estimatePreflopStrength(handNotation);
 
   // Required equity to call (with style adjustment)
   const requiredEquity = potOdds * (0.8 + profile.foldToBet * 0.4);
@@ -452,7 +443,16 @@ function getPreflopDecision(
   handNotation: string,
   profile: AIPlayerProfile
 ): AIDecision {
-  const { position, currentBet, playerBet, stack, hasRaiseInFront, lastAggressor, pot, preflopRaiseCount = 0 } = context;
+  const {
+    position,
+    currentBet,
+    playerBet,
+    stack,
+    hasRaiseInFront,
+    lastAggressor,
+    pot,
+    preflopRaiseCount = 0,
+  } = context;
   const toCall = currentBet - playerBet;
 
   // No raise in front - consider opening (RFI)
@@ -545,7 +545,11 @@ function getRFIDecision(
     return { action: "check", confidence: 0.7, reasoning: "Checking BB" };
   }
 
-  return { action: "fold", confidence: 1 - openProb, reasoning: `Folding ${handNotation} from ${position}` };
+  return {
+    action: "fold",
+    confidence: 1 - openProb,
+    reasoning: `Folding ${handNotation} from ${position}`,
+  };
 }
 
 /**
@@ -587,7 +591,7 @@ function getVsRFIDecision(
       callProb = Math.min(1.0 - threeBetProb, gtoCall * Math.min(callAdjust, 1.5));
 
       // Tighter players 3bet less
-      if (profile.vpip < 0.20) {
+      if (profile.vpip < 0.2) {
         threeBetProb *= 0.7;
       }
     }
@@ -601,7 +605,7 @@ function getVsRFIDecision(
     }
 
     // Maniacs 3bet light
-    if (profile.threeBetFreq > 0.10 && handStrength > 0.4) {
+    if (profile.threeBetFreq > 0.1 && handStrength > 0.4) {
       threeBetProb = (profile.threeBetFreq - 0.08) * handStrength;
     }
   }
@@ -671,13 +675,13 @@ function getVs3BetDecision(
     fourBetProb *= profile.fourBetFreq / 0.03;
 
     // Tighter players fold more to 3bets
-    callProb *= (1 - profile.foldTo3Bet);
+    callProb *= 1 - profile.foldTo3Bet;
   } else {
     // Hand not in GTO 4bet/call range
     const handStrength = estimatePreflopStrength(handNotation);
 
     // Only call with decent equity
-    if (profile.vpip > 0.30 && handStrength > 0.5) {
+    if (profile.vpip > 0.3 && handStrength > 0.5) {
       callProb = 0.2;
     }
   }
@@ -745,7 +749,7 @@ function getVs4BetDecision(
     fiveBetProb *= Math.min(1.5, 0.8 + profile.aggression * 0.7);
     fiveBetProb = Math.min(1.0, fiveBetProb);
     // Tighter players call less vs 4bet
-    if (profile.vpip < 0.20) {
+    if (profile.vpip < 0.2) {
       callProb *= 0.7;
     }
   } else {
@@ -796,11 +800,27 @@ function getPostflopDecision(
   handNotation: string,
   profile: AIPlayerProfile
 ): AIDecision {
-  const { pot, currentBet, playerBet, stack, communityCards, street, isInPosition, villainChecked, wasLastStreetAggressor, preflopAggressor, position } = context;
+  const {
+    pot,
+    currentBet,
+    playerBet,
+    stack,
+    communityCards,
+    street,
+    isInPosition,
+    villainChecked,
+    wasLastStreetAggressor,
+    preflopAggressor,
+    position,
+  } = context;
   const toCall = currentBet - playerBet;
 
   const opponents = Math.max(1, context.numActivePlayers - 1);
-  const handStrength = estimateHandStrengthVsOpponents(context.holeCards, communityCards, opponents);
+  const handStrength = estimateHandStrengthVsOpponents(
+    context.holeCards,
+    communityCards,
+    opponents
+  );
   const boardTexture = analyzeBoardTexture(communityCards);
 
   // Determine if we were the preflop aggressor
@@ -888,7 +908,7 @@ function getPostflopBetDecision(
   if (handStrength > 0.7) {
     betProb = Math.min(0.95, betProb + 0.3);
   } else if (handStrength > 0.4) {
-    betProb *= (boardTexture.isDry ? 1.2 : 0.7);
+    betProb *= boardTexture.isDry ? 1.2 : 0.7;
   } else {
     // Bluffing - need good blockers or dry board
     betProb = profile.bluffFreq * (boardTexture.isDry ? 0.8 : 0.3);
@@ -922,7 +942,7 @@ function getPostflopBetDecision(
       } else if (boardTexture.isWet) {
         betMultiplier = 0.55 + profile.aggression * 0.15;
       } else {
-        betMultiplier = 0.45 + profile.aggression * 0.10;
+        betMultiplier = 0.45 + profile.aggression * 0.1;
       }
     }
 
@@ -948,8 +968,12 @@ function getPostflopBetDecision(
       amount: Math.min(Math.max(betSize, 1), stack),
       confidence: betProb,
       reasoning: isPreflopAggressor
-        ? (handStrength > 0.5 ? "Value betting" : "Continuation bet")
-        : (handStrength > 0.5 ? "Value donk bet" : "Donk bluff"),
+        ? handStrength > 0.5
+          ? "Value betting"
+          : "Continuation bet"
+        : handStrength > 0.5
+          ? "Value donk bet"
+          : "Donk bluff",
     };
   }
 
@@ -1105,7 +1129,7 @@ function getFacingBetDecision(
 
   // Medium hands - pot odds decision with street adjustment
   if (handStrength > 0.35) {
-    const requiredEquity = potOdds * (0.8 + profile.foldToCbet * 0.4) / defenseMultiplier;
+    const requiredEquity = (potOdds * (0.8 + profile.foldToCbet * 0.4)) / defenseMultiplier;
 
     if (handStrength > requiredEquity) {
       // Floating IP with medium hands on flop/turn
@@ -1124,9 +1148,7 @@ function getFacingBetDecision(
   }
 
   // Weak hands - fold or bluff raise (less on river)
-  const bluffRaiseProb = street === "river"
-    ? profile.bluffFreq * 0.08
-    : profile.bluffFreq * 0.15;
+  const bluffRaiseProb = street === "river" ? profile.bluffFreq * 0.08 : profile.bluffFreq * 0.15;
 
   if (Math.random() < bluffRaiseProb && toCall < pot * 0.5) {
     const raiseSize = roundToHalf(currentBet * 2.5);
@@ -1139,7 +1161,7 @@ function getFacingBetDecision(
   }
 
   // Calling stations call more (but less on river)
-  const stationThreshold = street === "river" ? 0.20 : 0.30;
+  const stationThreshold = street === "river" ? 0.2 : 0.3;
   if (profile.foldToCbet < stationThreshold && toCall < pot * 0.6) {
     return { action: "call", confidence: 0.5, reasoning: "Calling as station" };
   }
@@ -1150,7 +1172,6 @@ function getFacingBetDecision(
 // ============================================
 // Board Texture Analysis
 // ============================================
-
 
 // ============================================
 // Helper Functions
@@ -1182,10 +1203,30 @@ function estimatePreflopStrength(hand: string): number {
 
   // Playable: 77-22, suited aces, broadway
   const playable = [
-    "77", "66", "55", "44", "33", "22",
-    "A9s", "A8s", "A7s", "A6s", "A5s", "A4s", "A3s", "A2s",
-    "KTs", "K9s", "QTs", "JTs", "T9s",
-    "AJo", "ATo", "KQo", "KJo", "QJo",
+    "77",
+    "66",
+    "55",
+    "44",
+    "33",
+    "22",
+    "A9s",
+    "A8s",
+    "A7s",
+    "A6s",
+    "A5s",
+    "A4s",
+    "A3s",
+    "A2s",
+    "KTs",
+    "K9s",
+    "QTs",
+    "JTs",
+    "T9s",
+    "AJo",
+    "ATo",
+    "KQo",
+    "KJo",
+    "QJo",
   ];
   if (playable.includes(hand)) return 0.5;
 
@@ -1257,14 +1298,14 @@ function estimateHandStrengthVsOpponents(
   if (maxSuit >= 5) return 0.88;
 
   // Check for straight (including wheel A-2-3-4-5)
-  const rankValues = allCards.map(c => "AKQJT98765432".indexOf(c.rank)).sort((a, b) => a - b);
+  const rankValues = allCards.map((c) => "AKQJT98765432".indexOf(c.rank)).sort((a, b) => a - b);
   const uniqueRanks = [...new Set(rankValues)];
   for (let i = 0; i <= uniqueRanks.length - 5; i++) {
     if (uniqueRanks[i + 4] - uniqueRanks[i] === 4) return 0.82;
   }
   // Wheel straight (A-2-3-4-5)
   const wheelRanks = [0, 9, 10, 11, 12]; // A,5,4,3,2 in index order
-  if (wheelRanks.every(r => uniqueRanks.includes(r))) {
+  if (wheelRanks.every((r) => uniqueRanks.includes(r))) {
     return 0.82;
   }
 
@@ -1272,7 +1313,7 @@ function estimateHandStrengthVsOpponents(
   if (counts[0] >= 3) return 0.75;
 
   // Two pair
-  if (counts[0] >= 2 && counts[1] >= 2) return 0.60;
+  if (counts[0] >= 2 && counts[1] >= 2) return 0.6;
 
   // One pair
   if (counts[0] >= 2) {
@@ -1282,13 +1323,16 @@ function estimateHandStrengthVsOpponents(
         "AKQJT98765432".indexOf(c.rank) < "AKQJT98765432".indexOf(max.rank) ? c : max
       );
       // Top pair or overpair
-      if (pairRank === boardHighCard.rank || "AKQJT98765432".indexOf(pairRank) < "AKQJT98765432".indexOf(boardHighCard.rank)) {
+      if (
+        pairRank === boardHighCard.rank ||
+        "AKQJT98765432".indexOf(pairRank) < "AKQJT98765432".indexOf(boardHighCard.rank)
+      ) {
         return 0.55;
       }
       // Middle/bottom pair
       return 0.35;
     }
-    return 0.40;
+    return 0.4;
   }
 
   // Calculate draw equity (only on flop and turn)
@@ -1302,7 +1346,7 @@ function estimateHandStrengthVsOpponents(
     "AKQJT98765432".indexOf(c.rank) < "AKQJT98765432".indexOf(max.rank) ? c : max
   );
   const highCardValue = 14 - "AKQJT98765432".indexOf(highCard.rank);
-  const baseStrength = 0.10 + (highCardValue / 14) * 0.20;
+  const baseStrength = 0.1 + (highCardValue / 14) * 0.2;
 
   // Combine base strength with draw equity
   return Math.min(0.99, baseStrength + drawEquity);
@@ -1367,7 +1411,7 @@ function getMonteCarloIterations(boardSize: number, opponents: number): number {
 }
 
 function buildDeckExcluding(excluded: Card[]): Card[] {
-  const excludedSet = new Set(excluded.map(c => `${c.rank}${c.suit}`));
+  const excludedSet = new Set(excluded.map((c) => `${c.rank}${c.suit}`));
   const deck: Card[] = [];
   for (const rank of "AKQJT98765432") {
     for (const suit of ["s", "h", "d", "c"] as const) {
@@ -1416,9 +1460,7 @@ function calculateDrawEquity(holeCards: [Card, Card], communityCards: Card[]): n
 
   // Check for straight draws
   const rankOrder = "AKQJT98765432";
-  const rankValues = allCards
-    .map(c => rankOrder.indexOf(c.rank))
-    .sort((a, b) => a - b);
+  const rankValues = allCards.map((c) => rankOrder.indexOf(c.rank)).sort((a, b) => a - b);
   const uniqueRanks = [...new Set(rankValues)];
 
   // OESD: 4 consecutive cards with gaps on both ends
@@ -1438,7 +1480,8 @@ function calculateDrawEquity(holeCards: [Card, Card], communityCards: Card[]): n
   }
 
   // Check for gutshot (4 cards with one gap)
-  if (equity < 0.15) { // Don't double-count with OESD
+  if (equity < 0.15) {
+    // Don't double-count with OESD
     for (let i = 0; i <= uniqueRanks.length - 4; i++) {
       const span = uniqueRanks[i + 3] - uniqueRanks[i];
       if (span === 4) {

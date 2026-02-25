@@ -3,13 +3,7 @@
 import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -42,8 +36,22 @@ import { cn } from "@/lib/utils";
 import Link from "next/link";
 
 const AVATAR_OPTIONS = [
-  "🎯", "🃏", "♠️", "♥️", "♦️", "♣️", "🎰", "🏆",
-  "👑", "💎", "🔥", "⚡", "🌟", "💫", "🎮", "🎲",
+  "🎯",
+  "🃏",
+  "♠️",
+  "♥️",
+  "♦️",
+  "♣️",
+  "🎰",
+  "🏆",
+  "👑",
+  "💎",
+  "🔥",
+  "⚡",
+  "🌟",
+  "💫",
+  "🎮",
+  "🎲",
 ];
 
 export default function ProfilePage() {
@@ -134,8 +142,8 @@ export default function ProfilePage() {
     <div className="container max-w-2xl py-8">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold flex items-center gap-2">
-          <User className="h-8 w-8 text-primary" />
+        <h1 className="flex items-center gap-2 text-3xl font-bold">
+          <User className="text-primary h-8 w-8" />
           {t("profile.title") || "Profile Settings"}
         </h1>
         <p className="text-muted-foreground mt-2">
@@ -165,7 +173,7 @@ export default function ProfilePage() {
             <CardContent className="space-y-6">
               {/* Avatar Selection */}
               <div>
-                <Label className="text-sm font-medium mb-3 block">
+                <Label className="mb-3 block text-sm font-medium">
                   {t("profile.avatar") || "Avatar"}
                 </Label>
                 <div className="grid grid-cols-8 gap-2">
@@ -174,8 +182,8 @@ export default function ProfilePage() {
                       key={emoji}
                       onClick={() => setSelectedAvatar(emoji)}
                       className={cn(
-                        "h-12 w-12 rounded-lg text-2xl flex items-center justify-center transition-all",
-                        "border-2 hover:border-primary/50",
+                        "flex h-12 w-12 items-center justify-center rounded-lg text-2xl transition-all",
+                        "hover:border-primary/50 border-2",
                         selectedAvatar === emoji
                           ? "border-primary bg-primary/10"
                           : "border-muted bg-muted/30"
@@ -189,7 +197,7 @@ export default function ProfilePage() {
 
               {/* Display Name */}
               <div>
-                <Label htmlFor="displayName" className="text-sm font-medium mb-2 block">
+                <Label htmlFor="displayName" className="mb-2 block text-sm font-medium">
                   {t("profile.displayName") || "Display Name"}
                 </Label>
                 <Input
@@ -200,18 +208,18 @@ export default function ProfilePage() {
                   maxLength={20}
                   className="max-w-xs"
                 />
-                <p className="text-xs text-muted-foreground mt-1">
+                <p className="text-muted-foreground mt-1 text-xs">
                   {displayName.length}/20 characters
                 </p>
               </div>
 
               {/* Preview */}
               <div>
-                <Label className="text-sm font-medium mb-2 block">
+                <Label className="mb-2 block text-sm font-medium">
                   {t("profile.preview") || "Preview"}
                 </Label>
-                <div className="flex items-center gap-3 p-3 rounded-lg bg-muted/30 border max-w-xs">
-                  <div className="h-10 w-10 rounded-full bg-primary/20 flex items-center justify-center text-xl">
+                <div className="bg-muted/30 flex max-w-xs items-center gap-3 rounded-lg border p-3">
+                  <div className="bg-primary/20 flex h-10 w-10 items-center justify-center rounded-full text-xl">
                     {selectedAvatar || "👤"}
                   </div>
                   <span className="font-medium">{displayName || "Anonymous"}</span>
@@ -234,10 +242,8 @@ export default function ProfilePage() {
             <CardContent>
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="font-medium">
-                    {t("profile.publicProfile") || "Public Profile"}
-                  </p>
-                  <p className="text-sm text-muted-foreground">
+                  <p className="font-medium">{t("profile.publicProfile") || "Public Profile"}</p>
+                  <p className="text-muted-foreground text-sm">
                     {isPublic
                       ? t("profile.publicDesc") || "Your name and stats appear on the leaderboard"
                       : t("profile.privateDesc") || "You appear as 'Anonymous' on the leaderboard"}
@@ -261,7 +267,7 @@ export default function ProfilePage() {
                 <div className="grid grid-cols-3 gap-4 text-center">
                   <div>
                     <div className="text-2xl font-bold">{stats.total_hands}</div>
-                    <div className="text-xs text-muted-foreground">
+                    <div className="text-muted-foreground text-xs">
                       {t("profile.totalHands") || "Total Hands"}
                     </div>
                   </div>
@@ -269,24 +275,25 @@ export default function ProfilePage() {
                     <div className="text-2xl font-bold text-green-500">
                       {stats.total_hands > 0
                         ? ((stats.correct_hands / stats.total_hands) * 100).toFixed(1)
-                        : 0}%
+                        : 0}
+                      %
                     </div>
-                    <div className="text-xs text-muted-foreground">
+                    <div className="text-muted-foreground text-xs">
                       {t("profile.accuracy") || "Accuracy"}
                     </div>
                   </div>
                   <div>
-                    <div className="text-2xl font-bold text-orange-500 flex items-center justify-center gap-1">
+                    <div className="flex items-center justify-center gap-1 text-2xl font-bold text-orange-500">
                       <Flame className="h-5 w-5" />
                       {stats.best_streak}
                     </div>
-                    <div className="text-xs text-muted-foreground">
+                    <div className="text-muted-foreground text-xs">
                       {t("profile.bestStreak") || "Best Streak"}
                     </div>
                   </div>
                 </div>
               ) : (
-                <p className="text-center text-muted-foreground py-4">
+                <p className="text-muted-foreground py-4 text-center">
                   {t("profile.noStats") || "Start practicing to see your stats!"}
                 </p>
               )}
@@ -316,14 +323,14 @@ export default function ProfilePage() {
                     {achievements.achievements.slice(0, 8).map((a) => (
                       <div
                         key={a.id}
-                        className="h-10 w-10 rounded-lg bg-yellow-500/10 border border-yellow-500/30 flex items-center justify-center text-xl"
+                        className="flex h-10 w-10 items-center justify-center rounded-lg border border-yellow-500/30 bg-yellow-500/10 text-xl"
                         title={a.name}
                       >
                         {a.icon}
                       </div>
                     ))}
                     {achievements.total_achievements > 8 && (
-                      <div className="h-10 w-10 rounded-lg bg-muted flex items-center justify-center text-sm text-muted-foreground">
+                      <div className="bg-muted text-muted-foreground flex h-10 w-10 items-center justify-center rounded-lg text-sm">
                         +{achievements.total_achievements - 8}
                       </div>
                     )}
@@ -335,7 +342,7 @@ export default function ProfilePage() {
                   </Link>
                 </div>
               ) : (
-                <div className="text-center py-4">
+                <div className="py-4 text-center">
                   <p className="text-muted-foreground mb-2">
                     {t("profile.noAchievements") || "No achievements yet"}
                   </p>

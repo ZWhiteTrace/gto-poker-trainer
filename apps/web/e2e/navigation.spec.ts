@@ -72,7 +72,10 @@ test.describe("Mobile Responsiveness", () => {
     await page.goto("/");
     await page.waitForLoadState("networkidle");
     const navElements = page.locator("nav, header, [role='navigation']");
-    const hasNav = await navElements.first().isVisible().catch(() => false);
+    const hasNav = await navElements
+      .first()
+      .isVisible()
+      .catch(() => false);
     expect(hasNav).toBe(true);
   });
 });

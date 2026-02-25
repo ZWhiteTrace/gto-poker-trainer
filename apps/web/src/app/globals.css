@@ -144,7 +144,8 @@
 }
 
 @keyframes card-highlight {
-  0%, 100% {
+  0%,
+  100% {
     box-shadow: 0 0 0 0 rgba(250, 204, 21, 0);
   }
   50% {
@@ -212,8 +213,15 @@ body.table-trainer-active main {
 
 /* Swipe hint animation */
 @keyframes swipe-hint {
-  0%, 100% { transform: translateX(0); opacity: 0.6; }
-  50% { transform: translateX(10px); opacity: 1; }
+  0%,
+  100% {
+    transform: translateX(0);
+    opacity: 0.6;
+  }
+  50% {
+    transform: translateX(10px);
+    opacity: 1;
+  }
 }
 
 .animate-swipe-hint {

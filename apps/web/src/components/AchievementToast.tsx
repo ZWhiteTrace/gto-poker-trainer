@@ -13,16 +13,10 @@ export function AchievementToast() {
       setAchievements((prev) => [...prev, ...event.detail]);
     };
 
-    window.addEventListener(
-      "achievement-unlocked",
-      handleAchievement as EventListener
-    );
+    window.addEventListener("achievement-unlocked", handleAchievement as EventListener);
 
     return () => {
-      window.removeEventListener(
-        "achievement-unlocked",
-        handleAchievement as EventListener
-      );
+      window.removeEventListener("achievement-unlocked", handleAchievement as EventListener);
     };
   }, []);
 
@@ -41,7 +35,7 @@ export function AchievementToast() {
   }, [achievements]);
 
   return (
-    <div className="fixed bottom-4 right-4 z-50 flex flex-col gap-2">
+    <div className="fixed right-4 bottom-4 z-50 flex flex-col gap-2">
       <AnimatePresence>
         {achievements.map((achievement) => (
           <motion.div
@@ -49,17 +43,17 @@ export function AchievementToast() {
             initial={{ opacity: 0, y: 50, scale: 0.8 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -20, scale: 0.8 }}
-            className="relative bg-gradient-to-r from-yellow-500/20 to-orange-500/20 border border-yellow-500/40 rounded-lg p-4 shadow-lg backdrop-blur-sm max-w-sm"
+            className="relative max-w-sm rounded-lg border border-yellow-500/40 bg-gradient-to-r from-yellow-500/20 to-orange-500/20 p-4 shadow-lg backdrop-blur-sm"
           >
             <button
               onClick={() => dismissAchievement(achievement.id)}
-              className="absolute top-2 right-2 text-muted-foreground hover:text-foreground"
+              className="text-muted-foreground hover:text-foreground absolute top-2 right-2"
             >
               <X className="h-4 w-4" />
             </button>
 
             <div className="flex items-center gap-3">
-              <div className="flex-shrink-0 h-12 w-12 rounded-full bg-yellow-500/20 flex items-center justify-center text-2xl">
+              <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-yellow-500/20 text-2xl">
                 {achievement.icon}
               </div>
               <div>
@@ -70,9 +64,7 @@ export function AchievementToast() {
                   </span>
                 </div>
                 <h4 className="font-semibold">{achievement.name}</h4>
-                <p className="text-sm text-muted-foreground">
-                  +{achievement.points} points
-                </p>
+                <p className="text-muted-foreground text-sm">+{achievement.points} points</p>
               </div>
             </div>
           </motion.div>

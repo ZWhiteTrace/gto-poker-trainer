@@ -3,13 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
@@ -61,10 +55,8 @@ type Scenario = FlopScenario | TurnScenario | RiverScenario;
 
 function BoardCard({ rank, suit }: { rank: string; suit: string }) {
   return (
-    <div className="bg-white dark:bg-gray-100 rounded-lg shadow-md w-14 h-20 sm:w-16 sm:h-24 flex flex-col items-center justify-center border-2 border-gray-200">
-      <span className={cn("text-2xl sm:text-3xl font-bold", SUIT_CARD_COLORS[suit])}>
-        {rank}
-      </span>
+    <div className="flex h-20 w-14 flex-col items-center justify-center rounded-lg border-2 border-gray-200 bg-white shadow-md sm:h-24 sm:w-16 dark:bg-gray-100">
+      <span className={cn("text-2xl font-bold sm:text-3xl", SUIT_CARD_COLORS[suit])}>{rank}</span>
       <span className={cn("text-xl sm:text-2xl", SUIT_CARD_COLORS[suit])}>
         {SUIT_SYMBOLS[suit]}
       </span>
@@ -119,21 +111,17 @@ function HeroHand({ hand, board = [] }: { hand: string; board?: string[] }) {
 
   return (
     <div className="flex gap-2">
-      <div className="bg-white dark:bg-gray-100 rounded-lg shadow-md w-12 h-16 sm:w-14 sm:h-20 flex flex-col items-center justify-center border-2 border-primary">
-        <span className={cn("text-xl sm:text-2xl font-bold", SUIT_CARD_COLORS[suit1])}>
+      <div className="border-primary flex h-16 w-12 flex-col items-center justify-center rounded-lg border-2 bg-white shadow-md sm:h-20 sm:w-14 dark:bg-gray-100">
+        <span className={cn("text-xl font-bold sm:text-2xl", SUIT_CARD_COLORS[suit1])}>
           {rank1}
         </span>
-        <span className={cn("text-lg", SUIT_CARD_COLORS[suit1])}>
-          {SUIT_SYMBOLS[suit1]}
-        </span>
+        <span className={cn("text-lg", SUIT_CARD_COLORS[suit1])}>{SUIT_SYMBOLS[suit1]}</span>
       </div>
-      <div className="bg-white dark:bg-gray-100 rounded-lg shadow-md w-12 h-16 sm:w-14 sm:h-20 flex flex-col items-center justify-center border-2 border-primary">
-        <span className={cn("text-xl sm:text-2xl font-bold", SUIT_CARD_COLORS[suit2])}>
+      <div className="border-primary flex h-16 w-12 flex-col items-center justify-center rounded-lg border-2 bg-white shadow-md sm:h-20 sm:w-14 dark:bg-gray-100">
+        <span className={cn("text-xl font-bold sm:text-2xl", SUIT_CARD_COLORS[suit2])}>
           {rank2}
         </span>
-        <span className={cn("text-lg", SUIT_CARD_COLORS[suit2])}>
-          {SUIT_SYMBOLS[suit2]}
-        </span>
+        <span className={cn("text-lg", SUIT_CARD_COLORS[suit2])}>{SUIT_SYMBOLS[suit2]}</span>
       </div>
     </div>
   );
@@ -245,12 +233,7 @@ export default function PostflopDrillPage() {
 
   // Load available textures for current street
   useEffect(() => {
-    const endpoint =
-      street === "flop"
-        ? "cbet"
-        : street === "turn"
-        ? "turn"
-        : "river";
+    const endpoint = street === "flop" ? "cbet" : street === "turn" ? "turn" : "river";
     fetch(`${API_BASE_URL}/api/postflop/${endpoint}/textures`)
       .then((res) => res.json())
       .then((data) => setTextures(data.textures || {}))
@@ -264,12 +247,7 @@ export default function PostflopDrillPage() {
     setError(null);
 
     try {
-      const endpoint =
-        street === "flop"
-          ? "cbet"
-          : street === "turn"
-          ? "turn"
-          : "river";
+      const endpoint = street === "flop" ? "cbet" : street === "turn" ? "turn" : "river";
       const params = new URLSearchParams();
       if (textureFilter) params.set("texture", textureFilter);
 
@@ -302,12 +280,7 @@ export default function PostflopDrillPage() {
     setSelectedAction(action);
 
     try {
-      const endpoint =
-        street === "flop"
-          ? "cbet"
-          : street === "turn"
-          ? "turn"
-          : "river";
+      const endpoint = street === "flop" ? "cbet" : street === "turn" ? "turn" : "river";
       const res = await fetch(`${API_BASE_URL}/api/postflop/${endpoint}/evaluate`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -363,8 +336,8 @@ export default function PostflopDrillPage() {
       const riverScenario = scenario as RiverScenario;
       return (
         <div className="mb-6">
-          <div className="text-sm text-muted-foreground mb-2 text-center">Board</div>
-          <div className="flex gap-2 justify-center bg-green-800/30 py-4 px-6 rounded-lg flex-wrap">
+          <div className="text-muted-foreground mb-2 text-center text-sm">Board</div>
+          <div className="flex flex-wrap justify-center gap-2 rounded-lg bg-green-800/30 px-6 py-4">
             {riverScenario.board.map((rank, i) => (
               <BoardCard key={i} rank={rank} suit={riverScenario.board_suits?.[i]} />
             ))}
@@ -377,8 +350,8 @@ export default function PostflopDrillPage() {
       const turnScenario = scenario as TurnScenario;
       return (
         <div className="mb-6">
-          <div className="text-sm text-muted-foreground mb-2 text-center">Board</div>
-          <div className="flex gap-2 justify-center bg-green-800/30 py-4 px-6 rounded-lg">
+          <div className="text-muted-foreground mb-2 text-center text-sm">Board</div>
+          <div className="flex justify-center gap-2 rounded-lg bg-green-800/30 px-6 py-4">
             {turnScenario.flop.map((rank, i) => (
               <BoardCard key={i} rank={rank} suit={turnScenario.flop_suits?.[i]} />
             ))}
@@ -393,8 +366,8 @@ export default function PostflopDrillPage() {
     const flopScenario = scenario as FlopScenario;
     return (
       <div className="mb-6">
-        <div className="text-sm text-muted-foreground mb-2 text-center">Flop</div>
-        <div className="flex gap-2 justify-center bg-green-800/30 py-4 px-6 rounded-lg">
+        <div className="text-muted-foreground mb-2 text-center text-sm">Flop</div>
+        <div className="flex justify-center gap-2 rounded-lg bg-green-800/30 px-6 py-4">
           {flopScenario.flop.map((rank, i) => (
             <BoardCard key={i} rank={rank} suit={flopScenario.flop_suits?.[i]} />
           ))}
@@ -407,7 +380,7 @@ export default function PostflopDrillPage() {
     if (street === "turn") {
       const turnScenario = scenario as TurnScenario;
       return (
-        <div className="text-sm text-muted-foreground mb-2 text-center">
+        <div className="text-muted-foreground mb-2 text-center text-sm">
           Flop Action: {turnScenario.flop_action}
         </div>
       );
@@ -415,7 +388,7 @@ export default function PostflopDrillPage() {
     if (street === "river") {
       const riverScenario = scenario as RiverScenario;
       return (
-        <div className="text-sm text-muted-foreground mb-2 text-center">
+        <div className="text-muted-foreground mb-2 text-center text-sm">
           {riverScenario.previous_action}
         </div>
       );
@@ -441,7 +414,7 @@ export default function PostflopDrillPage() {
     return (
       <div className="container max-w-2xl py-8">
         <div className="flex items-center justify-center py-12">
-          <RefreshCw className="h-8 w-8 animate-spin text-muted-foreground" />
+          <RefreshCw className="text-muted-foreground h-8 w-8 animate-spin" />
         </div>
       </div>
     );
@@ -450,15 +423,15 @@ export default function PostflopDrillPage() {
   const actionOptions = getActionsForStreet(street, drillMode);
 
   return (
-    <div className="container max-w-2xl py-4 sm:py-8 pb-24 sm:pb-8">
+    <div className="container max-w-2xl py-4 pb-24 sm:py-8 sm:pb-8">
       {/* Header */}
       <div className="mb-4 sm:mb-6">
-        <h1 className="text-xl sm:text-2xl font-bold">{t("postflop.title")}</h1>
-        <p className="text-sm text-muted-foreground">{t("postflop.description")}</p>
+        <h1 className="text-xl font-bold sm:text-2xl">{t("postflop.title")}</h1>
+        <p className="text-muted-foreground text-sm">{t("postflop.description")}</p>
       </div>
 
       {/* Drill Mode Selector - horizontal scroll on mobile */}
-      <div className="flex gap-2 mb-4 overflow-x-auto pb-2 -mx-4 px-4 sm:mx-0 sm:px-0 sm:overflow-visible sm:flex-wrap">
+      <div className="-mx-4 mb-4 flex gap-2 overflow-x-auto px-4 pb-2 sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0">
         {DRILL_MODE_OPTIONS.map((mode) => (
           <Button
             key={mode.key}
@@ -476,25 +449,35 @@ export default function PostflopDrillPage() {
       </div>
 
       {/* Street Tabs */}
-      <Tabs value={street} onValueChange={(v) => handleStreetChange(v as Street)} className="mb-4 sm:mb-6">
+      <Tabs
+        value={street}
+        onValueChange={(v) => handleStreetChange(v as Street)}
+        className="mb-4 sm:mb-6"
+      >
         <TabsList className="grid w-full grid-cols-3">
-          <TabsTrigger value="flop" className="text-sm sm:text-base">Flop</TabsTrigger>
-          <TabsTrigger value="turn" className="text-sm sm:text-base">Turn</TabsTrigger>
-          <TabsTrigger value="river" className="text-sm sm:text-base">River</TabsTrigger>
+          <TabsTrigger value="flop" className="text-sm sm:text-base">
+            Flop
+          </TabsTrigger>
+          <TabsTrigger value="turn" className="text-sm sm:text-base">
+            Turn
+          </TabsTrigger>
+          <TabsTrigger value="river" className="text-sm sm:text-base">
+            River
+          </TabsTrigger>
         </TabsList>
       </Tabs>
 
       {/* Score - compact on mobile */}
-      <div className="flex items-center justify-between mb-4 sm:mb-6">
+      <div className="mb-4 flex items-center justify-between sm:mb-6">
         <div className="flex items-center gap-4">
-          <Badge variant="outline" className="text-lg px-3 py-1">
-            <Trophy className="h-4 w-4 mr-1" />
+          <Badge variant="outline" className="px-3 py-1 text-lg">
+            <Trophy className="mr-1 h-4 w-4" />
             {score.correct}/{score.total}
           </Badge>
           <span className="text-muted-foreground">{accuracy}%</span>
         </div>
         <select
-          className="bg-muted px-3 py-1.5 rounded-md text-sm"
+          className="bg-muted rounded-md px-3 py-1.5 text-sm"
           value={textureFilter || "all"}
           onChange={(e) => {
             setTextureFilter(e.target.value === "all" ? null : e.target.value);
@@ -511,7 +494,7 @@ export default function PostflopDrillPage() {
       </div>
 
       {error && (
-        <div className="mb-4 rounded-lg bg-destructive/10 p-4 text-destructive text-center">
+        <div className="bg-destructive/10 text-destructive mb-4 rounded-lg p-4 text-center">
           {error}
           <Button variant="outline" size="sm" className="ml-3" onClick={loadScenario}>
             {t("common.retry") || "重試"}
@@ -530,22 +513,20 @@ export default function PostflopDrillPage() {
                 {scenario.hero_position} vs {scenario.villain_position}
               </Badge>
             </div>
-            <CardTitle className="text-lg mt-2">{getStreetTitle(street, drillMode)}</CardTitle>
+            <CardTitle className="mt-2 text-lg">{getStreetTitle(street, drillMode)}</CardTitle>
           </CardHeader>
           <CardContent>
             {/* Preflop Action */}
-            <div className="text-sm text-muted-foreground mb-2 text-center">
-              {scenario.preflop}
-            </div>
+            <div className="text-muted-foreground mb-2 text-center text-sm">{scenario.preflop}</div>
 
             {/* Mode-specific context */}
             {drillMode === "sizing_only" && (
-              <div className="text-sm text-center mb-2 p-2 bg-primary/10 rounded-lg">
+              <div className="bg-primary/10 mb-2 rounded-lg p-2 text-center text-sm">
                 {t("postflop.sizingPrompt")}
               </div>
             )}
             {drillMode === "oop_defense" && (
-              <div className="text-sm text-center mb-2 p-2 bg-amber-500/10 rounded-lg">
+              <div className="mb-2 rounded-lg bg-amber-500/10 p-2 text-center text-sm">
                 {t("postflop.oopDefensePrompt")}
               </div>
             )}
@@ -558,7 +539,7 @@ export default function PostflopDrillPage() {
 
             {/* Hero Hand */}
             <div className="mb-6">
-              <div className="text-sm text-muted-foreground mb-2 text-center">
+              <div className="text-muted-foreground mb-2 text-center text-sm">
                 {t("postflop.cbet.yourHand")}
               </div>
               <div className="flex justify-center">
@@ -567,10 +548,12 @@ export default function PostflopDrillPage() {
             </div>
 
             {/* Action Buttons */}
-            <div className={cn(
-              "grid gap-3",
-              actionOptions.length <= 4 ? "grid-cols-2" : "grid-cols-2 sm:grid-cols-3"
-            )}>
+            <div
+              className={cn(
+                "grid gap-3",
+                actionOptions.length <= 4 ? "grid-cols-2" : "grid-cols-2 sm:grid-cols-3"
+              )}
+            >
               {actionOptions.map((option) => {
                 const isSelected = selectedAction === option.key;
                 const showResult = selectedAction !== null;
@@ -584,12 +567,12 @@ export default function PostflopDrillPage() {
                         ? isCorrect
                           ? "default"
                           : isSelected
-                          ? "destructive"
-                          : "outline"
+                            ? "destructive"
+                            : "outline"
                         : "outline"
                     }
                     className={cn(
-                      "h-12 sm:h-auto sm:py-3 touch-target-lg",
+                      "touch-target-lg h-12 sm:h-auto sm:py-3",
                       showResult && isCorrect && "bg-green-600 hover:bg-green-600",
                       showResult && isSelected && !isCorrect && "bg-red-600"
                     )}
@@ -597,10 +580,8 @@ export default function PostflopDrillPage() {
                     disabled={showResult}
                   >
                     <span className="text-sm font-medium">{option.labelZh}</span>
-                    {showResult && isCorrect && <CheckCircle2 className="h-4 w-4 ml-2" />}
-                    {showResult && isSelected && !isCorrect && (
-                      <XCircle className="h-4 w-4 ml-2" />
-                    )}
+                    {showResult && isCorrect && <CheckCircle2 className="ml-2 h-4 w-4" />}
+                    {showResult && isSelected && !isCorrect && <XCircle className="ml-2 h-4 w-4" />}
                   </Button>
                 );
               })}
@@ -610,13 +591,14 @@ export default function PostflopDrillPage() {
             {result && (
               <div className="mt-6 text-center">
                 {result.correct ? (
-                  <p className="text-green-500 font-medium">{t("drill.result.correct")}</p>
+                  <p className="font-medium text-green-500">{t("drill.result.correct")}</p>
                 ) : (
-                  <p className="text-red-500 font-medium">
-                    {t("drill.result.incorrect")} - {getCorrectActionDisplay()} ({result.frequency}%)
+                  <p className="font-medium text-red-500">
+                    {t("drill.result.incorrect")} - {getCorrectActionDisplay()} ({result.frequency}
+                    %)
                   </p>
                 )}
-                <p className="text-sm text-muted-foreground mt-2 bg-muted/30 p-3 rounded-lg">
+                <p className="text-muted-foreground bg-muted/30 mt-2 rounded-lg p-3 text-sm">
                   {result.explanation}
                 </p>
                 <Button onClick={loadScenario} className="mt-4">
@@ -633,7 +615,7 @@ export default function PostflopDrillPage() {
         <CardHeader>
           <CardTitle className="text-base">{t("postflop.tipsTitle")}</CardTitle>
         </CardHeader>
-        <CardContent className="text-sm text-muted-foreground space-y-2">
+        <CardContent className="text-muted-foreground space-y-2 text-sm">
           {street === "flop" && (
             <>
               <p>{t("postflop.cbet.tip1")}</p>

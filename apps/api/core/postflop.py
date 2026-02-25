@@ -1,15 +1,14 @@
 """
 Postflop scenario and evaluation classes.
 """
-from dataclasses import dataclass
-from typing import List, Optional, Tuple
-from enum import Enum
+
 import json
 import random
+from dataclasses import dataclass
+from enum import Enum
 from pathlib import Path
 
 from core.hand import Hand
-from core.position import Position
 
 
 class PostflopAction(Enum):
@@ -49,47 +48,46 @@ class FlopCard:
     suit: str
 
     def __str__(self):
-        suit_symbols = {'s': '♠', 'h': '♥', 'd': '♦', 'c': '♣'}
+        suit_symbols = {"s": "♠", "h": "♥", "d": "♦", "c": "♣"}
         return f"{self.rank}{suit_symbols.get(self.suit, self.suit)}"
 
 
 @dataclass
 class HeroCard:
     """A specific hero card with rank and suit."""
+
     rank: str
     suit: str
 
     def __str__(self):
-        suit_symbols = {'s': '♠', 'h': '♥', 'd': '♦', 'c': '♣'}
+        suit_symbols = {"s": "♠", "h": "♥", "d": "♦", "c": "♣"}
         return f"{self.rank}{suit_symbols.get(self.suit, self.suit)}"
 
 
 @dataclass
 class PostflopScenario:
     """A postflop scenario for c-bet practice."""
+
     id: str
     preflop: str  # e.g. "BTN open, BB call"
     hero_position: str
     villain_position: str
     pot_type: str  # "srp" or "3bp"
-    flop: List[FlopCard]
+    flop: list[FlopCard]
     texture: FlopTexture
     texture_zh: str
     hero_hand: Hand
     correct_action: PostflopAction
-    correct_sizing: Optional[str]  # "33", "50", "66", "75", None
+    correct_sizing: str | None  # "33", "50", "66", "75", None
     frequency: int  # GTO frequency %
     explanation_zh: str
     explanation_en: str
-    hero_cards: Optional[List[HeroCard]] = None  # Specific cards when suits matter
+    hero_cards: list[HeroCard] | None = None  # Specific cards when suits matter
 
     @classmethod
     def from_dict(cls, data: dict) -> "PostflopScenario":
         """Create a PostflopScenario from a dictionary."""
-        flop = [
-            FlopCard(rank=r, suit=s)
-            for r, s in zip(data["flop"], data["flop_suits"])
-        ]
+        flop = [FlopCard(rank=r, suit=s) for r, s in zip(data["flop"], data["flop_suits"])]
 
         # Parse specific hero cards if provided (e.g., ["As", "Qd"])
         hero_cards = None
@@ -123,19 +121,21 @@ class PostflopScenario:
 @dataclass
 class PostflopSpot:
     """A practice spot for postflop training."""
+
     scenario: PostflopScenario
-    available_actions: List[PostflopAction]
-    available_sizings: List[str]  # For bet/raise: ["25", "33", "50", "66", "75", "100"]
+    available_actions: list[PostflopAction]
+    available_sizings: list[str]  # For bet/raise: ["25", "33", "50", "66", "75", "100"]
 
 
 @dataclass
 class PostflopResult:
     """Result of checking a postflop answer."""
+
     is_correct: bool
     action_correct: bool
-    sizing_correct: Optional[bool]  # None if check/fold
+    sizing_correct: bool | None  # None if check/fold
     correct_action: PostflopAction
-    correct_sizing: Optional[str]
+    correct_sizing: str | None
     frequency: int
     explanation: str
 
@@ -147,23 +147,23 @@ class PostflopDrill:
         if data_dir is None:
             data_dir = Path(__file__).parent.parent / "data" / "postflop"
         self.data_dir = Path(data_dir)
-        self.scenarios: List[PostflopScenario] = []
+        self.scenarios: list[PostflopScenario] = []
         self._load_scenarios()
 
         # Filter options
-        self.enabled_pot_types: List[str] = ["srp", "3bp"]
-        self.enabled_textures: Optional[List[FlopTexture]] = None
+        self.enabled_pot_types: list[str] = ["srp", "3bp"]
+        self.enabled_textures: list[FlopTexture] | None = None
 
     def _load_scenarios(self):
         """Load all postflop scenarios from JSON files."""
         cbet_file = self.data_dir / "flop_cbet.json"
         if cbet_file.exists():
-            with open(cbet_file, "r", encoding="utf-8") as f:
+            with open(cbet_file, encoding="utf-8") as f:
                 data = json.load(f)
                 for scenario_data in data.get("scenarios", []):
                     self.scenarios.append(PostflopScenario.from_dict(scenario_data))
 
-    def generate_spot(self) -> Optional[PostflopSpot]:
+    def generate_spot(self) -> PostflopSpot | None:
         """Generate a random postflop practice spot."""
         # Filter scenarios
         filtered = self.scenarios
@@ -193,7 +193,7 @@ class PostflopDrill:
         self,
         spot: PostflopSpot,
         user_action: PostflopAction,
-        user_sizing: Optional[str] = None,
+        user_sizing: str | None = None,
         lang: str = "zh",
     ) -> PostflopResult:
         """Check if the user's answer is correct."""

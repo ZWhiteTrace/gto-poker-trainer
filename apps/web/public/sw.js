@@ -3,27 +3,27 @@
 const CACHE_VERSION = 3;
 const CACHE_NAME = `grindgto-v${CACHE_VERSION}`;
 const STATIC_CACHE = `grindgto-static-v${CACHE_VERSION}`;
-const OFFLINE_URL = '/offline.html';
+const OFFLINE_URL = "/offline.html";
 
 // Files to cache immediately for offline access
 const PRECACHE_URLS = [
-  '/',
-  '/offline.html',
-  '/icon-192.png',
-  '/icon-512.png',
+  "/",
+  "/offline.html",
+  "/icon-192.png",
+  "/icon-512.png",
   // Core drill pages
-  '/drill/rfi',
-  '/drill/flop-texture',
-  '/drill/push-fold',
-  '/range',
-  '/mtt/push-fold',
+  "/drill/rfi",
+  "/drill/flop-texture",
+  "/drill/push-fold",
+  "/range",
+  "/mtt/push-fold",
   // Exam page
-  '/exam',
-  '/stats',
+  "/exam",
+  "/stats",
 ];
 
 // Install event - cache essential files
-self.addEventListener('install', (event) => {
+self.addEventListener("install", (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
       return cache.addAll(PRECACHE_URLS);
@@ -33,7 +33,7 @@ self.addEventListener('install', (event) => {
 });
 
 // Activate event - clean old caches
-self.addEventListener('activate', (event) => {
+self.addEventListener("activate", (event) => {
   const currentCaches = [CACHE_NAME, STATIC_CACHE];
   event.waitUntil(
     caches.keys().then((cacheNames) => {
@@ -54,25 +54,25 @@ function isStaticAsset(url) {
 
 // Helper: Check if URL is a Next.js data request
 function isNextDataRequest(url) {
-  return url.includes('/_next/data/') || url.includes('.json');
+  return url.includes("/_next/data/") || url.includes(".json");
 }
 
 // Fetch event - smart caching strategy
-self.addEventListener('fetch', (event) => {
+self.addEventListener("fetch", (event) => {
   const { request } = event;
   const url = request.url;
 
   // Only handle GET requests
-  if (request.method !== 'GET') return;
+  if (request.method !== "GET") return;
 
   // Skip cross-origin requests
   if (!url.startsWith(self.location.origin)) return;
 
   // Skip Supabase API requests
-  if (url.includes('supabase.co')) return;
+  if (url.includes("supabase.co")) return;
 
   // Skip internal Next.js API routes
-  if (url.includes('/api/')) return;
+  if (url.includes("/api/")) return;
 
   // Static assets: Cache-first strategy
   if (isStaticAsset(url)) {
@@ -81,15 +81,19 @@ self.addEventListener('fetch', (event) => {
         return cache.match(request).then((cachedResponse) => {
           if (cachedResponse) {
             // Refresh cache in background
-            fetch(request).then((response) => {
-              if (response.ok) cache.put(request, response.clone());
-            }).catch(() => {});
+            fetch(request)
+              .then((response) => {
+                if (response.ok) cache.put(request, response.clone());
+              })
+              .catch(() => {});
             return cachedResponse;
           }
-          return fetch(request).then((response) => {
-            if (response.ok) cache.put(request, response.clone());
-            return response;
-          }).catch(() => new Response('', { status: 503 }));
+          return fetch(request)
+            .then((response) => {
+              if (response.ok) cache.put(request, response.clone());
+              return response;
+            })
+            .catch(() => new Response("", { status: 503 }));
         });
       })
     );
@@ -97,7 +101,7 @@ self.addEventListener('fetch', (event) => {
   }
 
   // Navigation requests: Network-first, cache fallback
-  if (request.mode === 'navigate') {
+  if (request.mode === "navigate") {
     event.respondWith(
       fetch(request)
         .then((response) => {
@@ -136,7 +140,7 @@ self.addEventListener('fetch', (event) => {
           if (cachedResponse) return cachedResponse;
           return new Response(JSON.stringify({ offline: true }), {
             status: 503,
-            headers: { 'Content-Type': 'application/json' }
+            headers: { "Content-Type": "application/json" },
           });
         });
       })
@@ -144,8 +148,8 @@ self.addEventListener('fetch', (event) => {
 });
 
 // Message handler for manual cache updates
-self.addEventListener('message', (event) => {
-  if (event.data && event.data.type === 'SKIP_WAITING') {
+self.addEventListener("message", (event) => {
+  if (event.data && event.data.type === "SKIP_WAITING") {
     self.skipWaiting();
   }
 });

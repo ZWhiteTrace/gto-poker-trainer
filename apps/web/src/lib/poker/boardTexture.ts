@@ -62,9 +62,7 @@ export function analyzeBoardTexture(communityCards: Card[]): BoardAnalysis {
   const isPaired = Object.values(rankCounts).some((count) => count >= 2);
 
   // Check connectedness (straight possibilities)
-  const rankValues = communityCards
-    .map((c) => RANK_VALUES[c.rank])
-    .sort((a, b) => b - a);
+  const rankValues = communityCards.map((c) => RANK_VALUES[c.rank]).sort((a, b) => b - a);
   const uniqueRankValues = Array.from(new Set(rankValues));
   let connectedness = 0;
   let hasStraightDraw = false;

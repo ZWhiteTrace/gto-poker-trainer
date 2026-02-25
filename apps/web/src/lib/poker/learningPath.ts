@@ -220,19 +220,19 @@ const AVAILABLE_DRILLS: DrillRecommendation[] = [
 
 const STAT_DRILL_MAP: Record<string, string[]> = {
   // Preflop stats
-  "VPIP": ["rfi", "vs-rfi", "table-trainer"],
-  "PFR": ["rfi", "table-trainer"],
+  VPIP: ["rfi", "vs-rfi", "table-trainer"],
+  PFR: ["rfi", "table-trainer"],
   "3-Bet": ["vs-rfi", "vs-3bet", "table-trainer"],
   "Fold to 3-Bet": ["vs-3bet"],
   "4-Bet": ["vs-4bet"],
-  "ATS": ["rfi", "push-fold"],
+  ATS: ["rfi", "push-fold"],
 
   // Postflop stats
   "Flop CB": ["postflop", "flop-texture", "texture-training", "table-trainer"],
   "Fold to CB": ["postflop", "flop-texture"],
-  "WTSD": ["postflop", "table-trainer", "quiz-equity"],
-  "W$SD": ["table-trainer", "quiz-equity"],
-  "TAF": ["postflop", "texture-training", "quiz-ev"],
+  WTSD: ["postflop", "table-trainer", "quiz-equity"],
+  W$SD: ["table-trainer", "quiz-equity"],
+  TAF: ["postflop", "texture-training", "quiz-ev"],
 };
 
 // ============================================
@@ -288,8 +288,10 @@ const FOCUS_AREAS = {
 // Main Functions
 // ============================================
 
-function determineFocusAreas(weaknesses: StatFeedback[]): typeof FOCUS_AREAS[keyof typeof FOCUS_AREAS][] {
-  const areas: typeof FOCUS_AREAS[keyof typeof FOCUS_AREAS][] = [];
+function determineFocusAreas(
+  weaknesses: StatFeedback[]
+): (typeof FOCUS_AREAS)[keyof typeof FOCUS_AREAS][] {
+  const areas: (typeof FOCUS_AREAS)[keyof typeof FOCUS_AREAS][] = [];
 
   for (const weakness of weaknesses) {
     const stat = weakness.stat;
@@ -324,7 +326,7 @@ function determineFocusAreas(weaknesses: StatFeedback[]): typeof FOCUS_AREAS[key
   }
 
   // Remove duplicates
-  return [...new Map(areas.map(a => [a.area, a])).values()];
+  return [...new Map(areas.map((a) => [a.area, a])).values()];
 }
 
 function getDrillsForWeaknesses(weaknesses: StatFeedback[]): DrillRecommendation[] {
@@ -339,9 +341,9 @@ function getDrillsForWeaknesses(weaknesses: StatFeedback[]): DrillRecommendation
   }
 
   // Get full drill info and sort by priority
-  const drills = AVAILABLE_DRILLS
-    .filter(d => drillIds.has(d.drillId))
-    .sort((a, b) => b.priority - a.priority);
+  const drills = AVAILABLE_DRILLS.filter((d) => drillIds.has(d.drillId)).sort(
+    (a, b) => b.priority - a.priority
+  );
 
   return drills;
 }
@@ -364,7 +366,10 @@ function determineLevel(stats: HeroStats): {
   }
 }
 
-function generateWeeklyGoals(weaknesses: StatFeedback[], stats: HeroStats): LearningPath["weeklyGoals"] {
+function generateWeeklyGoals(
+  weaknesses: StatFeedback[],
+  stats: HeroStats
+): LearningPath["weeklyGoals"] {
   const goals: LearningPath["weeklyGoals"] = [];
 
   // Always add a basic goal
@@ -377,7 +382,7 @@ function generateWeeklyGoals(weaknesses: StatFeedback[], stats: HeroStats): Lear
   });
 
   // Add goals based on weaknesses
-  if (weaknesses.some(w => w.stat === "VPIP" || w.stat === "PFR")) {
+  if (weaknesses.some((w) => w.stat === "VPIP" || w.stat === "PFR")) {
     goals.push({
       goal: "Practice preflop ranges 3 times",
       goalZh: "練習翻前範圍 3 次",
@@ -387,7 +392,7 @@ function generateWeeklyGoals(weaknesses: StatFeedback[], stats: HeroStats): Lear
     });
   }
 
-  if (weaknesses.some(w => w.stat === "Flop CB")) {
+  if (weaknesses.some((w) => w.stat === "Flop CB")) {
     goals.push({
       goal: "Complete texture training quiz",
       goalZh: "完成質地訓練測驗",
@@ -397,7 +402,7 @@ function generateWeeklyGoals(weaknesses: StatFeedback[], stats: HeroStats): Lear
     });
   }
 
-  if (weaknesses.some(w => w.stat === "WTSD" || w.stat === "W$SD")) {
+  if (weaknesses.some((w) => w.stat === "WTSD" || w.stat === "W$SD")) {
     goals.push({
       goal: "Play 20 hands in Table Trainer",
       goalZh: "在牌桌訓練玩 20 手",
@@ -422,9 +427,7 @@ export function generateLearningPath(stats: HeroStats, userId?: string): Learnin
 
   // If no weaknesses, recommend general practice
   if (recommendations.length === 0) {
-    recommendations.push(
-      ...AVAILABLE_DRILLS.filter(d => d.priority >= 4).slice(0, 3)
-    );
+    recommendations.push(...AVAILABLE_DRILLS.filter((d) => d.priority >= 4).slice(0, 3));
   }
 
   return {
@@ -452,7 +455,7 @@ export function getQuickRecommendation(statName: string): DrillRecommendation | 
   if (!drillIds || drillIds.length === 0) return null;
 
   // Return the highest priority drill for this stat
-  const drill = AVAILABLE_DRILLS.find(d => drillIds.includes(d.drillId));
+  const drill = AVAILABLE_DRILLS.find((d) => drillIds.includes(d.drillId));
   return drill || null;
 }
 
@@ -466,6 +469,8 @@ export function getAllDrills(): DrillRecommendation[] {
 /**
  * Get drills by difficulty level
  */
-export function getDrillsByDifficulty(difficulty: DrillRecommendation["difficulty"]): DrillRecommendation[] {
-  return AVAILABLE_DRILLS.filter(d => d.difficulty === difficulty);
+export function getDrillsByDifficulty(
+  difficulty: DrillRecommendation["difficulty"]
+): DrillRecommendation[] {
+  return AVAILABLE_DRILLS.filter((d) => d.difficulty === difficulty);
 }

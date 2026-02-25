@@ -1,34 +1,34 @@
 """
 Preflop drill engine for GTO training.
 """
+
 import json
 import random
 from dataclasses import dataclass, field
+from datetime import datetime
 from functools import lru_cache
 from pathlib import Path
-from typing import List, Optional, Tuple
-from datetime import datetime
 
-from core.hand import Hand, random_hand, ALL_HANDS, RANKS
-from core.position import Position, POSITIONS_6MAX, positions_before
-from core.scenario import Scenario, ActionType
-from core.evaluator import Evaluator, EvalResult
+from core.evaluator import EvalResult, Evaluator
+from core.hand import ALL_HANDS, Hand, random_hand
+from core.position import POSITIONS_6MAX, Position, positions_before
 from core.rfi_utils import get_drillable_hands as get_drillable_from_rfi_utils
-
+from core.scenario import ActionType, Scenario
 
 # ============================================================================
 # 從 JSON 讀取出題範圍（v5.0 新架構）
 # ============================================================================
 
+
 @lru_cache(maxsize=1)
 def _load_rfi_json() -> dict:
     """載入 RFI 頻率 JSON（快取）"""
     json_path = Path(__file__).parent.parent / "data" / "ranges" / "6max" / "rfi_frequencies.json"
-    with open(json_path, 'r') as f:
+    with open(json_path) as f:
         return json.load(f)
 
 
-def get_drillable_from_json(position: str) -> List[str]:
+def get_drillable_from_json(position: str) -> list[str]:
     """
     從 JSON 讀取指定位置的出題範圍。
 
@@ -77,18 +77,28 @@ def clear_rfi_cache():
 
 # 頂級牌：所有位置都 100% 開，不需要練習
 PREMIUM_HANDS = {
-    "AA", "KK", "QQ",      # 頂級對子
-    "AKs", "AKo",          # 大 AK
+    "AA",
+    "KK",
+    "QQ",  # 頂級對子
+    "AKs",
+    "AKo",  # 大 AK
 }
 
 # 絕對垃圾牌：任何位置都 0% 開，離邊緣太遠
 TRASH_HANDS = {
     # Suited junk - 最爛的同花牌
-    "T2s", "92s", "82s", "72s", "62s",
-    "93s", "83s", "73s",
+    "T2s",
+    "92s",
+    "82s",
+    "72s",
+    "62s",
+    "93s",
+    "83s",
+    "73s",
     "94s",
     # Offsuit junk - 最爛的不同花
-    "72o", "62o",
+    "72o",
+    "62o",
 }
 
 # 基礎排除 = 頂級 + 垃圾
@@ -107,42 +117,146 @@ BASE_EXCLUDED_HANDS = PREMIUM_HANDS | TRASH_HANDS
 # ============================================================================
 
 POSITION_EXCLUDED_HANDS = {
-    "UTG": BASE_EXCLUDED_HANDS | {
+    "UTG": BASE_EXCLUDED_HANDS
+    | {
         # === 明顯 100% 牌（不用練）===
-        "JJ", "TT", "99", "88", "77", "66",  # 66+ 明顯
-        "AQs", "AJs", "ATs", "A9s", "A8s", "A7s", "A6s", "A5s", "A4s", "A3s",  # A3s+ 明顯
-        "KQs", "KJs", "KTs",  # KTs+ 明顯 (K9s 是邊緣，要考)
+        "JJ",
+        "TT",
+        "99",
+        "88",
+        "77",
+        "66",  # 66+ 明顯
+        "AQs",
+        "AJs",
+        "ATs",
+        "A9s",
+        "A8s",
+        "A7s",
+        "A6s",
+        "A5s",
+        "A4s",
+        "A3s",  # A3s+ 明顯
+        "KQs",
+        "KJs",
+        "KTs",  # KTs+ 明顯 (K9s 是邊緣，要考)
         "QJs",  # QJs 明顯 (QTs 是邊緣，要考)
         "JTs",  # JTs 明顯
-        "AQo", "AJo",  # AJo+ 明顯
+        "AQo",
+        "AJo",  # AJo+ 明顯
         # === 遠離邊界的 0% 牌（不用練）===
         # 同花 K (K8s 以下都是 0%，但 K8s 是邊緣要考)
-        "K6s", "K5s", "K4s", "K3s", "K2s",  # 不考
+        "K6s",
+        "K5s",
+        "K4s",
+        "K3s",
+        "K2s",  # 不考
         # 同花 Q (Q8s 以下是 0%)
-        "Q8s", "Q7s", "Q6s", "Q5s", "Q4s", "Q3s", "Q2s",
+        "Q8s",
+        "Q7s",
+        "Q6s",
+        "Q5s",
+        "Q4s",
+        "Q3s",
+        "Q2s",
         # 同花 J (J8s 以下是 0%, J9s 是 fold 邊緣要考)
-        "J8s", "J7s", "J6s", "J5s", "J4s", "J3s", "J2s",
+        "J8s",
+        "J7s",
+        "J6s",
+        "J5s",
+        "J4s",
+        "J3s",
+        "J2s",
         # 同花 T (T8s 以下是 0%)
-        "T8s", "T7s", "T6s", "T5s", "T4s", "T3s",
+        "T8s",
+        "T7s",
+        "T6s",
+        "T5s",
+        "T4s",
+        "T3s",
         # 同花連張 (98s-65s 全 fold，但要考)
-        "97s", "96s", "95s",
-        "86s", "85s", "84s",
-        "75s", "74s",
-        "64s", "63s",
-        "53s", "43s",
-        "33", "22",  # 小對子 0%
-        "32s", "42s", "52s",
+        "97s",
+        "96s",
+        "95s",
+        "86s",
+        "85s",
+        "84s",
+        "75s",
+        "74s",
+        "64s",
+        "63s",
+        "53s",
+        "43s",
+        "33",
+        "22",  # 小對子 0%
+        "32s",
+        "42s",
+        "52s",
         # === Offsuit 牌（大部分不考）===
-        "A9o", "A8o", "A7o", "A6o", "A5o", "A4o", "A3o", "A2o",
-        "K9o", "K8o", "K7o", "K6o", "K5o", "K4o", "K3o", "K2o",  # 但 KTo 要考
-        "QTo", "Q9o", "Q8o", "Q7o", "Q6o", "Q5o", "Q4o", "Q3o", "Q2o",
-        "J9o", "J8o", "J7o", "J6o", "J5o", "J4o", "J3o", "J2o",  # 但 JTo 要考
-        "T8o", "T7o", "T6o", "T5o", "T4o", "T3o", "T2o",
-        "97o", "96o", "95o", "94o", "93o", "92o",
-        "87o", "86o", "85o", "84o", "83o", "82o",
-        "76o", "75o", "74o", "73o",
-        "65o", "64o", "63o",
-        "54o", "53o", "43o", "32o", "42o", "52o",
+        "A9o",
+        "A8o",
+        "A7o",
+        "A6o",
+        "A5o",
+        "A4o",
+        "A3o",
+        "A2o",
+        "K9o",
+        "K8o",
+        "K7o",
+        "K6o",
+        "K5o",
+        "K4o",
+        "K3o",
+        "K2o",  # 但 KTo 要考
+        "QTo",
+        "Q9o",
+        "Q8o",
+        "Q7o",
+        "Q6o",
+        "Q5o",
+        "Q4o",
+        "Q3o",
+        "Q2o",
+        "J9o",
+        "J8o",
+        "J7o",
+        "J6o",
+        "J5o",
+        "J4o",
+        "J3o",
+        "J2o",  # 但 JTo 要考
+        "T8o",
+        "T7o",
+        "T6o",
+        "T5o",
+        "T4o",
+        "T3o",
+        "T2o",
+        "97o",
+        "96o",
+        "95o",
+        "94o",
+        "93o",
+        "92o",
+        "87o",
+        "86o",
+        "85o",
+        "84o",
+        "83o",
+        "82o",
+        "76o",
+        "75o",
+        "74o",
+        "73o",
+        "65o",
+        "64o",
+        "63o",
+        "54o",
+        "53o",
+        "43o",
+        "32o",
+        "42o",
+        "52o",
     },
     # === UTG 要考的牌 (不在排除列表) ===
     # K9s (100% 邊緣 open), K8s (0% 邊緣 fold), K7s (0%)
@@ -152,40 +266,147 @@ POSITION_EXCLUDED_HANDS = {
     # 98s/87s/76s/65s (0% fold 邊緣)
     # ATo (100% 邊緣), KQo (100% 邊緣)
     # KJo (0% 邊緣), JTo (0% 邊緣), KTo (0% 邊緣)
-
-    "HJ": BASE_EXCLUDED_HANDS | {
+    "HJ": BASE_EXCLUDED_HANDS
+    | {
         # === 明顯 100% 牌（不用練）===
-        "JJ", "TT", "99", "88", "77", "66", "55", "44",  # 44+ 明顯 (33 是邊緣，要考)
-        "AQs", "AJs", "ATs", "A9s", "A8s", "A7s", "A6s", "A5s", "A4s", "A3s", "A2s",
-        "KQs", "KJs", "KTs", "K9s", "K8s",  # K8s+ 明顯 (K7s 是邊緣，要考)
-        "QJs", "QTs",  # QTs+ 明顯 (Q9s 是邊緣，要考)
+        "JJ",
+        "TT",
+        "99",
+        "88",
+        "77",
+        "66",
+        "55",
+        "44",  # 44+ 明顯 (33 是邊緣，要考)
+        "AQs",
+        "AJs",
+        "ATs",
+        "A9s",
+        "A8s",
+        "A7s",
+        "A6s",
+        "A5s",
+        "A4s",
+        "A3s",
+        "A2s",
+        "KQs",
+        "KJs",
+        "KTs",
+        "K9s",
+        "K8s",  # K8s+ 明顯 (K7s 是邊緣，要考)
+        "QJs",
+        "QTs",  # QTs+ 明顯 (Q9s 是邊緣，要考)
         "JTs",  # JTs 明顯
         "T9s",  # T9s 明顯
-        "98s", "87s", "76s", "65s",  # 98s-65s 明顯 (54s 是 fold 邊緣，要考)
-        "AQo", "AJo", "ATo",  # ATo+ 明顯
+        "98s",
+        "87s",
+        "76s",
+        "65s",  # 98s-65s 明顯 (54s 是 fold 邊緣，要考)
+        "AQo",
+        "AJo",
+        "ATo",  # ATo+ 明顯
         "KQo",  # KQo 明顯 (KJo 是邊緣，要考)
         # === 遠離邊界的 0% 牌（不用練）===
-        "K5s", "K4s", "K3s", "K2s",  # 不考
-        "Q8s", "Q7s", "Q6s", "Q5s", "Q4s", "Q3s", "Q2s",
-        "J7s", "J6s", "J5s", "J4s", "J3s", "J2s",
-        "T6s", "T5s", "T4s", "T3s",
-        "96s", "95s",
-        "86s", "85s", "84s",
-        "75s", "74s",
-        "64s", "63s",
+        "K5s",
+        "K4s",
+        "K3s",
+        "K2s",  # 不考
+        "Q8s",
+        "Q7s",
+        "Q6s",
+        "Q5s",
+        "Q4s",
+        "Q3s",
+        "Q2s",
+        "J7s",
+        "J6s",
+        "J5s",
+        "J4s",
+        "J3s",
+        "J2s",
+        "T6s",
+        "T5s",
+        "T4s",
+        "T3s",
+        "96s",
+        "95s",
+        "86s",
+        "85s",
+        "84s",
+        "75s",
+        "74s",
+        "64s",
+        "63s",
         "53s",  # 53s 不考 (43s 是邊緣，要考)
-        "32s", "42s", "52s",
+        "32s",
+        "42s",
+        "52s",
         # === Offsuit 牌 ===
-        "A9o", "A8o", "A7o", "A6o", "A5o", "A4o", "A3o", "A2o",
-        "K9o", "K8o", "K7o", "K6o", "K5o", "K4o", "K3o", "K2o",
-        "Q9o", "Q8o", "Q7o", "Q6o", "Q5o", "Q4o", "Q3o", "Q2o",
-        "J9o", "J8o", "J7o", "J6o", "J5o", "J4o", "J3o", "J2o",
-        "T9o", "T8o", "T7o", "T6o", "T5o", "T4o", "T3o", "T2o",
-        "98o", "97o", "96o", "95o", "94o", "93o", "92o",
-        "87o", "86o", "85o", "84o", "83o", "82o",
-        "76o", "75o", "74o", "73o",
-        "65o", "64o", "63o",
-        "54o", "53o", "43o", "32o", "42o", "52o",
+        "A9o",
+        "A8o",
+        "A7o",
+        "A6o",
+        "A5o",
+        "A4o",
+        "A3o",
+        "A2o",
+        "K9o",
+        "K8o",
+        "K7o",
+        "K6o",
+        "K5o",
+        "K4o",
+        "K3o",
+        "K2o",
+        "Q9o",
+        "Q8o",
+        "Q7o",
+        "Q6o",
+        "Q5o",
+        "Q4o",
+        "Q3o",
+        "Q2o",
+        "J9o",
+        "J8o",
+        "J7o",
+        "J6o",
+        "J5o",
+        "J4o",
+        "J3o",
+        "J2o",
+        "T9o",
+        "T8o",
+        "T7o",
+        "T6o",
+        "T5o",
+        "T4o",
+        "T3o",
+        "T2o",
+        "98o",
+        "97o",
+        "96o",
+        "95o",
+        "94o",
+        "93o",
+        "92o",
+        "87o",
+        "86o",
+        "85o",
+        "84o",
+        "83o",
+        "82o",
+        "76o",
+        "75o",
+        "74o",
+        "73o",
+        "65o",
+        "64o",
+        "63o",
+        "54o",
+        "53o",
+        "43o",
+        "32o",
+        "42o",
+        "52o",
     },
     # === HJ 要考的牌 ===
     # K7s (100% 邊緣), K6s (0% 邊緣), Q9s (100% 邊緣)
@@ -193,42 +414,151 @@ POSITION_EXCLUDED_HANDS = {
     # 54s (0% fold 邊緣), 43s (0% 邊緣)
     # 33 (100% 邊緣), 22 (0% 邊緣)
     # KJo (100% 邊緣), QJo (0% fold 邊緣)
-
-    "CO": BASE_EXCLUDED_HANDS | {
+    "CO": BASE_EXCLUDED_HANDS
+    | {
         # === 明顯 100% 牌（不用練）===
-        "JJ", "TT", "99", "88", "77", "66", "55", "44", "33",  # 33+ 明顯 (22 是邊緣，要考)
-        "AQs", "AJs", "ATs", "A9s", "A8s", "A7s", "A6s", "A5s", "A4s", "A3s", "A2s",
-        "KQs", "KJs", "KTs", "K9s", "K8s", "K7s", "K6s", "K5s", "K4s",  # K4s+ 明顯 (K3s 是邊緣)
-        "QJs", "QTs", "Q9s", "Q8s", "Q7s",  # Q7s+ 明顯 (Q6s 是邊緣)
-        "JTs", "J9s", "J8s",  # J8s+ 明顯 (J7s 是邊緣)
-        "T9s", "T8s",  # T8s+ 明顯 (T7s 是邊緣)
+        "JJ",
+        "TT",
+        "99",
+        "88",
+        "77",
+        "66",
+        "55",
+        "44",
+        "33",  # 33+ 明顯 (22 是邊緣，要考)
+        "AQs",
+        "AJs",
+        "ATs",
+        "A9s",
+        "A8s",
+        "A7s",
+        "A6s",
+        "A5s",
+        "A4s",
+        "A3s",
+        "A2s",
+        "KQs",
+        "KJs",
+        "KTs",
+        "K9s",
+        "K8s",
+        "K7s",
+        "K6s",
+        "K5s",
+        "K4s",  # K4s+ 明顯 (K3s 是邊緣)
+        "QJs",
+        "QTs",
+        "Q9s",
+        "Q8s",
+        "Q7s",  # Q7s+ 明顯 (Q6s 是邊緣)
+        "JTs",
+        "J9s",
+        "J8s",  # J8s+ 明顯 (J7s 是邊緣)
+        "T9s",
+        "T8s",  # T8s+ 明顯 (T7s 是邊緣)
         "98s",  # 98s 明顯
-        "87s", "86s", "76s", "65s", "54s",  # 連張明顯
-        "AQo", "AJo", "ATo", "A9o",  # A9o+ 明顯 (A8o 是邊緣)
-        "KQo", "KJo",  # KJo+ 明顯
+        "87s",
+        "86s",
+        "76s",
+        "65s",
+        "54s",  # 連張明顯
+        "AQo",
+        "AJo",
+        "ATo",
+        "A9o",  # A9o+ 明顯 (A8o 是邊緣)
+        "KQo",
+        "KJo",  # KJo+ 明顯
         "QJo",  # QJo 明顯
         # === 遠離邊界的 0% 牌（不用練）===
         "K2s",  # 不考
-        "Q5s", "Q4s", "Q3s", "Q2s",
-        "J5s", "J4s", "J3s", "J2s",  # J6s 是邊緣，要考
-        "T5s", "T4s", "T3s",
-        "96s", "95s",
-        "85s", "84s",
-        "75s", "74s",
-        "64s", "63s",
-        "53s", "43s",
-        "32s", "42s", "52s",
+        "Q5s",
+        "Q4s",
+        "Q3s",
+        "Q2s",
+        "J5s",
+        "J4s",
+        "J3s",
+        "J2s",  # J6s 是邊緣，要考
+        "T5s",
+        "T4s",
+        "T3s",
+        "96s",
+        "95s",
+        "85s",
+        "84s",
+        "75s",
+        "74s",
+        "64s",
+        "63s",
+        "53s",
+        "43s",
+        "32s",
+        "42s",
+        "52s",
         # === Offsuit 牌 ===
-        "A7o", "A6o", "A5o", "A4o", "A3o", "A2o",  # A6o 以下不考
-        "K9o", "K8o", "K7o", "K6o", "K5o", "K4o", "K3o", "K2o",  # K9o 不考
-        "Q9o", "Q8o", "Q7o", "Q6o", "Q5o", "Q4o", "Q3o", "Q2o",  # Q9o 不考 (QTo 是邊緣)
-        "J9o", "J8o", "J7o", "J6o", "J5o", "J4o", "J3o", "J2o",  # J9o 不考 (JTo 是邊緣)
-        "T8o", "T7o", "T6o", "T5o", "T4o", "T3o", "T2o",
-        "98o", "97o", "96o", "95o", "94o", "93o", "92o",
-        "87o", "86o", "85o", "84o", "83o", "82o",
-        "76o", "75o", "74o", "73o",
-        "65o", "64o", "63o",
-        "54o", "53o", "43o", "32o", "42o", "52o",
+        "A7o",
+        "A6o",
+        "A5o",
+        "A4o",
+        "A3o",
+        "A2o",  # A6o 以下不考
+        "K9o",
+        "K8o",
+        "K7o",
+        "K6o",
+        "K5o",
+        "K4o",
+        "K3o",
+        "K2o",  # K9o 不考
+        "Q9o",
+        "Q8o",
+        "Q7o",
+        "Q6o",
+        "Q5o",
+        "Q4o",
+        "Q3o",
+        "Q2o",  # Q9o 不考 (QTo 是邊緣)
+        "J9o",
+        "J8o",
+        "J7o",
+        "J6o",
+        "J5o",
+        "J4o",
+        "J3o",
+        "J2o",  # J9o 不考 (JTo 是邊緣)
+        "T8o",
+        "T7o",
+        "T6o",
+        "T5o",
+        "T4o",
+        "T3o",
+        "T2o",
+        "98o",
+        "97o",
+        "96o",
+        "95o",
+        "94o",
+        "93o",
+        "92o",
+        "87o",
+        "86o",
+        "85o",
+        "84o",
+        "83o",
+        "82o",
+        "76o",
+        "75o",
+        "74o",
+        "73o",
+        "65o",
+        "64o",
+        "63o",
+        "54o",
+        "53o",
+        "43o",
+        "32o",
+        "42o",
+        "52o",
     },
     # === CO 要考的牌 ===
     # K3s (100% 邊緣), K2s (0% 邊緣)
@@ -236,41 +566,141 @@ POSITION_EXCLUDED_HANDS = {
     # T7s (100% 邊緣), 97s (100% 邊緣)
     # 22 (100% 邊緣)
     # A8o (100% 邊緣), KTo (100% 邊緣), QTo (100% 邊緣), JTo (100% 邊緣)
-
-    "BTN": BASE_EXCLUDED_HANDS | {
+    "BTN": BASE_EXCLUDED_HANDS
+    | {
         # === 明顯 100% 牌（不用練）===
-        "JJ", "TT", "99", "88", "77", "66", "55", "44", "33",
-        "AQs", "AJs", "ATs", "A9s", "A8s", "A7s", "A6s", "A5s", "A4s", "A3s",  # (A2s 是邊緣)
-        "KQs", "KJs", "KTs", "K9s", "K8s", "K7s", "K6s", "K5s", "K4s", "K3s",  # (K2s 是邊緣)
-        "QJs", "QTs", "Q9s", "Q8s", "Q7s", "Q6s", "Q5s", "Q4s",  # (Q3s, Q2s 是邊緣)
-        "JTs", "J9s", "J8s", "J7s", "J6s", "J5s",  # (J4s 是邊緣)
-        "T9s", "T8s", "T7s", "T6s",  # T6s+ 明顯
-        "98s", "97s", "96s",  # 96s+ 明顯
-        "87s", "86s",  # 86s+ 明顯
+        "JJ",
+        "TT",
+        "99",
+        "88",
+        "77",
+        "66",
+        "55",
+        "44",
+        "33",
+        "AQs",
+        "AJs",
+        "ATs",
+        "A9s",
+        "A8s",
+        "A7s",
+        "A6s",
+        "A5s",
+        "A4s",
+        "A3s",  # (A2s 是邊緣)
+        "KQs",
+        "KJs",
+        "KTs",
+        "K9s",
+        "K8s",
+        "K7s",
+        "K6s",
+        "K5s",
+        "K4s",
+        "K3s",  # (K2s 是邊緣)
+        "QJs",
+        "QTs",
+        "Q9s",
+        "Q8s",
+        "Q7s",
+        "Q6s",
+        "Q5s",
+        "Q4s",  # (Q3s, Q2s 是邊緣)
+        "JTs",
+        "J9s",
+        "J8s",
+        "J7s",
+        "J6s",
+        "J5s",  # (J4s 是邊緣)
+        "T9s",
+        "T8s",
+        "T7s",
+        "T6s",  # T6s+ 明顯
+        "98s",
+        "97s",
+        "96s",  # 96s+ 明顯
+        "87s",
+        "86s",  # 86s+ 明顯
         "76s",  # 76s 明顯 (75s 要考)
         "65s",  # 65s 明顯 (64s 要考)
         "54s",  # 54s 明顯
-        "AQo", "AJo", "ATo", "A9o", "A8o", "A7o", "A6o", "A5o",  # (A4o 是邊緣)
-        "KQo", "KJo", "KTo", "K9o",  # (K8o 是邊緣)
-        "QJo", "QTo",  # QTo+ 明顯
-        "JTo", "J9o", "J8o",  # J8o 100% 明顯
+        "AQo",
+        "AJo",
+        "ATo",
+        "A9o",
+        "A8o",
+        "A7o",
+        "A6o",
+        "A5o",  # (A4o 是邊緣)
+        "KQo",
+        "KJo",
+        "KTo",
+        "K9o",  # (K8o 是邊緣)
+        "QJo",
+        "QTo",  # QTo+ 明顯
+        "JTo",
+        "J9o",
+        "J8o",  # J8o 100% 明顯
         "T9o",  # (T8o 是邊緣)
         # === 遠離邊界的 0% 牌（不用練）===
         "J2s",
-        "T4s", "T3s",
+        "T4s",
+        "T3s",
         "95s",
-        "73s", "52s", "42s", "32s",  # 63s 要考
+        "73s",
+        "52s",
+        "42s",
+        "32s",  # 63s 要考
         # === Offsuit 牌 ===
-        "A3o", "A2o",  # 不考 (A4o 是邊緣)
-        "K7o", "K6o", "K5o", "K4o", "K3o", "K2o",  # K7o 不考
-        "Q8o", "Q7o", "Q6o", "Q5o", "Q4o", "Q3o", "Q2o",  # Q8o 不考
-        "J6o", "J5o", "J4o", "J3o", "J2o",  # J6o 不考 (J7o 要考)
-        "T6o", "T5o", "T4o", "T3o", "T2o",  # T6o 不考 (T7o 要考)
-        "97o", "96o", "95o", "94o", "93o", "92o",  # 97o 不考
-        "86o", "85o", "84o", "83o", "82o",  # 86o 不考 (87o 要考)
-        "76o", "75o", "74o", "73o",
-        "65o", "64o", "63o",
-        "54o", "53o", "43o", "32o", "42o", "52o",
+        "A3o",
+        "A2o",  # 不考 (A4o 是邊緣)
+        "K7o",
+        "K6o",
+        "K5o",
+        "K4o",
+        "K3o",
+        "K2o",  # K7o 不考
+        "Q8o",
+        "Q7o",
+        "Q6o",
+        "Q5o",
+        "Q4o",
+        "Q3o",
+        "Q2o",  # Q8o 不考
+        "J6o",
+        "J5o",
+        "J4o",
+        "J3o",
+        "J2o",  # J6o 不考 (J7o 要考)
+        "T6o",
+        "T5o",
+        "T4o",
+        "T3o",
+        "T2o",  # T6o 不考 (T7o 要考)
+        "97o",
+        "96o",
+        "95o",
+        "94o",
+        "93o",
+        "92o",  # 97o 不考
+        "86o",
+        "85o",
+        "84o",
+        "83o",
+        "82o",  # 86o 不考 (87o 要考)
+        "76o",
+        "75o",
+        "74o",
+        "73o",
+        "65o",
+        "64o",
+        "63o",
+        "54o",
+        "53o",
+        "43o",
+        "32o",
+        "42o",
+        "52o",
     },
     # === BTN 要考的牌 ===
     # A2s (100% 邊緣), K2s (100% 邊緣), Q3s/Q2s (100% 邊緣)
@@ -279,41 +709,141 @@ POSITION_EXCLUDED_HANDS = {
     # 22 (100% 邊緣)
     # A4o (100% 邊緣), K8o (100% 邊緣), T8o (100% 邊緣), 98o (100% 邊緣)
     # J7o/T7o/87o (0% 邊緣)
-
-    "SB": BASE_EXCLUDED_HANDS | {
+    "SB": BASE_EXCLUDED_HANDS
+    | {
         # === SB 與 BTN 相同（raise range 相同）===
-        "JJ", "TT", "99", "88", "77", "66", "55", "44", "33",
-        "AQs", "AJs", "ATs", "A9s", "A8s", "A7s", "A6s", "A5s", "A4s", "A3s",
-        "KQs", "KJs", "KTs", "K9s", "K8s", "K7s", "K6s", "K5s", "K4s", "K3s",
-        "QJs", "QTs", "Q9s", "Q8s", "Q7s", "Q6s", "Q5s", "Q4s",
-        "JTs", "J9s", "J8s", "J7s", "J6s", "J5s",
-        "T9s", "T8s", "T7s", "T6s",
-        "98s", "97s", "96s",
-        "87s", "86s",
+        "JJ",
+        "TT",
+        "99",
+        "88",
+        "77",
+        "66",
+        "55",
+        "44",
+        "33",
+        "AQs",
+        "AJs",
+        "ATs",
+        "A9s",
+        "A8s",
+        "A7s",
+        "A6s",
+        "A5s",
+        "A4s",
+        "A3s",
+        "KQs",
+        "KJs",
+        "KTs",
+        "K9s",
+        "K8s",
+        "K7s",
+        "K6s",
+        "K5s",
+        "K4s",
+        "K3s",
+        "QJs",
+        "QTs",
+        "Q9s",
+        "Q8s",
+        "Q7s",
+        "Q6s",
+        "Q5s",
+        "Q4s",
+        "JTs",
+        "J9s",
+        "J8s",
+        "J7s",
+        "J6s",
+        "J5s",
+        "T9s",
+        "T8s",
+        "T7s",
+        "T6s",
+        "98s",
+        "97s",
+        "96s",
+        "87s",
+        "86s",
         "76s",  # 75s 要考
         "65s",  # 64s 要考
         "54s",
-        "AQo", "AJo", "ATo", "A9o", "A8o", "A7o", "A6o", "A5o",
-        "KQo", "KJo", "KTo", "K9o",
-        "QJo", "QTo",
-        "JTo", "J9o", "J8o",  # J8o 100% 明顯
+        "AQo",
+        "AJo",
+        "ATo",
+        "A9o",
+        "A8o",
+        "A7o",
+        "A6o",
+        "A5o",
+        "KQo",
+        "KJo",
+        "KTo",
+        "K9o",
+        "QJo",
+        "QTo",
+        "JTo",
+        "J9o",
+        "J8o",  # J8o 100% 明顯
         "T9o",
         # === 遠離邊界的 0% 牌（不用練）===
         "J2s",
-        "T4s", "T3s",
+        "T4s",
+        "T3s",
         "95s",
-        "73s", "52s", "42s", "32s",  # 63s 要考
+        "73s",
+        "52s",
+        "42s",
+        "32s",  # 63s 要考
         # === Offsuit 牌 ===
-        "A3o", "A2o",
-        "K7o", "K6o", "K5o", "K4o", "K3o", "K2o",
-        "Q8o", "Q7o", "Q6o", "Q5o", "Q4o", "Q3o", "Q2o",
-        "J6o", "J5o", "J4o", "J3o", "J2o",
-        "T6o", "T5o", "T4o", "T3o", "T2o",
-        "97o", "96o", "95o", "94o", "93o", "92o",
-        "86o", "85o", "84o", "83o", "82o",
-        "76o", "75o", "74o", "73o",
-        "65o", "64o", "63o",
-        "54o", "53o", "43o", "32o", "42o", "52o",
+        "A3o",
+        "A2o",
+        "K7o",
+        "K6o",
+        "K5o",
+        "K4o",
+        "K3o",
+        "K2o",
+        "Q8o",
+        "Q7o",
+        "Q6o",
+        "Q5o",
+        "Q4o",
+        "Q3o",
+        "Q2o",
+        "J6o",
+        "J5o",
+        "J4o",
+        "J3o",
+        "J2o",
+        "T6o",
+        "T5o",
+        "T4o",
+        "T3o",
+        "T2o",
+        "97o",
+        "96o",
+        "95o",
+        "94o",
+        "93o",
+        "92o",
+        "86o",
+        "85o",
+        "84o",
+        "83o",
+        "82o",
+        "76o",
+        "75o",
+        "74o",
+        "73o",
+        "65o",
+        "64o",
+        "63o",
+        "54o",
+        "53o",
+        "43o",
+        "32o",
+        "42o",
+        "52o",
     },
     # === SB 要考的牌（同 BTN）===
 }
@@ -321,7 +851,10 @@ POSITION_EXCLUDED_HANDS = {
 # 向後相容：預設排除列表使用 SB（最寬範圍）
 EXCLUDED_HANDS = POSITION_EXCLUDED_HANDS["SB"]
 
-def get_drillable_hands(range_data: dict = None, scenario_type: str = "vs_rfi", position = None) -> List[str]:
+
+def get_drillable_hands(
+    range_data: dict = None, scenario_type: str = "vs_rfi", position=None
+) -> list[str]:
     """
     Get all hands that are in the drilling focus.
 
@@ -338,7 +871,7 @@ def get_drillable_hands(range_data: dict = None, scenario_type: str = "vs_rfi", 
     # Handle Position enum or string
     if position is None:
         pos_upper = "SB"
-    elif hasattr(position, 'value'):
+    elif hasattr(position, "value"):
         pos_upper = position.value.upper()
     else:
         pos_upper = str(position).upper()
@@ -354,7 +887,7 @@ def get_drillable_hands(range_data: dict = None, scenario_type: str = "vs_rfi", 
     return [h for h in ALL_HANDS if h not in excluded]
 
 
-def get_drillable_hands_dynamic(frequency_data: dict, scenario_type: str = "rfi") -> List[str]:
+def get_drillable_hands_dynamic(frequency_data: dict, scenario_type: str = "rfi") -> list[str]:
     """
     動態計算出題範圍（方案 C）。
 
@@ -444,7 +977,7 @@ def get_drillable_hands_dynamic(frequency_data: dict, scenario_type: str = "rfi"
         else:
             high_rank = RANKS.index(hand[0])
             low_rank = RANKS.index(hand[1])
-            is_suited = 1 if hand[2] == 's' else 2
+            is_suited = 1 if hand[2] == "s" else 2
             return (is_suited, high_rank, low_rank)
 
     # 按 (high_card, suit_type) 分組
@@ -492,7 +1025,7 @@ def get_drillable_hands_dynamic(frequency_data: dict, scenario_type: str = "rfi"
 
     # 在每組內找 rank 邊界
     # vs 場景需要更寬的邊界範圍（灰色地帶練習）
-    BOUNDARY_WIDTH_VS = 3   # vs scenarios: 3 hands on each side of transition
+    BOUNDARY_WIDTH_VS = 3  # vs scenarios: 3 hands on each side of transition
     BOUNDARY_WIDTH_RFI = 1  # RFI: keep current narrow behavior
 
     boundary_width = BOUNDARY_WIDTH_VS if scenario_type != "rfi" else BOUNDARY_WIDTH_RFI
@@ -507,7 +1040,7 @@ def get_drillable_hands_dynamic(frequency_data: dict, scenario_type: str = "rfi"
         # 找出所有邊界點的索引
         transition_indices = []
         for i in range(1, len(hands)):
-            if hands[i][1] != hands[i-1][1]:
+            if hands[i][1] != hands[i - 1][1]:
                 transition_indices.append(i)
 
         # 在每個邊界點兩側擴展 boundary_width 個手牌
@@ -536,7 +1069,7 @@ def get_drillable_hands_dynamic(frequency_data: dict, scenario_type: str = "rfi"
         # 6a: Offsuit counterparts - 同花有正向動作但非同花是 fold
         # 只對有正向動作的同花牌加其非同花版本
         for hand in rank_boundary_hands[:MAX_BOUNDARY]:
-            if len(hand) == 3 and hand[2] == 's' and hand in listed_hands:
+            if len(hand) == 3 and hand[2] == "s" and hand in listed_hands:
                 # 確認該牌確實有正向動作（不是 fold 側的邊界牌）
                 hand_actions = frequency_data.get(hand, {})
                 has_positive = any(hand_actions.get(a, 0) > 0 for a in actions_to_check)
@@ -548,14 +1081,14 @@ def get_drillable_hands_dynamic(frequency_data: dict, scenario_type: str = "rfi"
         # 6b: Connector chain - 同花連接牌往下延伸
         # 只對真正的連接牌/1-gap牌觸發（rank差距≤2）
         for key, hands in groups.items():
-            if key == "pairs" or key.endswith('o'):
+            if key == "pairs" or key.endswith("o"):
                 continue
             suited_hands = [(h, a) for h, a in hands if a != "fold"]
             if not suited_hands:
                 continue
             suited_hands.sort(key=lambda x: RANKS.index(x[0][1]))
             weakest = suited_hands[-1][0]
-            if len(weakest) == 3 and weakest[2] == 's':
+            if len(weakest) == 3 and weakest[2] == "s":
                 high_idx = RANKS.index(weakest[0])
                 low_idx = RANKS.index(weakest[1])
                 # 只對連接牌/1-gap (rank差距≤2) 觸發 chain
@@ -580,7 +1113,7 @@ def get_drillable_hands_dynamic(frequency_data: dict, scenario_type: str = "rfi"
     return list(set(interesting_hands))
 
 
-def _get_hand_neighbors(hand: str) -> List[str]:
+def _get_hand_neighbors(hand: str) -> list[str]:
     """獲取手牌的相鄰手牌（用於識別邊界）"""
     RANKS = "AKQJT98765432"
     neighbors = []
@@ -597,7 +1130,7 @@ def _get_hand_neighbors(hand: str) -> List[str]:
         low_idx = RANKS.index(low_rank)
 
         # 同花/非同花互換
-        other_suit = 'o' if suit == 's' else 's'
+        other_suit = "o" if suit == "s" else "s"
         neighbors.append(f"{high_rank}{low_rank}{other_suit}")
 
         # 相鄰 rank 的牌
@@ -610,12 +1143,12 @@ def _get_hand_neighbors(hand: str) -> List[str]:
 
 
 def get_drillable_hands_for_scenario(
-    evaluator: 'Evaluator',
+    evaluator: "Evaluator",
     table_format: str,
     scenario_type: str,
     hero_position: str = None,
-    villain_position: str = None
-) -> List[str]:
+    villain_position: str = None,
+) -> list[str]:
     """
     取得特定場景的出題範圍。
 
@@ -660,7 +1193,9 @@ def get_drillable_hands_for_scenario(
         return get_drillable_hands(position=hero_position)
 
 
-def get_interesting_hand(range_data: dict, scenario_type: str = "vs_rfi", position: str = None) -> Hand:
+def get_interesting_hand(
+    range_data: dict, scenario_type: str = "vs_rfi", position: str = None
+) -> Hand:
     """
     Generate an 'interesting' hand for drilling.
 
@@ -699,6 +1234,7 @@ def get_interesting_hand(range_data: dict, scenario_type: str = "vs_rfi", positi
 @dataclass
 class Spot:
     """A single training spot (hand + scenario)."""
+
     hand: Hand
     scenario: Scenario
     timestamp: datetime = field(default_factory=datetime.now)
@@ -713,7 +1249,9 @@ class Spot:
             "hand": str(self.hand),
             "scenario": self.scenario.scenario_key,
             "hero_position": self.scenario.hero_position.value,
-            "villain_position": self.scenario.villain_position.value if self.scenario.villain_position else None,
+            "villain_position": self.scenario.villain_position.value
+            if self.scenario.villain_position
+            else None,
             "action_type": self.scenario.action_type.value,
             "timestamp": self.timestamp.isoformat(),
         }
@@ -730,9 +1268,9 @@ class PreflopDrill:
         self._positions = POSITIONS_6MAX
 
         # Drill configuration
-        self.enabled_action_types: List[ActionType] = [ActionType.RFI]
-        self.enabled_positions: List[Position] = list(self._positions)
-        self.enabled_villain_positions: Optional[List[Position]] = None  # None = all
+        self.enabled_action_types: list[ActionType] = [ActionType.RFI]
+        self.enabled_positions: list[Position] = list(self._positions)
+        self.enabled_villain_positions: list[Position] | None = None  # None = all
 
     def enable_action_type(self, action_type: ActionType):
         """Enable a specific action type for drilling."""
@@ -744,7 +1282,7 @@ class PreflopDrill:
         if action_type in self.enabled_action_types:
             self.enabled_action_types.remove(action_type)
 
-    def set_enabled_positions(self, positions: List[Position]):
+    def set_enabled_positions(self, positions: list[Position]):
         """Set which positions to practice."""
         self.enabled_positions = positions
 
@@ -787,7 +1325,8 @@ class PreflopDrill:
         """Generate a facing-open-raise spot."""
         # Need at least one position before hero
         valid_hero_positions = [
-            p for p in self.enabled_positions
+            p
+            for p in self.enabled_positions
             if p not in [Position.UTG]  # UTG can't face a raise
         ]
         if not valid_hero_positions:
@@ -805,7 +1344,9 @@ class PreflopDrill:
 
             # Filter by enabled villain positions if set
             if self.enabled_villain_positions:
-                earlier_positions = [p for p in earlier_positions if p in self.enabled_villain_positions]
+                earlier_positions = [
+                    p for p in earlier_positions if p in self.enabled_villain_positions
+                ]
                 if not earlier_positions:
                     continue
 
@@ -824,10 +1365,15 @@ class PreflopDrill:
                 action_hands = set(range_data.get("3bet", []) + range_data.get("call", []))
 
                 # Get drillable hands for this VS RFI scenario (includes fold boundary)
-                drillable = set(get_drillable_hands_for_scenario(
-                    self.evaluator, self.format, "vs_rfi",
-                    hero_position=hero_pos.value, villain_position=villain_pos.value
-                ))
+                drillable = set(
+                    get_drillable_hands_for_scenario(
+                        self.evaluator,
+                        self.format,
+                        "vs_rfi",
+                        hero_position=hero_pos.value,
+                        villain_position=villain_pos.value,
+                    )
+                )
 
                 # Prefer action hands that are drillable (80%), else all drillable (20%)
                 drillable_action = list(action_hands & drillable)
@@ -867,10 +1413,15 @@ class PreflopDrill:
         range_data = self.evaluator.get_range_for_scenario(scenario, format=self.format) or {}
         action_hands = set(range_data.get("3bet", []) + range_data.get("call", []))
 
-        drillable = set(get_drillable_hands_for_scenario(
-            self.evaluator, self.format, "vs_rfi",
-            hero_position=hero_pos.value, villain_position=villain_pos.value
-        ))
+        drillable = set(
+            get_drillable_hands_for_scenario(
+                self.evaluator,
+                self.format,
+                "vs_rfi",
+                hero_position=hero_pos.value,
+                villain_position=villain_pos.value,
+            )
+        )
 
         drillable_action = list(action_hands & drillable)
         drillable_list = list(drillable)
@@ -894,7 +1445,8 @@ class PreflopDrill:
         """
         # Hero opened from some position, villain 3bet from later position
         valid_hero_positions = [
-            p for p in self.enabled_positions
+            p
+            for p in self.enabled_positions
             if p not in [Position.BB]  # BB doesn't open
         ]
         if not valid_hero_positions:
@@ -907,14 +1459,16 @@ class PreflopDrill:
 
             # Villain 3bets from later position or blinds
             hero_idx = self._positions.index(hero_pos)
-            later_positions = self._positions[hero_idx + 1:]
+            later_positions = self._positions[hero_idx + 1 :]
 
             if not later_positions:
                 continue
 
             # Filter by enabled villain positions if set
             if self.enabled_villain_positions:
-                later_positions = [p for p in later_positions if p in self.enabled_villain_positions]
+                later_positions = [
+                    p for p in later_positions if p in self.enabled_villain_positions
+                ]
                 if not later_positions:
                     continue
 
@@ -935,10 +1489,15 @@ class PreflopDrill:
                 rfi_hands = set(rfi_range.get("raise", []))
 
                 # Get drillable hands for this VS 3-Bet scenario (includes fold boundary)
-                drillable = set(get_drillable_hands_for_scenario(
-                    self.evaluator, self.format, "vs_3bet",
-                    hero_position=hero_pos.value, villain_position=villain_pos.value
-                ))
+                drillable = set(
+                    get_drillable_hands_for_scenario(
+                        self.evaluator,
+                        self.format,
+                        "vs_3bet",
+                        hero_position=hero_pos.value,
+                        villain_position=villain_pos.value,
+                    )
+                )
 
                 # Intersect: hands must be in RFI range AND be drillable
                 candidate_hands = list(rfi_hands & drillable)
@@ -954,7 +1513,7 @@ class PreflopDrill:
         # Fallback: return any valid scenario with a hand from RFI range
         hero_pos = random.choice(valid_hero_positions)
         hero_idx = self._positions.index(hero_pos)
-        later_positions = self._positions[hero_idx + 1:]
+        later_positions = self._positions[hero_idx + 1 :]
         if not later_positions:
             later_positions = [Position.BB]
         # Filter by enabled villain positions if set
@@ -970,10 +1529,15 @@ class PreflopDrill:
         rfi_hands = set(rfi_range.get("raise", []))
 
         # Try to use drillable hands
-        drillable = set(get_drillable_hands_for_scenario(
-            self.evaluator, self.format, "vs_3bet",
-            hero_position=hero_pos.value, villain_position=villain_pos.value
-        ))
+        drillable = set(
+            get_drillable_hands_for_scenario(
+                self.evaluator,
+                self.format,
+                "vs_3bet",
+                hero_position=hero_pos.value,
+                villain_position=villain_pos.value,
+            )
+        )
         candidate_hands = list(rfi_hands & drillable) or list(rfi_hands)
 
         if candidate_hands:
@@ -997,7 +1561,8 @@ class PreflopDrill:
         """
         # Hero 3bet from some position, villain (original raiser) 4bets
         valid_hero_positions = [
-            p for p in self.enabled_positions
+            p
+            for p in self.enabled_positions
             if p not in [Position.UTG]  # UTG can't 3bet
         ]
         if not valid_hero_positions:
@@ -1015,7 +1580,9 @@ class PreflopDrill:
 
             # Filter by enabled villain positions if set
             if self.enabled_villain_positions:
-                earlier_positions = [p for p in earlier_positions if p in self.enabled_villain_positions]
+                earlier_positions = [
+                    p for p in earlier_positions if p in self.enabled_villain_positions
+                ]
                 if not earlier_positions:
                     continue
 
@@ -1036,14 +1603,21 @@ class PreflopDrill:
                     action_type=ActionType.VS_RFI,
                     villain_position=villain_pos,
                 )
-                vs_rfi_range = self.evaluator.get_range_for_scenario(vs_rfi_scenario, format=self.format)
+                vs_rfi_range = self.evaluator.get_range_for_scenario(
+                    vs_rfi_scenario, format=self.format
+                )
                 threbet_hands = set(vs_rfi_range.get("3bet", []))
 
                 # Get drillable hands for this VS 4-Bet scenario (includes fold boundary)
-                drillable = set(get_drillable_hands_for_scenario(
-                    self.evaluator, self.format, "vs_4bet",
-                    hero_position=hero_pos.value, villain_position=villain_pos.value
-                ))
+                drillable = set(
+                    get_drillable_hands_for_scenario(
+                        self.evaluator,
+                        self.format,
+                        "vs_4bet",
+                        hero_position=hero_pos.value,
+                        villain_position=villain_pos.value,
+                    )
+                )
 
                 # Intersect: hands must be in 3-bet range AND be drillable
                 candidate_hands = list(threbet_hands & drillable)
@@ -1078,10 +1652,15 @@ class PreflopDrill:
         threbet_hands = set(vs_rfi_range.get("3bet", []))
 
         # Try to use drillable hands
-        drillable = set(get_drillable_hands_for_scenario(
-            self.evaluator, self.format, "vs_4bet",
-            hero_position=hero_pos.value, villain_position=villain_pos.value
-        ))
+        drillable = set(
+            get_drillable_hands_for_scenario(
+                self.evaluator,
+                self.format,
+                "vs_4bet",
+                hero_position=hero_pos.value,
+                villain_position=villain_pos.value,
+            )
+        )
         candidate_hands = list(threbet_hands & drillable) or list(threbet_hands)
 
         if candidate_hands:
@@ -1114,7 +1693,7 @@ class PreflopDrill:
             format=self.format,
         )
 
-    def get_available_actions(self, spot: Spot) -> List[str]:
+    def get_available_actions(self, spot: Spot) -> list[str]:
         """Get available actions for a spot."""
         return spot.scenario.available_actions
 
@@ -1125,20 +1704,30 @@ class PreflopDrill:
             format=self.format,
         )
 
-    def get_drillable_hands_for_spot(self, spot: Spot) -> List[str]:
+    def get_drillable_hands_for_spot(self, spot: Spot) -> list[str]:
         """Get the list of drillable hands for a spot (動態計算)."""
         # 使用動態計算取得出題範圍
-        action_type_map = {"rfi": "rfi", "vs_rfi": "vs_rfi", "vs_3bet": "vs_3bet", "vs_4bet": "vs_4bet"}
+        action_type_map = {
+            "rfi": "rfi",
+            "vs_rfi": "vs_rfi",
+            "vs_3bet": "vs_3bet",
+            "vs_4bet": "vs_4bet",
+        }
         scenario_type = action_type_map.get(spot.scenario.action_type.value, "rfi")
         hero_pos = spot.scenario.hero_position.value
-        villain_pos = spot.scenario.villain_position.value if spot.scenario.villain_position else None
-
-        return get_drillable_hands_for_scenario(
-            self.evaluator, self.format, scenario_type,
-            hero_position=hero_pos, villain_position=villain_pos
+        villain_pos = (
+            spot.scenario.villain_position.value if spot.scenario.villain_position else None
         )
 
-    def generate_comprehensive_rfi_spots(self) -> List[Spot]:
+        return get_drillable_hands_for_scenario(
+            self.evaluator,
+            self.format,
+            scenario_type,
+            hero_position=hero_pos,
+            villain_position=villain_pos,
+        )
+
+    def generate_comprehensive_rfi_spots(self) -> list[Spot]:
         """
         Generate ALL drillable RFI spots for comprehensive practice.
         Returns a shuffled list of all position+hand combinations.

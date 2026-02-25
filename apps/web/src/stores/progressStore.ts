@@ -107,10 +107,7 @@ function getTodayDate(): string {
 }
 
 // Helper to update daily history
-function updateDailyHistory(
-  history: DailyRecord[],
-  isCorrect: boolean
-): DailyRecord[] {
+function updateDailyHistory(history: DailyRecord[], isCorrect: boolean): DailyRecord[] {
   const today = getTodayDate();
   const existingIndex = history.findIndex((r) => r.date === today);
 
@@ -123,10 +120,7 @@ function updateDailyHistory(
       correct: newHistory[existingIndex].correct + (isCorrect ? 1 : 0),
     };
   } else {
-    newHistory = [
-      ...history,
-      { date: today, total: 1, correct: isCorrect ? 1 : 0 },
-    ];
+    newHistory = [...history, { date: today, total: 1, correct: isCorrect ? 1 : 0 }];
   }
 
   // Keep only last 30 days
@@ -197,10 +191,7 @@ export const useProgressStore = create<ProgressState>()(
 
             // Update leaderboard stats and check achievements
             const isCorrect = result.is_correct || result.is_acceptable;
-            const leaderboardResult = await updateLeaderboardStats(
-              userId,
-              isCorrect
-            );
+            const leaderboardResult = await updateLeaderboardStats(userId, isCorrect);
 
             // If new achievements were unlocked, dispatch a custom event
             if (leaderboardResult?.newAchievements?.length) {
@@ -348,8 +339,7 @@ export const useProgressStore = create<ProgressState>()(
         return positions
           .filter(([, stats]) => {
             if (stats.total < 5) return false; // Need at least 5 attempts
-            const accuracy =
-              ((stats.correct + stats.acceptable) / stats.total) * 100;
+            const accuracy = ((stats.correct + stats.acceptable) / stats.total) * 100;
             return accuracy < 70;
           })
           .map(([pos]) => pos);
@@ -384,9 +374,7 @@ export const useProgressStore = create<ProgressState>()(
             ...stats,
             [drillType]: { ...initialStats, byPosition: {} },
           },
-          recentResults: recentResults.filter(
-            (r) => r.drill_type !== drillType
-          ),
+          recentResults: recentResults.filter((r) => r.drill_type !== drillType),
         });
       },
     }),

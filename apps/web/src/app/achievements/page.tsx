@@ -2,25 +2,13 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { useTranslations } from "next-intl";
-import {
-  Card,
-  CardContent,
-} from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
-import {
-  Trophy,
-  Lock,
-  Star,
-  Target,
-  Flame,
-  Award,
-  Sparkles,
-  RefreshCcw,
-} from "lucide-react";
+import { Trophy, Lock, Star, Target, Flame, Award, Sparkles, RefreshCcw } from "lucide-react";
 import {
   getAllAchievements,
   getUserAchievements,
@@ -90,9 +78,8 @@ function AchievementCard({
         progressText = `${userStats.best_streak} / ${req.value}`;
         break;
       case "accuracy":
-        const accuracy = userStats.total_hands > 0
-          ? (userStats.correct_hands / userStats.total_hands) * 100
-          : 0;
+        const accuracy =
+          userStats.total_hands > 0 ? (userStats.correct_hands / userStats.total_hands) * 100 : 0;
         progress = Math.min((accuracy / req.value) * 100, 100);
         progressText = `${accuracy.toFixed(1)}% / ${req.value}%`;
         break;
@@ -102,16 +89,14 @@ function AchievementCard({
   return (
     <div
       className={cn(
-        "relative p-4 rounded-lg border-2 transition-all",
-        isUnlocked
-          ? TIER_COLORS[achievement.tier]
-          : "border-muted bg-muted/30 opacity-60"
+        "relative rounded-lg border-2 p-4 transition-all",
+        isUnlocked ? TIER_COLORS[achievement.tier] : "border-muted bg-muted/30 opacity-60"
       )}
     >
       {/* Lock overlay for locked achievements */}
       {!isUnlocked && (
-        <div className="absolute inset-0 flex items-center justify-center bg-background/50 rounded-lg">
-          <Lock className="h-8 w-8 text-muted-foreground/50" />
+        <div className="bg-background/50 absolute inset-0 flex items-center justify-center rounded-lg">
+          <Lock className="text-muted-foreground/50 h-8 w-8" />
         </div>
       )}
 
@@ -127,12 +112,12 @@ function AchievementCard({
               {TIER_LABELS[achievement.tier]}
             </Badge>
           </div>
-          <p className="text-sm text-muted-foreground mt-1">{description}</p>
+          <p className="text-muted-foreground mt-1 text-sm">{description}</p>
 
           {/* Progress bar for locked achievements */}
           {!isUnlocked && userStats && progress > 0 && (
             <div className="mt-2">
-              <div className="flex justify-between text-xs text-muted-foreground mb-1">
+              <div className="text-muted-foreground mb-1 flex justify-between text-xs">
                 <span>Progress</span>
                 <span>{progressText}</span>
               </div>
@@ -218,12 +203,15 @@ export default function AchievementsPage() {
   };
 
   // Group achievements by category
-  const groupedAchievements = allAchievements.reduce((acc, achievement) => {
-    const category = achievement.category;
-    if (!acc[category]) acc[category] = [];
-    acc[category].push(achievement);
-    return acc;
-  }, {} as Record<string, Achievement[]>);
+  const groupedAchievements = allAchievements.reduce(
+    (acc, achievement) => {
+      const category = achievement.category;
+      if (!acc[category]) acc[category] = [];
+      acc[category].push(achievement);
+      return acc;
+    },
+    {} as Record<string, Achievement[]>
+  );
 
   const unlockedIds = new Set(userSummary?.achievements.map((a) => a.id) || []);
   const totalAchievements = allAchievements.length;
@@ -234,10 +222,10 @@ export default function AchievementsPage() {
   if (!user) {
     return (
       <div className="container max-w-4xl py-8">
-        <Card className="text-center py-12">
+        <Card className="py-12 text-center">
           <CardContent>
-            <Trophy className="h-16 w-16 mx-auto text-muted-foreground/50 mb-4" />
-            <h2 className="text-xl font-semibold mb-2">
+            <Trophy className="text-muted-foreground/50 mx-auto mb-4 h-16 w-16" />
+            <h2 className="mb-2 text-xl font-semibold">
               {t("achievements.loginRequired") || "Login Required"}
             </h2>
             <p className="text-muted-foreground mb-4">
@@ -256,7 +244,7 @@ export default function AchievementsPage() {
     <div className="container max-w-4xl py-8">
       {/* Header */}
       <div className="mb-8 text-center">
-        <h1 className="text-3xl font-bold flex items-center justify-center gap-2">
+        <h1 className="flex items-center justify-center gap-2 text-3xl font-bold">
           <Trophy className="h-8 w-8 text-yellow-500" />
           {t("achievements.title") || "Achievements"}
         </h1>
@@ -266,25 +254,25 @@ export default function AchievementsPage() {
       </div>
 
       {/* Summary Card */}
-      <Card className="mb-8 bg-gradient-to-r from-yellow-500/10 to-orange-500/10 border-yellow-500/20">
+      <Card className="mb-8 border-yellow-500/20 bg-gradient-to-r from-yellow-500/10 to-orange-500/10">
         <CardContent className="p-6">
-          <div className="flex justify-between items-start mb-4">
-            <div className="grid grid-cols-3 gap-4 text-center flex-1">
+          <div className="mb-4 flex items-start justify-between">
+            <div className="grid flex-1 grid-cols-3 gap-4 text-center">
               <div>
                 <div className="text-3xl font-bold text-yellow-500">{unlockedCount}</div>
-                <div className="text-sm text-muted-foreground">
+                <div className="text-muted-foreground text-sm">
                   {t("achievements.unlocked") || "Unlocked"}
                 </div>
               </div>
               <div>
-                <div className="text-3xl font-bold text-primary">{totalPoints}</div>
-                <div className="text-sm text-muted-foreground">
+                <div className="text-primary text-3xl font-bold">{totalPoints}</div>
+                <div className="text-muted-foreground text-sm">
                   {t("achievements.totalPoints") || "Total Points"}
                 </div>
               </div>
               <div>
                 <div className="text-3xl font-bold">{totalAchievements}</div>
-                <div className="text-sm text-muted-foreground">
+                <div className="text-muted-foreground text-sm">
                   {t("achievements.total") || "Total"}
                 </div>
               </div>
@@ -296,14 +284,18 @@ export default function AchievementsPage() {
               disabled={isChecking}
               className="ml-4"
             >
-              <RefreshCcw className={cn("h-4 w-4 mr-2", isChecking && "animate-spin")} />
+              <RefreshCcw className={cn("mr-2 h-4 w-4", isChecking && "animate-spin")} />
               {isChecking
-                ? (locale === "zh-TW" ? "檢查中..." : "Checking...")
-                : (locale === "zh-TW" ? "檢查成就" : "Check Achievements")}
+                ? locale === "zh-TW"
+                  ? "檢查中..."
+                  : "Checking..."
+                : locale === "zh-TW"
+                  ? "檢查成就"
+                  : "Check Achievements"}
             </Button>
           </div>
           <div>
-            <div className="flex justify-between text-sm mb-1">
+            <div className="mb-1 flex justify-between text-sm">
               <span>{t("achievements.completion") || "Completion"}</span>
               <span>{completionPercent.toFixed(0)}%</span>
             </div>
@@ -317,7 +309,7 @@ export default function AchievementsPage() {
         <div className="space-y-6">
           {[...Array(4)].map((_, i) => (
             <div key={i}>
-              <Skeleton className="h-8 w-32 mb-4" />
+              <Skeleton className="mb-4 h-8 w-32" />
               <div className="grid gap-4 sm:grid-cols-2">
                 {[...Array(4)].map((_, j) => (
                   <Skeleton key={j} className="h-32" />
@@ -330,7 +322,7 @@ export default function AchievementsPage() {
         <div className="space-y-8">
           {Object.entries(groupedAchievements).map(([category, achievements]) => (
             <div key={category}>
-              <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
+              <h2 className="mb-4 flex items-center gap-2 text-xl font-semibold">
                 {CATEGORY_ICONS[category as keyof typeof CATEGORY_ICONS]}
                 {CATEGORY_LABELS[category as keyof typeof CATEGORY_LABELS] || category}
                 <Badge variant="secondary">
@@ -351,9 +343,8 @@ export default function AchievementsPage() {
                       key={achievement.id}
                       achievement={{
                         ...achievement,
-                        unlocked_at: userSummary?.achievements.find(
-                          (a) => a.id === achievement.id
-                        )?.unlocked_at,
+                        unlocked_at: userSummary?.achievements.find((a) => a.id === achievement.id)
+                          ?.unlocked_at,
                       }}
                       isUnlocked={unlockedIds.has(achievement.id)}
                       userStats={userStats}
@@ -371,8 +362,7 @@ export default function AchievementsPage() {
         <Card className="mt-8 text-center">
           <CardContent className="py-8">
             <p className="text-muted-foreground mb-4">
-              {t("achievements.keepPracticing") ||
-                "Keep practicing to unlock more achievements!"}
+              {t("achievements.keepPracticing") || "Keep practicing to unlock more achievements!"}
             </p>
             <Button asChild>
               <Link href="/drill/rfi">{t("drill.startDrill") || "Start Practicing"}</Link>

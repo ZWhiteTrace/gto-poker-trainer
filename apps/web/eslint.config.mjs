@@ -1,24 +1,21 @@
 import { defineConfig, globalIgnores } from "eslint/config";
 import nextVitals from "eslint-config-next/core-web-vitals";
 import nextTs from "eslint-config-next/typescript";
+import prettierConfig from "eslint-config-prettier";
 
 const eslintConfig = defineConfig([
   ...nextVitals,
   ...nextTs,
   // Override default ignores of eslint-config-next.
-  globalIgnores([
-    ".next/**",
-    "out/**",
-    "build/**",
-    "next-env.d.ts",
-    "scripts/**/*.cjs",
-  ]),
+  globalIgnores([".next/**", "out/**", "build/**", "next-env.d.ts", "scripts/**/*.cjs"]),
   {
     rules: {
       // Data fetching in useEffect is standard React — allow as warning
       "react-hooks/set-state-in-effect": "warn",
     },
   },
+  // Disable ESLint rules that conflict with Prettier
+  prettierConfig,
 ]);
 
 export default eslintConfig;

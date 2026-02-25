@@ -3,24 +3,27 @@ Postflop Heuristic Analyzer
 Analyzes user's postflop play using heuristic rules and frequency tracking.
 Note: This is NOT full GTO analysis (would require solver), but provides useful insights.
 """
-from dataclasses import dataclass, field
-from typing import List, Dict, Optional, Tuple
-from enum import Enum
-from collections import defaultdict
 
-from .hand_parser import HandHistory, Action, ActionType as ParserActionType, Street
+from collections import defaultdict
+from dataclasses import dataclass, field
+from enum import Enum
+
+from .hand_parser import Action, HandHistory, Street
+from .hand_parser import ActionType as ParserActionType
 
 
 class BoardTexture(Enum):
     """Simplified board texture classification."""
-    DRY = "dry"           # Rainbow, disconnected (e.g., K72r)
-    SEMI_WET = "semi_wet" # Two-tone or some connectivity
-    WET = "wet"           # Monotone or highly connected
-    PAIRED = "paired"     # Board has a pair
+
+    DRY = "dry"  # Rainbow, disconnected (e.g., K72r)
+    SEMI_WET = "semi_wet"  # Two-tone or some connectivity
+    WET = "wet"  # Monotone or highly connected
+    PAIRED = "paired"  # Board has a pair
 
 
 class Position(Enum):
     """Hero's position relative to pot."""
+
     IP = "in_position"
     OOP = "out_of_position"
 
@@ -28,23 +31,25 @@ class Position(Enum):
 @dataclass
 class PostflopDecision:
     """Represents a single postflop decision."""
+
     hand_id: str
     street: Street
     hero_position: Position
     pot_size: float
     hero_action: ParserActionType
-    bet_size: Optional[float]
+    bet_size: float | None
     board_texture: BoardTexture
 
     # Context
     is_aggressor: bool  # Was hero the preflop aggressor?
-    facing_bet: bool    # Is hero facing a bet?
-    num_players: int    # Players in the pot
+    facing_bet: bool  # Is hero facing a bet?
+    num_players: int  # Players in the pot
 
 
 @dataclass
 class PostflopStats:
     """Aggregated postflop statistics."""
+
     # C-bet stats
     cbet_opportunities_ip: int = 0
     cbet_made_ip: int = 0
@@ -90,6 +95,7 @@ class PostflopStats:
 @dataclass
 class PostflopReport:
     """Postflop analysis report."""
+
     total_hands: int = 0
     hands_with_flop: int = 0
     hands_with_turn: int = 0
@@ -98,10 +104,10 @@ class PostflopReport:
     stats: PostflopStats = field(default_factory=PostflopStats)
 
     # Identified leaks
-    leaks: List[Dict] = field(default_factory=list)
+    leaks: list[dict] = field(default_factory=list)
 
     # Texture-based stats
-    texture_stats: Dict[str, Dict] = field(default_factory=dict)
+    texture_stats: dict[str, dict] = field(default_factory=dict)
 
 
 class PostflopAnalyzer:
@@ -109,20 +115,20 @@ class PostflopAnalyzer:
 
     # GTO reference frequencies (approximate)
     GTO_BENCHMARKS = {
-        "cbet_ip_flop": (65, 75),      # 65-75% IP c-bet
-        "cbet_oop_flop": (50, 65),     # 50-65% OOP c-bet
-        "fold_to_cbet_flop": (35, 50), # 35-50% fold to c-bet
-        "check_raise_flop": (8, 15),   # 8-15% check-raise
-        "probe_turn": (30, 45),        # 30-45% probe bet
-        "turn_barrel": (55, 70),       # 55-70% turn barrel
-        "river_barrel": (40, 55),      # 40-55% river barrel
+        "cbet_ip_flop": (65, 75),  # 65-75% IP c-bet
+        "cbet_oop_flop": (50, 65),  # 50-65% OOP c-bet
+        "fold_to_cbet_flop": (35, 50),  # 35-50% fold to c-bet
+        "check_raise_flop": (8, 15),  # 8-15% check-raise
+        "probe_turn": (30, 45),  # 30-45% probe bet
+        "turn_barrel": (55, 70),  # 55-70% turn barrel
+        "river_barrel": (40, 55),  # 40-55% river barrel
     }
 
     def __init__(self):
-        self.decisions: List[PostflopDecision] = []
+        self.decisions: list[PostflopDecision] = []
         self.stats = PostflopStats()
 
-    def analyze_hands(self, hands: List[HandHistory]) -> PostflopReport:
+    def analyze_hands(self, hands: list[HandHistory]) -> PostflopReport:
         """Analyze postflop play across multiple hands."""
         self.decisions = []
         self.stats = PostflopStats()
@@ -158,31 +164,24 @@ class PostflopAnalyzer:
         # Analyze each street
         if hand.flop:
             texture = self._classify_board_texture(hand.flop)
-            self._analyze_street(
-                hand, Street.FLOP, hand.flop_actions,
-                is_ip, is_aggressor, texture
-            )
+            self._analyze_street(hand, Street.FLOP, hand.flop_actions, is_ip, is_aggressor, texture)
 
         if hand.turn:
-            self._analyze_street(
-                hand, Street.TURN, hand.turn_actions,
-                is_ip, is_aggressor, texture
-            )
+            self._analyze_street(hand, Street.TURN, hand.turn_actions, is_ip, is_aggressor, texture)
 
         if hand.river:
             self._analyze_street(
-                hand, Street.RIVER, hand.river_actions,
-                is_ip, is_aggressor, texture
+                hand, Street.RIVER, hand.river_actions, is_ip, is_aggressor, texture
             )
 
     def _analyze_street(
         self,
         hand: HandHistory,
         street: Street,
-        actions: List[Action],
+        actions: list[Action],
         is_ip: bool,
         is_aggressor: bool,
-        texture: BoardTexture
+        texture: BoardTexture,
     ):
         """Analyze actions on a specific street."""
         hero_name = hand.hero.name
@@ -190,17 +189,14 @@ class PostflopAnalyzer:
         # Track action state
         checked_to_hero = False
         facing_bet = False
-        bet_before_hero = False
-        hero_acted = False
 
         for action in actions:
             if action.player == hero_name:
-                hero_acted = True
-
                 # Track stats by street and action
                 if street == Street.FLOP:
-                    self._track_flop_action(action, is_aggressor, is_ip,
-                                           facing_bet, checked_to_hero)
+                    self._track_flop_action(
+                        action, is_aggressor, is_ip, facing_bet, checked_to_hero
+                    )
                 elif street == Street.TURN:
                     self._track_turn_action(action, is_aggressor, facing_bet)
                 elif street == Street.RIVER:
@@ -212,16 +208,10 @@ class PostflopAnalyzer:
                     checked_to_hero = True
                 elif action.action_type in (ParserActionType.BET, ParserActionType.RAISE):
                     facing_bet = True
-                    bet_before_hero = True
                     checked_to_hero = False
 
     def _track_flop_action(
-        self,
-        action: Action,
-        is_aggressor: bool,
-        is_ip: bool,
-        facing_bet: bool,
-        checked_to: bool
+        self, action: Action, is_aggressor: bool, is_ip: bool, facing_bet: bool, checked_to: bool
     ):
         """Track flop action statistics."""
         if action.action_type == ParserActionType.BET:
@@ -308,9 +298,11 @@ class PostflopAnalyzer:
         # Find who else is still in the pot
         active_players = set()
         for action in hand.preflop_actions:
-            if action.action_type not in (ParserActionType.FOLD,
-                                          ParserActionType.POST_SB,
-                                          ParserActionType.POST_BB):
+            if action.action_type not in (
+                ParserActionType.FOLD,
+                ParserActionType.POST_SB,
+                ParserActionType.POST_BB,
+            ):
                 active_players.add(action.player)
 
         # BTN > CO > HJ > UTG > BB > SB (postflop order)
@@ -327,7 +319,7 @@ class PostflopAnalyzer:
 
         return True
 
-    def _get_preflop_aggressor(self, hand: HandHistory) -> Optional[str]:
+    def _get_preflop_aggressor(self, hand: HandHistory) -> str | None:
         """Get the preflop aggressor (last raiser)."""
         last_raiser = None
         for action in hand.preflop_actions:
@@ -338,7 +330,7 @@ class PostflopAnalyzer:
     def _classify_board_texture(self, flop: str) -> BoardTexture:
         """Classify board texture from flop string."""
         # Parse cards from flop string like "Ah Kd 7c"
-        cards = flop.replace('[', '').replace(']', '').split()
+        cards = flop.replace("[", "").replace("]", "").split()
 
         if len(cards) < 3:
             return BoardTexture.DRY
@@ -349,7 +341,7 @@ class PostflopAnalyzer:
             return BoardTexture.PAIRED
 
         # Check for flush draw (two same suit)
-        suits = [c[1] if len(c) > 1 else '' for c in cards]
+        suits = [c[1] if len(c) > 1 else "" for c in cards]
         suit_counts = defaultdict(int)
         for s in suits:
             suit_counts[s] += 1
@@ -359,12 +351,23 @@ class PostflopAnalyzer:
 
         # Check for connectivity
         rank_values = {
-            'A': 14, 'K': 13, 'Q': 12, 'J': 11, 'T': 10,
-            '9': 9, '8': 8, '7': 7, '6': 6, '5': 5, '4': 4, '3': 3, '2': 2
+            "A": 14,
+            "K": 13,
+            "Q": 12,
+            "J": 11,
+            "T": 10,
+            "9": 9,
+            "8": 8,
+            "7": 7,
+            "6": 6,
+            "5": 5,
+            "4": 4,
+            "3": 3,
+            "2": 2,
         }
 
         values = sorted([rank_values.get(r, 0) for r in ranks])
-        gaps = [values[i+1] - values[i] for i in range(len(values)-1)]
+        gaps = [values[i + 1] - values[i] for i in range(len(values) - 1)]
 
         # Wet if connected (small gaps) or two-tone
         if max(suit_counts.values()) == 2 or max(gaps) <= 2:
@@ -372,7 +375,7 @@ class PostflopAnalyzer:
 
         return BoardTexture.DRY
 
-    def _identify_leaks(self) -> List[Dict]:
+    def _identify_leaks(self) -> list[dict]:
         """Identify leaks based on stats vs GTO benchmarks."""
         leaks = []
 
@@ -382,23 +385,27 @@ class PostflopAnalyzer:
             low, high = self.GTO_BENCHMARKS["cbet_ip_flop"]
 
             if cbet_ip_pct < low:
-                leaks.append({
-                    "type": "cbet_ip_low",
-                    "description": "IP C-bet 頻率過低",
-                    "your_value": f"{cbet_ip_pct:.0f}%",
-                    "gto_range": f"{low}-{high}%",
-                    "sample": self.stats.cbet_opportunities_ip,
-                    "suggestion": "在有利位置時更積極地 c-bet"
-                })
+                leaks.append(
+                    {
+                        "type": "cbet_ip_low",
+                        "description": "IP C-bet 頻率過低",
+                        "your_value": f"{cbet_ip_pct:.0f}%",
+                        "gto_range": f"{low}-{high}%",
+                        "sample": self.stats.cbet_opportunities_ip,
+                        "suggestion": "在有利位置時更積極地 c-bet",
+                    }
+                )
             elif cbet_ip_pct > high:
-                leaks.append({
-                    "type": "cbet_ip_high",
-                    "description": "IP C-bet 頻率過高",
-                    "your_value": f"{cbet_ip_pct:.0f}%",
-                    "gto_range": f"{low}-{high}%",
-                    "sample": self.stats.cbet_opportunities_ip,
-                    "suggestion": "考慮在更多牌面上 check back"
-                })
+                leaks.append(
+                    {
+                        "type": "cbet_ip_high",
+                        "description": "IP C-bet 頻率過高",
+                        "your_value": f"{cbet_ip_pct:.0f}%",
+                        "gto_range": f"{low}-{high}%",
+                        "sample": self.stats.cbet_opportunities_ip,
+                        "suggestion": "考慮在更多牌面上 check back",
+                    }
+                )
 
         # C-bet OOP
         if self.stats.cbet_opportunities_oop >= 10:
@@ -406,23 +413,27 @@ class PostflopAnalyzer:
             low, high = self.GTO_BENCHMARKS["cbet_oop_flop"]
 
             if cbet_oop_pct < low:
-                leaks.append({
-                    "type": "cbet_oop_low",
-                    "description": "OOP C-bet 頻率過低",
-                    "your_value": f"{cbet_oop_pct:.0f}%",
-                    "gto_range": f"{low}-{high}%",
-                    "sample": self.stats.cbet_opportunities_oop,
-                    "suggestion": "在不利位置時也需要適當 c-bet"
-                })
+                leaks.append(
+                    {
+                        "type": "cbet_oop_low",
+                        "description": "OOP C-bet 頻率過低",
+                        "your_value": f"{cbet_oop_pct:.0f}%",
+                        "gto_range": f"{low}-{high}%",
+                        "sample": self.stats.cbet_opportunities_oop,
+                        "suggestion": "在不利位置時也需要適當 c-bet",
+                    }
+                )
             elif cbet_oop_pct > high:
-                leaks.append({
-                    "type": "cbet_oop_high",
-                    "description": "OOP C-bet 頻率過高",
-                    "your_value": f"{cbet_oop_pct:.0f}%",
-                    "gto_range": f"{low}-{high}%",
-                    "sample": self.stats.cbet_opportunities_oop,
-                    "suggestion": "OOP 應該 check 更多，保護 check range"
-                })
+                leaks.append(
+                    {
+                        "type": "cbet_oop_high",
+                        "description": "OOP C-bet 頻率過高",
+                        "your_value": f"{cbet_oop_pct:.0f}%",
+                        "gto_range": f"{low}-{high}%",
+                        "sample": self.stats.cbet_opportunities_oop,
+                        "suggestion": "OOP 應該 check 更多，保護 check range",
+                    }
+                )
 
         # Fold to c-bet
         if self.stats.fold_to_cbet_opportunities >= 10:
@@ -430,23 +441,27 @@ class PostflopAnalyzer:
             low, high = self.GTO_BENCHMARKS["fold_to_cbet_flop"]
 
             if fold_pct < low:
-                leaks.append({
-                    "type": "fold_to_cbet_low",
-                    "description": "Fold to C-bet 頻率過低",
-                    "your_value": f"{fold_pct:.0f}%",
-                    "gto_range": f"{low}-{high}%",
-                    "sample": self.stats.fold_to_cbet_opportunities,
-                    "suggestion": "可能在 call 太寬，考慮更多 fold 弱牌"
-                })
+                leaks.append(
+                    {
+                        "type": "fold_to_cbet_low",
+                        "description": "Fold to C-bet 頻率過低",
+                        "your_value": f"{fold_pct:.0f}%",
+                        "gto_range": f"{low}-{high}%",
+                        "sample": self.stats.fold_to_cbet_opportunities,
+                        "suggestion": "可能在 call 太寬，考慮更多 fold 弱牌",
+                    }
+                )
             elif fold_pct > high:
-                leaks.append({
-                    "type": "fold_to_cbet_high",
-                    "description": "Fold to C-bet 頻率過高",
-                    "your_value": f"{fold_pct:.0f}%",
-                    "gto_range": f"{low}-{high}%",
-                    "sample": self.stats.fold_to_cbet_opportunities,
-                    "suggestion": "被剝削了！需要更多防守，考慮浮動或加注"
-                })
+                leaks.append(
+                    {
+                        "type": "fold_to_cbet_high",
+                        "description": "Fold to C-bet 頻率過高",
+                        "your_value": f"{fold_pct:.0f}%",
+                        "gto_range": f"{low}-{high}%",
+                        "sample": self.stats.fold_to_cbet_opportunities,
+                        "suggestion": "被剝削了！需要更多防守，考慮浮動或加注",
+                    }
+                )
 
         # Check-raise
         if self.stats.check_raise_opportunities >= 15:
@@ -454,14 +469,16 @@ class PostflopAnalyzer:
             low, high = self.GTO_BENCHMARKS["check_raise_flop"]
 
             if cr_pct < low:
-                leaks.append({
-                    "type": "check_raise_low",
-                    "description": "Check-raise 頻率過低",
-                    "your_value": f"{cr_pct:.0f}%",
-                    "gto_range": f"{low}-{high}%",
-                    "sample": self.stats.check_raise_opportunities,
-                    "suggestion": "需要更多 check-raise 來平衡你的 check range"
-                })
+                leaks.append(
+                    {
+                        "type": "check_raise_low",
+                        "description": "Check-raise 頻率過低",
+                        "your_value": f"{cr_pct:.0f}%",
+                        "gto_range": f"{low}-{high}%",
+                        "sample": self.stats.check_raise_opportunities,
+                        "suggestion": "需要更多 check-raise 來平衡你的 check range",
+                    }
+                )
 
         return leaks
 
@@ -490,11 +507,15 @@ def format_postflop_report(report: PostflopReport) -> str:
 
     if stats.cbet_opportunities_ip > 0:
         cbet_ip = stats.cbet_made_ip / stats.cbet_opportunities_ip * 100
-        lines.append(f"IP C-bet: {stats.cbet_made_ip}/{stats.cbet_opportunities_ip} ({cbet_ip:.0f}%)")
+        lines.append(
+            f"IP C-bet: {stats.cbet_made_ip}/{stats.cbet_opportunities_ip} ({cbet_ip:.0f}%)"
+        )
 
     if stats.cbet_opportunities_oop > 0:
         cbet_oop = stats.cbet_made_oop / stats.cbet_opportunities_oop * 100
-        lines.append(f"OOP C-bet: {stats.cbet_made_oop}/{stats.cbet_opportunities_oop} ({cbet_oop:.0f}%)")
+        lines.append(
+            f"OOP C-bet: {stats.cbet_made_oop}/{stats.cbet_opportunities_oop} ({cbet_oop:.0f}%)"
+        )
 
     lines.append("")
 
@@ -505,11 +526,15 @@ def format_postflop_report(report: PostflopReport) -> str:
 
     if stats.fold_to_cbet_opportunities > 0:
         fold_pct = stats.fold_to_cbet_count / stats.fold_to_cbet_opportunities * 100
-        lines.append(f"Fold to C-bet: {stats.fold_to_cbet_count}/{stats.fold_to_cbet_opportunities} ({fold_pct:.0f}%)")
+        lines.append(
+            f"Fold to C-bet: {stats.fold_to_cbet_count}/{stats.fold_to_cbet_opportunities} ({fold_pct:.0f}%)"
+        )
 
     if stats.check_raise_opportunities > 0:
         cr_pct = stats.check_raise_count / stats.check_raise_opportunities * 100
-        lines.append(f"Check-raise: {stats.check_raise_count}/{stats.check_raise_opportunities} ({cr_pct:.0f}%)")
+        lines.append(
+            f"Check-raise: {stats.check_raise_count}/{stats.check_raise_opportunities} ({cr_pct:.0f}%)"
+        )
 
     lines.append("")
 
@@ -518,17 +543,41 @@ def format_postflop_report(report: PostflopReport) -> str:
     lines.append("街道動作分佈")
     lines.append("-" * 40)
 
-    flop_total = stats.flop_bets + stats.flop_checks + stats.flop_calls + stats.flop_folds + stats.flop_raises
+    flop_total = (
+        stats.flop_bets
+        + stats.flop_checks
+        + stats.flop_calls
+        + stats.flop_folds
+        + stats.flop_raises
+    )
     if flop_total > 0:
-        lines.append(f"Flop: Bet {stats.flop_bets} | Check {stats.flop_checks} | Call {stats.flop_calls} | Fold {stats.flop_folds} | Raise {stats.flop_raises}")
+        lines.append(
+            f"Flop: Bet {stats.flop_bets} | Check {stats.flop_checks} | Call {stats.flop_calls} | Fold {stats.flop_folds} | Raise {stats.flop_raises}"
+        )
 
-    turn_total = stats.turn_bets + stats.turn_checks + stats.turn_calls + stats.turn_folds + stats.turn_raises
+    turn_total = (
+        stats.turn_bets
+        + stats.turn_checks
+        + stats.turn_calls
+        + stats.turn_folds
+        + stats.turn_raises
+    )
     if turn_total > 0:
-        lines.append(f"Turn: Bet {stats.turn_bets} | Check {stats.turn_checks} | Call {stats.turn_calls} | Fold {stats.turn_folds} | Raise {stats.turn_raises}")
+        lines.append(
+            f"Turn: Bet {stats.turn_bets} | Check {stats.turn_checks} | Call {stats.turn_calls} | Fold {stats.turn_folds} | Raise {stats.turn_raises}"
+        )
 
-    river_total = stats.river_bets + stats.river_checks + stats.river_calls + stats.river_folds + stats.river_raises
+    river_total = (
+        stats.river_bets
+        + stats.river_checks
+        + stats.river_calls
+        + stats.river_folds
+        + stats.river_raises
+    )
     if river_total > 0:
-        lines.append(f"River: Bet {stats.river_bets} | Check {stats.river_checks} | Call {stats.river_calls} | Fold {stats.river_folds} | Raise {stats.river_raises}")
+        lines.append(
+            f"River: Bet {stats.river_bets} | Check {stats.river_checks} | Call {stats.river_calls} | Fold {stats.river_folds} | Raise {stats.river_raises}"
+        )
 
     # Leaks
     if report.leaks:

@@ -131,7 +131,4 @@ const sentryWebpackPluginOptions = {
 };
 
 // Apply plugins: next-intl → Sentry
-export default withSentryConfig(
-  withNextIntl(nextConfig),
-  sentryWebpackPluginOptions
-);
+export default withSentryConfig(withNextIntl(nextConfig), sentryWebpackPluginOptions);

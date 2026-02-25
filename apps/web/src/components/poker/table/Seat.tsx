@@ -19,12 +19,12 @@ interface SeatProps {
 
 // 座位位置配置 (6-max 橢圓佈局)
 export const SEAT_POSITIONS: Record<number, { top: string; left: string; transform: string }> = {
-  0: { top: "85%", left: "50%", transform: "translate(-50%, -50%)" },   // BB (底部中央)
-  1: { top: "75%", left: "15%", transform: "translate(-50%, -50%)" },   // SB (左下)
-  2: { top: "35%", left: "5%", transform: "translate(-50%, -50%)" },    // BTN (左上)
-  3: { top: "10%", left: "50%", transform: "translate(-50%, -50%)" },   // CO (頂部中央)
-  4: { top: "35%", left: "95%", transform: "translate(-50%, -50%)" },   // MP (右上)
-  5: { top: "75%", left: "85%", transform: "translate(-50%, -50%)" },   // UTG (右下)
+  0: { top: "85%", left: "50%", transform: "translate(-50%, -50%)" }, // BB (底部中央)
+  1: { top: "75%", left: "15%", transform: "translate(-50%, -50%)" }, // SB (左下)
+  2: { top: "35%", left: "5%", transform: "translate(-50%, -50%)" }, // BTN (左上)
+  3: { top: "10%", left: "50%", transform: "translate(-50%, -50%)" }, // CO (頂部中央)
+  4: { top: "35%", left: "95%", transform: "translate(-50%, -50%)" }, // MP (右上)
+  5: { top: "75%", left: "85%", transform: "translate(-50%, -50%)" }, // UTG (右下)
 };
 
 // Position 到 seatIndex 的映射
@@ -37,20 +37,28 @@ export const POSITION_TO_SEAT: Record<Position, number> = {
   UTG: 5,
 };
 
-export const Seat = memo(function Seat({ player, isActive = false, isHero = false, showCards = false, aiProfile, devMode = false, className }: SeatProps) {
+export const Seat = memo(function Seat({
+  player,
+  isActive = false,
+  isHero = false,
+  showCards = false,
+  aiProfile,
+  devMode = false,
+  className,
+}: SeatProps) {
   if (!player) {
     // 空座位
     return (
       <div
         className={cn(
           "flex items-center justify-center",
-          "px-3 py-2 min-w-[100px]",
+          "min-w-[100px] px-3 py-2",
           "rounded-xl border-2 border-dashed border-gray-600/50",
           "bg-gray-800/30",
           className
         )}
       >
-        <span className="text-gray-500 text-sm">空位</span>
+        <span className="text-sm text-gray-500">空位</span>
       </div>
     );
   }
@@ -62,18 +70,19 @@ export const Seat = memo(function Seat({ player, isActive = false, isHero = fals
         "rounded-xl border-2",
         "transition-all duration-300",
         // Active player - prominent glow effect
-        isActive && !player.isFolded && [
-          "border-yellow-400",
-          "bg-yellow-400/10",
-          "shadow-[0_0_20px_rgba(250,204,21,0.4)]",
-          "animate-pulse",
-        ],
+        isActive &&
+          !player.isFolded && [
+            "border-yellow-400",
+            "bg-yellow-400/10",
+            "shadow-[0_0_20px_rgba(250,204,21,0.4)]",
+            "animate-pulse",
+          ],
         // Inactive player
         !isActive && "border-gray-600/50 bg-gray-800/50",
         // Folded player
         player.isFolded && "opacity-50",
         // Hero styling (when not active)
-        isHero && !isActive && "ring-2 ring-yellow-500/30 border-yellow-500/50",
+        isHero && !isActive && "border-yellow-500/50 ring-2 ring-yellow-500/30",
         className
       )}
     >
@@ -91,7 +100,7 @@ export const Seat = memo(function Seat({ player, isActive = false, isHero = fals
             <CardBack size="sm" />
           </div>
         ) : player.isFolded ? (
-          <div className="text-gray-500 text-xs italic">Fold</div>
+          <div className="text-xs text-gray-500 italic">Fold</div>
         ) : null}
       </div>
 
@@ -101,7 +110,7 @@ export const Seat = memo(function Seat({ player, isActive = false, isHero = fals
         <div className="flex items-center gap-1.5">
           <span
             className={cn(
-              "px-1.5 py-0.5 rounded text-xs font-bold",
+              "rounded px-1.5 py-0.5 text-xs font-bold",
               isHero
                 ? "bg-yellow-500 text-black"
                 : player.isDealer
@@ -113,7 +122,7 @@ export const Seat = memo(function Seat({ player, isActive = false, isHero = fals
           </span>
           {/* 玩家名字（非 Hero 時顯示） */}
           {!isHero && (
-            <span className="text-[10px] text-gray-400 truncate max-w-[50px]" title={player.name}>
+            <span className="max-w-[50px] truncate text-[10px] text-gray-400" title={player.name}>
               {player.name}
             </span>
           )}
@@ -124,7 +133,11 @@ export const Seat = memo(function Seat({ player, isActive = false, isHero = fals
           <span
             className={cn(
               "text-sm font-bold",
-              player.stack > 50 ? "text-green-400" : player.stack > 20 ? "text-yellow-400" : "text-red-400"
+              player.stack > 50
+                ? "text-green-400"
+                : player.stack > 20
+                  ? "text-yellow-400"
+                  : "text-red-400"
             )}
           >
             {player.stack.toFixed(1)}
@@ -137,9 +150,10 @@ export const Seat = memo(function Seat({ player, isActive = false, isHero = fals
 
       {/* Dev mode: AI profile info */}
       {devMode && !isHero && aiProfile && (
-        <div className="px-1.5 py-0.5 bg-purple-900/50 rounded text-[10px] text-purple-300 border border-purple-500/30">
+        <div className="rounded border border-purple-500/30 bg-purple-900/50 px-1.5 py-0.5 text-[10px] text-purple-300">
           <div className="text-purple-400">
-            {aiProfile.style} {Math.round(aiProfile.vpip * 100)}/{Math.round(aiProfile.pfr * 100)}/{Math.round(aiProfile.threeBetFreq * 100)}
+            {aiProfile.style} {Math.round(aiProfile.vpip * 100)}/{Math.round(aiProfile.pfr * 100)}/
+            {Math.round(aiProfile.threeBetFreq * 100)}
           </div>
         </div>
       )}
@@ -154,11 +168,15 @@ interface MiniSeatProps {
   className?: string;
 }
 
-export const MiniSeat = memo(function MiniSeat({ player, isActive = false, className }: MiniSeatProps) {
+export const MiniSeat = memo(function MiniSeat({
+  player,
+  isActive = false,
+  className,
+}: MiniSeatProps) {
   return (
     <div
       className={cn(
-        "flex items-center gap-2 px-2 py-1 rounded-lg",
+        "flex items-center gap-2 rounded-lg px-2 py-1",
         "border",
         isActive ? "border-primary bg-primary/10" : "border-gray-600 bg-gray-800/50",
         player.isFolded && "opacity-50",
@@ -168,7 +186,9 @@ export const MiniSeat = memo(function MiniSeat({ player, isActive = false, class
       <span className="text-xs font-semibold text-gray-400">{player.position}</span>
       <span className="text-sm text-white">{player.name}</span>
       <span className="text-xs text-green-400">{player.stack.toFixed(1)}</span>
-      {player.currentBet > 0 && <span className="text-xs text-orange-400">({player.currentBet})</span>}
+      {player.currentBet > 0 && (
+        <span className="text-xs text-orange-400">({player.currentBet})</span>
+      )}
     </div>
   );
 });

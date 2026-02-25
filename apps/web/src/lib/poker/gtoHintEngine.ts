@@ -33,8 +33,19 @@ import {
 } from "./solverClient";
 
 const RANK_VALUES: Record<Rank, number> = {
-  "A": 14, "K": 13, "Q": 12, "J": 11, "T": 10,
-  "9": 9, "8": 8, "7": 7, "6": 6, "5": 5, "4": 4, "3": 3, "2": 2,
+  A: 14,
+  K: 13,
+  Q: 12,
+  J: 11,
+  T: 10,
+  "9": 9,
+  "8": 8,
+  "7": 7,
+  "6": 6,
+  "5": 5,
+  "4": 4,
+  "3": 3,
+  "2": 2,
 };
 
 // ============================================
@@ -73,7 +84,10 @@ export function analyzeHandStrength(
     } else if (isPair && highCard >= 7) {
       category = "medium";
       equity = 0.55;
-    } else if (highCard === 14 && RANK_VALUES[holeCards[0].rank === "A" ? holeCards[1].rank : holeCards[0].rank] >= 10) {
+    } else if (
+      highCard === 14 &&
+      RANK_VALUES[holeCards[0].rank === "A" ? holeCards[1].rank : holeCards[0].rank] >= 10
+    ) {
       category = "strong";
       equity = 0.65;
     } else if (highCard >= 12 && isSuited) {
@@ -100,9 +114,9 @@ export function analyzeHandStrength(
 
   // Postflop analysis
   const allCards = [...holeCards, ...communityCards];
-  const boardRanks = communityCards.map(c => RANK_VALUES[c.rank]);
+  const boardRanks = communityCards.map((c) => RANK_VALUES[c.rank]);
   const boardHighCard = Math.max(...boardRanks);
-  const holeRanks = holeCards.map(c => RANK_VALUES[c.rank]);
+  const holeRanks = holeCards.map((c) => RANK_VALUES[c.rank]);
 
   // Check for pairs, sets, etc.
   const rankCounts: Record<number, number> = {};
@@ -111,17 +125,15 @@ export function analyzeHandStrength(
     rankCounts[val] = (rankCounts[val] || 0) + 1;
   }
 
-  const hasSet = Object.values(rankCounts).some(c => c >= 3);
-  const hasTwoPair = Object.values(rankCounts).filter(c => c >= 2).length >= 2;
-  const hasPair = Object.values(rankCounts).some(c => c >= 2);
+  const hasSet = Object.values(rankCounts).some((c) => c >= 3);
+  const hasTwoPair = Object.values(rankCounts).filter((c) => c >= 2).length >= 2;
+  const hasPair = Object.values(rankCounts).some((c) => c >= 2);
 
   // Check if we have top pair
-  const hasTopPair = holeRanks.includes(boardHighCard) &&
-    rankCounts[boardHighCard] >= 2;
+  const hasTopPair = holeRanks.includes(boardHighCard) && rankCounts[boardHighCard] >= 2;
 
   // Check for overpair
-  const hasOverpair = holeRanks[0] === holeRanks[1] &&
-    holeRanks[0] > boardHighCard;
+  const hasOverpair = holeRanks[0] === holeRanks[1] && holeRanks[0] > boardHighCard;
 
   // Check for flush draws
   const suitCounts: Record<Suit, number> = { s: 0, h: 0, d: 0, c: 0 };
@@ -133,7 +145,7 @@ export function analyzeHandStrength(
   const hasFlush = maxSuitCount >= 5;
 
   // Simplified straight draw detection
-  const sortedRanks = [...new Set(allCards.map(c => RANK_VALUES[c.rank]))].sort((a, b) => b - a);
+  const sortedRanks = [...new Set(allCards.map((c) => RANK_VALUES[c.rank]))].sort((a, b) => b - a);
   let consecutiveCount = 1;
   let maxConsecutive = 1;
   for (let i = 1; i < sortedRanks.length; i++) {
@@ -583,8 +595,12 @@ export async function generateGTOHintWithSolver(context: HintContext): Promise<G
 
         if (riverClassification && solverResult.texture) {
           // Determine if we made our hand (simplified check)
-          const madeHand = handStrength.category === "nuts" || handStrength.category === "strong" ||
-                          handStrength.hasSet || handStrength.hasTwoPair || handStrength.hasTopPair;
+          const madeHand =
+            handStrength.category === "nuts" ||
+            handStrength.category === "strong" ||
+            handStrength.hasSet ||
+            handStrength.hasTwoPair ||
+            handStrength.hasTopPair;
 
           const handCategory = categorizeHandForRiver(
             handStrength.category,
@@ -628,10 +644,12 @@ export async function generateGTOHintWithSolver(context: HintContext): Promise<G
       keyFactorsZh.push(`手牌: ${handString} (${handStrength.categoryZh})`);
 
       // Add primary action explanation
-      const primaryAction = recommendations.find(r => r.isPrimary);
+      const primaryAction = recommendations.find((r) => r.isPrimary);
       if (primaryAction) {
         if (primaryAction.action === "bet" && primaryAction.sizing) {
-          keyFactorsZh.push(`GTO 建議: Bet ${primaryAction.sizing}% pot (${primaryAction.frequency}%)`);
+          keyFactorsZh.push(
+            `GTO 建議: Bet ${primaryAction.sizing}% pot (${primaryAction.frequency}%)`
+          );
         } else if (primaryAction.action === "check") {
           keyFactorsZh.push(`GTO 建議: Check (${primaryAction.frequency}%)`);
         }
@@ -658,14 +676,18 @@ export async function generateGTOHintWithSolver(context: HintContext): Promise<G
             scenarioId: solverResult.scenario_id,
             hand: solverResult.hand,
             strategy: finalStrategy as Record<string, number>,
-            turnAdjustment: turnInfo ? {
-              turnType: turnInfo.turnType,
-              turnTypeZh: turnInfo.turnTypeZh,
-            } : undefined,
-            riverAdjustment: riverInfo ? {
-              riverType: riverInfo.riverType,
-              riverTypeZh: riverInfo.riverTypeZh,
-            } : undefined,
+            turnAdjustment: turnInfo
+              ? {
+                  turnType: turnInfo.turnType,
+                  turnTypeZh: turnInfo.turnTypeZh,
+                }
+              : undefined,
+            riverAdjustment: riverInfo
+              ? {
+                  riverType: riverInfo.riverType,
+                  riverTypeZh: riverInfo.riverTypeZh,
+                }
+              : undefined,
           },
         },
       };
@@ -698,13 +720,7 @@ export async function getSolverStrategyForHand(
   }
 
   try {
-    const result = await querySolverStrategy(
-      communityCards,
-      holeCards,
-      position,
-      undefined,
-      "srp"
-    );
+    const result = await querySolverStrategy(communityCards, holeCards, position, undefined, "srp");
 
     if (result.found && result.strategy) {
       return {

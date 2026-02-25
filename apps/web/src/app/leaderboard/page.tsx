@@ -2,13 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -33,7 +27,12 @@ import {
 } from "@/lib/supabase/leaderboard";
 import { useAuthStore } from "@/stores/authStore";
 
-const LEADERBOARD_TABS: { value: LeaderboardType; label: string; labelZh: string; icon: React.ReactNode }[] = [
+const LEADERBOARD_TABS: {
+  value: LeaderboardType;
+  label: string;
+  labelZh: string;
+  icon: React.ReactNode;
+}[] = [
   { value: "total", label: "All Time", labelZh: "總榜", icon: <Trophy className="h-4 w-4" /> },
   { value: "weekly", label: "Weekly", labelZh: "週榜", icon: <Calendar className="h-4 w-4" /> },
   { value: "monthly", label: "Monthly", labelZh: "月榜", icon: <TrendingUp className="h-4 w-4" /> },
@@ -45,7 +44,7 @@ function getRankIcon(rank: number) {
   if (rank === 1) return <Crown className="h-5 w-5 text-yellow-500" />;
   if (rank === 2) return <Medal className="h-5 w-5 text-gray-400" />;
   if (rank === 3) return <Award className="h-5 w-5 text-amber-600" />;
-  return <span className="text-muted-foreground font-mono w-5 text-center">{rank}</span>;
+  return <span className="text-muted-foreground w-5 text-center font-mono">{rank}</span>;
 }
 
 function getRankBgColor(rank: number) {
@@ -103,7 +102,7 @@ export default function LeaderboardPage() {
     <div className="container max-w-4xl py-8">
       {/* Header */}
       <div className="mb-8 text-center">
-        <h1 className="text-3xl font-bold flex items-center justify-center gap-2">
+        <h1 className="flex items-center justify-center gap-2 text-3xl font-bold">
           <Trophy className="h-8 w-8 text-yellow-500" />
           {t("leaderboard.title") || "Leaderboard"}
         </h1>
@@ -114,21 +113,21 @@ export default function LeaderboardPage() {
 
       {/* User's Current Rank */}
       {user && userRank && (
-        <Card className="mb-6 bg-primary/5 border-primary/20">
-          <CardContent className="p-4 flex items-center justify-between">
+        <Card className="bg-primary/5 border-primary/20 mb-6">
+          <CardContent className="flex items-center justify-between p-4">
             <div className="flex items-center gap-3">
-              <div className="h-10 w-10 rounded-full bg-primary/20 flex items-center justify-center">
-                <User className="h-5 w-5 text-primary" />
+              <div className="bg-primary/20 flex h-10 w-10 items-center justify-center rounded-full">
+                <User className="text-primary h-5 w-5" />
               </div>
               <div>
                 <p className="font-medium">{t("leaderboard.yourRank") || "Your Rank"}</p>
-                <p className="text-sm text-muted-foreground">
+                <p className="text-muted-foreground text-sm">
                   {LEADERBOARD_TABS.find((tab) => tab.value === activeTab)?.label}
                 </p>
               </div>
             </div>
             <div className="text-right">
-              <p className="text-3xl font-bold text-primary">#{userRank}</p>
+              <p className="text-primary text-3xl font-bold">#{userRank}</p>
             </div>
           </CardContent>
         </Card>
@@ -136,9 +135,13 @@ export default function LeaderboardPage() {
 
       {/* Leaderboard Tabs */}
       <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as LeaderboardType)}>
-        <TabsList className="grid w-full grid-cols-5 mb-6">
+        <TabsList className="mb-6 grid w-full grid-cols-5">
           {LEADERBOARD_TABS.map((tab) => (
-            <TabsTrigger key={tab.value} value={tab.value} className="flex items-center gap-1 text-xs sm:text-sm">
+            <TabsTrigger
+              key={tab.value}
+              value={tab.value}
+              className="flex items-center gap-1 text-xs sm:text-sm"
+            >
               {tab.icon}
               <span className="hidden sm:inline">{tab.label}</span>
             </TabsTrigger>
@@ -154,11 +157,16 @@ export default function LeaderboardPage() {
                   {tab.label} {t("leaderboard.rankings") || "Rankings"}
                 </CardTitle>
                 <CardDescription>
-                  {tab.value === "total" && (t("leaderboard.totalDesc") || "Top players by total hands practiced")}
-                  {tab.value === "weekly" && (t("leaderboard.weeklyDesc") || "This week's most active players")}
-                  {tab.value === "monthly" && (t("leaderboard.monthlyDesc") || "This month's most active players")}
-                  {tab.value === "streak" && (t("leaderboard.streakDesc") || "Players with the longest winning streaks")}
-                  {tab.value === "accuracy" && (t("leaderboard.accuracyDesc") || "Highest accuracy (min 100 hands)")}
+                  {tab.value === "total" &&
+                    (t("leaderboard.totalDesc") || "Top players by total hands practiced")}
+                  {tab.value === "weekly" &&
+                    (t("leaderboard.weeklyDesc") || "This week's most active players")}
+                  {tab.value === "monthly" &&
+                    (t("leaderboard.monthlyDesc") || "This month's most active players")}
+                  {tab.value === "streak" &&
+                    (t("leaderboard.streakDesc") || "Players with the longest winning streaks")}
+                  {tab.value === "accuracy" &&
+                    (t("leaderboard.accuracyDesc") || "Highest accuracy (min 100 hands)")}
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -174,16 +182,14 @@ export default function LeaderboardPage() {
                       <div
                         key={entry.user_id}
                         className={cn(
-                          "flex items-center justify-between p-3 rounded-lg border transition-colors",
+                          "flex items-center justify-between rounded-lg border p-3 transition-colors",
                           getRankBgColor(entry.rank),
-                          user?.id === entry.user_id && "ring-2 ring-primary"
+                          user?.id === entry.user_id && "ring-primary ring-2"
                         )}
                       >
                         <div className="flex items-center gap-4">
-                          <div className="w-8 flex justify-center">
-                            {getRankIcon(entry.rank)}
-                          </div>
-                          <div className="h-10 w-10 rounded-full bg-muted flex items-center justify-center">
+                          <div className="flex w-8 justify-center">{getRankIcon(entry.rank)}</div>
+                          <div className="bg-muted flex h-10 w-10 items-center justify-center rounded-full">
                             {entry.avatar_url ? (
                               <img
                                 src={entry.avatar_url}
@@ -191,7 +197,7 @@ export default function LeaderboardPage() {
                                 className="h-10 w-10 rounded-full object-cover"
                               />
                             ) : (
-                              <User className="h-5 w-5 text-muted-foreground" />
+                              <User className="text-muted-foreground h-5 w-5" />
                             )}
                           </div>
                           <div>
@@ -203,7 +209,7 @@ export default function LeaderboardPage() {
                                 </Badge>
                               )}
                             </p>
-                            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                            <div className="text-muted-foreground flex items-center gap-2 text-sm">
                               <span>{entry.total_hands} total</span>
                               <span>•</span>
                               <span>{entry.accuracy}% accuracy</span>
@@ -211,10 +217,10 @@ export default function LeaderboardPage() {
                           </div>
                         </div>
                         <div className="text-right">
-                          <p className="font-bold text-lg">{getDisplayValue(entry)}</p>
+                          <p className="text-lg font-bold">{getDisplayValue(entry)}</p>
                           {activeTab !== "streak" && (
-                            <p className="text-xs text-muted-foreground">
-                              <Flame className="inline h-3 w-3 mr-1" />
+                            <p className="text-muted-foreground text-xs">
+                              <Flame className="mr-1 inline h-3 w-3" />
                               {entry.best_streak} best
                             </p>
                           )}
@@ -223,8 +229,8 @@ export default function LeaderboardPage() {
                     ))}
                   </div>
                 ) : (
-                  <div className="text-center py-12">
-                    <Trophy className="h-12 w-12 mx-auto text-muted-foreground/50 mb-4" />
+                  <div className="py-12 text-center">
+                    <Trophy className="text-muted-foreground/50 mx-auto mb-4 h-12 w-12" />
                     <p className="text-muted-foreground">
                       {t("leaderboard.noData") || "No rankings yet. Be the first!"}
                     </p>
@@ -240,11 +246,11 @@ export default function LeaderboardPage() {
       </Tabs>
 
       {/* Info */}
-      <div className="mt-6 text-center text-sm text-muted-foreground">
-        <p>{t("leaderboard.minRequirement") || "Minimum 10 hands required to appear on leaderboard"}</p>
-        <p className="mt-1">
-          {t("leaderboard.updateFrequency") || "Rankings update in real-time"}
+      <div className="text-muted-foreground mt-6 text-center text-sm">
+        <p>
+          {t("leaderboard.minRequirement") || "Minimum 10 hands required to appear on leaderboard"}
         </p>
+        <p className="mt-1">{t("leaderboard.updateFrequency") || "Rankings update in real-time"}</p>
       </div>
     </div>
   );

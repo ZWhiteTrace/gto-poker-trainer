@@ -1,24 +1,25 @@
 """
 Poker table positions.
 """
+
 from enum import Enum
-from typing import List
 
 
 class Position(Enum):
     """Table positions for 6-max games."""
+
     # 6-max positions
-    UTG = "UTG"      # Under the Gun (first to act preflop)
-    HJ = "HJ"        # Hijack
-    CO = "CO"        # Cutoff
-    BTN = "BTN"      # Button (dealer)
-    SB = "SB"        # Small Blind
-    BB = "BB"        # Big Blind
+    UTG = "UTG"  # Under the Gun (first to act preflop)
+    HJ = "HJ"  # Hijack
+    CO = "CO"  # Cutoff
+    BTN = "BTN"  # Button (dealer)
+    SB = "SB"  # Small Blind
+    BB = "BB"  # Big Blind
 
     # Additional positions (reserved for future use)
-    UTG1 = "UTG+1"   # UTG+1 (also: EP2)
-    UTG2 = "UTG+2"   # UTG+2 (also: EP3)
-    MP = "MP"        # Middle Position (also: LJ - Lojack)
+    UTG1 = "UTG+1"  # UTG+1 (also: EP2)
+    UTG2 = "UTG+2"  # UTG+2 (also: EP3)
+    MP = "MP"  # Middle Position (also: LJ - Lojack)
 
     @property
     def display_name(self) -> str:
@@ -54,7 +55,7 @@ class Position(Enum):
 
 
 # Position order (early to late)
-POSITIONS_6MAX: List[Position] = [
+POSITIONS_6MAX: list[Position] = [
     Position.UTG,
     Position.HJ,
     Position.CO,
@@ -63,20 +64,21 @@ POSITIONS_6MAX: List[Position] = [
     Position.BB,
 ]
 
-def get_positions(format: str = "6max") -> List[Position]:
+
+def get_positions(format: str = "6max") -> list[Position]:
     """Get positions for 6-max format."""
     return POSITIONS_6MAX
 
 
-def positions_after(pos: Position, format: str = "6max") -> List[Position]:
+def positions_after(pos: Position, format: str = "6max") -> list[Position]:
     """Get all positions that act after the given position preflop."""
     positions = get_positions(format)
     idx = positions.index(pos)
     # Preflop order: UTG -> ... -> BTN -> SB -> BB
-    return positions[idx + 1:]
+    return positions[idx + 1 :]
 
 
-def positions_before(pos: Position, format: str = "6max") -> List[Position]:
+def positions_before(pos: Position, format: str = "6max") -> list[Position]:
     """Get all positions that act before the given position preflop."""
     positions = get_positions(format)
     idx = positions.index(pos)

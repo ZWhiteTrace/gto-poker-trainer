@@ -38,8 +38,8 @@ export interface StatFeedback {
 // ============================================
 
 export const STATS_THRESHOLDS = {
-  BASIC: 30,    // 基礎統計 (VPIP, PFR)
-  FULL: 100,    // 完整統計 + 分析建議
+  BASIC: 30, // 基礎統計 (VPIP, PFR)
+  FULL: 100, // 完整統計 + 分析建議
 } as const;
 
 // GTO 目標範圍 (6-max cash game)
@@ -48,10 +48,10 @@ const STAT_TARGETS = {
   pfr: { min: 0.18, max: 0.22, name: "PFR", nameZh: "翻前加注率" },
   threeBet: { min: 0.08, max: 0.12, name: "3-Bet", nameZh: "3-Bet 頻率" },
   ats: { min: 0.32, max: 0.38, name: "ATS", nameZh: "偷盲嘗試率" },
-  flopCbet: { min: 0.50, max: 0.60, name: "Flop CB", nameZh: "翻牌 C-Bet" },
+  flopCbet: { min: 0.5, max: 0.6, name: "Flop CB", nameZh: "翻牌 C-Bet" },
   foldToCbet: { min: 0.38, max: 0.45, name: "Fold to CB", nameZh: "棄牌率" },
   wtsd: { min: 0.26, max: 0.32, name: "WTSD", nameZh: "攤牌率" },
-  wsd: { min: 0.50, max: 0.55, name: "W$SD", nameZh: "攤牌勝率" },
+  wsd: { min: 0.5, max: 0.55, name: "W$SD", nameZh: "攤牌勝率" },
   taf: { min: 1.8, max: 2.5, name: "TAF", nameZh: "侵略因子" },
 } as const;
 
@@ -59,10 +59,13 @@ const STAT_TARGETS = {
 // Feedback Templates
 // ============================================
 
-const FEEDBACK_TEMPLATES: Record<string, {
-  tooHigh: { feedback: string; suggestion: string };
-  tooLow: { feedback: string; suggestion: string };
-}> = {
+const FEEDBACK_TEMPLATES: Record<
+  string,
+  {
+    tooHigh: { feedback: string; suggestion: string };
+    tooLow: { feedback: string; suggestion: string };
+  }
+> = {
   vpip: {
     tooHigh: {
       feedback: "你打得太鬆了，進入太多底池",
@@ -159,11 +162,7 @@ const FEEDBACK_TEMPLATES: Record<string, {
 // Analysis Functions
 // ============================================
 
-function analyzeStatValue(
-  value: number,
-  min: number,
-  max: number
-): StatStatus {
+function analyzeStatValue(value: number, min: number, max: number): StatStatus {
   if (value < min) return "too_low";
   if (value > max) return "too_high";
   return "good";
@@ -211,9 +210,14 @@ export function analyzePlayerStats(stats: HeroStats): StatFeedback[] {
 
   // 3-Bet Analysis
   const threeBet = getPlayer3Bet(stats);
-  const threeBetStatus = analyzeStatValue(threeBet, STAT_TARGETS.threeBet.min, STAT_TARGETS.threeBet.max);
+  const threeBetStatus = analyzeStatValue(
+    threeBet,
+    STAT_TARGETS.threeBet.min,
+    STAT_TARGETS.threeBet.max
+  );
   if (threeBetStatus !== "good") {
-    const template = FEEDBACK_TEMPLATES.threeBet[threeBetStatus === "too_high" ? "tooHigh" : "tooLow"];
+    const template =
+      FEEDBACK_TEMPLATES.threeBet[threeBetStatus === "too_high" ? "tooHigh" : "tooLow"];
     feedback.push({
       stat: "3-Bet",
       statZh: "3-Bet 頻率",
@@ -245,9 +249,14 @@ export function analyzePlayerStats(stats: HeroStats): StatFeedback[] {
 
   // Flop C-Bet Analysis
   const flopCbet = getFlopCBet(stats);
-  const flopCbetStatus = analyzeStatValue(flopCbet, STAT_TARGETS.flopCbet.min, STAT_TARGETS.flopCbet.max);
+  const flopCbetStatus = analyzeStatValue(
+    flopCbet,
+    STAT_TARGETS.flopCbet.min,
+    STAT_TARGETS.flopCbet.max
+  );
   if (flopCbetStatus !== "good") {
-    const template = FEEDBACK_TEMPLATES.flopCbet[flopCbetStatus === "too_high" ? "tooHigh" : "tooLow"];
+    const template =
+      FEEDBACK_TEMPLATES.flopCbet[flopCbetStatus === "too_high" ? "tooHigh" : "tooLow"];
     feedback.push({
       stat: "Flop CB",
       statZh: "翻牌 C-Bet",
@@ -262,9 +271,14 @@ export function analyzePlayerStats(stats: HeroStats): StatFeedback[] {
 
   // Fold to C-Bet Analysis
   const foldToCbet = getFoldToCBet(stats);
-  const foldToCbetStatus = analyzeStatValue(foldToCbet, STAT_TARGETS.foldToCbet.min, STAT_TARGETS.foldToCbet.max);
+  const foldToCbetStatus = analyzeStatValue(
+    foldToCbet,
+    STAT_TARGETS.foldToCbet.min,
+    STAT_TARGETS.foldToCbet.max
+  );
   if (foldToCbetStatus !== "good") {
-    const template = FEEDBACK_TEMPLATES.foldToCbet[foldToCbetStatus === "too_high" ? "tooHigh" : "tooLow"];
+    const template =
+      FEEDBACK_TEMPLATES.foldToCbet[foldToCbetStatus === "too_high" ? "tooHigh" : "tooLow"];
     feedback.push({
       stat: "Fold to CB",
       statZh: "面對 C-Bet 棄牌率",
@@ -349,7 +363,7 @@ export function getOverallPerformance(stats: HeroStats): {
   description: string;
 } {
   const feedback = analyzePlayerStats(stats);
-  const highPriorityIssues = feedback.filter(f => f.priority >= 4).length;
+  const highPriorityIssues = feedback.filter((f) => f.priority >= 4).length;
   const totalIssues = feedback.length;
 
   if (totalIssues === 0) {

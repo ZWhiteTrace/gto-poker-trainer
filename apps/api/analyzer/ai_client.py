@@ -2,11 +2,10 @@
 AI Client for Hand Analysis
 Supports multiple AI providers: DeepSeek, OpenAI, Claude (Anthropic)
 """
+
 import os
-import json
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import Optional, List, Dict, Any
 from enum import Enum
 
 try:
@@ -24,10 +23,11 @@ class AIProvider(Enum):
 @dataclass
 class AIConfig:
     """Configuration for AI client."""
+
     provider: AIProvider
     api_key: str
-    base_url: Optional[str] = None
-    model: Optional[str] = None
+    base_url: str | None = None
+    model: str | None = None
     temperature: float = 0.7
     max_tokens: int = 2000
 
@@ -69,7 +69,7 @@ class BaseAIClient(ABC):
         self.client = httpx.Client(timeout=60.0)
 
     @abstractmethod
-    def chat(self, messages: List[Dict[str, str]], **kwargs) -> str:
+    def chat(self, messages: list[dict[str, str]], **kwargs) -> str:
         """Send chat messages and get response."""
         pass
 
@@ -89,7 +89,7 @@ class BaseAIClient(ABC):
 
         messages = [
             {"role": "system", "content": system_prompt},
-            {"role": "user", "content": f"請分析這手牌：\n\n{hand_description}"}
+            {"role": "user", "content": f"請分析這手牌：\n\n{hand_description}"},
         ]
 
         return self.chat(messages)
@@ -102,7 +102,7 @@ class BaseAIClient(ABC):
 class DeepSeekClient(BaseAIClient):
     """DeepSeek AI client."""
 
-    def chat(self, messages: List[Dict[str, str]], **kwargs) -> str:
+    def chat(self, messages: list[dict[str, str]], **kwargs) -> str:
         """Send chat messages to DeepSeek API."""
         url = f"{self.config.base_url}/v1/chat/completions"
 
@@ -128,7 +128,7 @@ class DeepSeekClient(BaseAIClient):
 class OpenAIClient(BaseAIClient):
     """OpenAI client (also works with OpenAI-compatible APIs)."""
 
-    def chat(self, messages: List[Dict[str, str]], **kwargs) -> str:
+    def chat(self, messages: list[dict[str, str]], **kwargs) -> str:
         """Send chat messages to OpenAI API."""
         url = f"{self.config.base_url}/v1/chat/completions"
 
@@ -154,7 +154,7 @@ class OpenAIClient(BaseAIClient):
 class AnthropicClient(BaseAIClient):
     """Anthropic (Claude) client."""
 
-    def chat(self, messages: List[Dict[str, str]], **kwargs) -> str:
+    def chat(self, messages: list[dict[str, str]], **kwargs) -> str:
         """Send chat messages to Anthropic API."""
         url = f"{self.config.base_url}/v1/messages"
 
@@ -190,9 +190,9 @@ class AnthropicClient(BaseAIClient):
 
 def create_ai_client(
     provider: str = "deepseek",
-    api_key: Optional[str] = None,
-    base_url: Optional[str] = None,
-    model: Optional[str] = None,
+    api_key: str | None = None,
+    base_url: str | None = None,
+    model: str | None = None,
 ) -> BaseAIClient:
     """
     Factory function to create AI client.
@@ -218,8 +218,10 @@ def create_ai_client(
         config.model = model
 
     if not config.api_key:
-        raise ValueError(f"API key not provided for {provider}. "
-                        f"Set {provider.upper()}_API_KEY environment variable or pass api_key parameter.")
+        raise ValueError(
+            f"API key not provided for {provider}. "
+            f"Set {provider.upper()}_API_KEY environment variable or pass api_key parameter."
+        )
 
     if provider_enum == AIProvider.DEEPSEEK:
         return DeepSeekClient(config)

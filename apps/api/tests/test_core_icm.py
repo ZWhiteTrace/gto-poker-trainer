@@ -1,19 +1,21 @@
 """
 Unit tests for ICM (Independent Chip Model) calculations.
 """
-import pytest
-import sys
+
 import os
+import sys
+
+import pytest
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from core.icm import (
-    calculate_icm_equity,
     calculate_finish_probability,
+    calculate_icm_equity,
     calculate_icm_pressure,
+    chip_ev,
     get_standard_payouts,
     icm_ev,
-    chip_ev,
     icm_vs_chip_ev_diff,
 )
 

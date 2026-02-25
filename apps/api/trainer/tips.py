@@ -4,24 +4,24 @@ Helps players memorize range boundaries by highlighting edge hands.
 
 v2.0: edge_hands now dynamically computed from rfi_utils
 """
-from typing import Dict, Optional, List
 
 # Import dynamic functions
 try:
-    from core.rfi_utils import get_drillable_hands, get_opening_hands, get_rfi_data, RANKS
+    from core.rfi_utils import RANKS, get_drillable_hands, get_opening_hands, get_rfi_data
+
     HAS_RFI_UTILS = True
 except ImportError:
     HAS_RFI_UTILS = False
 
 
-def get_dynamic_edge_hands(position: str) -> List[str]:
+def get_dynamic_edge_hands(position: str) -> list[str]:
     """Get edge hands dynamically from rfi_utils."""
     if not HAS_RFI_UTILS:
         return []
     return get_drillable_hands(position)
 
 
-def get_range_boundary(position: str, prefix: str, suffix: str = 's') -> str:
+def get_range_boundary(position: str, prefix: str, suffix: str = "s") -> str:
     """
     Get the range boundary string dynamically.
     e.g., get_range_boundary('UTG', 'K', 's') -> 'K8s+'
@@ -40,7 +40,7 @@ def get_range_boundary(position: str, prefix: str, suffix: str = 's') -> str:
     lowest = RANKS[lowest_idx]
 
     # Check if opens all (e.g., A2s+)
-    if lowest == '2':
+    if lowest == "2":
         return f"{prefix}2{suffix}+"
 
     return f"{prefix}{lowest}{suffix}+"
@@ -80,12 +80,12 @@ def get_dynamic_range_tip(position: str, lang: str = "zh") -> str:
     # Count hands
     raise_100 = sum(1 for h, f in frequencies.items() if f.get("raise", 0) == 100)
     raise_mixed = sum(1 for h, f in frequencies.items() if 1 <= f.get("raise", 0) < 100)
-    vpip = stats.get("estimated_vpip_contribution", 0)
+    stats.get("estimated_vpip_contribution", 0)
 
     # Get boundaries dynamically
     boundaries = []
-    for prefix in ['A', 'K', 'Q', 'J']:
-        suited_range = get_range_boundary(pos_upper, prefix, 's')
+    for prefix in ["A", "K", "Q", "J"]:
+        suited_range = get_range_boundary(pos_upper, prefix, "s")
         if suited_range:
             boundaries.append(f"{prefix}x同花: {suited_range}")
 
@@ -187,7 +187,7 @@ RFI_RANGE_TIPS = {
 }
 
 
-def get_rfi_tip(position: str, lang: str = "zh") -> Optional[Dict]:
+def get_rfi_tip(position: str, lang: str = "zh") -> dict | None:
     """
     Get RFI range tip for a position.
 
@@ -313,15 +313,15 @@ def get_hand_category_tip(hand: str, position: str, correct_action: str, lang: s
         Specific tip string for this hand type
     """
     # Determine hand type
-    is_suited = hand.endswith('s')
+    is_suited = hand.endswith("s")
     is_pair = len(hand) == 2 or (len(hand) == 3 and hand[0] == hand[1])
 
     # Extract ranks
     if is_pair:
-        rank = hand[0]
+        hand[0]
     else:
-        high_rank = hand[0]
-        low_rank = hand[1]
+        hand[0]
+        hand[1]
 
     tips = {
         "zh": {
@@ -339,7 +339,7 @@ def get_hand_category_tip(hand: str, position: str, correct_action: str, lang: s
             "fold_should_raise_offsuit": "This hand is part of the opening range for this position",
             "raise_should_fold_weak": "This hand is too weak for this position's opening range",
             "raise_should_fold_offsuit": "Offsuit hands need to be played more carefully in early position",
-        }
+        },
     }
 
     t = tips.get(lang, tips["zh"])
@@ -349,7 +349,7 @@ def get_hand_category_tip(hand: str, position: str, correct_action: str, lang: s
         if is_pair:
             return t["fold_should_raise_pair"]
         elif is_suited and not is_pair:
-            if hand[0] == 'A':
+            if hand[0] == "A":
                 return t["fold_should_raise_suited_ace"]
             # Check if connector (ranks are adjacent)
             ranks = "AKQJT98765432"
@@ -374,8 +374,8 @@ def get_hand_category(hand: str) -> str:
         類型名稱: pairs, suited_aces, suited_kings, suited_queens, suited_jacks,
                   suited_broadways, suited_connectors, offsuit_aces, offsuit_broadways
     """
-    is_suited = hand.endswith('s')
-    is_offsuit = hand.endswith('o')
+    is_suited = hand.endswith("s")
+    hand.endswith("o")
 
     # 對子
     if len(hand) == 2 or (len(hand) == 3 and hand[0] == hand[1]):
@@ -387,16 +387,16 @@ def get_hand_category(hand: str) -> str:
 
     if is_suited:
         # 同花 A
-        if high_rank == 'A':
+        if high_rank == "A":
             return "suited_aces"
         # 同花 K
-        elif high_rank == 'K':
+        elif high_rank == "K":
             return "suited_kings"
         # 同花 Q
-        elif high_rank == 'Q':
+        elif high_rank == "Q":
             return "suited_queens"
         # 同花 J
-        elif high_rank == 'J':
+        elif high_rank == "J":
             return "suited_jacks"
         # 同花連張 (相鄰或間隔1-2)
         elif high_rank in ranks and low_rank in ranks:
@@ -407,7 +407,7 @@ def get_hand_category(hand: str) -> str:
         return "suited_broadways"
     else:
         # 不同花 A
-        if high_rank == 'A':
+        if high_rank == "A":
             return "offsuit_aces"
         # 不同花百搭
         return "offsuit_broadways"
@@ -470,9 +470,24 @@ RANGE_MNEMONICS = {
         "title_zh": "同花連張 (Suited Connectors) - 簡化版",
         "title_en": "Suited Connectors - Simplified",
         "patterns": [
-            {"hands": "T9s", "start_pos": "UTG (100%)", "note_zh": "T9s 從 UTG 開始全開", "note_en": "T9s always open from UTG"},
-            {"hands": "98s-65s", "start_pos": "UTG (50%)", "note_zh": "98s/87s/76s/65s 從 UTG 開始 (50%)，HJ+ 全開", "note_en": "98s/87s/76s/65s starts at UTG (50%), always from HJ+"},
-            {"hands": "54s", "start_pos": "HJ (100%)", "note_zh": "54s 從 HJ 開始全開", "note_en": "54s always open from HJ"},
+            {
+                "hands": "T9s",
+                "start_pos": "UTG (100%)",
+                "note_zh": "T9s 從 UTG 開始全開",
+                "note_en": "T9s always open from UTG",
+            },
+            {
+                "hands": "98s-65s",
+                "start_pos": "UTG (50%)",
+                "note_zh": "98s/87s/76s/65s 從 UTG 開始 (50%)，HJ+ 全開",
+                "note_en": "98s/87s/76s/65s starts at UTG (50%), always from HJ+",
+            },
+            {
+                "hands": "54s",
+                "start_pos": "HJ (100%)",
+                "note_zh": "54s 從 HJ 開始全開",
+                "note_en": "54s always open from HJ",
+            },
         ],
         "mnemonic_zh": "口訣：T9 UTG 全開、98-65 UTG(50%)/HJ+ 全開、54 HJ+",
         "mnemonic_en": "Pattern: T9 UTG always, 98-65 UTG(50%)/HJ+ always, 54 HJ+",
@@ -481,11 +496,36 @@ RANGE_MNEMONICS = {
         "title_zh": "同花隔張 (Suited Gappers) - 簡化版",
         "title_en": "Suited Gappers - Simplified",
         "patterns": [
-            {"hands": "T8s", "start_pos": "HJ (100%)", "note_zh": "T8s 從 HJ 開始全開", "note_en": "T8s always open from HJ"},
-            {"hands": "97s", "start_pos": "CO (100%)", "note_zh": "97s 從 CO 開始全開", "note_en": "97s always open from CO"},
-            {"hands": "86s", "start_pos": "CO (100%)", "note_zh": "86s 從 CO 開始全開", "note_en": "86s always open from CO"},
-            {"hands": "85s, 75s", "start_pos": "BTN (100%)", "note_zh": "85s/75s 從 BTN 開始全開", "note_en": "85s/75s always open from BTN"},
-            {"hands": "64s", "start_pos": "BTN (100%)", "note_zh": "64s 從 BTN 開始全開", "note_en": "64s always open from BTN"},
+            {
+                "hands": "T8s",
+                "start_pos": "HJ (100%)",
+                "note_zh": "T8s 從 HJ 開始全開",
+                "note_en": "T8s always open from HJ",
+            },
+            {
+                "hands": "97s",
+                "start_pos": "CO (100%)",
+                "note_zh": "97s 從 CO 開始全開",
+                "note_en": "97s always open from CO",
+            },
+            {
+                "hands": "86s",
+                "start_pos": "CO (100%)",
+                "note_zh": "86s 從 CO 開始全開",
+                "note_en": "86s always open from CO",
+            },
+            {
+                "hands": "85s, 75s",
+                "start_pos": "BTN (100%)",
+                "note_zh": "85s/75s 從 BTN 開始全開",
+                "note_en": "85s/75s always open from BTN",
+            },
+            {
+                "hands": "64s",
+                "start_pos": "BTN (100%)",
+                "note_zh": "64s 從 BTN 開始全開",
+                "note_en": "64s always open from BTN",
+            },
         ],
         "mnemonic_zh": "口訣：T8 HJ、97/86 CO、85/75/64 BTN",
         "mnemonic_en": "Pattern: T8 HJ, 97/86 CO, 85/75/64 BTN",
@@ -494,10 +534,30 @@ RANGE_MNEMONICS = {
         "title_zh": "小對子 (Small Pairs) - 簡化版",
         "title_en": "Small Pairs - Simplified",
         "patterns": [
-            {"hands": "66+", "start_pos": "UTG (100%)", "note_zh": "66+ 全場都開", "note_en": "66+ always open everywhere"},
-            {"hands": "55", "start_pos": "UTG (100%)", "note_zh": "55 從 UTG 開始全開", "note_en": "55 always open from UTG"},
-            {"hands": "44, 33", "start_pos": "HJ (100%)", "note_zh": "44/33 從 HJ 開始全開", "note_en": "44/33 always open from HJ"},
-            {"hands": "22", "start_pos": "CO (100%)", "note_zh": "22 從 CO 開始全開", "note_en": "22 always open from CO"},
+            {
+                "hands": "66+",
+                "start_pos": "UTG (100%)",
+                "note_zh": "66+ 全場都開",
+                "note_en": "66+ always open everywhere",
+            },
+            {
+                "hands": "55",
+                "start_pos": "UTG (100%)",
+                "note_zh": "55 從 UTG 開始全開",
+                "note_en": "55 always open from UTG",
+            },
+            {
+                "hands": "44, 33",
+                "start_pos": "HJ (100%)",
+                "note_zh": "44/33 從 HJ 開始全開",
+                "note_en": "44/33 always open from HJ",
+            },
+            {
+                "hands": "22",
+                "start_pos": "CO (100%)",
+                "note_zh": "22 從 CO 開始全開",
+                "note_en": "22 always open from CO",
+            },
         ],
         "mnemonic_zh": "口訣：55+ UTG、44/33 HJ、22 CO",
         "mnemonic_en": "Pattern: 55+ UTG, 44/33 HJ, 22 CO",
@@ -506,7 +566,12 @@ RANGE_MNEMONICS = {
         "title_zh": "同花 Ax (Suited Aces) - 簡化版",
         "title_en": "Suited Aces - Simplified",
         "patterns": [
-            {"hands": "A2s+", "start_pos": "UTG (100%)", "note_zh": "A2s+ 從 UTG 開始全開", "note_en": "A2s+ always open from UTG"},
+            {
+                "hands": "A2s+",
+                "start_pos": "UTG (100%)",
+                "note_zh": "A2s+ 從 UTG 開始全開",
+                "note_en": "A2s+ always open from UTG",
+            },
         ],
         "mnemonic_zh": "口訣：A2s+ UTG 全開（最簡單）",
         "mnemonic_en": "Pattern: A2s+ UTG always (simplest)",
@@ -515,11 +580,36 @@ RANGE_MNEMONICS = {
         "title_zh": "同花 Kx (Suited Kings) - 簡化版",
         "title_en": "Suited Kings - Simplified",
         "patterns": [
-            {"hands": "K9s+", "start_pos": "UTG (100%)", "note_zh": "K9s+ 從 UTG 開始全開", "note_en": "K9s+ always open from UTG"},
-            {"hands": "K7s-K8s", "start_pos": "HJ (100%)", "note_zh": "K7s-K8s 從 HJ 開始全開", "note_en": "K7s-K8s always open from HJ"},
-            {"hands": "K4s-K6s", "start_pos": "CO (100%)", "note_zh": "K4s-K6s 從 CO 開始全開", "note_en": "K4s-K6s always open from CO"},
-            {"hands": "K3s", "start_pos": "CO (100%)", "note_zh": "K3s 從 CO 開始全開", "note_en": "K3s always open from CO"},
-            {"hands": "K2s", "start_pos": "BTN (100%)", "note_zh": "K2s 從 BTN 開始全開", "note_en": "K2s always open from BTN"},
+            {
+                "hands": "K9s+",
+                "start_pos": "UTG (100%)",
+                "note_zh": "K9s+ 從 UTG 開始全開",
+                "note_en": "K9s+ always open from UTG",
+            },
+            {
+                "hands": "K7s-K8s",
+                "start_pos": "HJ (100%)",
+                "note_zh": "K7s-K8s 從 HJ 開始全開",
+                "note_en": "K7s-K8s always open from HJ",
+            },
+            {
+                "hands": "K4s-K6s",
+                "start_pos": "CO (100%)",
+                "note_zh": "K4s-K6s 從 CO 開始全開",
+                "note_en": "K4s-K6s always open from CO",
+            },
+            {
+                "hands": "K3s",
+                "start_pos": "CO (100%)",
+                "note_zh": "K3s 從 CO 開始全開",
+                "note_en": "K3s always open from CO",
+            },
+            {
+                "hands": "K2s",
+                "start_pos": "BTN (100%)",
+                "note_zh": "K2s 從 BTN 開始全開",
+                "note_en": "K2s always open from BTN",
+            },
         ],
         "mnemonic_zh": "口訣：K9 UTG、K7 HJ、K3-K6 CO、K2 BTN",
         "mnemonic_en": "Pattern: K9 UTG, K7 HJ, K3-K6 CO, K2 BTN",
@@ -528,11 +618,36 @@ RANGE_MNEMONICS = {
         "title_zh": "同花 Qx (Suited Queens) - 簡化版",
         "title_en": "Suited Queens - Simplified",
         "patterns": [
-            {"hands": "QTs+", "start_pos": "UTG (100%)", "note_zh": "QTs+ 從 UTG 開始全開", "note_en": "QTs+ always open from UTG"},
-            {"hands": "Q9s", "start_pos": "HJ (100%)", "note_zh": "Q9s 從 HJ 開始全開", "note_en": "Q9s always open from HJ"},
-            {"hands": "Q6s-Q8s", "start_pos": "CO (100%)", "note_zh": "Q6s-Q8s 從 CO 開始全開", "note_en": "Q6s-Q8s always open from CO"},
-            {"hands": "Q4s-Q5s", "start_pos": "BTN (100%)", "note_zh": "Q4s/Q5s 從 BTN 開始全開", "note_en": "Q4s/Q5s always open from BTN"},
-            {"hands": "Q2s-Q3s", "start_pos": "BTN (100%)", "note_zh": "Q2s/Q3s 從 BTN 開始全開", "note_en": "Q2s/Q3s always open from BTN"},
+            {
+                "hands": "QTs+",
+                "start_pos": "UTG (100%)",
+                "note_zh": "QTs+ 從 UTG 開始全開",
+                "note_en": "QTs+ always open from UTG",
+            },
+            {
+                "hands": "Q9s",
+                "start_pos": "HJ (100%)",
+                "note_zh": "Q9s 從 HJ 開始全開",
+                "note_en": "Q9s always open from HJ",
+            },
+            {
+                "hands": "Q6s-Q8s",
+                "start_pos": "CO (100%)",
+                "note_zh": "Q6s-Q8s 從 CO 開始全開",
+                "note_en": "Q6s-Q8s always open from CO",
+            },
+            {
+                "hands": "Q4s-Q5s",
+                "start_pos": "BTN (100%)",
+                "note_zh": "Q4s/Q5s 從 BTN 開始全開",
+                "note_en": "Q4s/Q5s always open from BTN",
+            },
+            {
+                "hands": "Q2s-Q3s",
+                "start_pos": "BTN (100%)",
+                "note_zh": "Q2s/Q3s 從 BTN 開始全開",
+                "note_en": "Q2s/Q3s always open from BTN",
+            },
         ],
         "mnemonic_zh": "口訣：QTs UTG、Q9 HJ、Q6-Q8 CO、Q2-Q5 BTN",
         "mnemonic_en": "Pattern: QTs UTG, Q9 HJ, Q6-Q8 CO, Q2-Q5 BTN",
@@ -541,9 +656,24 @@ RANGE_MNEMONICS = {
         "title_zh": "不同花 Ax (Offsuit Aces) - 簡化版",
         "title_en": "Offsuit Aces - Simplified",
         "patterns": [
-            {"hands": "ATo+", "start_pos": "UTG (100%)", "note_zh": "ATo+ 從 UTG 開始全開", "note_en": "ATo+ always open from UTG"},
-            {"hands": "A8o-A9o", "start_pos": "CO (100%)", "note_zh": "A8o/A9o 從 CO 開始全開", "note_en": "A8o/A9o always open from CO"},
-            {"hands": "A4o-A7o", "start_pos": "BTN (100%)", "note_zh": "A4o-A7o 從 BTN 開始全開", "note_en": "A4o-A7o always open from BTN"},
+            {
+                "hands": "ATo+",
+                "start_pos": "UTG (100%)",
+                "note_zh": "ATo+ 從 UTG 開始全開",
+                "note_en": "ATo+ always open from UTG",
+            },
+            {
+                "hands": "A8o-A9o",
+                "start_pos": "CO (100%)",
+                "note_zh": "A8o/A9o 從 CO 開始全開",
+                "note_en": "A8o/A9o always open from CO",
+            },
+            {
+                "hands": "A4o-A7o",
+                "start_pos": "BTN (100%)",
+                "note_zh": "A4o-A7o 從 BTN 開始全開",
+                "note_en": "A4o-A7o always open from BTN",
+            },
         ],
         "mnemonic_zh": "口訣：ATo UTG、A8o CO、A4o BTN",
         "mnemonic_en": "Pattern: ATo UTG, A8o CO, A4o BTN",
@@ -552,11 +682,36 @@ RANGE_MNEMONICS = {
         "title_zh": "不同花大牌 (Offsuit Broadways) - 簡化版",
         "title_en": "Offsuit Broadways - Simplified",
         "patterns": [
-            {"hands": "KQo", "start_pos": "UTG (100%)", "note_zh": "KQo 從 UTG 開始全開", "note_en": "KQo always open from UTG"},
-            {"hands": "KJo", "start_pos": "HJ (100%)", "note_zh": "KJo 從 HJ 開始全開", "note_en": "KJo always open from HJ"},
-            {"hands": "KTo, QTo, JTo", "start_pos": "CO (100%)", "note_zh": "KTo/QTo/JTo 從 CO 開始全開", "note_en": "KTo/QTo/JTo always open from CO"},
-            {"hands": "K8o-K9o", "start_pos": "BTN (100%)", "note_zh": "K8o/K9o 從 BTN 開始全開", "note_en": "K8o/K9o always open from BTN"},
-            {"hands": "Q9o, J9o, T8o, T9o, 98o, J8o", "start_pos": "BTN (100%)", "note_zh": "Q9o/J9o/T8o/T9o/98o/J8o 從 BTN 開始全開", "note_en": "Q9o/J9o/T8o/T9o/98o/J8o always open from BTN"},
+            {
+                "hands": "KQo",
+                "start_pos": "UTG (100%)",
+                "note_zh": "KQo 從 UTG 開始全開",
+                "note_en": "KQo always open from UTG",
+            },
+            {
+                "hands": "KJo",
+                "start_pos": "HJ (100%)",
+                "note_zh": "KJo 從 HJ 開始全開",
+                "note_en": "KJo always open from HJ",
+            },
+            {
+                "hands": "KTo, QTo, JTo",
+                "start_pos": "CO (100%)",
+                "note_zh": "KTo/QTo/JTo 從 CO 開始全開",
+                "note_en": "KTo/QTo/JTo always open from CO",
+            },
+            {
+                "hands": "K8o-K9o",
+                "start_pos": "BTN (100%)",
+                "note_zh": "K8o/K9o 從 BTN 開始全開",
+                "note_en": "K8o/K9o always open from BTN",
+            },
+            {
+                "hands": "Q9o, J9o, T8o, T9o, 98o, J8o",
+                "start_pos": "BTN (100%)",
+                "note_zh": "Q9o/J9o/T8o/T9o/98o/J8o 從 BTN 開始全開",
+                "note_en": "Q9o/J9o/T8o/T9o/98o/J8o always open from BTN",
+            },
         ],
         "mnemonic_zh": "口訣：KQo UTG、KJo HJ、KTo/QTo/JTo CO、K8o-J8o BTN",
         "mnemonic_en": "Pattern: KQo UTG, KJo HJ, KTo/QTo/JTo CO, K8o-J8o BTN",

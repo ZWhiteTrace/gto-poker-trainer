@@ -4,13 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { api, SpotResponse, EvaluateResponse } from "@/lib/api";
@@ -105,9 +99,7 @@ export function DrillSession({
   const [error, setError] = useState<string | null>(null);
   const [sessionStats, setSessionStats] = useState<SessionStats>(initialStats);
   const [enabledPositions, setEnabledPositions] = useState<string[]>(
-    initialPosition && positions.includes(initialPosition)
-      ? [initialPosition]
-      : positions
+    initialPosition && positions.includes(initialPosition) ? [initialPosition] : positions
   );
   const [showSettings, setShowSettings] = useState(false);
   const [showRange, setShowRange] = useState(false);
@@ -330,19 +322,13 @@ export function DrillSession({
 
   const accuracy =
     sessionStats.total > 0
-      ? Math.round(
-          ((sessionStats.correct + sessionStats.acceptable) /
-            sessionStats.total) *
-            100
-        )
+      ? Math.round(((sessionStats.correct + sessionStats.acceptable) / sessionStats.total) * 100)
       : 0;
 
   const cumulativeAccuracy =
     cumulativeStats.total > 0
       ? Math.round(
-          ((cumulativeStats.correct + cumulativeStats.acceptable) /
-            cumulativeStats.total) *
-            100
+          ((cumulativeStats.correct + cumulativeStats.acceptable) / cumulativeStats.total) * 100
         )
       : 0;
 
@@ -383,11 +369,7 @@ export function DrillSession({
               <Eye className="h-4 w-4" />
             )}
           </Button>
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={() => setShowSettings(!showSettings)}
-          >
+          <Button variant="outline" size="icon" onClick={() => setShowSettings(!showSettings)}>
             <Settings className="h-4 w-4" />
           </Button>
           <Button variant="outline" onClick={resetSession}>
@@ -402,10 +384,14 @@ export function DrillSession({
         <Card className="mb-6">
           <CardHeader>
             <CardTitle className="text-lg">
-              {currentSpot?.hero_position} {drillType === "rfi" ? "RFI Range" :
-               drillType === "vs_rfi" ? `vs ${currentSpot?.villain_position} Open` :
-               drillType === "vs_3bet" ? `vs ${currentSpot?.villain_position} 3-Bet` :
-               `vs ${currentSpot?.villain_position} 4-Bet`}
+              {currentSpot?.hero_position}{" "}
+              {drillType === "rfi"
+                ? "RFI Range"
+                : drillType === "vs_rfi"
+                  ? `vs ${currentSpot?.villain_position} Open`
+                  : drillType === "vs_3bet"
+                    ? `vs ${currentSpot?.villain_position} 3-Bet`
+                    : `vs ${currentSpot?.villain_position} 4-Bet`}
             </CardTitle>
             <CardDescription>
               {t("drill.rangeDescription") || "GTO range for this scenario"}
@@ -450,52 +436,44 @@ export function DrillSession({
       {/* Session Stats Bar */}
       <div className="mb-4 grid grid-cols-4 gap-2 sm:gap-4">
         <Card>
-          <CardContent className="p-3 sm:p-4 text-center">
-            <div className="text-xl sm:text-2xl font-bold">
-              {sessionStats.total}
-            </div>
-            <div className="text-xs sm:text-sm text-muted-foreground">
-              {t("common.total")}
-            </div>
+          <CardContent className="p-3 text-center sm:p-4">
+            <div className="text-xl font-bold sm:text-2xl">{sessionStats.total}</div>
+            <div className="text-muted-foreground text-xs sm:text-sm">{t("common.total")}</div>
           </CardContent>
         </Card>
         <Card>
-          <CardContent className="p-3 sm:p-4 text-center">
-            <div className="text-xl sm:text-2xl font-bold text-green-500">
+          <CardContent className="p-3 text-center sm:p-4">
+            <div className="text-xl font-bold text-green-500 sm:text-2xl">
               {sessionStats.correct}
             </div>
-            <div className="text-xs sm:text-sm text-muted-foreground">
-              {t("common.correct")}
-            </div>
+            <div className="text-muted-foreground text-xs sm:text-sm">{t("common.correct")}</div>
           </CardContent>
         </Card>
         <Card>
-          <CardContent className="p-3 sm:p-4 text-center">
-            <div className="text-xl sm:text-2xl font-bold">{accuracy}%</div>
-            <div className="text-xs sm:text-sm text-muted-foreground">
-              {t("common.accuracy")}
-            </div>
+          <CardContent className="p-3 text-center sm:p-4">
+            <div className="text-xl font-bold sm:text-2xl">{accuracy}%</div>
+            <div className="text-muted-foreground text-xs sm:text-sm">{t("common.accuracy")}</div>
           </CardContent>
         </Card>
         <Card>
-          <CardContent className="p-3 sm:p-4 text-center">
-            <div className="text-xl sm:text-2xl font-bold text-primary">
-              {sessionStats.streak}
-            </div>
-            <div className="text-xs sm:text-sm text-muted-foreground">
-              {t("common.streak")}
-            </div>
+          <CardContent className="p-3 text-center sm:p-4">
+            <div className="text-primary text-xl font-bold sm:text-2xl">{sessionStats.streak}</div>
+            <div className="text-muted-foreground text-xs sm:text-sm">{t("common.streak")}</div>
           </CardContent>
         </Card>
       </div>
 
       {/* Cumulative Stats (All-time) */}
       {cumulativeStats.total > 0 && (
-        <div className="mb-8 p-3 rounded-lg bg-muted/50 flex items-center justify-between text-sm">
+        <div className="bg-muted/50 mb-8 flex items-center justify-between rounded-lg p-3 text-sm">
           <span className="text-muted-foreground">{t("drill.allTime")}:</span>
           <div className="flex gap-4">
-            <span>{cumulativeStats.total} {t("common.total")}</span>
-            <span className="text-green-500">{cumulativeAccuracy}% {t("common.accuracy")}</span>
+            <span>
+              {cumulativeStats.total} {t("common.total")}
+            </span>
+            <span className="text-green-500">
+              {cumulativeAccuracy}% {t("common.accuracy")}
+            </span>
           </div>
         </div>
       )}
@@ -508,30 +486,28 @@ export function DrillSession({
         </CardHeader>
         <CardContent>
           {error && (
-            <div className="mb-4 rounded-lg bg-destructive/10 p-4 text-destructive">
-              {error}
-            </div>
+            <div className="bg-destructive/10 text-destructive mb-4 rounded-lg p-4">{error}</div>
           )}
 
           {isLoading && !currentSpot ? (
             <div className="space-y-6">
               {/* Skeleton for scenario */}
-              <Skeleton className="h-10 w-32 mx-auto" />
+              <Skeleton className="mx-auto h-10 w-32" />
               {/* Skeleton for hand and position */}
               <div className="flex items-center justify-center gap-6 sm:gap-8">
                 <div className="text-center">
-                  <Skeleton className="h-16 w-24 mx-auto mb-2" />
-                  <Skeleton className="h-4 w-16 mx-auto" />
+                  <Skeleton className="mx-auto mb-2 h-16 w-24" />
+                  <Skeleton className="mx-auto h-4 w-16" />
                 </div>
                 <div className="text-center">
-                  <Skeleton className="h-10 w-16 mx-auto mb-2" />
-                  <Skeleton className="h-4 w-12 mx-auto" />
+                  <Skeleton className="mx-auto mb-2 h-10 w-16" />
+                  <Skeleton className="mx-auto h-4 w-12" />
                 </div>
               </div>
               {/* Skeleton for buttons */}
               <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-4">
                 {[1, 2, 3, 4].map((i) => (
-                  <Skeleton key={i} className="h-14 sm:h-16 w-full" />
+                  <Skeleton key={i} className="h-14 w-full sm:h-16" />
                 ))}
               </div>
             </div>
@@ -539,7 +515,7 @@ export function DrillSession({
             <div className="space-y-6">
               {/* Scenario Display */}
               {currentSpot.villain_position && (
-                <div className="text-center p-3 rounded-lg bg-muted/50">
+                <div className="bg-muted/50 rounded-lg p-3 text-center">
                   <span className="text-muted-foreground">
                     {currentSpot.villain_position} opens
                   </span>
@@ -561,14 +537,9 @@ export function DrillSession({
                     transition={{ delay: 0.1 }}
                     className="flex justify-center"
                   >
-                    <HoleCards
-                      cards={handNotationToCards(currentSpot.hand)}
-                      size="lg"
-                    />
+                    <HoleCards cards={handNotationToCards(currentSpot.hand)} size="lg" />
                   </motion.div>
-                  <div className="mt-2 text-sm text-muted-foreground">
-                    {currentSpot.hand}
-                  </div>
+                  <div className="text-muted-foreground mt-2 text-sm">{currentSpot.hand}</div>
                 </div>
                 <div className="text-center">
                   <motion.div
@@ -578,67 +549,64 @@ export function DrillSession({
                   >
                     <Badge
                       variant="secondary"
-                      className="text-base sm:text-lg px-3 sm:px-4 py-1 sm:py-2"
+                      className="px-3 py-1 text-base sm:px-4 sm:py-2 sm:text-lg"
                     >
                       {currentSpot.hero_position}
                     </Badge>
                   </motion.div>
-                  <div className="mt-2 text-sm text-muted-foreground">
-                    {t("drill.position")}
-                  </div>
+                  <div className="text-muted-foreground mt-2 text-sm">{t("drill.position")}</div>
                 </div>
               </motion.div>
 
               {/* Result Display */}
               <AnimatePresence mode="wait">
-              {lastResult && (
-                <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  transition={{ duration: 0.2 }}
-                  className={`rounded-lg p-4 ${
-                    lastResult.is_correct
-                      ? "bg-green-500/10 border border-green-500/20"
-                      : lastResult.is_acceptable
-                      ? "bg-yellow-500/10 border border-yellow-500/20"
-                      : "bg-red-500/10 border border-red-500/20"
-                  }`}
-                >
-                  <div className="flex items-center gap-2 mb-2">
-                    {lastResult.is_correct ? (
-                      <>
-                        <CheckCircle2 className="h-5 w-5 text-green-500" />
-                        <span className="font-semibold text-green-500">
-                          {t("drill.result.correct")}
-                        </span>
-                      </>
-                    ) : lastResult.is_acceptable ? (
-                      <>
-                        <AlertCircle className="h-5 w-5 text-yellow-500" />
-                        <span className="font-semibold text-yellow-500">
-                          {t("drill.result.acceptable")}
-                        </span>
-                      </>
-                    ) : (
-                      <>
-                        <XCircle className="h-5 w-5 text-red-500" />
-                        <span className="font-semibold text-red-500">
-                          {t("drill.result.incorrect")}
-                        </span>
-                      </>
-                    )}
-                  </div>
-                  <p className="text-sm">
-                    {t("drill.gto")}:{" "}
-                    <strong>{getActionLabel(lastResult.correct_action)}</strong>{" "}
-                    ({lastResult.frequency}%)
-                  </p>
-                  <p className="text-sm text-muted-foreground mt-1">
-                    {lastResult.explanation_zh || lastResult.explanation}
-                  </p>
-                </motion.div>
-              )}
+                {lastResult && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    transition={{ duration: 0.2 }}
+                    className={`rounded-lg p-4 ${
+                      lastResult.is_correct
+                        ? "border border-green-500/20 bg-green-500/10"
+                        : lastResult.is_acceptable
+                          ? "border border-yellow-500/20 bg-yellow-500/10"
+                          : "border border-red-500/20 bg-red-500/10"
+                    }`}
+                  >
+                    <div className="mb-2 flex items-center gap-2">
+                      {lastResult.is_correct ? (
+                        <>
+                          <CheckCircle2 className="h-5 w-5 text-green-500" />
+                          <span className="font-semibold text-green-500">
+                            {t("drill.result.correct")}
+                          </span>
+                        </>
+                      ) : lastResult.is_acceptable ? (
+                        <>
+                          <AlertCircle className="h-5 w-5 text-yellow-500" />
+                          <span className="font-semibold text-yellow-500">
+                            {t("drill.result.acceptable")}
+                          </span>
+                        </>
+                      ) : (
+                        <>
+                          <XCircle className="h-5 w-5 text-red-500" />
+                          <span className="font-semibold text-red-500">
+                            {t("drill.result.incorrect")}
+                          </span>
+                        </>
+                      )}
+                    </div>
+                    <p className="text-sm">
+                      {t("drill.gto")}: <strong>{getActionLabel(lastResult.correct_action)}</strong>{" "}
+                      ({lastResult.frequency}%)
+                    </p>
+                    <p className="text-muted-foreground mt-1 text-sm">
+                      {lastResult.explanation_zh || lastResult.explanation}
+                    </p>
+                  </motion.div>
+                )}
               </AnimatePresence>
 
               {/* Action Buttons */}
@@ -646,19 +614,30 @@ export function DrillSession({
                 <div className="space-y-3">
                   <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-4">
                     {currentSpot.available_actions.map((action) => {
-                      const shortcutKey = action === "raise" ? "R" : action === "3bet" ? "3" : action === "4bet" ? "4" : action === "call" ? "C" : action === "fold" ? "F" : action === "allin" ? "A" : action === "5bet" ? "A" : "";
+                      const shortcutKey =
+                        action === "raise"
+                          ? "R"
+                          : action === "3bet"
+                            ? "3"
+                            : action === "4bet"
+                              ? "4"
+                              : action === "call"
+                                ? "C"
+                                : action === "fold"
+                                  ? "F"
+                                  : action === "allin"
+                                    ? "A"
+                                    : action === "5bet"
+                                      ? "A"
+                                      : "";
                       return (
                         <Button
                           key={action}
                           size="lg"
-                          variant={
-                            action === "raise" || action === "allin"
-                              ? "default"
-                              : "outline"
-                          }
+                          variant={action === "raise" || action === "allin" ? "default" : "outline"}
                           onClick={() => submitAnswer(action)}
                           disabled={isLoading}
-                          className="h-14 sm:h-16 text-base sm:text-lg relative"
+                          className="relative h-14 text-base sm:h-16 sm:text-lg"
                         >
                           {isLoading ? (
                             <Loader2 className="h-5 w-5 animate-spin" />
@@ -666,7 +645,7 @@ export function DrillSession({
                             <>
                               {getActionLabel(action)}
                               {shortcutKey && (
-                                <kbd className="absolute top-1 right-1 hidden sm:inline-flex h-5 w-5 items-center justify-center rounded border bg-muted text-[10px] font-medium text-muted-foreground">
+                                <kbd className="bg-muted text-muted-foreground absolute top-1 right-1 hidden h-5 w-5 items-center justify-center rounded border text-[10px] font-medium sm:inline-flex">
                                   {shortcutKey}
                                 </kbd>
                               )}
@@ -676,7 +655,7 @@ export function DrillSession({
                       );
                     })}
                   </div>
-                  <p className="text-xs text-center text-muted-foreground hidden sm:block">
+                  <p className="text-muted-foreground hidden text-center text-xs sm:block">
                     {t("drill.keyboardShortcuts")}: R = Raise, C = Call, F = Fold, A = All-in
                   </p>
                 </div>
@@ -685,10 +664,10 @@ export function DrillSession({
                   <Button
                     size="lg"
                     onClick={generateSpot}
-                    className="w-full h-14 sm:h-16 text-base sm:text-lg"
+                    className="h-14 w-full text-base sm:h-16 sm:text-lg"
                   >
                     {t("drill.nextHand")}
-                    <kbd className="ml-2 hidden sm:inline-flex h-5 px-1.5 items-center justify-center rounded border bg-muted text-[10px] font-medium text-muted-foreground">
+                    <kbd className="bg-muted text-muted-foreground ml-2 hidden h-5 items-center justify-center rounded border px-1.5 text-[10px] font-medium sm:inline-flex">
                       Space
                     </kbd>
                   </Button>
@@ -696,9 +675,9 @@ export function DrillSession({
               )}
             </div>
           ) : (
-            <div className="text-center py-12 text-muted-foreground">
+            <div className="text-muted-foreground py-12 text-center">
               {t("drill.clickToStart")}
-              <Button onClick={generateSpot} className="mt-4 block mx-auto">
+              <Button onClick={generateSpot} className="mx-auto mt-4 block">
                 {t("drill.startDrill")}
               </Button>
             </div>
@@ -716,9 +695,7 @@ export function DrillSession({
             {positions.map((pos) => (
               <Badge
                 key={pos}
-                variant={
-                  currentSpot?.hero_position === pos ? "default" : "secondary"
-                }
+                variant={currentSpot?.hero_position === pos ? "default" : "secondary"}
               >
                 {pos}
               </Badge>

@@ -29,7 +29,12 @@ import {
 } from "@/lib/poker/types";
 import { TIMING, TABLE } from "@/lib/poker/constants";
 import { evaluateHand, determineWinners as findWinners } from "@/lib/poker/handEvaluator";
-import { getAIDecision, AI_PROFILES, AIPlayerProfile, getAIProfile } from "@/lib/poker/aiDecisionEngine";
+import {
+  getAIDecision,
+  AI_PROFILES,
+  AIPlayerProfile,
+  getAIProfile,
+} from "@/lib/poker/aiDecisionEngine";
 import { createHandHistory, saveHandHistory } from "@/lib/poker/handHistory";
 
 // ============================================
@@ -73,7 +78,7 @@ function getAIProfilesForStyle(style: string): AIPlayerProfile[] {
   if (style === "mixed") {
     return AI_PROFILES;
   }
-  const profile = AI_PROFILES.find(p => p.id === style);
+  const profile = AI_PROFILES.find((p) => p.id === style);
   if (profile) {
     // Return array of same profile for all opponents
     return [profile];
@@ -103,7 +108,7 @@ function createPlayers(
 
     return {
       id: `player_${index}`,
-      name: isHero ? "Hero" : (aiProfile?.nameZh || `AI_${position}`),
+      name: isHero ? "Hero" : aiProfile?.nameZh || `AI_${position}`,
       position,
       stack: config.startingStack,
       holeCards: null,
@@ -124,7 +129,11 @@ function getPlayerAIProfile(seatIndex: number): AIPlayerProfile {
 }
 
 // Get all AI profiles for hand history recording
-function getAIProfilesForHandHistory(): { seatIndex: number; profileId: string; style: AIPlayerProfile["style"] }[] {
+function getAIProfilesForHandHistory(): {
+  seatIndex: number;
+  profileId: string;
+  style: AIPlayerProfile["style"];
+}[] {
   const profiles: { seatIndex: number; profileId: string; style: AIPlayerProfile["style"] }[] = [];
   aiProfileAssignments.forEach((profile, seatIndex) => {
     profiles.push({
@@ -190,10 +199,7 @@ function updateAIOpponentStats(
   return newStats;
 }
 
-function getNextActivePlayerIndex(
-  players: Player[],
-  currentIndex: number
-): number {
+function getNextActivePlayerIndex(players: Player[], currentIndex: number): number {
   let nextIndex = (currentIndex + 1) % players.length;
   let attempts = 0;
 
@@ -210,7 +216,7 @@ function getNextActivePlayerIndex(
 }
 
 function countActivePlayers(players: Player[]): number {
-  return players.filter(p => p.isActive && !p.isFolded).length;
+  return players.filter((p) => p.isActive && !p.isFolded).length;
 }
 
 // Side pot calculation for multi-way all-in scenarios
@@ -218,11 +224,13 @@ function countActivePlayers(players: Player[]): number {
 
 function calculateSidePots(players: Player[]): { amount: number; eligiblePlayers: string[] }[] {
   // Get all players who contributed to the pot (including folded players)
-  const contributors = players.filter(p => p.totalInvested > 0);
+  const contributors = players.filter((p) => p.totalInvested > 0);
   if (contributors.length === 0) return [];
 
   // Get unique investment levels, sorted ascending
-  const investmentLevels = [...new Set(contributors.map(p => p.totalInvested))].sort((a, b) => a - b);
+  const investmentLevels = [...new Set(contributors.map((p) => p.totalInvested))].sort(
+    (a, b) => a - b
+  );
 
   const pots: { amount: number; eligiblePlayers: string[] }[] = [];
   let previousLevel = 0;
@@ -232,18 +240,18 @@ function calculateSidePots(players: Player[]): { amount: number; eligiblePlayers
       const contribution = level - previousLevel;
 
       // Count how many players contributed at least this level
-      const playersAtThisLevel = contributors.filter(p => p.totalInvested >= level);
+      const playersAtThisLevel = contributors.filter((p) => p.totalInvested >= level);
 
       // Pot amount = contribution * number of players who contributed at least this much
       const potAmount = contribution * playersAtThisLevel.length;
 
       // Only non-folded players are eligible to win
-      const eligiblePlayersList = playersAtThisLevel.filter(p => !p.isFolded);
+      const eligiblePlayersList = playersAtThisLevel.filter((p) => !p.isFolded);
 
       if (potAmount > 0 && eligiblePlayersList.length > 0) {
         pots.push({
           amount: potAmount,
-          eligiblePlayers: eligiblePlayersList.map(p => p.id),
+          eligiblePlayers: eligiblePlayersList.map((p) => p.id),
         });
       } else if (potAmount > 0 && eligiblePlayersList.length === 0) {
         // All eligible players folded - add to previous pot or create dead money pot
@@ -280,10 +288,10 @@ function getPositionForSeat(seatIndex: number, dealerSeatIndex: number): Positio
 
 // Check if all remaining players are all-in (no one can act)
 function areAllPlayersAllIn(players: Player[]): boolean {
-  const activePlayers = players.filter(p => p.isActive && !p.isFolded);
+  const activePlayers = players.filter((p) => p.isActive && !p.isFolded);
   if (activePlayers.length <= 1) return false;
   // All active players must be all-in
-  return activePlayers.every(p => p.isAllIn);
+  return activePlayers.every((p) => p.isAllIn);
 }
 
 // ============================================
@@ -429,12 +437,13 @@ export const useTableStore = create<TableState & TableActions>()(
         // Apply blinds to initial state
         const headsUp = inHandPositions.size === 2;
         if (headsUp) {
-          const btnIndex = players.findIndex(p => p.position === "BTN");
-          const bbIndex = players.findIndex(p => p.position === "BB");
-          const smallBlindIndex = btnIndex !== -1 ? btnIndex : players.findIndex(p => p.isHero);
-          const bigBlindIndex = bbIndex !== -1
-            ? bbIndex
-            : players.findIndex(p => p.position !== players[smallBlindIndex].position);
+          const btnIndex = players.findIndex((p) => p.position === "BTN");
+          const bbIndex = players.findIndex((p) => p.position === "BB");
+          const smallBlindIndex = btnIndex !== -1 ? btnIndex : players.findIndex((p) => p.isHero);
+          const bigBlindIndex =
+            bbIndex !== -1
+              ? bbIndex
+              : players.findIndex((p) => p.position !== players[smallBlindIndex].position);
 
           if (smallBlindIndex !== -1) {
             players[smallBlindIndex].currentBet = config.blinds.sb;
@@ -466,7 +475,7 @@ export const useTableStore = create<TableState & TableActions>()(
 
         if (scenario.preflopActions && scenario.preflopActions.length > 0) {
           for (const action of scenario.preflopActions) {
-            const playerIndex = players.findIndex(p => p.position === action.position);
+            const playerIndex = players.findIndex((p) => p.position === action.position);
             if (playerIndex === -1) continue;
 
             const player = players[playerIndex];
@@ -530,11 +539,12 @@ export const useTableStore = create<TableState & TableActions>()(
         // Set hero hand if specified
         let deck = shuffleDeck(createDeck());
         if (scenario.heroHand) {
-          const heroIndex = players.findIndex(p => p.isHero);
+          const heroIndex = players.findIndex((p) => p.isHero);
           if (heroIndex !== -1) {
-            deck = deck.filter(c =>
-              !(c.rank === scenario.heroHand![0].rank && c.suit === scenario.heroHand![0].suit) &&
-              !(c.rank === scenario.heroHand![1].rank && c.suit === scenario.heroHand![1].suit)
+            deck = deck.filter(
+              (c) =>
+                !(c.rank === scenario.heroHand![0].rank && c.suit === scenario.heroHand![0].suit) &&
+                !(c.rank === scenario.heroHand![1].rank && c.suit === scenario.heroHand![1].suit)
             );
             players[heroIndex].holeCards = scenario.heroHand;
           }
@@ -549,9 +559,11 @@ export const useTableStore = create<TableState & TableActions>()(
             communityCards = [...scenario.board.flop];
             currentStreet = "flop";
             for (const card of scenario.board.flop) {
-              deck = deck.filter(c => !(c.rank === card.rank && c.suit === card.suit));
+              deck = deck.filter((c) => !(c.rank === card.rank && c.suit === card.suit));
             }
-            players.forEach(p => { p.currentBet = 0; });
+            players.forEach((p) => {
+              p.currentBet = 0;
+            });
             currentBet = 0;
             actionsThisRound = 0;
             lastAggressorIndex = null;
@@ -559,21 +571,23 @@ export const useTableStore = create<TableState & TableActions>()(
           if (scenario.board.turn) {
             communityCards.push(scenario.board.turn);
             currentStreet = "turn";
-            deck = deck.filter(c =>
-              !(c.rank === scenario.board!.turn!.rank && c.suit === scenario.board!.turn!.suit)
+            deck = deck.filter(
+              (c) =>
+                !(c.rank === scenario.board!.turn!.rank && c.suit === scenario.board!.turn!.suit)
             );
           }
           if (scenario.board.river) {
             communityCards.push(scenario.board.river);
             currentStreet = "river";
-            deck = deck.filter(c =>
-              !(c.rank === scenario.board!.river!.rank && c.suit === scenario.board!.river!.suit)
+            deck = deck.filter(
+              (c) =>
+                !(c.rank === scenario.board!.river!.rank && c.suit === scenario.board!.river!.suit)
             );
           }
         }
 
         // Deal hole cards to players still in the hand
-        const activePlayers = players.filter(p => p.isActive && !p.isFolded);
+        const activePlayers = players.filter((p) => p.isActive && !p.isFolded);
         for (const player of activePlayers) {
           if (!player.holeCards) {
             const card1 = deck.pop();
@@ -589,10 +603,10 @@ export const useTableStore = create<TableState & TableActions>()(
         if (currentStreet === "preflop") {
           if (scenario.preflopActions && scenario.preflopActions.length > 0) {
             const lastAction = scenario.preflopActions[scenario.preflopActions.length - 1];
-            const lastIndex = players.findIndex(p => p.position === lastAction.position);
+            const lastIndex = players.findIndex((p) => p.position === lastAction.position);
             activePlayerIndex = getNextActivePlayerIndex(players, lastIndex);
           } else if (headsUp) {
-            const btnIndex = players.findIndex(p => p.position === "BTN");
+            const btnIndex = players.findIndex((p) => p.position === "BTN");
             activePlayerIndex = btnIndex !== -1 ? btnIndex : 0;
           } else {
             let firstToAct = (dealerIndex + 3) % 6;
@@ -620,7 +634,7 @@ export const useTableStore = create<TableState & TableActions>()(
         }
 
         const streetActions = new Map<Street, ActionRecord[]>([
-          ["preflop", actionHistory.filter(a => a.street === "preflop")],
+          ["preflop", actionHistory.filter((a) => a.street === "preflop")],
         ]);
 
         set({
@@ -674,9 +688,7 @@ export const useTableStore = create<TableState & TableActions>()(
         const { config, dealerSeatIndex, players, sessionStats, autoRotate } = get();
 
         // Rotate dealer only if autoRotate is enabled
-        const newDealerIndex = autoRotate
-          ? (dealerSeatIndex + 1) % 6
-          : dealerSeatIndex;
+        const newDealerIndex = autoRotate ? (dealerSeatIndex + 1) % 6 : dealerSeatIndex;
 
         // Reset players for new hand, update positions based on new dealer
         const resetPlayers = players.map((p, i) => ({
@@ -740,7 +752,7 @@ export const useTableStore = create<TableState & TableActions>()(
       dealHoleCards: () => {
         const { deck, players } = get();
         const newDeck = [...deck];
-        const newPlayers = players.map(p => {
+        const newPlayers = players.map((p) => {
           if (p.isActive) {
             const card1 = newDeck.pop()!;
             const card2 = newDeck.pop()!;
@@ -763,7 +775,7 @@ export const useTableStore = create<TableState & TableActions>()(
         const flop: Card[] = [newDeck.pop()!, newDeck.pop()!, newDeck.pop()!];
 
         // Reset current bets for new street
-        const resetPlayers = players.map(p => ({
+        const resetPlayers = players.map((p) => ({
           ...p,
           currentBet: 0,
         }));
@@ -814,7 +826,7 @@ export const useTableStore = create<TableState & TableActions>()(
         newDeck.pop(); // Burn
         const turn = newDeck.pop()!;
 
-        const resetPlayers = players.map(p => ({ ...p, currentBet: 0 }));
+        const resetPlayers = players.map((p) => ({ ...p, currentBet: 0 }));
 
         let firstToAct = (dealerSeatIndex + 1) % 6;
         let attempts = 0;
@@ -860,7 +872,7 @@ export const useTableStore = create<TableState & TableActions>()(
         newDeck.pop(); // Burn
         const river = newDeck.pop()!;
 
-        const resetPlayers = players.map(p => ({ ...p, currentBet: 0 }));
+        const resetPlayers = players.map((p) => ({ ...p, currentBet: 0 }));
 
         let firstToAct = (dealerSeatIndex + 1) % 6;
         let attempts = 0;
@@ -941,7 +953,7 @@ export const useTableStore = create<TableState & TableActions>()(
         }
 
         // Reset player bets for new street
-        const resetPlayers = players.map(p => ({ ...p, currentBet: 0 }));
+        const resetPlayers = players.map((p) => ({ ...p, currentBet: 0 }));
 
         // Deal with recursive delays
         let currentIndex = 0;
@@ -1161,16 +1173,25 @@ export const useTableStore = create<TableState & TableActions>()(
           // ============================================
           if (currentStreet === "preflop") {
             // Check if hero has already made voluntary actions this hand
-            const heroPreflopActions = actionHistory.filter(a => a.street === "preflop" && a.isHero);
+            const heroPreflopActions = actionHistory.filter(
+              (a) => a.street === "preflop" && a.isHero
+            );
             const heroAlreadyVPIP = heroPreflopActions.some(
-              a => a.action === "call" || a.action === "raise" || a.action === "bet" || a.action === "allin"
+              (a) =>
+                a.action === "call" ||
+                a.action === "raise" ||
+                a.action === "bet" ||
+                a.action === "allin"
             );
             const heroAlreadyPFR = heroPreflopActions.some(
-              a => a.action === "raise" || a.action === "bet"
+              (a) => a.action === "raise" || a.action === "bet"
             );
 
             // Track VPIP (voluntarily put money in pot) - only count once per hand
-            if (!heroAlreadyVPIP && (action === "call" || action === "raise" || action === "bet" || action === "allin")) {
+            if (
+              !heroAlreadyVPIP &&
+              (action === "call" || action === "raise" || action === "bet" || action === "allin")
+            ) {
               newHeroStats.handsVPIP++;
             }
 
@@ -1181,9 +1202,11 @@ export const useTableStore = create<TableState & TableActions>()(
 
             // Track ATS (Attempt to Steal) - raise from CO/BTN/SB when folded to
             const heroPosition = player.position;
-            const isStealPosition = heroPosition === "CO" || heroPosition === "BTN" || heroPosition === "SB";
-            const allFoldedToHero = actionHistory.filter(a => a.street === "preflop")
-              .every(a => a.action === "fold" || a.position === "SB" || a.position === "BB");
+            const isStealPosition =
+              heroPosition === "CO" || heroPosition === "BTN" || heroPosition === "SB";
+            const allFoldedToHero = actionHistory
+              .filter((a) => a.street === "preflop")
+              .every((a) => a.action === "fold" || a.position === "SB" || a.position === "BB");
 
             if (isStealPosition && allFoldedToHero) {
               newHeroStats.stealOpportunities++;
@@ -1194,8 +1217,10 @@ export const useTableStore = create<TableState & TableActions>()(
 
             // Track 3-bet
             // Check if there's already a raise before us
-            const preflopActions = actionHistory.filter(a => a.street === "preflop");
-            const previousRaises = preflopActions.filter(a => a.action === "raise" || a.action === "bet");
+            const preflopActions = actionHistory.filter((a) => a.street === "preflop");
+            const previousRaises = preflopActions.filter(
+              (a) => a.action === "raise" || a.action === "bet"
+            );
             if (previousRaises.length === 1) {
               // Someone raised, we can 3-bet
               newHeroStats.threeBetOpportunity++;
@@ -1207,7 +1232,9 @@ export const useTableStore = create<TableState & TableActions>()(
             // Track Fold to 3-bet
             if (previousRaises.length >= 2) {
               // We raised and got 3-bet
-              const heroRaised = preflopActions.some(a => a.isHero && (a.action === "raise" || a.action === "bet"));
+              const heroRaised = preflopActions.some(
+                (a) => a.isHero && (a.action === "raise" || a.action === "bet")
+              );
               if (heroRaised) {
                 newHeroStats.faced3BetCount++;
                 if (action === "fold") {
@@ -1222,8 +1249,10 @@ export const useTableStore = create<TableState & TableActions>()(
           // ============================================
           if (currentStreet !== "preflop") {
             // Find who was the preflop aggressor
-            const preflopActions = actionHistory.filter(a => a.street === "preflop");
-            const preflopRaiser = preflopActions.filter(a => a.action === "raise" || a.action === "bet").pop();
+            const preflopActions = actionHistory.filter((a) => a.street === "preflop");
+            const preflopRaiser = preflopActions
+              .filter((a) => a.action === "raise" || a.action === "bet")
+              .pop();
             const wasHeroPreflopAggressor = preflopRaiser?.isHero ?? false;
 
             // C-bet opportunity (hero was preflop aggressor, action checks to us or we act first)
@@ -1249,9 +1278,10 @@ export const useTableStore = create<TableState & TableActions>()(
             // Facing C-bet (villain was preflop aggressor and bet)
             if (!wasHeroPreflopAggressor && currentBet > 0) {
               // Check if this is actually a c-bet (bet from preflop aggressor)
-              const currentStreetActions = actionHistory.filter(a => a.street === currentStreet);
-              const bettorAction = currentStreetActions.find(a => a.action === "bet");
-              const isCBet = bettorAction && preflopRaiser && bettorAction.position === preflopRaiser.position;
+              const currentStreetActions = actionHistory.filter((a) => a.street === currentStreet);
+              const bettorAction = currentStreetActions.find((a) => a.action === "bet");
+              const isCBet =
+                bettorAction && preflopRaiser && bettorAction.position === preflopRaiser.position;
 
               if (isCBet) {
                 newHeroStats.facedCBet++;
@@ -1267,10 +1297,10 @@ export const useTableStore = create<TableState & TableActions>()(
 
             // Check-raise tracking
             const heroActionsThisStreet = actionHistory.filter(
-              a => a.street === currentStreet && a.isHero
+              (a) => a.street === currentStreet && a.isHero
             );
-            const heroCheckedFirst = heroActionsThisStreet.length === 1 &&
-              heroActionsThisStreet[0].action === "check";
+            const heroCheckedFirst =
+              heroActionsThisStreet.length === 1 && heroActionsThisStreet[0].action === "check";
 
             if (heroCheckedFirst && currentBet > 0) {
               newHeroStats.checkRaiseOpportunity++;
@@ -1409,7 +1439,7 @@ export const useTableStore = create<TableState & TableActions>()(
         actionsCount: number
       ) => {
         // Players who can still act (not folded, not all-in)
-        const playersWhoCanAct = players.filter(p => p.isActive && !p.isFolded && !p.isAllIn);
+        const playersWhoCanAct = players.filter((p) => p.isActive && !p.isFolded && !p.isAllIn);
 
         // If nobody can act, round is complete
         if (playersWhoCanAct.length === 0) return true;
@@ -1425,7 +1455,7 @@ export const useTableStore = create<TableState & TableActions>()(
         }
 
         // Multiple players can act - check if bets are equal
-        const allBetsEqual = playersWhoCanAct.every(p => p.currentBet === currentBetAmount);
+        const allBetsEqual = playersWhoCanAct.every((p) => p.currentBet === currentBetAmount);
 
         // Round is complete when:
         // 1. All bets are equal (everyone has matched or checked)
@@ -1522,9 +1552,20 @@ export const useTableStore = create<TableState & TableActions>()(
         set({ aiThinking: true });
 
         // Simulate AI thinking time
-        await new Promise(resolve => setTimeout(resolve, TIMING.AI_THINKING_MIN + Math.random() * TIMING.AI_THINKING_RANDOM));
+        await new Promise((resolve) =>
+          setTimeout(resolve, TIMING.AI_THINKING_MIN + Math.random() * TIMING.AI_THINKING_RANDOM)
+        );
 
-        const { players, activePlayerIndex, currentBet, pot, currentStreet, communityCards, lastAggressorIndex, heroStats } = get();
+        const {
+          players,
+          activePlayerIndex,
+          currentBet,
+          pot,
+          currentStreet,
+          communityCards,
+          lastAggressorIndex,
+          heroStats,
+        } = get();
         const aiPlayer = players[activePlayerIndex];
 
         if (!aiPlayer || aiPlayer.isHero || !aiPlayer.holeCards) {
@@ -1536,34 +1577,39 @@ export const useTableStore = create<TableState & TableActions>()(
         const aiProfile = getPlayerAIProfile(aiPlayer.seatIndex);
 
         // Get last aggressor position
-        const lastAggressor = lastAggressorIndex !== null ? players[lastAggressorIndex]?.position : null;
+        const lastAggressor =
+          lastAggressorIndex !== null ? players[lastAggressorIndex]?.position : null;
 
         // Check if there's a raise in front
         const hasRaiseInFront = currentBet > 1 && lastAggressorIndex !== activePlayerIndex;
 
         // Calculate position awareness (is AI in position vs active players)
         const { dealerSeatIndex, actionHistory } = get();
-        const playersInHand = players.filter(p => p.isActive && !p.isFolded);
-        const activePlayers = playersInHand.filter(p => !p.isAllIn);
+        const playersInHand = players.filter((p) => p.isActive && !p.isFolded);
+        const activePlayers = playersInHand.filter((p) => !p.isAllIn);
         const aiSeatIndex = aiPlayer.seatIndex;
         // In position = acting last among remaining players
-        const isInPosition = activePlayers.every(p =>
-          p.seatIndex === aiSeatIndex ||
-          ((p.seatIndex - dealerSeatIndex + 6) % 6) < ((aiSeatIndex - dealerSeatIndex + 6) % 6)
+        const isInPosition = activePlayers.every(
+          (p) =>
+            p.seatIndex === aiSeatIndex ||
+            (p.seatIndex - dealerSeatIndex + 6) % 6 < (aiSeatIndex - dealerSeatIndex + 6) % 6
         );
 
         // Check if villain checked (last action on this street was a check)
-        const streetActions = actionHistory.filter(a => a.street === currentStreet);
-        const villainChecked = streetActions.length > 0 &&
+        const streetActions = actionHistory.filter((a) => a.street === currentStreet);
+        const villainChecked =
+          streetActions.length > 0 &&
           streetActions[streetActions.length - 1]?.action === "check" &&
           !streetActions[streetActions.length - 1]?.isHero;
 
         // Find preflop aggressor (who raised preflop)
-        const preflopActions = actionHistory.filter(a => a.street === "preflop");
-        const preflopRaiser = preflopActions.find(a => a.action === "raise" || a.action === "bet");
+        const preflopActions = actionHistory.filter((a) => a.street === "preflop");
+        const preflopRaiser = preflopActions.find(
+          (a) => a.action === "raise" || a.action === "bet"
+        );
         const preflopAggressor = preflopRaiser?.position;
-        const preflopRaiseCount = preflopActions.filter(a =>
-          a.action === "raise" || a.action === "bet" || a.action === "allin"
+        const preflopRaiseCount = preflopActions.filter(
+          (a) => a.action === "raise" || a.action === "bet" || a.action === "allin"
         ).length;
 
         // Check if AI was the aggressor on previous street
@@ -1571,10 +1617,11 @@ export const useTableStore = create<TableState & TableActions>()(
         const currentStreetIndex = streetOrder.indexOf(currentStreet);
         const previousStreet = currentStreetIndex > 0 ? streetOrder[currentStreetIndex - 1] : null;
         const wasLastStreetAggressor = previousStreet
-          ? actionHistory.some(a =>
-              a.street === previousStreet &&
-              a.position === aiPlayer.position &&
-              (a.action === "bet" || a.action === "raise")
+          ? actionHistory.some(
+              (a) =>
+                a.street === previousStreet &&
+                a.position === aiPlayer.position &&
+                (a.action === "bet" || a.action === "raise")
             )
           : false;
 
@@ -1614,12 +1661,12 @@ export const useTableStore = create<TableState & TableActions>()(
 
       determineWinners: () => {
         const { players, pot } = get();
-        const activePlayers = players.filter(p => p.isActive && !p.isFolded);
+        const activePlayers = players.filter((p) => p.isActive && !p.isFolded);
 
         if (activePlayers.length === 1) {
           // Only one player left, they win
           const winner = activePlayers[0];
-          const winnerIndex = players.findIndex(p => p.id === winner.id);
+          const winnerIndex = players.findIndex((p) => p.id === winner.id);
           const newPlayers = [...players];
           newPlayers[winnerIndex] = {
             ...winner,
@@ -1635,11 +1682,20 @@ export const useTableStore = create<TableState & TableActions>()(
           });
 
           // Update session stats, hero stats, and position stats
-          const heroPlayer = players.find(p => p.isHero);
+          const heroPlayer = players.find((p) => p.isHero);
           const heroInvested = heroPlayer?.totalInvested ?? 0;
           const heroPosition = heroPlayer?.position;
-          const { sessionStats, heroStats, positionStats, handNumber, actionHistory, communityCards: cc, config, dealerSeatIndex } = get();
-          const dealerPlayer = players.find(p => p.seatIndex === dealerSeatIndex);
+          const {
+            sessionStats,
+            heroStats,
+            positionStats,
+            handNumber,
+            actionHistory,
+            communityCards: cc,
+            config,
+            dealerSeatIndex,
+          } = get();
+          const dealerPlayer = players.find((p) => p.seatIndex === dealerSeatIndex);
           const dealerPosition = dealerPlayer?.position ?? "BTN";
           const newHeroStats = { ...heroStats, handsPlayed: heroStats.handsPlayed + 1 };
 
@@ -1647,7 +1703,7 @@ export const useTableStore = create<TableState & TableActions>()(
           const newPositionStats = { ...positionStats };
           if (heroPosition) {
             const posStats = newPositionStats[heroPosition];
-            const netProfit = winner.isHero ? (pot - heroInvested) : -heroInvested;
+            const netProfit = winner.isHero ? pot - heroInvested : -heroInvested;
             newPositionStats[heroPosition] = {
               handsPlayed: posStats.handsPlayed + 1,
               handsWon: posStats.handsWon + (winner.isHero ? 1 : 0),
@@ -1656,7 +1712,7 @@ export const useTableStore = create<TableState & TableActions>()(
           }
 
           // Record hand history
-          const heroProfit = winner.isHero ? (pot - heroInvested) : -heroInvested;
+          const heroProfit = winner.isHero ? pot - heroInvested : -heroInvested;
           const handHistory = createHandHistory(
             handNumber,
             players,
@@ -1720,7 +1776,9 @@ export const useTableStore = create<TableState & TableActions>()(
           if (communityCards.length < 5) {
             // This shouldn't happen - runOutBoard should be called first
             // But if it does, deal remaining cards synchronously
-            console.warn("[determineWinners] Called with < 5 community cards, dealing remaining cards...");
+            console.warn(
+              "[determineWinners] Called with < 5 community cards, dealing remaining cards..."
+            );
 
             const newDeck = [...get().deck];
             const newCommunityCards = [...communityCards];
@@ -1744,8 +1802,8 @@ export const useTableStore = create<TableState & TableActions>()(
 
           // Evaluate all active players' hands
           const playersWithCards = activePlayers
-            .filter(p => p.holeCards !== null)
-            .map(p => ({
+            .filter((p) => p.holeCards !== null)
+            .map((p) => ({
               id: p.id,
               holeCards: p.holeCards as [Card, Card],
             }));
@@ -1767,8 +1825,8 @@ export const useTableStore = create<TableState & TableActions>()(
           // Award each pot to its winner(s)
           for (const sidePot of sidePots) {
             // Find eligible players with cards for this pot
-            const eligibleWithCards = playersWithCards.filter(
-              p => sidePot.eligiblePlayers.includes(p.id)
+            const eligibleWithCards = playersWithCards.filter((p) =>
+              sidePot.eligiblePlayers.includes(p.id)
             );
 
             if (eligibleWithCards.length === 0) continue;
@@ -1798,7 +1856,7 @@ export const useTableStore = create<TableState & TableActions>()(
           }
 
           // Get winner Player objects (players who won at least one pot)
-          const winnerPlayers = activePlayers.filter(p => allWinnerIds.has(p.id));
+          const winnerPlayers = activePlayers.filter((p) => allWinnerIds.has(p.id));
 
           set({
             players: newPlayers,
@@ -1811,13 +1869,21 @@ export const useTableStore = create<TableState & TableActions>()(
           });
 
           // Update session stats, hero stats, and position stats
-          const heroPlayer = players.find(p => p.isHero);
+          const heroPlayer = players.find((p) => p.isHero);
           const heroInvested = heroPlayer?.totalInvested ?? 0;
-          const heroWinnings = heroPlayer ? (winnings.get(heroPlayer.id) || 0) : 0;
+          const heroWinnings = heroPlayer ? winnings.get(heroPlayer.id) || 0 : 0;
           const heroWon = heroWinnings > 0;
           const heroPosition = heroPlayer?.position;
-          const { sessionStats, heroStats, positionStats, handNumber, actionHistory, config, dealerSeatIndex } = get();
-          const dealerPlayer = players.find(p => p.seatIndex === dealerSeatIndex);
+          const {
+            sessionStats,
+            heroStats,
+            positionStats,
+            handNumber,
+            actionHistory,
+            config,
+            dealerSeatIndex,
+          } = get();
+          const dealerPlayer = players.find((p) => p.seatIndex === dealerSeatIndex);
           const dealerPosition = dealerPlayer?.position ?? "BTN";
 
           // Track showdown stats (WT = Went to Showdown, WSD = Won at Showdown)
@@ -1833,7 +1899,7 @@ export const useTableStore = create<TableState & TableActions>()(
           const newPositionStats = { ...positionStats };
           if (heroPosition) {
             const posStats = newPositionStats[heroPosition];
-            const netProfit = heroWon ? (heroWinnings - heroInvested) : -heroInvested;
+            const netProfit = heroWon ? heroWinnings - heroInvested : -heroInvested;
             newPositionStats[heroPosition] = {
               handsPlayed: posStats.handsPlayed + 1,
               handsWon: posStats.handsWon + (heroWon ? 1 : 0),
@@ -1842,7 +1908,7 @@ export const useTableStore = create<TableState & TableActions>()(
           }
 
           // Record hand history (showdown)
-          const heroProfit = heroWon ? (heroWinnings - heroInvested) : -heroInvested;
+          const heroProfit = heroWon ? heroWinnings - heroInvested : -heroInvested;
           const handHistory = createHandHistory(
             handNumber,
             players,
@@ -1939,14 +2005,15 @@ export const useTableStore = create<TableState & TableActions>()(
     {
       name: "table-store",
       version: 4, // Bump version for AI opponent stats
-      partialize: (state) => ({
-        sessionStats: state.sessionStats,
-        trainingMode: state.trainingMode,
-        autoRotate: state.autoRotate,
-        heroStats: state.heroStats,
-        positionStats: state.positionStats,
-        aiOpponentStats: state.aiOpponentStats,
-      } as TableState),
+      partialize: (state) =>
+        ({
+          sessionStats: state.sessionStats,
+          trainingMode: state.trainingMode,
+          autoRotate: state.autoRotate,
+          heroStats: state.heroStats,
+          positionStats: state.positionStats,
+          aiOpponentStats: state.aiOpponentStats,
+        }) as TableState,
       migrate: (persistedState: unknown, version: number) => {
         const defaultPositionStats = {
           BTN: { handsPlayed: 0, handsWon: 0, totalProfit: 0 },
@@ -1977,7 +2044,9 @@ export const useTableStore = create<TableState & TableActions>()(
         // Migrate version 2 → 3: MP → HJ position rename
         if (version === 2) {
           const state = persistedState as Record<string, unknown>;
-          const oldPositionStats = state.positionStats as Record<string, { handsPlayed: number; handsWon: number; totalProfit: number }> | undefined;
+          const oldPositionStats = state.positionStats as
+            | Record<string, { handsPlayed: number; handsWon: number; totalProfit: number }>
+            | undefined;
 
           // Convert MP stats to HJ if exists
           const newPositionStats = { ...defaultPositionStats };

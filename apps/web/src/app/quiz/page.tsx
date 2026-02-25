@@ -2,13 +2,7 @@
 
 import Link from "next/link";
 import { useTranslations } from "next-intl";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Calculator, Brain, TrendingUp, Lightbulb, Target } from "lucide-react";
@@ -53,32 +47,29 @@ export default function QuizIndexPage() {
     <div className="container max-w-4xl py-8">
       <div className="mb-8">
         <h1 className="text-3xl font-bold">{t("quiz.title")}</h1>
-        <p className="text-muted-foreground">
-          Test your poker knowledge with interactive quizzes
-        </p>
+        <p className="text-muted-foreground">Test your poker knowledge with interactive quizzes</p>
       </div>
 
       <div className="grid gap-6 md:grid-cols-2">
         {quizTypes.map((quiz) => {
           const Icon = quiz.icon;
-          const titleKey = `home.drills.${quiz.id === "equity" ? "rangeViewer" : quiz.id}.name` as string;
-          const descKey = `home.drills.${quiz.id === "equity" ? "rangeViewer" : quiz.id}.description` as string;
+          const titleKey =
+            `home.drills.${quiz.id === "equity" ? "rangeViewer" : quiz.id}.name` as string;
+          const descKey =
+            `home.drills.${quiz.id === "equity" ? "rangeViewer" : quiz.id}.description` as string;
 
           return (
-            <Card
-              key={quiz.id}
-              className={!quiz.available ? "opacity-60" : ""}
-            >
+            <Card key={quiz.id} className={!quiz.available ? "opacity-60" : ""}>
               <CardHeader>
                 <div className="flex items-center justify-between">
-                  <Icon className="h-8 w-8 text-primary" />
+                  <Icon className="text-primary h-8 w-8" />
                   <Badge
                     variant={
                       quiz.difficulty === "easy"
                         ? "default"
                         : quiz.difficulty === "medium"
-                        ? "secondary"
-                        : "destructive"
+                          ? "secondary"
+                          : "destructive"
                     }
                   >
                     {t(`quiz.difficulty.${quiz.difficulty}`)}
@@ -88,23 +79,23 @@ export default function QuizIndexPage() {
                   {quiz.id === "equity"
                     ? t("quiz.equity.title")
                     : quiz.id === "outs"
-                    ? t("quiz.outs.title")
-                    : quiz.id === "ev"
-                    ? t("quiz.ev.title")
-                    : quiz.id === "exploit"
-                    ? t("quiz.exploit.title")
-                    : t("quiz.logic.title")}
+                      ? t("quiz.outs.title")
+                      : quiz.id === "ev"
+                        ? t("quiz.ev.title")
+                        : quiz.id === "exploit"
+                          ? t("quiz.exploit.title")
+                          : t("quiz.logic.title")}
                 </CardTitle>
                 <CardDescription>
                   {quiz.id === "equity"
                     ? t("quiz.equity.description")
                     : quiz.id === "outs"
-                    ? t("quiz.outs.description")
-                    : quiz.id === "ev"
-                    ? t("quiz.ev.description")
-                    : quiz.id === "exploit"
-                    ? t("quiz.exploit.description")
-                    : t("quiz.logic.description")}
+                      ? t("quiz.outs.description")
+                      : quiz.id === "ev"
+                        ? t("quiz.ev.description")
+                        : quiz.id === "exploit"
+                          ? t("quiz.exploit.description")
+                          : t("quiz.logic.description")}
                 </CardDescription>
               </CardHeader>
               <CardContent>

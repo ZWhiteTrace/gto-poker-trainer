@@ -1,17 +1,18 @@
 """
 Postflop C-bet practice endpoints.
 """
-from fastapi import APIRouter, HTTPException, Query
-from pydantic import BaseModel
-from typing import Dict, List, Optional
-from pathlib import Path
+
 import json
 import random
+from pathlib import Path
+
+from fastapi import APIRouter, HTTPException, Query
+from pydantic import BaseModel
 
 router = APIRouter()
 
 # Cache for postflop data
-_postflop_cache: Dict[str, Dict] = {}
+_postflop_cache: dict[str, dict] = {}
 
 
 class CbetScenario(BaseModel):
@@ -20,13 +21,13 @@ class CbetScenario(BaseModel):
     hero_position: str
     villain_position: str
     pot_type: str
-    flop: List[str]
-    flop_suits: List[str]
+    flop: list[str]
+    flop_suits: list[str]
     texture: str
     texture_zh: str
     hero_hand: str
     correct_action: str
-    correct_sizing: Optional[str]
+    correct_sizing: str | None
     frequency: int
     explanation_zh: str
     explanation_en: str
@@ -38,8 +39,8 @@ class TurnScenario(BaseModel):
     hero_position: str
     villain_position: str
     pot_type: str
-    flop: List[str]
-    flop_suits: List[str]
+    flop: list[str]
+    flop_suits: list[str]
     turn: str
     turn_suit: str
     texture: str
@@ -47,7 +48,7 @@ class TurnScenario(BaseModel):
     hero_hand: str
     flop_action: str
     correct_action: str
-    correct_sizing: Optional[str]
+    correct_sizing: str | None
     frequency: int
     explanation_zh: str
     explanation_en: str
@@ -59,14 +60,14 @@ class RiverScenario(BaseModel):
     hero_position: str
     villain_position: str
     pot_type: str
-    board: List[str]
-    board_suits: List[str]
+    board: list[str]
+    board_suits: list[str]
     texture: str
     texture_zh: str
     hero_hand: str
     previous_action: str
     correct_action: str
-    correct_sizing: Optional[str]
+    correct_sizing: str | None
     frequency: int
     explanation_zh: str
     explanation_en: str
@@ -74,17 +75,17 @@ class RiverScenario(BaseModel):
 
 class CbetDrillResponse(BaseModel):
     scenario: CbetScenario
-    options: List[str]
+    options: list[str]
 
 
 class TurnDrillResponse(BaseModel):
     scenario: TurnScenario
-    options: List[str]
+    options: list[str]
 
 
 class RiverDrillResponse(BaseModel):
     scenario: RiverScenario
-    options: List[str]
+    options: list[str]
 
 
 class CbetEvaluateRequest(BaseModel):
@@ -101,7 +102,7 @@ class PostflopEvaluateRequest(BaseModel):
 class CbetEvaluateResponse(BaseModel):
     correct: bool
     correct_action: str
-    correct_sizing: Optional[str]
+    correct_sizing: str | None
     frequency: int
     explanation_zh: str
     explanation_en: str
@@ -110,13 +111,13 @@ class CbetEvaluateResponse(BaseModel):
 class PostflopEvaluateResponse(BaseModel):
     correct: bool
     correct_action: str
-    correct_sizing: Optional[str]
+    correct_sizing: str | None
     frequency: int
     explanation_zh: str
     explanation_en: str
 
 
-def get_cbet_data() -> Dict:
+def get_cbet_data() -> dict:
     """Load C-bet scenario data."""
     if "cbet" in _postflop_cache:
         return _postflop_cache["cbet"]
@@ -134,8 +135,8 @@ def get_cbet_data() -> Dict:
 
 @router.get("/cbet/random", response_model=CbetDrillResponse)
 def get_random_cbet_scenario(
-    texture: Optional[str] = Query(default=None, description="Filter by board texture"),
-    position: Optional[str] = Query(default=None, description="Filter by hero position"),
+    texture: str | None = Query(default=None, description="Filter by board texture"),
+    position: str | None = Query(default=None, description="Filter by hero position"),
 ):
     """Get a random C-bet scenario for practice."""
     try:
@@ -225,7 +226,7 @@ def list_textures():
 
 @router.get("/cbet/scenarios")
 def list_scenarios(
-    texture: Optional[str] = Query(default=None),
+    texture: str | None = Query(default=None),
     limit: int = Query(default=20, le=100),
 ):
     """List C-bet scenarios with optional filtering."""
@@ -246,7 +247,8 @@ def list_scenarios(
 
 # ============ Turn Barrel Endpoints ============
 
-def get_turn_data() -> Dict:
+
+def get_turn_data() -> dict:
     """Load Turn barrel scenario data."""
     if "turn" in _postflop_cache:
         return _postflop_cache["turn"]
@@ -264,8 +266,8 @@ def get_turn_data() -> Dict:
 
 @router.get("/turn/random", response_model=TurnDrillResponse)
 def get_random_turn_scenario(
-    texture: Optional[str] = Query(default=None, description="Filter by board texture"),
-    position: Optional[str] = Query(default=None, description="Filter by hero position"),
+    texture: str | None = Query(default=None, description="Filter by board texture"),
+    position: str | None = Query(default=None, description="Filter by hero position"),
 ):
     """Get a random turn barrel scenario for practice."""
     try:
@@ -355,7 +357,8 @@ def list_turn_textures():
 
 # ============ River Decision Endpoints ============
 
-def get_river_data() -> Dict:
+
+def get_river_data() -> dict:
     """Load River decision scenario data."""
     if "river" in _postflop_cache:
         return _postflop_cache["river"]
@@ -373,8 +376,8 @@ def get_river_data() -> Dict:
 
 @router.get("/river/random", response_model=RiverDrillResponse)
 def get_random_river_scenario(
-    texture: Optional[str] = Query(default=None, description="Filter by board texture"),
-    position: Optional[str] = Query(default=None, description="Filter by hero position"),
+    texture: str | None = Query(default=None, description="Filter by board texture"),
+    position: str | None = Query(default=None, description="Filter by hero position"),
 ):
     """Get a random river decision scenario for practice."""
     try:

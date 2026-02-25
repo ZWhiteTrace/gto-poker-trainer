@@ -2,14 +2,15 @@
 EV (Expected Value) Quiz module for poker decision training.
 Teaches players pot odds and EV calculation through practical scenarios.
 """
+
 import random
 from dataclasses import dataclass
-from typing import List, Tuple, Optional
 
 
 @dataclass
 class EVQuestion:
     """Represents an EV calculation question."""
+
     pot_size: int  # in bb or dollars
     bet_size: int  # opponent's bet
     equity: int  # player's estimated win rate (%)
@@ -48,9 +49,10 @@ class EVQuestion:
 @dataclass
 class EVChoice:
     """Represents a choice in an EV quiz."""
+
     action: str  # "call" or "fold"
     is_correct: bool
-    ev_value: Optional[float] = None
+    ev_value: float | None = None
 
 
 class EVQuiz:
@@ -58,10 +60,10 @@ class EVQuiz:
 
     # Common bet sizes relative to pot
     BET_RATIOS = [
-        (1/3, "1/3 pot"),
-        (1/2, "1/2 pot"),
-        (2/3, "2/3 pot"),
-        (3/4, "3/4 pot"),
+        (1 / 3, "1/3 pot"),
+        (1 / 2, "1/2 pot"),
+        (2 / 3, "2/3 pot"),
+        (3 / 4, "3/4 pot"),
         (1.0, "pot"),
     ]
 
@@ -79,7 +81,7 @@ class EVQuiz:
     def __init__(self):
         self.scenarios = self._generate_scenarios()
 
-    def _generate_scenarios(self) -> List[dict]:
+    def _generate_scenarios(self) -> list[dict]:
         """Generate a pool of EV scenarios."""
         scenarios = []
 
@@ -90,11 +92,11 @@ class EVQuiz:
         plus_ev = [
             {"pot": 100, "bet": 50, "equity": 30},  # Pot odds 25%, +EV
             {"pot": 100, "bet": 33, "equity": 22},  # Pot odds 20%, +EV
-            {"pot": 80, "bet": 40, "equity": 28},   # Pot odds 25%, +EV
+            {"pot": 80, "bet": 40, "equity": 28},  # Pot odds 25%, +EV
             {"pot": 120, "bet": 60, "equity": 27},  # Pot odds 25%, +EV
-            {"pot": 100, "bet": 100, "equity": 38}, # Pot odds 33%, +EV
+            {"pot": 100, "bet": 100, "equity": 38},  # Pot odds 33%, +EV
             {"pot": 150, "bet": 50, "equity": 22},  # Pot odds 20%, +EV
-            {"pot": 200, "bet": 100, "equity": 28}, # Pot odds 25%, +EV
+            {"pot": 200, "bet": 100, "equity": 28},  # Pot odds 25%, +EV
             {"pot": 100, "bet": 67, "equity": 32},  # Pot odds 28.5%, +EV
         ]
 
@@ -102,12 +104,12 @@ class EVQuiz:
         minus_ev = [
             {"pot": 100, "bet": 50, "equity": 20},  # Pot odds 25%, -EV
             {"pot": 100, "bet": 33, "equity": 15},  # Pot odds 20%, -EV
-            {"pot": 80, "bet": 40, "equity": 20},   # Pot odds 25%, -EV
-            {"pot": 100, "bet": 100, "equity": 28}, # Pot odds 33%, -EV
+            {"pot": 80, "bet": 40, "equity": 20},  # Pot odds 25%, -EV
+            {"pot": 100, "bet": 100, "equity": 28},  # Pot odds 33%, -EV
             {"pot": 120, "bet": 80, "equity": 25},  # Pot odds 28.5%, -EV
-            {"pot": 150, "bet": 100, "equity": 25}, # Pot odds 28.5%, -EV
+            {"pot": 150, "bet": 100, "equity": 25},  # Pot odds 28.5%, -EV
             {"pot": 100, "bet": 75, "equity": 26},  # Pot odds 30%, -EV
-            {"pot": 200, "bet": 200, "equity": 30}, # Pot odds 33%, -EV
+            {"pot": 200, "bet": 200, "equity": 30},  # Pot odds 33%, -EV
         ]
 
         # Edge cases (close to breakeven)
@@ -115,7 +117,7 @@ class EVQuiz:
             {"pot": 100, "bet": 50, "equity": 25},  # Exactly breakeven
             {"pot": 100, "bet": 50, "equity": 26},  # Barely +EV
             {"pot": 100, "bet": 50, "equity": 24},  # Barely -EV
-            {"pot": 100, "bet": 100, "equity": 33}, # Exactly breakeven
+            {"pot": 100, "bet": 100, "equity": 33},  # Exactly breakeven
             {"pot": 100, "bet": 33, "equity": 20},  # Exactly breakeven
         ]
 
@@ -143,7 +145,7 @@ class EVQuiz:
             scenario_type="call_decision",
         )
 
-    def generate_choices(self, question: EVQuestion) -> List[EVChoice]:
+    def generate_choices(self, question: EVQuestion) -> list[EVChoice]:
         """Generate call/fold choices for a question."""
         is_call_correct = question.is_profitable_call
 
@@ -160,7 +162,7 @@ class EVQuiz:
             ),
         ]
 
-    def check_answer(self, question: EVQuestion, player_action: str) -> Tuple[bool, str]:
+    def check_answer(self, question: EVQuestion, player_action: str) -> tuple[bool, str]:
         """
         Check if player's answer is correct.
 

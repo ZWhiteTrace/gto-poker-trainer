@@ -10,7 +10,7 @@ test.describe("Table Trainer Stats Panel", () => {
     await page.goto("/drill/table-trainer");
     await page.waitForLoadState("domcontentloaded");
     // Wait for table trainer to render (has a header with data attribute)
-    await page.waitForSelector('[data-table-trainer-header]', { timeout: 15000 });
+    await page.waitForSelector("[data-table-trainer-header]", { timeout: 15000 });
   });
 
   test("shows data collection message or stats when loaded", async ({ page }) => {

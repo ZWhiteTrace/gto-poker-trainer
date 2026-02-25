@@ -17,18 +17,18 @@ import type { Suit, Rank } from "./types";
  * Suit overlay (rainbow/twotone/monotone) is tracked separately.
  */
 export type FlopTextureType =
-  | "ABB"        // Ace + 2 Broadway (AKQ, AKJ, AKT, AQJ, AQT, AJT)
-  | "ABx"        // Ace + 1 Broadway + 1 low card
-  | "Axx"        // Ace + 2 low cards (9 or below)
-  | "BBB"        // 3 Broadway no Ace (KQJ, KQT, KJT, QJT)
-  | "BBx"        // 2 Broadway + 1 low card
-  | "KQx"        // K or Q as sole Broadway + 2 low cards
-  | "JTx"        // J or T as sole Broadway + 2 disconnected low
-  | "JT_conn"    // J or T as sole Broadway + connected low cards
-  | "Low_conn"   // All ≤9, connected (gapSum ≤ 4)
+  | "ABB" // Ace + 2 Broadway (AKQ, AKJ, AKT, AQJ, AQT, AJT)
+  | "ABx" // Ace + 1 Broadway + 1 low card
+  | "Axx" // Ace + 2 low cards (9 or below)
+  | "BBB" // 3 Broadway no Ace (KQJ, KQT, KJT, QJT)
+  | "BBx" // 2 Broadway + 1 low card
+  | "KQx" // K or Q as sole Broadway + 2 low cards
+  | "JTx" // J or T as sole Broadway + 2 disconnected low
+  | "JT_conn" // J or T as sole Broadway + connected low cards
+  | "Low_conn" // All ≤9, connected (gapSum ≤ 4)
   | "Low_unconn" // All ≤9, disconnected (gapSum > 4)
-  | "Paired"     // Two cards same rank
-  | "Trips";     // Three cards same rank
+  | "Paired" // Two cards same rank
+  | "Trips"; // Three cards same rank
 
 export type SuitDistribution = "rainbow" | "twotone" | "monotone";
 export type SizingProfile = "small" | "large" | "mixed" | "polarized";
@@ -41,12 +41,12 @@ export type SizingAdjust = "much_larger" | "larger" | "same" | "smaller";
  * Applicable to most live cash games worldwide.
  */
 export interface LiveExploitData {
-  frequencyAdjust: FrequencyAdjust;   // Frequency vs GTO baseline
-  sizingAdjust: SizingAdjust;         // Sizing vs GTO baseline
-  multiWayNote: string;               // Multi-way pot strategy (zh)
-  commonLeaks: string[];              // Opponent tendencies to exploit (zh)
-  exploitTip: string;                 // Key exploit note (zh)
-  dangerSigns: string[];              // When to stop / warning signs (zh)
+  frequencyAdjust: FrequencyAdjust; // Frequency vs GTO baseline
+  sizingAdjust: SizingAdjust; // Sizing vs GTO baseline
+  multiWayNote: string; // Multi-way pot strategy (zh)
+  commonLeaks: string[]; // Opponent tendencies to exploit (zh)
+  exploitTip: string; // Key exploit note (zh)
+  dangerSigns: string[]; // When to stop / warning signs (zh)
 }
 
 export interface FlopTextureCategory {
@@ -80,16 +80,16 @@ export interface FlopAnalysis {
   suitDistribution: SuitDistribution;
   // Rank structure
   aceCount: number;
-  broadwayCount: number;   // T, J, Q, K (not A)
-  lowCount: number;        // 2-9
-  highestRank: number;     // numeric (A=14)
+  broadwayCount: number; // T, J, Q, K (not A)
+  lowCount: number; // 2-9
+  highestRank: number; // numeric (A=14)
   // Pairing
   isPaired: boolean;
   isTrips: boolean;
   pairedRank?: number;
   // Connectivity
-  connectednessScore: number;  // 0-1
-  isConnected: boolean;        // gapSum ≤ 4
+  connectednessScore: number; // 0-1
+  isConnected: boolean; // gapSum ≤ 4
   gapSum: number;
   // Draws
   hasFlushDraw: boolean;
@@ -104,8 +104,19 @@ export interface FlopAnalysis {
 // ============================================
 
 const RANK_VALUES: Record<string, number> = {
-  "2": 2, "3": 3, "4": 4, "5": 5, "6": 6, "7": 7, "8": 8,
-  "9": 9, "T": 10, "J": 11, "Q": 12, "K": 13, "A": 14,
+  "2": 2,
+  "3": 3,
+  "4": 4,
+  "5": 5,
+  "6": 6,
+  "7": 7,
+  "8": 8,
+  "9": 9,
+  T: 10,
+  J: 11,
+  Q: 12,
+  K: 13,
+  A: 14,
 };
 
 const BROADWAY: Rank[] = ["T", "J", "Q", "K"];
@@ -119,7 +130,8 @@ export const FLOP_TEXTURE_CATEGORIES: Record<FlopTextureType, FlopTextureCategor
     id: "ABB",
     nameZh: "A+雙大牌",
     nameEn: "Ace + 2 Broadway",
-    description: "Ace with two Broadway cards (AKQ, AKJ, AKT, AQJ, AQT, AJT). Massive range advantage for PFR.",
+    description:
+      "Ace with two Broadway cards (AKQ, AKJ, AKT, AQJ, AQT, AJT). Massive range advantage for PFR.",
     descriptionZh: "Ace 加兩張大牌（T-K）。翻前加注者 range 優勢極大，BB 幾乎無強牌。",
     frequencyPct: 1.5,
     advantageTier: "high",
@@ -185,7 +197,8 @@ export const FLOP_TEXTURE_CATEGORIES: Record<FlopTextureType, FlopTextureCategor
     id: "BBB",
     nameZh: "三大牌無A",
     nameEn: "3 Broadway (No Ace)",
-    description: "Three Broadway cards without Ace (KQJ, KQT, KJT, QJT). PFR dominates with overpairs + sets.",
+    description:
+      "Three Broadway cards without Ace (KQJ, KQT, KJT, QJT). PFR dominates with overpairs + sets.",
     descriptionZh: "三張大牌無 Ace。PFR 有超對（AA）和 set 優勢。BB 有些順子聽牌。",
     frequencyPct: 1.2,
     advantageTier: "high",
@@ -404,7 +417,7 @@ export function analyzeSuitDistribution(suits: Suit[]): SuitDistribution {
  * Reused by other systems — do not change behavior.
  */
 export function calculateConnectedness(ranks: Rank[]): number {
-  const values = ranks.map(r => RANK_VALUES[r] || 0).sort((a, b) => a - b);
+  const values = ranks.map((r) => RANK_VALUES[r] || 0).sort((a, b) => a - b);
 
   // Special case: Ace-low boards (A-2-3, A-2-4, etc.)
   if (values[2] === 14 && values[1] <= 5) {
@@ -431,7 +444,7 @@ export function calculateConnectedness(ranks: Rank[]): number {
  * e.g. J(11)-8-3 → (11-8)+(8-3) = 8 → disconnected
  */
 export function computeGapSum(ranks: Rank[]): number {
-  const values = ranks.map(r => RANK_VALUES[r] || 0).sort((a, b) => b - a);
+  const values = ranks.map((r) => RANK_VALUES[r] || 0).sort((a, b) => b - a);
   let sum = 0;
   for (let i = 0; i < values.length - 1; i++) {
     sum += values[i] - values[i + 1];
@@ -442,7 +455,11 @@ export function computeGapSum(ranks: Rank[]): number {
 /**
  * Check if board is paired or trips
  */
-export function checkPaired(ranks: Rank[]): { isPaired: boolean; isTrips: boolean; pairedRank?: number } {
+export function checkPaired(ranks: Rank[]): {
+  isPaired: boolean;
+  isTrips: boolean;
+  pairedRank?: number;
+} {
   const counts = new Map<Rank, number>();
   for (const rank of ranks) {
     counts.set(rank, (counts.get(rank) || 0) + 1);
@@ -478,9 +495,9 @@ export function classifyFlop(ranks: Rank[]): FlopTextureType {
   if (isPaired) return "Paired";
 
   // Step 3: Count rank categories
-  const values = ranks.map(r => RANK_VALUES[r] || 0);
-  const aceCount = values.filter(v => v === 14).length;
-  const broadwayCount = values.filter(v => v >= 10 && v <= 13).length; // T, J, Q, K
+  const values = ranks.map((r) => RANK_VALUES[r] || 0);
+  const aceCount = values.filter((v) => v === 14).length;
+  const broadwayCount = values.filter((v) => v >= 10 && v <= 13).length; // T, J, Q, K
   const gapSum = computeGapSum(ranks);
 
   // Step 3a: Ace present
@@ -498,7 +515,7 @@ export function classifyFlop(ranks: Rank[]): FlopTextureType {
 
   // Step 3d: 1 Broadway + 2 low
   if (broadwayCount === 1) {
-    const bwayValue = values.find(v => v >= 10 && v <= 13)!;
+    const bwayValue = values.find((v) => v >= 10 && v <= 13)!;
     if (bwayValue >= 12) return "KQx"; // K(13) or Q(12)
     // J(11) or T(10) — check connectivity
     if (gapSum <= CONNECTED_GAP_THRESHOLD) return "JT_conn";
@@ -520,10 +537,10 @@ export function analyzeFlop(ranks: Rank[], suits: Suit[]): FlopAnalysis {
   const gapSum = computeGapSum(ranks);
   const texture = classifyFlop(ranks);
 
-  const values = ranks.map(r => RANK_VALUES[r] || 0);
-  const aceCount = values.filter(v => v === 14).length;
-  const broadwayCount = values.filter(v => v >= 10 && v <= 13).length;
-  const lowCount = values.filter(v => v <= 9).length;
+  const values = ranks.map((r) => RANK_VALUES[r] || 0);
+  const aceCount = values.filter((v) => v === 14).length;
+  const broadwayCount = values.filter((v) => v >= 10 && v <= 13).length;
+  const lowCount = values.filter((v) => v <= 9).length;
   const highestRank = Math.max(...values);
   const isConnected = gapSum <= CONNECTED_GAP_THRESHOLD;
 
@@ -587,10 +604,10 @@ export function generateFlopOfTexture(
   const randomSuits = (): Suit[] => {
     // 60% rainbow, 35% twotone, 5% monotone (matches real distribution)
     const r = Math.random();
-    if (r < 0.60) return rainbowSuits();
+    if (r < 0.6) return rainbowSuits();
     if (r < 0.95) {
       const s = pickRandom(allSuits);
-      const other = pickRandom(allSuits.filter(x => x !== s));
+      const other = pickRandom(allSuits.filter((x) => x !== s));
       return shuffleArray([s, s, other]) as Suit[];
     }
     const s = pickRandom(allSuits);
@@ -664,12 +681,26 @@ export function generateFlopOfTexture(
     case "JT_conn": {
       // J or T + connected low cards (gapSum ≤ 4)
       const connSets: Record<string, Rank[][]> = {
-        J: [["9", "8"], ["9", "7"], ["8", "7"], ["8", "6"], ["T", "9"], ["T", "8"]],
-        T: [["8", "7"], ["8", "6"], ["7", "6"], ["7", "5"], ["9", "8"], ["9", "7"]],
+        J: [
+          ["9", "8"],
+          ["9", "7"],
+          ["8", "7"],
+          ["8", "6"],
+          ["T", "9"],
+          ["T", "8"],
+        ],
+        T: [
+          ["8", "7"],
+          ["8", "6"],
+          ["7", "6"],
+          ["7", "5"],
+          ["9", "8"],
+          ["9", "7"],
+        ],
       };
       const high = pickRandom(["J", "T"] as Rank[]);
       // Filter to only valid sets (gapSum ≤ 4 with the high card)
-      const validSets = connSets[high].filter(pair => {
+      const validSets = connSets[high].filter((pair) => {
         const gs = computeGapSum([high, pair[0] as Rank, pair[1] as Rank]);
         return gs <= CONNECTED_GAP_THRESHOLD;
       });
@@ -682,12 +713,24 @@ export function generateFlopOfTexture(
     case "Low_conn": {
       // All ≤ 9, connected (gapSum ≤ 4)
       const allConnSets: Rank[][] = [
-        ["9", "8", "7"], ["8", "7", "6"], ["7", "6", "5"], ["6", "5", "4"],
-        ["5", "4", "3"], ["4", "3", "2"], ["9", "8", "6"], ["8", "7", "5"],
-        ["7", "6", "4"], ["6", "5", "3"], ["5", "4", "2"], ["9", "7", "6"],
-        ["8", "6", "5"], ["7", "5", "4"], ["6", "4", "3"], ["5", "3", "2"],
+        ["9", "8", "7"],
+        ["8", "7", "6"],
+        ["7", "6", "5"],
+        ["6", "5", "4"],
+        ["5", "4", "3"],
+        ["4", "3", "2"],
+        ["9", "8", "6"],
+        ["8", "7", "5"],
+        ["7", "6", "4"],
+        ["6", "5", "3"],
+        ["5", "4", "2"],
+        ["9", "7", "6"],
+        ["8", "6", "5"],
+        ["7", "5", "4"],
+        ["6", "4", "3"],
+        ["5", "3", "2"],
       ];
-      const connSets = allConnSets.filter(set => computeGapSum(set) <= CONNECTED_GAP_THRESHOLD);
+      const connSets = allConnSets.filter((set) => computeGapSum(set) <= CONNECTED_GAP_THRESHOLD);
       ranks = [...pickRandom(connSets)];
       suits = randomSuits();
       break;
@@ -709,9 +752,23 @@ export function generateFlopOfTexture(
     }
 
     case "Paired": {
-      const allRanksForPair: Rank[] = ["2", "3", "4", "5", "6", "7", "8", "9", "T", "J", "Q", "K", "A"];
+      const allRanksForPair: Rank[] = [
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8",
+        "9",
+        "T",
+        "J",
+        "Q",
+        "K",
+        "A",
+      ];
       const pairRank = pickRandom(allRanksForPair);
-      const remaining = allRanksForPair.filter(r => r !== pairRank);
+      const remaining = allRanksForPair.filter((r) => r !== pairRank);
       ranks = [pairRank, pairRank, pickRandom(remaining)];
       // Paired cards must have different suits
       const pairSuits = pickNDistinct(allSuits, 2);
@@ -721,7 +778,21 @@ export function generateFlopOfTexture(
     }
 
     case "Trips": {
-      const allRanksForTrips: Rank[] = ["2", "3", "4", "5", "6", "7", "8", "9", "T", "J", "Q", "K", "A"];
+      const allRanksForTrips: Rank[] = [
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8",
+        "9",
+        "T",
+        "J",
+        "Q",
+        "K",
+        "A",
+      ];
       const tripRank = pickRandom(allRanksForTrips);
       ranks = [tripRank, tripRank, tripRank];
       // Trips must have 3 different suits
@@ -780,10 +851,14 @@ export function getAllTextureTypes(): FlopTextureCategory[] {
  */
 export function getAdvantageColor(tier: AdvantageTier): string {
   switch (tier) {
-    case "high": return "text-green-600";
-    case "medium": return "text-yellow-600";
-    case "low": return "text-red-600";
-    case "special": return "text-purple-600";
+    case "high":
+      return "text-green-600";
+    case "medium":
+      return "text-yellow-600";
+    case "low":
+      return "text-red-600";
+    case "special":
+      return "text-purple-600";
   }
 }
 

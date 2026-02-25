@@ -3,13 +3,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
@@ -109,7 +103,9 @@ export default function MockExamPage() {
 
     // Priority: 1. Unanswered, 2. Needs Review, 3. Mastered (if nothing else)
     const unansweredQuestions = EXAM_QUESTIONS.filter((q) => unansweredIds.has(q.id));
-    const needsReviewQuestions = EXAM_QUESTIONS.filter((q) => needsReviewIds.has(q.id) && !unansweredIds.has(q.id));
+    const needsReviewQuestions = EXAM_QUESTIONS.filter(
+      (q) => needsReviewIds.has(q.id) && !unansweredIds.has(q.id)
+    );
     const masteredQuestions = EXAM_QUESTIONS.filter((q) => masteredIds.has(q.id));
 
     let selected: ExamQuestion[] = [];
@@ -278,7 +274,7 @@ export default function MockExamPage() {
           </svg>
           <div className="absolute inset-0 flex flex-col items-center justify-center">
             <span className="text-2xl font-bold">{value}%</span>
-            <span className="text-xs text-muted-foreground">{t("exam.completed") || "完成"}</span>
+            <span className="text-muted-foreground text-xs">{t("exam.completed") || "完成"}</span>
           </div>
         </div>
       );
@@ -300,48 +296,58 @@ export default function MockExamPage() {
             </div>
 
             <div className="grid grid-cols-2 gap-4 text-center">
-              <div className="p-4 bg-muted rounded-lg">
+              <div className="bg-muted rounded-lg p-4">
                 <div className="text-3xl font-bold">{EXAM_CONFIG.totalQuestions}</div>
-                <div className="text-sm text-muted-foreground">{t("exam.questions") || "Questions"}</div>
+                <div className="text-muted-foreground text-sm">
+                  {t("exam.questions") || "Questions"}
+                </div>
               </div>
-              <div className="p-4 bg-muted rounded-lg">
+              <div className="bg-muted rounded-lg p-4">
                 <div className="text-3xl font-bold">{Math.floor(EXAM_CONFIG.timeLimit / 60)}</div>
-                <div className="text-sm text-muted-foreground">{t("exam.minutes") || "Minutes"}</div>
+                <div className="text-muted-foreground text-sm">
+                  {t("exam.minutes") || "Minutes"}
+                </div>
               </div>
             </div>
 
             {/* Question Status Summary */}
-            <div className="p-4 bg-muted/50 rounded-lg space-y-3">
+            <div className="bg-muted/50 space-y-3 rounded-lg p-4">
               <div className="flex items-center gap-2 text-sm font-medium">
                 <TrendingUp className="h-4 w-4" />
                 {t("exam.questionBank") || "題庫狀態"}
               </div>
               <div className="grid grid-cols-3 gap-2 text-center">
-                <div className="p-2 bg-background rounded">
+                <div className="bg-background rounded p-2">
                   <div className="text-lg font-bold text-blue-500">{unansweredCount}</div>
-                  <div className="text-xs text-muted-foreground">{t("exam.unanswered") || "未作答"}</div>
+                  <div className="text-muted-foreground text-xs">
+                    {t("exam.unanswered") || "未作答"}
+                  </div>
                 </div>
-                <div className="p-2 bg-background rounded">
+                <div className="bg-background rounded p-2">
                   <div className="text-lg font-bold text-amber-500">{needsReviewCount}</div>
-                  <div className="text-xs text-muted-foreground">{t("exam.needsReview") || "需複習"}</div>
+                  <div className="text-muted-foreground text-xs">
+                    {t("exam.needsReview") || "需複習"}
+                  </div>
                 </div>
-                <div className="p-2 bg-background rounded">
+                <div className="bg-background rounded p-2">
                   <div className="text-lg font-bold text-green-500">{quizStats.mastered}</div>
-                  <div className="text-xs text-muted-foreground">{t("exam.mastered") || "已掌握"}</div>
+                  <div className="text-muted-foreground text-xs">
+                    {t("exam.mastered") || "已掌握"}
+                  </div>
                 </div>
               </div>
-              <div className="text-xs text-muted-foreground text-center">
+              <div className="text-muted-foreground text-center text-xs">
                 {unansweredCount > 0
                   ? t("exam.priorityUnanswered") || "本次考試將優先出未作答的題目"
                   : needsReviewCount > 0
-                  ? t("exam.priorityReview") || "所有題目已作答，本次將複習錯題"
-                  : t("exam.allMastered") || "恭喜！所有題目都已掌握"}
+                    ? t("exam.priorityReview") || "所有題目已作答，本次將複習錯題"
+                    : t("exam.allMastered") || "恭喜！所有題目都已掌握"}
               </div>
             </div>
 
-            <div className="text-sm text-muted-foreground space-y-2">
+            <div className="text-muted-foreground space-y-2 text-sm">
               <p>{t("exam.instruction1") || "This exam covers:"}</p>
-              <ul className="list-disc list-inside space-y-1">
+              <ul className="list-inside list-disc space-y-1">
                 <li>{t("exam.topic1") || "GTO Logic and Theory"}</li>
                 <li>{t("exam.topic2") || "Hand Equity"}</li>
                 <li>{t("exam.topic3") || "Position Strategy"}</li>
@@ -352,7 +358,7 @@ export default function MockExamPage() {
               </ul>
             </div>
 
-            <Button onClick={startExam} className="w-full h-12 text-lg">
+            <Button onClick={startExam} className="h-12 w-full text-lg">
               <Play className="mr-2 h-5 w-5" />
               {t("exam.startExam") || "Start Exam"}
             </Button>
@@ -364,38 +370,48 @@ export default function MockExamPage() {
 
   if (examState === "review") {
     // Calculate score in points (each question = 100/totalQuestions points)
-    const pointsPerQuestion = Math.round(100 / questions.length * 10) / 10;
+    const pointsPerQuestion = Math.round((100 / questions.length) * 10) / 10;
     const totalPoints = Math.round(score * pointsPerQuestion * 10) / 10;
 
     return (
       <div className="container max-w-3xl py-8">
         <Card className="mb-6">
           <CardHeader className="text-center">
-            <Trophy className={cn("h-16 w-16 mx-auto mb-4", percentage >= 70 ? "text-yellow-500" : "text-muted-foreground")} />
+            <Trophy
+              className={cn(
+                "mx-auto mb-4 h-16 w-16",
+                percentage >= 70 ? "text-yellow-500" : "text-muted-foreground"
+              )}
+            />
             <CardTitle className="text-3xl">
               {percentage >= 80
                 ? t("exam.resultExcellent") || "Excellent!"
                 : percentage >= 70
-                ? t("exam.resultGood") || "Good Job!"
-                : t("exam.resultKeepPracticing") || "Keep Practicing!"}
+                  ? t("exam.resultGood") || "Good Job!"
+                  : t("exam.resultKeepPracticing") || "Keep Practicing!"}
             </CardTitle>
-            <CardDescription className="text-xl mt-2">
-              {t("exam.yourScore") || "Your Score"}: <span className="font-bold text-primary">{totalPoints} {t("exam.points") || "分"}</span>
+            <CardDescription className="mt-2 text-xl">
+              {t("exam.yourScore") || "Your Score"}:{" "}
+              <span className="text-primary font-bold">
+                {totalPoints} {t("exam.points") || "分"}
+              </span>
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-3 gap-4 text-center mb-6">
-              <div className="p-4 bg-green-500/10 rounded-lg">
+            <div className="mb-6 grid grid-cols-3 gap-4 text-center">
+              <div className="rounded-lg bg-green-500/10 p-4">
                 <div className="text-2xl font-bold text-green-500">{score}</div>
-                <div className="text-sm text-muted-foreground">{t("common.correct") || "正確"}</div>
+                <div className="text-muted-foreground text-sm">{t("common.correct") || "正確"}</div>
               </div>
-              <div className="p-4 bg-red-500/10 rounded-lg">
+              <div className="rounded-lg bg-red-500/10 p-4">
                 <div className="text-2xl font-bold text-red-500">{questions.length - score}</div>
-                <div className="text-sm text-muted-foreground">{t("exam.incorrect") || "錯誤"}</div>
+                <div className="text-muted-foreground text-sm">{t("exam.incorrect") || "錯誤"}</div>
               </div>
-              <div className="p-4 bg-muted rounded-lg">
-                <div className="text-2xl font-bold">{formatTime(EXAM_CONFIG.timeLimit - timeLeft)}</div>
-                <div className="text-sm text-muted-foreground">{t("exam.timeTaken") || "用時"}</div>
+              <div className="bg-muted rounded-lg p-4">
+                <div className="text-2xl font-bold">
+                  {formatTime(EXAM_CONFIG.timeLimit - timeLeft)}
+                </div>
+                <div className="text-muted-foreground text-sm">{t("exam.timeTaken") || "用時"}</div>
               </div>
             </div>
 
@@ -411,9 +427,7 @@ export default function MockExamPage() {
           const wrongIds = Array.from(results.entries())
             .filter(([_, r]) => !r.isCorrect)
             .map(([id]) => id);
-          const questionTypes = Object.fromEntries(
-            questions.map((q) => [q.id, q.type])
-          );
+          const questionTypes = Object.fromEntries(questions.map((q) => [q.id, q.type]));
           const recommendations = getArticleRecommendations(wrongIds, questionTypes);
           const weakAreas = analyzeWeakAreas(wrongIds, questionTypes);
 
@@ -436,10 +450,10 @@ export default function MockExamPage() {
                         <div key={area.type} className="flex items-center justify-between">
                           <span className="capitalize">{area.type.replace("_", " ")}</span>
                           <div className="flex items-center gap-2">
-                            <span className="text-sm text-muted-foreground">
+                            <span className="text-muted-foreground text-sm">
                               {area.count} {t("exam.mistakes") || "mistakes"}
                             </span>
-                            <Progress value={area.percentage} className="w-20 h-2" />
+                            <Progress value={area.percentage} className="h-2 w-20" />
                           </div>
                         </div>
                       ))}
@@ -457,7 +471,8 @@ export default function MockExamPage() {
                       {t("exam.recommendedReading") || "Recommended Reading"}
                     </CardTitle>
                     <CardDescription>
-                      {t("exam.recommendedReadingDesc") || "Based on your mistakes, we recommend reviewing these articles:"}
+                      {t("exam.recommendedReadingDesc") ||
+                        "Based on your mistakes, we recommend reviewing these articles:"}
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
@@ -466,10 +481,10 @@ export default function MockExamPage() {
                         <Link
                           key={article.path}
                           href={article.path}
-                          className="block p-3 rounded-lg border hover:bg-muted/50 transition-colors"
+                          className="hover:bg-muted/50 block rounded-lg border p-3 transition-colors"
                         >
                           <div className="font-medium">{article.titleZh}</div>
-                          <div className="text-sm text-muted-foreground">{article.description}</div>
+                          <div className="text-muted-foreground text-sm">{article.description}</div>
                         </Link>
                       ))}
                     </div>
@@ -481,12 +496,17 @@ export default function MockExamPage() {
         })()}
 
         {/* Review Questions */}
-        <h2 className="text-xl font-bold mb-4">{t("exam.reviewAnswers") || "Review Your Answers"}</h2>
+        <h2 className="mb-4 text-xl font-bold">
+          {t("exam.reviewAnswers") || "Review Your Answers"}
+        </h2>
         <div className="space-y-4">
           {questions.map((q, idx) => {
             const result = results.get(q.id);
             return (
-              <Card key={q.id} className={cn(result?.isCorrect ? "border-green-500/50" : "border-red-500/50")}>
+              <Card
+                key={q.id}
+                className={cn(result?.isCorrect ? "border-green-500/50" : "border-red-500/50")}
+              >
                 <CardHeader className="pb-2">
                   <div className="flex items-center gap-2">
                     <Badge variant="outline">Q{idx + 1}</Badge>
@@ -500,7 +520,9 @@ export default function MockExamPage() {
                 </CardHeader>
                 <CardContent className="text-sm">
                   <p className="mb-2">
-                    <span className="text-muted-foreground">{t("exam.yourAnswer") || "Your answer"}:</span>{" "}
+                    <span className="text-muted-foreground">
+                      {t("exam.yourAnswer") || "Your answer"}:
+                    </span>{" "}
                     {result?.selectedAnswer
                       ? q.options.find((o) => o.key === result.selectedAnswer)?.text
                       : t("exam.noAnswer") || "No answer"}
@@ -511,7 +533,7 @@ export default function MockExamPage() {
                       {q.options.find((o) => o.key === q.correctAnswer)?.text}
                     </p>
                   )}
-                  <p className="mt-2 text-muted-foreground">{q.explanation}</p>
+                  <p className="text-muted-foreground mt-2">{q.explanation}</p>
                 </CardContent>
               </Card>
             );
@@ -525,23 +547,25 @@ export default function MockExamPage() {
   return (
     <div className="container max-w-3xl py-4">
       {/* Header */}
-      <div className="sticky top-14 bg-background/95 backdrop-blur z-10 pb-4 mb-4 border-b">
-        <div className="flex items-center justify-between mb-2">
+      <div className="bg-background/95 sticky top-14 z-10 mb-4 border-b pb-4 backdrop-blur">
+        <div className="mb-2 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Badge variant="outline" className="text-lg px-3 py-1">
-              <Clock className={cn("h-4 w-4 mr-1", timeLeft < 60 && "text-red-500 animate-pulse")} />
+            <Badge variant="outline" className="px-3 py-1 text-lg">
+              <Clock
+                className={cn("mr-1 h-4 w-4", timeLeft < 60 && "animate-pulse text-red-500")}
+              />
               {formatTime(timeLeft)}
             </Badge>
           </div>
           <div className="flex items-center gap-2">
-            <span className="text-sm text-muted-foreground">
+            <span className="text-muted-foreground text-sm">
               {answered}/{questions.length} {t("exam.answered") || "已答"}
             </span>
             <span className="text-sm font-medium text-green-500">
               {score} {t("exam.points") || "分"}
             </span>
             <Button variant="destructive" size="sm" onClick={submitExam}>
-              <Flag className="h-4 w-4 mr-1" />
+              <Flag className="mr-1 h-4 w-4" />
               {t("exam.submit") || "提交"}
             </Button>
           </div>
@@ -551,7 +575,7 @@ export default function MockExamPage() {
         <Progress value={(answered / questions.length) * 100} className="h-2" />
 
         {/* Question Navigation */}
-        <div className="flex flex-wrap gap-1 mt-3">
+        <div className="mt-3 flex flex-wrap gap-1">
           {questions.map((q, idx) => {
             const result = results.get(q.id);
             return (
@@ -559,7 +583,7 @@ export default function MockExamPage() {
                 key={q.id}
                 variant={currentIndex === idx ? "default" : result ? "secondary" : "outline"}
                 size="sm"
-                className="w-8 h-8 p-0"
+                className="h-8 w-8 p-0"
                 onClick={() => goToQuestion(idx)}
               >
                 {idx + 1}
@@ -576,11 +600,14 @@ export default function MockExamPage() {
             題目中的 BB 指大盲，「10BB」代表有效籌碼（你與對手較小者）。
           </CardDescription>
         </CardHeader>
-        <CardContent className="text-sm text-muted-foreground space-y-1">
+        <CardContent className="text-muted-foreground space-y-1 text-sm">
           <p>若涉及底池大小，題目會標示「底池 = X BB」。</p>
           <p>Pot Odds = 底池賠率。</p>
           <p>RFI = Raise First In（首次加注）；C-bet = Continuation Bet（持續下注）。</p>
-          <p>MDF = Minimum Defense Frequency（最小防禦頻率）；ICM = Independent Chip Model（獨立籌碼模型）。</p>
+          <p>
+            MDF = Minimum Defense Frequency（最小防禦頻率）；ICM = Independent Chip
+            Model（獨立籌碼模型）。
+          </p>
           <p>IP / OOP = In Position / Out of Position（有位置 / 沒位置）。</p>
           <p>r = rainbow（彩虹面，無同花）。</p>
         </CardContent>
@@ -590,7 +617,7 @@ export default function MockExamPage() {
       {currentQuestion && (
         <Card className="mb-4">
           <CardHeader>
-            <div className="flex items-center gap-2 mb-2">
+            <div className="mb-2 flex items-center gap-2">
               <Badge variant="secondary">Q{currentIndex + 1}</Badge>
               <Badge variant="outline">{currentQuestion.type}</Badge>
             </div>
@@ -602,10 +629,10 @@ export default function MockExamPage() {
                 <Button
                   key={option.key}
                   variant={currentResult?.selectedAnswer === option.key ? "default" : "outline"}
-                  className="w-full h-auto py-4 px-4 text-left justify-start whitespace-normal"
+                  className="h-auto w-full justify-start px-4 py-4 text-left whitespace-normal"
                   onClick={() => selectAnswer(currentQuestion.id, option.key)}
                 >
-                  <span className="font-bold mr-2">{option.key.toUpperCase()}.</span>
+                  <span className="mr-2 font-bold">{option.key.toUpperCase()}.</span>
                   <span className="flex-1">{option.text}</span>
                 </Button>
               ))}
@@ -621,7 +648,7 @@ export default function MockExamPage() {
           onClick={() => goToQuestion(currentIndex - 1)}
           disabled={currentIndex === 0}
         >
-          <ArrowLeft className="h-4 w-4 mr-1" />
+          <ArrowLeft className="mr-1 h-4 w-4" />
           {t("common.previous")}
         </Button>
         <Button
@@ -630,7 +657,7 @@ export default function MockExamPage() {
           disabled={currentIndex === questions.length - 1}
         >
           {t("common.next")}
-          <ArrowRight className="h-4 w-4 ml-1" />
+          <ArrowRight className="ml-1 h-4 w-4" />
         </Button>
       </div>
     </div>

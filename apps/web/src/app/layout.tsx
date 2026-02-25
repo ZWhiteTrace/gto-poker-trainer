@@ -47,9 +47,7 @@ export const metadata: Metadata = {
       { url: "/icon-192.png", sizes: "192x192", type: "image/png" },
       { url: "/icon-512.png", sizes: "512x512", type: "image/png" },
     ],
-    apple: [
-      { url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
-    ],
+    apple: [{ url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" }],
   },
   other: {
     "mobile-web-app-capable": "yes",
@@ -79,7 +77,8 @@ export const metadata: Metadata = {
     url: "https://grindgto.com",
     siteName: "GTO 撲克訓練器",
     title: "免費德州撲克 GTO 練習工具 - 在線撲克範圍訓練器",
-    description: "提升德撲技巧的免費 GTO 訓練器。提供翻前範圍表 (Preflop Ranges)、推圖 (Push/Fold) 練習及 ICM 計算。無需下載註冊，立即開啟在線練習。",
+    description:
+      "提升德撲技巧的免費 GTO 訓練器。提供翻前範圍表 (Preflop Ranges)、推圖 (Push/Fold) 練習及 ICM 計算。無需下載註冊，立即開啟在線練習。",
     images: [
       {
         url: "https://grindgto.com/opengraph-image",
@@ -92,7 +91,8 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "免費德州撲克 GTO 練習工具 - 在線撲克範圍訓練器",
-    description: "提升德撲技巧的免費 GTO 訓練器。提供翻前範圍表 (Preflop Ranges)、推圖 (Push/Fold) 練習及 ICM 計算。無需下載註冊，立即開啟在線練習。",
+    description:
+      "提升德撲技巧的免費 GTO 訓練器。提供翻前範圍表 (Preflop Ranges)、推圖 (Push/Fold) 練習及 ICM 計算。無需下載註冊，立即開啟在線練習。",
     images: ["https://grindgto.com/opengraph-image"],
   },
   alternates: {
@@ -112,8 +112,7 @@ function StructuredDataJsonLd() {
         "@id": "https://grindgto.com/#website",
         name: "GTO 撲克訓練器 - 免費德州撲克練習工具",
         url: "https://grindgto.com",
-        description:
-          "提升德撲技巧的免費 GTO 訓練器。提供翻前範圍表、推圖練習及 ICM 計算。",
+        description: "提升德撲技巧的免費 GTO 訓練器。提供翻前範圍表、推圖練習及 ICM 計算。",
         inLanguage: ["zh-TW", "zh-CN"],
         publisher: { "@id": "https://grindgto.com/#organization" },
         potentialAction: {
@@ -145,8 +144,7 @@ function StructuredDataJsonLd() {
           price: "0",
           priceCurrency: "USD",
         },
-        description:
-          "免費 GTO 德州撲克訓練應用，提供翻前範圍練習、推圖表和 AI 手牌分析",
+        description: "免費 GTO 德州撲克訓練應用，提供翻前範圍練習、推圖表和 AI 手牌分析",
         featureList: [
           "翻前範圍訓練",
           "推圖 (Push/Fold) 練習",
@@ -175,12 +173,7 @@ function StructuredDataJsonLd() {
             courseWorkload: "PT30M",
           },
         ],
-        teaches: [
-          "各位置的翻前範圍",
-          "3-bet 和 4-bet 策略",
-          "錦標賽推圖策略",
-          "ICM 考量",
-        ],
+        teaches: ["各位置的翻前範圍", "3-bet 和 4-bet 策略", "錦標賽推圖策略", "ICM 考量"],
       },
     ],
   };
@@ -206,18 +199,66 @@ export default async function RootLayout({
       <head>
         <StructuredDataJsonLd />
         {/* Apple splash screens for PWA */}
-        <link rel="apple-touch-startup-image" href="/api/splash?w=1290&h=2796" media="(device-width: 430px) and (device-height: 932px) and (-webkit-device-pixel-ratio: 3)" />
-        <link rel="apple-touch-startup-image" href="/api/splash?w=1179&h=2556" media="(device-width: 393px) and (device-height: 852px) and (-webkit-device-pixel-ratio: 3)" />
-        <link rel="apple-touch-startup-image" href="/api/splash?w=1284&h=2778" media="(device-width: 428px) and (device-height: 926px) and (-webkit-device-pixel-ratio: 3)" />
-        <link rel="apple-touch-startup-image" href="/api/splash?w=1170&h=2532" media="(device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3)" />
-        <link rel="apple-touch-startup-image" href="/api/splash?w=1125&h=2436" media="(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3)" />
-        <link rel="apple-touch-startup-image" href="/api/splash?w=1242&h=2688" media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 3)" />
-        <link rel="apple-touch-startup-image" href="/api/splash?w=828&h=1792" media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2)" />
-        <link rel="apple-touch-startup-image" href="/api/splash?w=1242&h=2208" media="(device-width: 414px) and (device-height: 736px) and (-webkit-device-pixel-ratio: 3)" />
-        <link rel="apple-touch-startup-image" href="/api/splash?w=750&h=1334" media="(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2)" />
-        <link rel="apple-touch-startup-image" href="/api/splash?w=640&h=1136" media="(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2)" />
-        <link rel="apple-touch-startup-image" href="/api/splash?w=1320&h=2868" media="(device-width: 440px) and (device-height: 956px) and (-webkit-device-pixel-ratio: 3)" />
-        <link rel="apple-touch-startup-image" href="/api/splash?w=1206&h=2622" media="(device-width: 402px) and (device-height: 874px) and (-webkit-device-pixel-ratio: 3)" />
+        <link
+          rel="apple-touch-startup-image"
+          href="/api/splash?w=1290&h=2796"
+          media="(device-width: 430px) and (device-height: 932px) and (-webkit-device-pixel-ratio: 3)"
+        />
+        <link
+          rel="apple-touch-startup-image"
+          href="/api/splash?w=1179&h=2556"
+          media="(device-width: 393px) and (device-height: 852px) and (-webkit-device-pixel-ratio: 3)"
+        />
+        <link
+          rel="apple-touch-startup-image"
+          href="/api/splash?w=1284&h=2778"
+          media="(device-width: 428px) and (device-height: 926px) and (-webkit-device-pixel-ratio: 3)"
+        />
+        <link
+          rel="apple-touch-startup-image"
+          href="/api/splash?w=1170&h=2532"
+          media="(device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3)"
+        />
+        <link
+          rel="apple-touch-startup-image"
+          href="/api/splash?w=1125&h=2436"
+          media="(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3)"
+        />
+        <link
+          rel="apple-touch-startup-image"
+          href="/api/splash?w=1242&h=2688"
+          media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 3)"
+        />
+        <link
+          rel="apple-touch-startup-image"
+          href="/api/splash?w=828&h=1792"
+          media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2)"
+        />
+        <link
+          rel="apple-touch-startup-image"
+          href="/api/splash?w=1242&h=2208"
+          media="(device-width: 414px) and (device-height: 736px) and (-webkit-device-pixel-ratio: 3)"
+        />
+        <link
+          rel="apple-touch-startup-image"
+          href="/api/splash?w=750&h=1334"
+          media="(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2)"
+        />
+        <link
+          rel="apple-touch-startup-image"
+          href="/api/splash?w=640&h=1136"
+          media="(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2)"
+        />
+        <link
+          rel="apple-touch-startup-image"
+          href="/api/splash?w=1320&h=2868"
+          media="(device-width: 440px) and (device-height: 956px) and (-webkit-device-pixel-ratio: 3)"
+        />
+        <link
+          rel="apple-touch-startup-image"
+          href="/api/splash?w=1206&h=2622"
+          media="(device-width: 402px) and (device-height: 874px) and (-webkit-device-pixel-ratio: 3)"
+        />
       </head>
       <body className={`${inter.variable} font-sans antialiased`}>
         <NextIntlClientProvider messages={messages}>
@@ -232,9 +273,7 @@ export default async function RootLayout({
             <AchievementToast />
           </AuthProvider>
         </NextIntlClientProvider>
-        {process.env.NEXT_PUBLIC_GA_ID && (
-          <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID} />
-        )}
+        {process.env.NEXT_PUBLIC_GA_ID && <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID} />}
       </body>
     </html>
   );

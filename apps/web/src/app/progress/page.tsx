@@ -3,13 +3,7 @@
 import { useEffect, useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useAuthStore } from "@/stores/authStore";
@@ -32,7 +26,17 @@ import {
   Trash2,
 } from "lucide-react";
 
-type DrillType = "rfi" | "vs_rfi" | "vs_3bet" | "vs_4bet" | "push_fold" | "push_fold_defense" | "push_fold_resteal" | "push_fold_hu" | "table_trainer" | "postflop";
+type DrillType =
+  | "rfi"
+  | "vs_rfi"
+  | "vs_3bet"
+  | "vs_4bet"
+  | "push_fold"
+  | "push_fold_defense"
+  | "push_fold_resteal"
+  | "push_fold_hu"
+  | "table_trainer"
+  | "postflop";
 type QuizType = "equity" | "outs" | "ev" | "logic" | "exploit";
 
 const drillTypeLabels: Record<DrillType, { en: string; zh: string }> = {
@@ -93,8 +97,15 @@ export default function ProgressPage() {
   const t = useTranslations();
   const router = useRouter();
   const { user, isInitialized } = useAuthStore();
-  const { stats, recentResults, getWeakPositions, syncToCloud, isSyncing, lastSyncedAt, resetDrillStats } =
-    useProgressStore();
+  const {
+    stats,
+    recentResults,
+    getWeakPositions,
+    syncToCloud,
+    isSyncing,
+    lastSyncedAt,
+    resetDrillStats,
+  } = useProgressStore();
   const { quizStats } = useQuizProgressStore();
 
   // Filter state for wrong answers
@@ -148,7 +159,7 @@ export default function ProgressPage() {
     return (
       <div className="container max-w-4xl py-8">
         <div className="flex items-center justify-center py-12">
-          <RefreshCw className="h-8 w-8 animate-spin text-muted-foreground" />
+          <RefreshCw className="text-muted-foreground h-8 w-8 animate-spin" />
         </div>
       </div>
     );
@@ -165,10 +176,7 @@ export default function ProgressPage() {
 
   const overallAccuracy =
     totalStats.total > 0
-      ? Math.round(
-          ((totalStats.correct + totalStats.acceptable) / totalStats.total) *
-            100
-        )
+      ? Math.round(((totalStats.correct + totalStats.acceptable) / totalStats.total) * 100)
       : 0;
 
   return (
@@ -177,78 +185,60 @@ export default function ProgressPage() {
       <div className="mb-8 flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold">{t("progress.title")}</h1>
-          <p className="text-muted-foreground">
-            {t("progress.description")}
-          </p>
+          <p className="text-muted-foreground">{t("progress.description")}</p>
         </div>
-        <Button
-          variant="outline"
-          onClick={() => syncToCloud(user.id)}
-          disabled={isSyncing}
-        >
-          <RefreshCw
-            className={`h-4 w-4 mr-2 ${isSyncing ? "animate-spin" : ""}`}
-          />
+        <Button variant="outline" onClick={() => syncToCloud(user.id)} disabled={isSyncing}>
+          <RefreshCw className={`mr-2 h-4 w-4 ${isSyncing ? "animate-spin" : ""}`} />
           {t("progress.sync")}
         </Button>
       </div>
 
       {/* Overview Stats */}
-      <div className="grid gap-4 md:grid-cols-4 mb-8">
+      <div className="mb-8 grid gap-4 md:grid-cols-4">
         <Card>
           <CardContent className="p-4 text-center">
             <div className="text-3xl font-bold">{totalStats.total}</div>
-            <div className="text-sm text-muted-foreground">{t("progress.totalHands")}</div>
+            <div className="text-muted-foreground text-sm">{t("progress.totalHands")}</div>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="p-4 text-center">
-            <div className="text-3xl font-bold text-green-500">
-              {totalStats.correct}
-            </div>
-            <div className="text-sm text-muted-foreground">{t("progress.correct")}</div>
+            <div className="text-3xl font-bold text-green-500">{totalStats.correct}</div>
+            <div className="text-muted-foreground text-sm">{t("progress.correct")}</div>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="p-4 text-center">
-            <div className="text-3xl font-bold text-yellow-500">
-              {totalStats.acceptable}
-            </div>
-            <div className="text-sm text-muted-foreground">{t("progress.acceptable")}</div>
+            <div className="text-3xl font-bold text-yellow-500">{totalStats.acceptable}</div>
+            <div className="text-muted-foreground text-sm">{t("progress.acceptable")}</div>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="p-4 text-center">
-            <div className="text-3xl font-bold text-primary">
-              {overallAccuracy}%
-            </div>
-            <div className="text-sm text-muted-foreground">{t("progress.accuracy")}</div>
+            <div className="text-primary text-3xl font-bold">{overallAccuracy}%</div>
+            <div className="text-muted-foreground text-sm">{t("progress.accuracy")}</div>
           </CardContent>
         </Card>
       </div>
 
       {/* Section Header - Drill Stats */}
-      <h2 className="text-xl font-bold mb-4">{t("progress.drillStats")}</h2>
+      <h2 className="mb-4 text-xl font-bold">{t("progress.drillStats")}</h2>
 
       {/* Drill Stats */}
-      <div className="grid gap-6 md:grid-cols-2 mb-8">
+      <div className="mb-8 grid gap-6 md:grid-cols-2">
         {(Object.keys(stats) as DrillType[]).map((drillType) => {
           const drillStats = stats[drillType];
           const weakPositions = getWeakPositions(drillType);
           const accuracy =
             drillStats.total > 0
-              ? Math.round(
-                  ((drillStats.correct + drillStats.acceptable) /
-                    drillStats.total) *
-                    100
-                )
+              ? Math.round(((drillStats.correct + drillStats.acceptable) / drillStats.total) * 100)
               : 0;
 
           return (
             <Card key={drillType}>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <Target className="h-5 w-5 text-primary" />
+                  <Target className="text-primary h-5 w-5" />
                   {drillTypeLabels[drillType].zh}
                 </CardTitle>
                 <CardDescription>
@@ -263,72 +253,60 @@ export default function ProgressPage() {
                   <div className="grid grid-cols-3 gap-4 text-center">
                     <div>
                       <div className="text-2xl font-bold">{drillStats.total}</div>
-                      <div className="text-xs text-muted-foreground">{t("progress.hands")}</div>
+                      <div className="text-muted-foreground text-xs">{t("progress.hands")}</div>
                     </div>
                     <div>
-                      <div className="text-2xl font-bold text-green-500">
-                        {accuracy}%
-                      </div>
-                      <div className="text-xs text-muted-foreground">
-                        {t("progress.accuracy")}
-                      </div>
+                      <div className="text-2xl font-bold text-green-500">{accuracy}%</div>
+                      <div className="text-muted-foreground text-xs">{t("progress.accuracy")}</div>
                     </div>
                     <div>
                       <div className="text-2xl font-bold">
                         {Object.keys(drillStats.byPosition).length}
                       </div>
-                      <div className="text-xs text-muted-foreground">
-                        {t("progress.positions")}
-                      </div>
+                      <div className="text-muted-foreground text-xs">{t("progress.positions")}</div>
                     </div>
                   </div>
 
                   {/* Position breakdown */}
                   {Object.keys(drillStats.byPosition).length > 0 && (
                     <div>
-                      <div className="text-sm font-medium mb-2">
+                      <div className="mb-2 text-sm font-medium">
                         {t("progress.positionBreakdown")}
                       </div>
                       <div className="flex flex-wrap gap-2">
-                        {Object.entries(drillStats.byPosition).map(
-                          ([pos, posStats]) => {
-                            const posAccuracy =
-                              posStats.total > 0
-                                ? Math.round(
-                                    ((posStats.correct + posStats.acceptable) /
-                                      posStats.total) *
-                                      100
-                                  )
-                                : 0;
-                            return (
-                              <Badge
-                                key={pos}
-                                variant={
-                                  posAccuracy >= 80
-                                    ? "default"
-                                    : posAccuracy >= 60
+                        {Object.entries(drillStats.byPosition).map(([pos, posStats]) => {
+                          const posAccuracy =
+                            posStats.total > 0
+                              ? Math.round(
+                                  ((posStats.correct + posStats.acceptable) / posStats.total) * 100
+                                )
+                              : 0;
+                          return (
+                            <Badge
+                              key={pos}
+                              variant={
+                                posAccuracy >= 80
+                                  ? "default"
+                                  : posAccuracy >= 60
                                     ? "secondary"
                                     : "destructive"
-                                }
-                              >
-                                {pos}: {posAccuracy}%
-                              </Badge>
-                            );
-                          }
-                        )}
+                              }
+                            >
+                              {pos}: {posAccuracy}%
+                            </Badge>
+                          );
+                        })}
                       </div>
                     </div>
                   )}
 
                   {/* Weak positions */}
                   {weakPositions.length > 0 && (
-                    <div className="flex items-start gap-2 p-3 rounded-lg bg-destructive/10">
-                      <AlertTriangle className="h-5 w-5 text-destructive flex-shrink-0 mt-0.5" />
+                    <div className="bg-destructive/10 flex items-start gap-2 rounded-lg p-3">
+                      <AlertTriangle className="text-destructive mt-0.5 h-5 w-5 flex-shrink-0" />
                       <div>
-                        <div className="text-sm font-medium">
-                          {t("progress.needsImprovement")}
-                        </div>
-                        <div className="text-sm text-muted-foreground">
+                        <div className="text-sm font-medium">{t("progress.needsImprovement")}</div>
+                        <div className="text-muted-foreground text-sm">
                           {t("progress.focusOn")}: {weakPositions.join(", ")}
                         </div>
                       </div>
@@ -338,11 +316,7 @@ export default function ProgressPage() {
                   {/* Practice button */}
                   <Button
                     className="w-full"
-                    onClick={() =>
-                      router.push(
-                        `/drill/${drillType.replace("_", "-")}`
-                      )
-                    }
+                    onClick={() => router.push(`/drill/${drillType.replace("_", "-")}`)}
                   >
                     {t("progress.practiceNow")}
                   </Button>
@@ -352,7 +326,7 @@ export default function ProgressPage() {
                     <Button
                       variant="ghost"
                       size="sm"
-                      className="w-full text-muted-foreground hover:text-destructive"
+                      className="text-muted-foreground hover:text-destructive w-full"
                       onClick={() => {
                         if (
                           window.confirm(
@@ -363,7 +337,7 @@ export default function ProgressPage() {
                         }
                       }}
                     >
-                      <Trash2 className="h-3 w-3 mr-1" />
+                      <Trash2 className="mr-1 h-3 w-3" />
                       {t("progress.resetDrill") || "重置此練習統計"}
                     </Button>
                   )}
@@ -375,26 +349,23 @@ export default function ProgressPage() {
       </div>
 
       {/* Section Header - Quiz Stats */}
-      <h2 className="text-xl font-bold mb-4">{t("progress.quizStats")}</h2>
+      <h2 className="mb-4 text-xl font-bold">{t("progress.quizStats")}</h2>
 
       {/* Quiz Stats */}
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 mb-8">
+      <div className="mb-8 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {(Object.keys(quizStats) as QuizType[]).map((quizType) => {
           const qStats = quizStats[quizType];
-          const accuracy =
-            qStats.total > 0
-              ? Math.round((qStats.correct / qStats.total) * 100)
-              : 0;
+          const accuracy = qStats.total > 0 ? Math.round((qStats.correct / qStats.total) * 100) : 0;
 
           return (
             <Card key={quizType}>
               <CardHeader className="pb-2">
                 <CardTitle className="flex items-center gap-2 text-base">
-                  {quizType === "equity" && <Calculator className="h-4 w-4 text-primary" />}
-                  {quizType === "outs" && <Brain className="h-4 w-4 text-primary" />}
-                  {quizType === "ev" && <TrendingUp className="h-4 w-4 text-primary" />}
-                  {quizType === "logic" && <Lightbulb className="h-4 w-4 text-primary" />}
-                  {quizType === "exploit" && <Target className="h-4 w-4 text-primary" />}
+                  {quizType === "equity" && <Calculator className="text-primary h-4 w-4" />}
+                  {quizType === "outs" && <Brain className="text-primary h-4 w-4" />}
+                  {quizType === "ev" && <TrendingUp className="text-primary h-4 w-4" />}
+                  {quizType === "logic" && <Lightbulb className="text-primary h-4 w-4" />}
+                  {quizType === "exploit" && <Target className="text-primary h-4 w-4" />}
                   {quizTypeLabels[quizType].zh}
                 </CardTitle>
                 <CardDescription>
@@ -404,25 +375,21 @@ export default function ProgressPage() {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="grid grid-cols-2 gap-4 text-center mb-4">
+                <div className="mb-4 grid grid-cols-2 gap-4 text-center">
                   <div>
                     <div className="text-2xl font-bold">{qStats.total}</div>
-                    <div className="text-xs text-muted-foreground">{t("progress.questions")}</div>
+                    <div className="text-muted-foreground text-xs">{t("progress.questions")}</div>
                   </div>
                   <div>
-                    <div className="text-2xl font-bold text-green-500">
-                      {accuracy}%
-                    </div>
-                    <div className="text-xs text-muted-foreground">
-                      {t("progress.accuracy")}
-                    </div>
+                    <div className="text-2xl font-bold text-green-500">{accuracy}%</div>
+                    <div className="text-muted-foreground text-xs">{t("progress.accuracy")}</div>
                   </div>
                 </div>
 
                 {/* Category breakdown */}
                 {Object.keys(qStats.byCategory).length > 0 && (
                   <div className="mb-4">
-                    <div className="text-xs text-muted-foreground mb-2">
+                    <div className="text-muted-foreground mb-2 text-xs">
                       {t("progress.categoryBreakdown")}
                     </div>
                     <div className="flex flex-wrap gap-1">
@@ -438,8 +405,8 @@ export default function ProgressPage() {
                               catAccuracy >= 80
                                 ? "default"
                                 : catAccuracy >= 60
-                                ? "secondary"
-                                : "destructive"
+                                  ? "secondary"
+                                  : "destructive"
                             }
                             className="text-xs"
                           >
@@ -466,9 +433,9 @@ export default function ProgressPage() {
       </div>
 
       {/* Section Header - Wrong Answers Review */}
-      {recentResults.filter(r => !r.is_correct && !r.is_acceptable).length > 0 && (
+      {recentResults.filter((r) => !r.is_correct && !r.is_acceptable).length > 0 && (
         <>
-          <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
+          <h2 className="mb-4 flex items-center gap-2 text-xl font-bold">
             <RotateCcw className="h-5 w-5" />
             {t("progress.wrongAnswers") || "錯題複習"}
           </h2>
@@ -487,7 +454,7 @@ export default function ProgressPage() {
                   {errorPatterns.map((pattern, idx) => (
                     <div
                       key={idx}
-                      className="flex items-center justify-between p-2 rounded bg-muted/50"
+                      className="bg-muted/50 flex items-center justify-between rounded p-2"
                     >
                       <div className="flex items-center gap-2">
                         <Badge variant="outline">{pattern.position}</Badge>
@@ -503,14 +470,14 @@ export default function ProgressPage() {
                         <Button
                           variant="ghost"
                           size="sm"
-                          className="h-7 px-2 ml-1"
+                          className="ml-1 h-7 px-2"
                           onClick={() =>
                             router.push(
                               `${getDrillHref(pattern.drillType as import("@/lib/constants/drills").DrillType)}?position=${pattern.position}`
                             )
                           }
                         >
-                          <Target className="h-3 w-3 mr-1" />
+                          <Target className="mr-1 h-3 w-3" />
                           練習
                         </Button>
                       </div>
@@ -526,7 +493,7 @@ export default function ProgressPage() {
               <div className="flex items-center justify-between">
                 <div>
                   <CardTitle className="flex items-center gap-2 text-base">
-                    <XCircle className="h-5 w-5 text-destructive" />
+                    <XCircle className="text-destructive h-5 w-5" />
                     {t("progress.recentMistakes") || "最近錯誤"}
                     <Badge variant="secondary" className="ml-2">
                       {filteredWrongAnswers.length}
@@ -536,28 +503,26 @@ export default function ProgressPage() {
                     {t("progress.reviewMistakesDesc") || "複習這些錯誤的手牌，加強記憶"}
                   </CardDescription>
                 </div>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setShowFilters(!showFilters)}
-                >
-                  <Filter className="h-4 w-4 mr-1" />
+                <Button variant="outline" size="sm" onClick={() => setShowFilters(!showFilters)}>
+                  <Filter className="mr-1 h-4 w-4" />
                   {t("common.filter") || "篩選"}
-                  <ChevronDown className={`h-4 w-4 ml-1 transition-transform ${showFilters ? "rotate-180" : ""}`} />
+                  <ChevronDown
+                    className={`ml-1 h-4 w-4 transition-transform ${showFilters ? "rotate-180" : ""}`}
+                  />
                 </Button>
               </div>
 
               {/* Filters */}
               {showFilters && (
-                <div className="mt-4 p-4 rounded-lg bg-muted/50 space-y-3">
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                <div className="bg-muted/50 mt-4 space-y-3 rounded-lg p-4">
+                  <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
                     {/* Drill Type Filter */}
                     <div>
-                      <label className="text-xs font-medium text-muted-foreground mb-1 block">
+                      <label className="text-muted-foreground mb-1 block text-xs font-medium">
                         {t("progress.drillType") || "練習類型"}
                       </label>
                       <select
-                        className="w-full p-2 rounded border bg-background text-sm"
+                        className="bg-background w-full rounded border p-2 text-sm"
                         value={filterDrillType}
                         onChange={(e) => setFilterDrillType(e.target.value as DrillType | "all")}
                       >
@@ -572,11 +537,11 @@ export default function ProgressPage() {
 
                     {/* Position Filter */}
                     <div>
-                      <label className="text-xs font-medium text-muted-foreground mb-1 block">
+                      <label className="text-muted-foreground mb-1 block text-xs font-medium">
                         {t("drill.position") || "位置"}
                       </label>
                       <select
-                        className="w-full p-2 rounded border bg-background text-sm"
+                        className="bg-background w-full rounded border p-2 text-sm"
                         value={filterPosition}
                         onChange={(e) => setFilterPosition(e.target.value)}
                       >
@@ -591,11 +556,11 @@ export default function ProgressPage() {
 
                     {/* Time Range Filter */}
                     <div>
-                      <label className="text-xs font-medium text-muted-foreground mb-1 block">
+                      <label className="text-muted-foreground mb-1 block text-xs font-medium">
                         {t("progress.timeRange") || "時間範圍"}
                       </label>
                       <select
-                        className="w-full p-2 rounded border bg-background text-sm"
+                        className="bg-background w-full rounded border p-2 text-sm"
                         value={filterTimeRange}
                         onChange={(e) => setFilterTimeRange(e.target.value as TimeRange)}
                       >
@@ -609,7 +574,9 @@ export default function ProgressPage() {
                   </div>
 
                   {/* Clear filters */}
-                  {(filterDrillType !== "all" || filterPosition !== "all" || filterTimeRange !== "all") && (
+                  {(filterDrillType !== "all" ||
+                    filterPosition !== "all" ||
+                    filterTimeRange !== "all") && (
                     <Button
                       variant="ghost"
                       size="sm"
@@ -619,7 +586,7 @@ export default function ProgressPage() {
                         setFilterTimeRange("all");
                       }}
                     >
-                      <RotateCcw className="h-3 w-3 mr-1" />
+                      <RotateCcw className="mr-1 h-3 w-3" />
                       {t("common.clearFilters") || "清除篩選"}
                     </Button>
                   )}
@@ -628,18 +595,18 @@ export default function ProgressPage() {
             </CardHeader>
             <CardContent>
               {filteredWrongAnswers.length === 0 ? (
-                <div className="text-center py-8 text-muted-foreground">
+                <div className="text-muted-foreground py-8 text-center">
                   {t("progress.noMatchingErrors") || "沒有符合條件的錯題"}
                 </div>
               ) : (
-                <div className="space-y-3 max-h-96 overflow-y-auto">
+                <div className="max-h-96 space-y-3 overflow-y-auto">
                   {filteredWrongAnswers.slice(0, 50).map((result, index) => (
                     <div
                       key={result.id || index}
-                      className="flex items-center justify-between p-3 rounded-lg bg-destructive/5 border border-destructive/20"
+                      className="bg-destructive/5 border-destructive/20 flex items-center justify-between rounded-lg border p-3"
                     >
                       <div className="flex items-center gap-4">
-                        <div className="text-xl font-bold font-mono">{result.hand}</div>
+                        <div className="font-mono text-xl font-bold">{result.hand}</div>
                         <div className="text-sm">
                           <Badge variant="outline" className="mr-2">
                             {result.hero_position}
@@ -669,28 +636,34 @@ export default function ProgressPage() {
               )}
 
               {/* Practice button for filtered results */}
-              {filteredWrongAnswers.length > 0 && (() => {
-                // Find most common drill type among filtered wrong answers
-                const drillCounts = filteredWrongAnswers.reduce((acc, r) => {
-                  acc[r.drill_type] = (acc[r.drill_type] || 0) + 1;
-                  return acc;
-                }, {} as Record<string, number>);
+              {filteredWrongAnswers.length > 0 &&
+                (() => {
+                  // Find most common drill type among filtered wrong answers
+                  const drillCounts = filteredWrongAnswers.reduce(
+                    (acc, r) => {
+                      acc[r.drill_type] = (acc[r.drill_type] || 0) + 1;
+                      return acc;
+                    },
+                    {} as Record<string, number>
+                  );
 
-                const mostCommonDrill = Object.entries(drillCounts)
-                  .sort(([, a], [, b]) => b - a)[0]?.[0] as DrillType;
+                  const mostCommonDrill = Object.entries(drillCounts).sort(
+                    ([, a], [, b]) => b - a
+                  )[0]?.[0] as DrillType;
 
-                if (!mostCommonDrill) return null;
+                  if (!mostCommonDrill) return null;
 
-                return (
-                  <Button
-                    className="w-full mt-4"
-                    variant="destructive"
-                    onClick={() => router.push(`/drill/${mostCommonDrill.replace(/_/g, "-")}`)}
-                  >
-                    {t("progress.practiceWeakArea") || "練習弱項"}: {drillTypeLabels[mostCommonDrill]?.zh || mostCommonDrill}
-                  </Button>
-                );
-              })()}
+                  return (
+                    <Button
+                      className="mt-4 w-full"
+                      variant="destructive"
+                      onClick={() => router.push(`/drill/${mostCommonDrill.replace(/_/g, "-")}`)}
+                    >
+                      {t("progress.practiceWeakArea") || "練習弱項"}:{" "}
+                      {drillTypeLabels[mostCommonDrill]?.zh || mostCommonDrill}
+                    </Button>
+                  );
+                })()}
             </CardContent>
           </Card>
         </>
@@ -698,7 +671,7 @@ export default function ProgressPage() {
 
       {/* Last synced */}
       {lastSyncedAt && (
-        <div className="mt-8 text-center text-sm text-muted-foreground">
+        <div className="text-muted-foreground mt-8 text-center text-sm">
           {t("stats.lastSynced")}: {new Date(lastSyncedAt).toLocaleString()}
         </div>
       )}

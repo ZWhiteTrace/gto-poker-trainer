@@ -3,12 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import {
@@ -66,11 +61,11 @@ interface Stats {
 // Get weakpoints (accuracy < 60%)
 function getWeakpoints(stats: Stats): { potTypes: string[]; textures: string[] } {
   const weakPotTypes = Object.entries(stats.byPotType)
-    .filter(([, s]) => s.total >= 3 && (s.correct / s.total) < 0.6)
+    .filter(([, s]) => s.total >= 3 && s.correct / s.total < 0.6)
     .map(([key]) => key);
 
   const weakTextures = Object.entries(stats.byTexture)
-    .filter(([, s]) => s.total >= 3 && (s.correct / s.total) < 0.6)
+    .filter(([, s]) => s.total >= 3 && s.correct / s.total < 0.6)
     .map(([key]) => key);
 
   return { potTypes: weakPotTypes, textures: weakTextures };
@@ -104,13 +99,9 @@ function BoardCard({ card }: { card: string }) {
   const suit = card[1]?.toLowerCase() || "s";
 
   return (
-    <div className="bg-white dark:bg-gray-100 rounded-lg shadow-md w-12 h-16 sm:w-14 sm:h-20 flex flex-col items-center justify-center border-2 border-gray-200">
-      <span className={cn("text-xl sm:text-2xl font-bold", SUIT_CARD_COLORS[suit])}>
-        {rank}
-      </span>
-      <span className={cn("text-lg sm:text-xl", SUIT_CARD_COLORS[suit])}>
-        {SUIT_SYMBOLS[suit]}
-      </span>
+    <div className="flex h-16 w-12 flex-col items-center justify-center rounded-lg border-2 border-gray-200 bg-white shadow-md sm:h-20 sm:w-14 dark:bg-gray-100">
+      <span className={cn("text-xl font-bold sm:text-2xl", SUIT_CARD_COLORS[suit])}>{rank}</span>
+      <span className={cn("text-lg sm:text-xl", SUIT_CARD_COLORS[suit])}>{SUIT_SYMBOLS[suit]}</span>
     </div>
   );
 }
@@ -134,29 +125,29 @@ function HeroHand({ hand, board = [] }: { hand: string; board?: string[] }) {
   let suit1: string;
   let suit2: string;
   if (suited) {
-    suit1 = allSuits.find(s => !used1.has(s) && !used2.has(s)) || "h";
+    suit1 = allSuits.find((s) => !used1.has(s) && !used2.has(s)) || "h";
     suit2 = suit1;
   } else if (isPair) {
-    const avail = allSuits.filter(s => !used1.has(s));
+    const avail = allSuits.filter((s) => !used1.has(s));
     suit1 = avail[0] || "h";
     suit2 = avail[1] || "d";
   } else {
-    suit1 = allSuits.find(s => !used1.has(s)) || "s";
-    suit2 = allSuits.find(s => !used2.has(s) && s !== suit1) || "c";
+    suit1 = allSuits.find((s) => !used1.has(s)) || "s";
+    suit2 = allSuits.find((s) => !used2.has(s) && s !== suit1) || "c";
   }
 
   return (
     <div className="flex gap-2">
-      <div className="bg-white dark:bg-gray-100 rounded-lg shadow-md w-12 h-16 sm:w-14 sm:h-20 flex flex-col items-center justify-center border-2 border-primary">
-        <span className={cn("text-xl sm:text-2xl font-bold", SUIT_CARD_COLORS[suit1])}>
+      <div className="border-primary flex h-16 w-12 flex-col items-center justify-center rounded-lg border-2 bg-white shadow-md sm:h-20 sm:w-14 dark:bg-gray-100">
+        <span className={cn("text-xl font-bold sm:text-2xl", SUIT_CARD_COLORS[suit1])}>
           {rank1}
         </span>
         <span className={cn("text-lg sm:text-xl", SUIT_CARD_COLORS[suit1])}>
           {SUIT_SYMBOLS[suit1]}
         </span>
       </div>
-      <div className="bg-white dark:bg-gray-100 rounded-lg shadow-md w-12 h-16 sm:w-14 sm:h-20 flex flex-col items-center justify-center border-2 border-primary">
-        <span className={cn("text-xl sm:text-2xl font-bold", SUIT_CARD_COLORS[suit2])}>
+      <div className="border-primary flex h-16 w-12 flex-col items-center justify-center rounded-lg border-2 bg-white shadow-md sm:h-20 sm:w-14 dark:bg-gray-100">
+        <span className={cn("text-xl font-bold sm:text-2xl", SUIT_CARD_COLORS[suit2])}>
           {rank2}
         </span>
         <span className={cn("text-lg sm:text-xl", SUIT_CARD_COLORS[suit2])}>
@@ -189,7 +180,10 @@ export default function EndlessDrillPage() {
   const [isCorrect, setIsCorrect] = useState(false);
   const [loading, setLoading] = useState(false);
   const [stats, setStats] = useState<Stats>(() => loadStats());
-  const [weakpoints, setWeakpoints] = useState<{ potTypes: string[]; textures: string[] }>({ potTypes: [], textures: [] });
+  const [weakpoints, setWeakpoints] = useState<{ potTypes: string[]; textures: string[] }>({
+    potTypes: [],
+    textures: [],
+  });
 
   // Update weakpoints when stats change
   useEffect(() => {
@@ -208,9 +202,7 @@ export default function EndlessDrillPage() {
         params.set("pot_type", selectedPotType);
       }
 
-      const response = await fetch(
-        `${API_BASE_URL}/api/solver/random-drill?${params.toString()}`
-      );
+      const response = await fetch(`${API_BASE_URL}/api/solver/random-drill?${params.toString()}`);
 
       if (!response.ok) {
         throw new Error("Failed to fetch scenario");
@@ -268,9 +260,7 @@ export default function EndlessDrillPage() {
       total: stats.total + 1,
       correct: stats.correct + (correct ? 1 : 0),
       streak: correct ? stats.streak + 1 : 0,
-      maxStreak: correct
-        ? Math.max(stats.maxStreak, stats.streak + 1)
-        : stats.maxStreak,
+      maxStreak: correct ? Math.max(stats.maxStreak, stats.streak + 1) : stats.maxStreak,
       byPotType: { ...stats.byPotType },
       byTexture: { ...stats.byTexture },
     };
@@ -311,60 +301,58 @@ export default function EndlessDrillPage() {
   const accuracy = stats.total > 0 ? Math.round((stats.correct / stats.total) * 100) : 0;
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-4xl">
+    <div className="container mx-auto max-w-4xl px-4 py-8">
       {/* Header */}
       <div className="mb-6">
-        <h1 className="text-2xl font-bold mb-2">{t("title")}</h1>
-        <p className="text-muted-foreground">
-          {t("description")}
-        </p>
+        <h1 className="mb-2 text-2xl font-bold">{t("title")}</h1>
+        <p className="text-muted-foreground">{t("description")}</p>
       </div>
 
       {/* Stats Bar */}
-      <div className="grid grid-cols-4 gap-4 mb-6">
+      <div className="mb-6 grid grid-cols-4 gap-4">
         <Card className="bg-gradient-to-br from-blue-500/10 to-blue-600/10">
-          <CardContent className="p-4 flex items-center gap-3">
+          <CardContent className="flex items-center gap-3 p-4">
             <Target className="h-8 w-8 text-blue-500" />
             <div>
               <div className="text-2xl font-bold">{stats.total}</div>
-              <div className="text-xs text-muted-foreground">{t("totalQuestions")}</div>
+              <div className="text-muted-foreground text-xs">{t("totalQuestions")}</div>
             </div>
           </CardContent>
         </Card>
 
         <Card className="bg-gradient-to-br from-green-500/10 to-green-600/10">
-          <CardContent className="p-4 flex items-center gap-3">
+          <CardContent className="flex items-center gap-3 p-4">
             <CheckCircle2 className="h-8 w-8 text-green-500" />
             <div>
               <div className="text-2xl font-bold">{accuracy}%</div>
-              <div className="text-xs text-muted-foreground">{t("accuracy")}</div>
+              <div className="text-muted-foreground text-xs">{t("accuracy")}</div>
             </div>
           </CardContent>
         </Card>
 
         <Card className="bg-gradient-to-br from-orange-500/10 to-orange-600/10">
-          <CardContent className="p-4 flex items-center gap-3">
+          <CardContent className="flex items-center gap-3 p-4">
             <Flame className="h-8 w-8 text-orange-500" />
             <div>
               <div className="text-2xl font-bold">{stats.streak}</div>
-              <div className="text-xs text-muted-foreground">{t("streak")}</div>
+              <div className="text-muted-foreground text-xs">{t("streak")}</div>
             </div>
           </CardContent>
         </Card>
 
         <Card className="bg-gradient-to-br from-purple-500/10 to-purple-600/10">
-          <CardContent className="p-4 flex items-center gap-3">
+          <CardContent className="flex items-center gap-3 p-4">
             <Trophy className="h-8 w-8 text-purple-500" />
             <div>
               <div className="text-2xl font-bold">{stats.maxStreak}</div>
-              <div className="text-xs text-muted-foreground">{t("maxStreak")}</div>
+              <div className="text-muted-foreground text-xs">{t("maxStreak")}</div>
             </div>
           </CardContent>
         </Card>
       </div>
 
       {/* Pot Type Filter */}
-      <div className="flex flex-wrap gap-2 mb-6">
+      <div className="mb-6 flex flex-wrap gap-2">
         {POT_TYPE_KEYS.map((key) => (
           <Button
             key={key}
@@ -395,12 +383,7 @@ export default function EndlessDrillPage() {
                 </>
               )}
             </div>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={handleNext}
-              disabled={loading}
-            >
+            <Button variant="ghost" size="icon" onClick={handleNext} disabled={loading}>
               <RefreshCw className={cn("h-4 w-4", loading && "animate-spin")} />
             </Button>
           </div>
@@ -409,7 +392,7 @@ export default function EndlessDrillPage() {
         <CardContent className="space-y-6">
           {loading ? (
             <div className="flex items-center justify-center py-12">
-              <RefreshCw className="h-8 w-8 animate-spin text-muted-foreground" />
+              <RefreshCw className="text-muted-foreground h-8 w-8 animate-spin" />
             </div>
           ) : scenario ? (
             <>
@@ -423,15 +406,13 @@ export default function EndlessDrillPage() {
               {/* Hero Hand */}
               <div className="flex justify-center">
                 <div className="text-center">
-                  <div className="text-sm text-muted-foreground mb-2">
-                    {t("yourHand")}
-                  </div>
+                  <div className="text-muted-foreground mb-2 text-sm">{t("yourHand")}</div>
                   <HeroHand hand={scenario.hand} board={scenario.board} />
                 </div>
               </div>
 
               {/* Action Buttons */}
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+              <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
                 {scenario.options.map((action) => {
                   const freq = scenario.correct_strategy?.[action] || 0;
                   const isSelected = selectedAction === action;
@@ -442,7 +423,7 @@ export default function EndlessDrillPage() {
                       key={action}
                       variant={isSelected ? "default" : "outline"}
                       className={cn(
-                        "h-auto py-3 flex flex-col gap-1",
+                        "flex h-auto flex-col gap-1 py-3",
                         showResult && isGoodAction && "ring-2 ring-green-500",
                         showResult && isSelected && !isGoodAction && "ring-2 ring-red-500"
                       )}
@@ -450,9 +431,7 @@ export default function EndlessDrillPage() {
                       disabled={showResult}
                     >
                       <span>{ACTION_LABELS[action] || action}</span>
-                      {showResult && (
-                        <span className="text-xs opacity-75">{freq}%</span>
-                      )}
+                      {showResult && <span className="text-xs opacity-75">{freq}%</span>}
                     </Button>
                   );
                 })}
@@ -462,13 +441,13 @@ export default function EndlessDrillPage() {
               {showResult && (
                 <div
                   className={cn(
-                    "p-4 rounded-lg text-center",
+                    "rounded-lg p-4 text-center",
                     isCorrect
-                      ? "bg-green-500/10 border border-green-500/30"
-                      : "bg-red-500/10 border border-red-500/30"
+                      ? "border border-green-500/30 bg-green-500/10"
+                      : "border border-red-500/30 bg-red-500/10"
                   )}
                 >
-                  <div className="flex items-center justify-center gap-2 mb-2">
+                  <div className="mb-2 flex items-center justify-center gap-2">
                     {isCorrect ? (
                       <>
                         <CheckCircle2 className="h-6 w-6 text-green-500" />
@@ -477,14 +456,12 @@ export default function EndlessDrillPage() {
                     ) : (
                       <>
                         <XCircle className="h-6 w-6 text-red-500" />
-                        <span className="font-bold text-red-600">
-                          {t("couldBeBetter")}
-                        </span>
+                        <span className="font-bold text-red-600">{t("couldBeBetter")}</span>
                       </>
                     )}
                   </div>
 
-                  <div className="text-sm text-muted-foreground mb-4">
+                  <div className="text-muted-foreground mb-4 text-sm">
                     {t("bestStrategy")}
                     {Object.entries(scenario.correct_strategy || {})
                       .filter(([, freq]) => (freq as number) > 0)
@@ -504,9 +481,7 @@ export default function EndlessDrillPage() {
               )}
             </>
           ) : (
-            <div className="text-center py-12 text-muted-foreground">
-              {t("loading")}
-            </div>
+            <div className="text-muted-foreground py-12 text-center">{t("loading")}</div>
           )}
         </CardContent>
       </Card>
@@ -515,16 +490,16 @@ export default function EndlessDrillPage() {
       {(weakpoints.potTypes.length > 0 || weakpoints.textures.length > 0) && (
         <Card className="border-orange-500/30 bg-orange-500/5">
           <CardHeader>
-            <CardTitle className="text-sm flex items-center gap-2">
+            <CardTitle className="flex items-center gap-2 text-sm">
               <AlertTriangle className="h-4 w-4 text-orange-500" />
               {t("weakpoints")}
             </CardTitle>
           </CardHeader>
-          <CardContent className="text-sm space-y-3">
+          <CardContent className="space-y-3 text-sm">
             {weakpoints.potTypes.length > 0 && (
               <div>
                 <span className="text-muted-foreground">{t("weakPotTypes")}</span>
-                <div className="flex flex-wrap gap-2 mt-1">
+                <div className="mt-1 flex flex-wrap gap-2">
                   {weakpoints.potTypes.map((pt) => (
                     <Badge
                       key={pt}
@@ -535,7 +510,10 @@ export default function EndlessDrillPage() {
                       {t(`potTypes.${pt}`)}
                       {stats.byPotType[pt] && (
                         <span className="ml-1 text-orange-500">
-                          {Math.round((stats.byPotType[pt].correct / stats.byPotType[pt].total) * 100)}%
+                          {Math.round(
+                            (stats.byPotType[pt].correct / stats.byPotType[pt].total) * 100
+                          )}
+                          %
                         </span>
                       )}
                     </Badge>
@@ -546,13 +524,16 @@ export default function EndlessDrillPage() {
             {weakpoints.textures.length > 0 && (
               <div>
                 <span className="text-muted-foreground">{t("weakTextures")}</span>
-                <div className="flex flex-wrap gap-2 mt-1">
+                <div className="mt-1 flex flex-wrap gap-2">
                   {weakpoints.textures.slice(0, 5).map((tex) => (
                     <Badge key={tex} variant="outline">
                       {tex}
                       {stats.byTexture[tex] && (
                         <span className="ml-1 text-orange-500">
-                          {Math.round((stats.byTexture[tex].correct / stats.byTexture[tex].total) * 100)}%
+                          {Math.round(
+                            (stats.byTexture[tex].correct / stats.byTexture[tex].total) * 100
+                          )}
+                          %
                         </span>
                       )}
                     </Badge>
@@ -569,15 +550,18 @@ export default function EndlessDrillPage() {
         <CardHeader>
           <CardTitle className="text-sm">{t("tipsTitle")}</CardTitle>
         </CardHeader>
-        <CardContent className="text-sm text-muted-foreground space-y-2">
+        <CardContent className="text-muted-foreground space-y-2 text-sm">
           <p>
-            <strong>{t("tipCorrectLabel")}</strong>{t("tipCorrectDesc")}
+            <strong>{t("tipCorrectLabel")}</strong>
+            {t("tipCorrectDesc")}
           </p>
           <p>
-            <strong>{t("tipMixedLabel")}</strong>{t("tipMixedDesc")}
+            <strong>{t("tipMixedLabel")}</strong>
+            {t("tipMixedDesc")}
           </p>
           <p>
-            <strong>{t("tipPositionLabel")}</strong>{t("tipPositionDesc")}
+            <strong>{t("tipPositionLabel")}</strong>
+            {t("tipPositionDesc")}
           </p>
         </CardContent>
       </Card>

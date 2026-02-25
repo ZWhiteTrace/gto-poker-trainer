@@ -67,7 +67,7 @@ const textureCache = new Map<string, TextureData>();
  * e.g., [{rank: 'A', suit: 'h'}, {rank: 'K', suit: 's'}, {rank: '5', suit: 'd'}] -> "AhKs5d"
  */
 export function cardsToString(cards: Card[]): string {
-  return cards.map(c => `${c.rank}${c.suit}`).join("");
+  return cards.map((c) => `${c.rank}${c.suit}`).join("");
 }
 
 /**
@@ -87,8 +87,19 @@ export function holeCardsToHandString(holeCards: HoleCards): string {
 
   // Sort by rank value
   const rankValues: Record<string, number> = {
-    A: 14, K: 13, Q: 12, J: 11, T: 10,
-    "9": 9, "8": 8, "7": 7, "6": 6, "5": 5, "4": 4, "3": 3, "2": 2,
+    A: 14,
+    K: 13,
+    Q: 12,
+    J: 11,
+    T: 10,
+    "9": 9,
+    "8": 8,
+    "7": 7,
+    "6": 6,
+    "5": 5,
+    "4": 4,
+    "3": 3,
+    "2": 2,
   };
 
   const [high, low] = rankValues[r1] > rankValues[r2] ? [r1, r2] : [r2, r1];
@@ -201,7 +212,9 @@ export async function getTextureData(textureId: string): Promise<TextureData | n
     };
 
     // Flatten hands from categories
-    for (const category of Object.values(data.hands_by_category || {}) as Array<Array<{ hand: string } & SolverStrategy>>) {
+    for (const category of Object.values(data.hands_by_category || {}) as Array<
+      Array<{ hand: string } & SolverStrategy>
+    >) {
       for (const handData of category) {
         const { hand, ...strategy } = handData;
         textureData.strategies[hand] = strategy;
@@ -227,23 +240,34 @@ export function mapBoardToTextureId(
   if (board.length < 3) return null;
 
   // Check for monotone (all same suit)
-  const suits = board.map(c => c.suit);
-  const isMonotone = suits.every(s => s === suits[0]);
+  const suits = board.map((c) => c.suit);
+  const isMonotone = suits.every((s) => s === suits[0]);
   if (isMonotone) return "monotone";
 
   // Check for paired board
-  const ranks = board.map(c => c.rank);
+  const ranks = board.map((c) => c.rank);
   const rankCounts: Record<string, number> = {};
   for (const r of ranks) {
     rankCounts[r] = (rankCounts[r] || 0) + 1;
   }
-  const hasPair = Object.values(rankCounts).some(c => c >= 2);
+  const hasPair = Object.values(rankCounts).some((c) => c >= 2);
 
   if (hasPair) {
     // High pair (T+) or low pair
     const rankValues: Record<string, number> = {
-      A: 14, K: 13, Q: 12, J: 11, T: 10,
-      "9": 9, "8": 8, "7": 7, "6": 6, "5": 5, "4": 4, "3": 3, "2": 2,
+      A: 14,
+      K: 13,
+      Q: 12,
+      J: 11,
+      T: 10,
+      "9": 9,
+      "8": 8,
+      "7": 7,
+      "6": 6,
+      "5": 5,
+      "4": 4,
+      "3": 3,
+      "2": 2,
     };
     const pairedRank = Object.entries(rankCounts).find(([, c]) => c >= 2)?.[0];
     if (pairedRank && rankValues[pairedRank] >= 10) {
@@ -254,15 +278,26 @@ export function mapBoardToTextureId(
 
   // Check for connected board
   const rankValues: Record<string, number> = {
-    A: 14, K: 13, Q: 12, J: 11, T: 10,
-    "9": 9, "8": 8, "7": 7, "6": 6, "5": 5, "4": 4, "3": 3, "2": 2,
+    A: 14,
+    K: 13,
+    Q: 12,
+    J: 11,
+    T: 10,
+    "9": 9,
+    "8": 8,
+    "7": 7,
+    "6": 6,
+    "5": 5,
+    "4": 4,
+    "3": 3,
+    "2": 2,
   };
-  const sortedValues = ranks.map(r => rankValues[r]).sort((a, b) => b - a);
+  const sortedValues = ranks.map((r) => rankValues[r]).sort((a, b) => b - a);
   const gaps = [];
   for (let i = 0; i < sortedValues.length - 1; i++) {
     gaps.push(sortedValues[i] - sortedValues[i + 1]);
   }
-  const isConnected = gaps.every(g => g <= 2);
+  const isConnected = gaps.every((g) => g <= 2);
 
   if (isConnected && Math.max(...sortedValues) - Math.min(...sortedValues) <= 4) {
     const avgRank = sortedValues.reduce((a, b) => a + b, 0) / sortedValues.length;
@@ -296,9 +331,7 @@ export function mapBoardToTextureId(
 /**
  * Convert solver strategy to GTOHint recommendations format
  */
-export function solverStrategyToRecommendations(
-  strategy: SolverStrategy
-): Array<{
+export function solverStrategyToRecommendations(strategy: SolverStrategy): Array<{
   action: "bet" | "check" | "call" | "raise" | "fold";
   frequency: number;
   sizing?: number;
@@ -457,15 +490,15 @@ export function categorizeHandForTurn(
 ): string {
   // Map hand strength to turn adjustment categories
   if (handStrength === "nuts" || handStrength === "strong") {
-    return "value";  // Strong hands
+    return "value"; // Strong hands
   }
   if (handStrength === "medium") {
-    return "marginal";  // Medium strength
+    return "marginal"; // Medium strength
   }
   if (hasFlushDraw || hasStraightDraw) {
-    return "bluff";  // Draws play like bluffs (semi-bluff)
+    return "bluff"; // Draws play like bluffs (semi-bluff)
   }
-  return "bluff";  // Air/weak = bluff
+  return "bluff"; // Air/weak = bluff
 }
 
 /**
@@ -494,7 +527,8 @@ export function applyTurnAdjustment(
     if (adjusted.bet_50) adjusted.bet_50 = Math.max(0, Math.min(100, adjusted.bet_50 * betRatio));
     if (adjusted.bet_66) adjusted.bet_66 = Math.max(0, Math.min(100, adjusted.bet_66 * betRatio));
     if (adjusted.bet_75) adjusted.bet_75 = Math.max(0, Math.min(100, adjusted.bet_75 * betRatio));
-    if (adjusted.bet_100) adjusted.bet_100 = Math.max(0, Math.min(100, adjusted.bet_100 * betRatio));
+    if (adjusted.bet_100)
+      adjusted.bet_100 = Math.max(0, Math.min(100, adjusted.bet_100 * betRatio));
   }
 
   // Apply check delta
@@ -666,7 +700,8 @@ export function applyRiverAdjustment(
     if (adjusted.bet_50) adjusted.bet_50 = Math.max(0, Math.min(100, adjusted.bet_50 * betRatio));
     if (adjusted.bet_66) adjusted.bet_66 = Math.max(0, Math.min(100, adjusted.bet_66 * betRatio));
     if (adjusted.bet_75) adjusted.bet_75 = Math.max(0, Math.min(100, adjusted.bet_75 * betRatio));
-    if (adjusted.bet_100) adjusted.bet_100 = Math.max(0, Math.min(100, adjusted.bet_100 * betRatio));
+    if (adjusted.bet_100)
+      adjusted.bet_100 = Math.max(0, Math.min(100, adjusted.bet_100 * betRatio));
   }
 
   // Apply check delta

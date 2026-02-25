@@ -54,7 +54,7 @@ export function ActionButtons({
   // GGPoker style presets - simplified for mobile
   const betSizePresets = [
     { label: "33%", value: roundToHalf(Math.max(minBet, callAmount + effectivePot * 0.33)) },
-    { label: "50%", value: roundToHalf(Math.max(minBet, callAmount + effectivePot * 0.50)) },
+    { label: "50%", value: roundToHalf(Math.max(minBet, callAmount + effectivePot * 0.5)) },
     { label: "75%", value: roundToHalf(Math.max(minBet, callAmount + effectivePot * 0.75)) },
     { label: "Pot", value: roundToHalf(Math.max(minBet, callAmount + effectivePot * 1.0)) },
   ];
@@ -77,7 +77,12 @@ export function ActionButtons({
   const displayValue = inputValue || roundToHalf(selectedBetSize).toString();
 
   return (
-    <div className={cn("flex flex-col gap-3 sm:gap-3 p-3 sm:p-4 bg-gray-900/95 rounded-xl border border-gray-700/80 backdrop-blur-sm", className)}>
+    <div
+      className={cn(
+        "flex flex-col gap-3 rounded-xl border border-gray-700/80 bg-gray-900/95 p-3 backdrop-blur-sm sm:gap-3 sm:p-4",
+        className
+      )}
+    >
       {/* 下注控制區 (只在可以 bet/raise 時顯示) */}
       {betOrRaiseAction && (
         <div className="flex flex-col gap-2 sm:gap-2">
@@ -94,9 +99,10 @@ export function ActionButtons({
                 }}
                 disabled={disabled || preset.value > maxBet}
                 className={cn(
-                  "h-9 sm:h-8 px-1 sm:px-2 text-xs sm:text-xs font-semibold",
-                  "bg-gray-800/60 border-gray-600 hover:bg-gray-700 active:bg-gray-600",
-                  Math.abs(selectedBetSize - preset.value) < 0.3 && "border-green-500 bg-green-500/20 text-green-400"
+                  "h-9 px-1 text-xs font-semibold sm:h-8 sm:px-2 sm:text-xs",
+                  "border-gray-600 bg-gray-800/60 hover:bg-gray-700 active:bg-gray-600",
+                  Math.abs(selectedBetSize - preset.value) < 0.3 &&
+                    "border-green-500 bg-green-500/20 text-green-400"
                 )}
               >
                 {preset.label}
@@ -106,7 +112,9 @@ export function ActionButtons({
 
           {/* 滑桿 + 數值顯示 - 加大滑桿和拇指 */}
           <div className="flex items-center gap-2 sm:gap-2">
-            <span className="text-[10px] sm:text-xs text-gray-500 w-7 sm:w-8 shrink-0">{roundToHalf(minBet)}</span>
+            <span className="w-7 shrink-0 text-[10px] text-gray-500 sm:w-8 sm:text-xs">
+              {roundToHalf(minBet)}
+            </span>
             <input
               type="range"
               min={roundToHalf(minBet)}
@@ -122,11 +130,7 @@ export function ActionButtons({
               aria-valuemin={roundToHalf(minBet)}
               aria-valuemax={roundToHalf(maxBet)}
               aria-valuenow={roundToHalf(selectedBetSize)}
-              className="flex-1 h-2 bg-gray-700 rounded-full appearance-none cursor-pointer
-                       [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:h-6
-                       [&::-webkit-slider-thumb]:bg-green-500 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:cursor-pointer
-                       [&::-webkit-slider-thumb]:shadow-lg [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-green-400
-                       [&::-webkit-slider-thumb]:active:scale-110 [&::-webkit-slider-thumb]:transition-transform"
+              className="h-2 flex-1 cursor-pointer appearance-none rounded-full bg-gray-700 [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-green-400 [&::-webkit-slider-thumb]:bg-green-500 [&::-webkit-slider-thumb]:shadow-lg [&::-webkit-slider-thumb]:transition-transform [&::-webkit-slider-thumb]:active:scale-110"
             />
             {/* 數值顯示/輸入 - 加大 */}
             <input
@@ -139,16 +143,14 @@ export function ActionButtons({
               max={roundToHalf(maxBet)}
               step={0.5}
               disabled={disabled}
-              className="w-14 sm:w-16 h-8 sm:h-7 px-1.5 text-xs sm:text-xs text-center font-mono
-                       bg-gray-800 border border-gray-600 rounded text-white shrink-0
-                       focus:border-green-500 focus:outline-none focus:ring-1 focus:ring-green-500/50"
+              className="h-8 w-14 shrink-0 rounded border border-gray-600 bg-gray-800 px-1.5 text-center font-mono text-xs text-white focus:border-green-500 focus:ring-1 focus:ring-green-500/50 focus:outline-none sm:h-7 sm:w-16 sm:text-xs"
             />
           </div>
         </div>
       )}
 
       {/* 主要動作按鈕 - GGPoker 風格，加大觸控區域 */}
-      <div className="flex gap-2 justify-center">
+      <div className="flex justify-center gap-2">
         {/* Fold */}
         {foldAction && (
           <Button
@@ -156,9 +158,9 @@ export function ActionButtons({
             onClick={() => onAction("fold")}
             disabled={disabled}
             aria-label="Fold your hand"
-            className="flex-1 h-12 sm:h-12 bg-red-900/40 hover:bg-red-800/60 active:bg-red-700/70 border border-red-700/50 text-red-100"
+            className="h-12 flex-1 border border-red-700/50 bg-red-900/40 text-red-100 hover:bg-red-800/60 active:bg-red-700/70 sm:h-12"
           >
-            <span className="font-bold text-base sm:text-base">Fold</span>
+            <span className="text-base font-bold sm:text-base">Fold</span>
           </Button>
         )}
 
@@ -169,9 +171,9 @@ export function ActionButtons({
             onClick={() => onAction("check")}
             disabled={disabled}
             aria-label="Check"
-            className="flex-1 h-12 sm:h-12 bg-gray-700/50 hover:bg-gray-600/60 active:bg-gray-500/70 border border-gray-600/50 text-gray-100"
+            className="h-12 flex-1 border border-gray-600/50 bg-gray-700/50 text-gray-100 hover:bg-gray-600/60 active:bg-gray-500/70 sm:h-12"
           >
-            <span className="font-bold text-base sm:text-base">Check</span>
+            <span className="text-base font-bold sm:text-base">Check</span>
           </Button>
         )}
 
@@ -182,11 +184,13 @@ export function ActionButtons({
             onClick={() => onAction("call")}
             disabled={disabled}
             aria-label={`Call ${roundToHalf(currentBet)} big blinds`}
-            className="flex-1 h-12 sm:h-12 bg-blue-900/40 hover:bg-blue-800/60 active:bg-blue-700/70 border border-blue-700/50 text-blue-100"
+            className="h-12 flex-1 border border-blue-700/50 bg-blue-900/40 text-blue-100 hover:bg-blue-800/60 active:bg-blue-700/70 sm:h-12"
           >
             <div className="flex flex-col items-center leading-tight">
-              <span className="font-bold text-base sm:text-base">Call</span>
-              <span className="text-[11px] sm:text-xs opacity-80">{roundToHalf(currentBet)} BB</span>
+              <span className="text-base font-bold sm:text-base">Call</span>
+              <span className="text-[11px] opacity-80 sm:text-xs">
+                {roundToHalf(currentBet)} BB
+              </span>
             </div>
           </Button>
         )}
@@ -198,11 +202,15 @@ export function ActionButtons({
             onClick={() => onAction(betOrRaiseAction.type, roundToHalf(selectedBetSize))}
             disabled={disabled}
             aria-label={`${betAction ? "Bet" : "Raise to"} ${roundToHalf(selectedBetSize)} big blinds`}
-            className="flex-1 h-12 sm:h-12 bg-green-900/50 hover:bg-green-800/60 active:bg-green-700/70 border border-green-600/50 text-green-100"
+            className="h-12 flex-1 border border-green-600/50 bg-green-900/50 text-green-100 hover:bg-green-800/60 active:bg-green-700/70 sm:h-12"
           >
             <div className="flex flex-col items-center leading-tight">
-              <span className="font-bold text-base sm:text-base">{betAction ? "Bet" : "Raise"}</span>
-              <span className="text-[11px] sm:text-xs opacity-80">{roundToHalf(selectedBetSize)} BB</span>
+              <span className="text-base font-bold sm:text-base">
+                {betAction ? "Bet" : "Raise"}
+              </span>
+              <span className="text-[11px] opacity-80 sm:text-xs">
+                {roundToHalf(selectedBetSize)} BB
+              </span>
             </div>
           </Button>
         )}
@@ -214,18 +222,18 @@ export function ActionButtons({
             onClick={() => onAction("allin")}
             disabled={disabled}
             aria-label={`Go all in for ${roundToHalf(heroStack)} big blinds`}
-            className="flex-1 h-12 sm:h-12 bg-amber-900/50 hover:bg-amber-800/60 active:bg-amber-700/70 border border-amber-600/50 text-amber-100"
+            className="h-12 flex-1 border border-amber-600/50 bg-amber-900/50 text-amber-100 hover:bg-amber-800/60 active:bg-amber-700/70 sm:h-12"
           >
             <div className="flex flex-col items-center leading-tight">
-              <span className="font-bold text-base sm:text-base">All In</span>
-              <span className="text-[11px] sm:text-xs opacity-80">{roundToHalf(heroStack)} BB</span>
+              <span className="text-base font-bold sm:text-base">All In</span>
+              <span className="text-[11px] opacity-80 sm:text-xs">{roundToHalf(heroStack)} BB</span>
             </div>
           </Button>
         )}
       </div>
 
       {/* 快捷鍵提示 - 只在桌面顯示 */}
-      <div className="hidden sm:flex justify-center gap-4 text-[10px] text-gray-500">
+      <div className="hidden justify-center gap-4 text-[10px] text-gray-500 sm:flex">
         {foldAction && <span>F = Fold</span>}
         {(checkAction || callAction) && <span>C = {checkAction ? "Check" : "Call"}</span>}
         {betOrRaiseAction && <span>R = {betAction ? "Bet" : "Raise"}</span>}
@@ -254,7 +262,7 @@ export function SimpleActionButtons({
   const roundToHalf = (value: number) => Math.round(value * 2) / 2;
 
   return (
-    <div className={cn("flex gap-2 justify-center", className)}>
+    <div className={cn("flex justify-center gap-2", className)}>
       {availableActions.map((action) => (
         <Button
           key={action.type}

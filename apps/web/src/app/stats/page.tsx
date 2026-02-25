@@ -5,13 +5,7 @@ import { useTranslations } from "next-intl";
 import dynamic from "next/dynamic";
 import { useProgressStore } from "@/stores/progressStore";
 import { useQuizProgressStore } from "@/stores/quizProgressStore";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -36,18 +30,10 @@ import { Progress } from "@/components/ui/progress";
 import { WeaknessHeatmap } from "@/components/stats/WeaknessHeatmap";
 import { ShareCard } from "@/components/stats/ShareCard";
 import Link from "next/link";
-import {
-  TrackedDrillType,
-  DRILL_LABELS,
-  POSITIONS,
-  drillTypeToPath,
-} from "@/lib/constants/drills";
+import { TrackedDrillType, DRILL_LABELS, POSITIONS, drillTypeToPath } from "@/lib/constants/drills";
 
 // Dynamic import for recharts to reduce initial bundle size
-const AreaChart = dynamic(
-  () => import("recharts").then((mod) => mod.AreaChart),
-  { ssr: false }
-);
+const AreaChart = dynamic(() => import("recharts").then((mod) => mod.AreaChart), { ssr: false });
 const Area = dynamic(() => import("recharts").then((mod) => mod.Area), {
   ssr: false,
 });
@@ -57,10 +43,9 @@ const XAxis = dynamic(() => import("recharts").then((mod) => mod.XAxis), {
 const YAxis = dynamic(() => import("recharts").then((mod) => mod.YAxis), {
   ssr: false,
 });
-const CartesianGrid = dynamic(
-  () => import("recharts").then((mod) => mod.CartesianGrid),
-  { ssr: false }
-);
+const CartesianGrid = dynamic(() => import("recharts").then((mod) => mod.CartesianGrid), {
+  ssr: false,
+});
 const Tooltip = dynamic(() => import("recharts").then((mod) => mod.Tooltip), {
   ssr: false,
 });
@@ -68,10 +53,7 @@ const ResponsiveContainer = dynamic(
   () => import("recharts").then((mod) => mod.ResponsiveContainer),
   { ssr: false }
 );
-const PieChart = dynamic(
-  () => import("recharts").then((mod) => mod.PieChart),
-  { ssr: false }
-);
+const PieChart = dynamic(() => import("recharts").then((mod) => mod.PieChart), { ssr: false });
 const Pie = dynamic(() => import("recharts").then((mod) => mod.Pie), {
   ssr: false,
 });
@@ -107,12 +89,17 @@ export default function StatsPage() {
     totalHands: trendData.reduce((sum, d) => sum + d.total, 0),
     totalCorrect: trendData.reduce((sum, d) => sum + d.correct, 0),
     avgAccuracy: (() => {
-      const daysWithData = trendData.filter(d => d.total > 0);
+      const daysWithData = trendData.filter((d) => d.total > 0);
       if (daysWithData.length === 0) return 0;
       return Math.round(daysWithData.reduce((sum, d) => sum + d.accuracy, 0) / daysWithData.length);
     })(),
-    activeDays: trendData.filter(d => d.total > 0).length,
-    bestDay: trendData.reduce((best, d) => d.total > best.total ? d : best, { total: 0, correct: 0, accuracy: 0, date: "" }),
+    activeDays: trendData.filter((d) => d.total > 0).length,
+    bestDay: trendData.reduce((best, d) => (d.total > best.total ? d : best), {
+      total: 0,
+      correct: 0,
+      accuracy: 0,
+      date: "",
+    }),
   };
 
   // Pie chart data for drill distribution
@@ -125,10 +112,7 @@ export default function StatsPage() {
 
   // Calculate overall stats
   const totalHands = Object.values(stats).reduce((sum, s) => sum + s.total, 0);
-  const totalCorrect = Object.values(stats).reduce(
-    (sum, s) => sum + s.correct + s.acceptable,
-    0
-  );
+  const totalCorrect = Object.values(stats).reduce((sum, s) => sum + s.correct + s.acceptable, 0);
   const overallAccuracy = totalHands > 0 ? (totalCorrect / totalHands) * 100 : 0;
 
   // Calculate best streak from recent results
@@ -219,41 +203,41 @@ export default function StatsPage() {
       {/* Overview Cards */}
       <div className="mb-8 grid grid-cols-2 gap-4 md:grid-cols-4">
         <Card>
-          <CardContent className="p-4 sm:p-6 text-center">
-            <Activity className="h-8 w-8 mx-auto mb-2 text-primary" />
-            <div className="text-2xl sm:text-3xl font-bold">{totalHands}</div>
-            <div className="text-sm text-muted-foreground">
+          <CardContent className="p-4 text-center sm:p-6">
+            <Activity className="text-primary mx-auto mb-2 h-8 w-8" />
+            <div className="text-2xl font-bold sm:text-3xl">{totalHands}</div>
+            <div className="text-muted-foreground text-sm">
               {t("stats.totalHands") || "Total Hands"}
             </div>
           </CardContent>
         </Card>
         <Card>
-          <CardContent className="p-4 sm:p-6 text-center">
-            <Target className="h-8 w-8 mx-auto mb-2 text-green-500" />
+          <CardContent className="p-4 text-center sm:p-6">
+            <Target className="mx-auto mb-2 h-8 w-8 text-green-500" />
             <div
-              className={cn("text-2xl sm:text-3xl font-bold", getAccuracyColor(overallAccuracy))}
+              className={cn("text-2xl font-bold sm:text-3xl", getAccuracyColor(overallAccuracy))}
             >
               {overallAccuracy.toFixed(1)}%
             </div>
-            <div className="text-sm text-muted-foreground">
+            <div className="text-muted-foreground text-sm">
               {t("stats.overallAccuracy") || "Overall Accuracy"}
             </div>
           </CardContent>
         </Card>
         <Card>
-          <CardContent className="p-4 sm:p-6 text-center">
-            <Trophy className="h-8 w-8 mx-auto mb-2 text-yellow-500" />
-            <div className="text-2xl sm:text-3xl font-bold">{bestStreak}</div>
-            <div className="text-sm text-muted-foreground">
+          <CardContent className="p-4 text-center sm:p-6">
+            <Trophy className="mx-auto mb-2 h-8 w-8 text-yellow-500" />
+            <div className="text-2xl font-bold sm:text-3xl">{bestStreak}</div>
+            <div className="text-muted-foreground text-sm">
               {t("stats.bestStreak") || "Best Streak"}
             </div>
           </CardContent>
         </Card>
         <Card>
-          <CardContent className="p-4 sm:p-6 text-center">
-            <TrendingUp className="h-8 w-8 mx-auto mb-2 text-blue-500" />
-            <div className="text-2xl sm:text-3xl font-bold">{totalCorrect}</div>
-            <div className="text-sm text-muted-foreground">
+          <CardContent className="p-4 text-center sm:p-6">
+            <TrendingUp className="mx-auto mb-2 h-8 w-8 text-blue-500" />
+            <div className="text-2xl font-bold sm:text-3xl">{totalCorrect}</div>
+            <div className="text-muted-foreground text-sm">
               {t("stats.correctAnswers") || "Correct Answers"}
             </div>
           </CardContent>
@@ -359,11 +343,9 @@ export default function StatsPage() {
           return (
             <Card className="mb-8 border-green-500/30 bg-green-500/5">
               <CardContent className="p-6 text-center">
-                <Trophy className="h-12 w-12 mx-auto text-green-500 mb-3" />
-                <h3 className="text-lg font-semibold mb-2">表現優異！</h3>
-                <p className="text-muted-foreground">
-                  目前沒有明顯弱點，繼續保持練習以維持水準
-                </p>
+                <Trophy className="mx-auto mb-3 h-12 w-12 text-green-500" />
+                <h3 className="mb-2 text-lg font-semibold">表現優異！</h3>
+                <p className="text-muted-foreground">目前沒有明顯弱點，繼續保持練習以維持水準</p>
               </CardContent>
             </Card>
           );
@@ -379,7 +361,8 @@ export default function StatsPage() {
                 {t("stats.recommendations") || "Personalized Recommendations"}
               </CardTitle>
               <CardDescription>
-                {t("stats.recommendationsDesc") || "Based on your practice data, here's what to focus on"}
+                {t("stats.recommendationsDesc") ||
+                  "Based on your practice data, here's what to focus on"}
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -389,19 +372,19 @@ export default function StatsPage() {
                     key={idx}
                     href={rec.href}
                     className={cn(
-                      "flex items-start gap-3 p-4 rounded-lg border transition-all hover:shadow-md",
+                      "flex items-start gap-3 rounded-lg border p-4 transition-all hover:shadow-md",
                       rec.priority === "high"
                         ? "border-red-500/30 bg-red-500/5 hover:bg-red-500/10"
                         : rec.priority === "medium"
-                        ? "border-amber-500/30 bg-amber-500/5 hover:bg-amber-500/10"
-                        : "border-blue-500/30 bg-blue-500/5 hover:bg-blue-500/10"
+                          ? "border-amber-500/30 bg-amber-500/5 hover:bg-amber-500/10"
+                          : "border-blue-500/30 bg-blue-500/5 hover:bg-blue-500/10"
                     )}
                   >
-                    <div className="shrink-0 mt-0.5">{rec.icon}</div>
-                    <div className="flex-1 min-w-0">
-                      <h4 className="font-medium text-sm mb-1">{rec.title}</h4>
-                      <p className="text-xs text-muted-foreground mb-2">{rec.description}</p>
-                      <span className="inline-flex items-center gap-1 text-xs font-medium text-primary">
+                    <div className="mt-0.5 shrink-0">{rec.icon}</div>
+                    <div className="min-w-0 flex-1">
+                      <h4 className="mb-1 text-sm font-medium">{rec.title}</h4>
+                      <p className="text-muted-foreground mb-2 text-xs">{rec.description}</p>
+                      <span className="text-primary inline-flex items-center gap-1 text-xs font-medium">
                         {rec.action}
                         <ArrowRight className="h-3 w-3" />
                       </span>
@@ -425,17 +408,17 @@ export default function StatsPage() {
               </CardTitle>
               <CardDescription>
                 {trendRange === 7
-                  ? (t("stats.weeklyTrendDesc") || "Your practice activity over the last week")
-                  : (t("stats.monthlyTrendDesc") || "Your practice activity over the last month")}
+                  ? t("stats.weeklyTrendDesc") || "Your practice activity over the last week"
+                  : t("stats.monthlyTrendDesc") || "Your practice activity over the last month"}
               </CardDescription>
             </div>
             {/* Range Toggle */}
-            <div className="flex gap-1 bg-muted rounded-lg p-1">
+            <div className="bg-muted flex gap-1 rounded-lg p-1">
               <Button
                 variant={trendRange === 7 ? "default" : "ghost"}
                 size="sm"
                 onClick={() => setTrendRange(7)}
-                className="text-xs px-3"
+                className="px-3 text-xs"
               >
                 7 {t("common.days") || "Days"}
               </Button>
@@ -443,7 +426,7 @@ export default function StatsPage() {
                 variant={trendRange === 30 ? "default" : "ghost"}
                 size="sm"
                 onClick={() => setTrendRange(30)}
-                className="text-xs px-3"
+                className="px-3 text-xs"
               >
                 30 {t("common.days") || "Days"}
               </Button>
@@ -453,22 +436,30 @@ export default function StatsPage() {
         <CardContent>
           {/* Period Summary */}
           {trendStats.totalHands > 0 && (
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4 p-4 bg-muted/50 rounded-lg">
+            <div className="bg-muted/50 mb-4 grid grid-cols-2 gap-4 rounded-lg p-4 md:grid-cols-4">
               <div className="text-center">
                 <div className="text-xl font-bold">{trendStats.totalHands}</div>
-                <div className="text-xs text-muted-foreground">{t("stats.totalHands") || "Total Hands"}</div>
+                <div className="text-muted-foreground text-xs">
+                  {t("stats.totalHands") || "Total Hands"}
+                </div>
               </div>
               <div className="text-center">
                 <div className="text-xl font-bold text-green-500">{trendStats.avgAccuracy}%</div>
-                <div className="text-xs text-muted-foreground">{t("stats.avgAccuracy") || "Avg Accuracy"}</div>
+                <div className="text-muted-foreground text-xs">
+                  {t("stats.avgAccuracy") || "Avg Accuracy"}
+                </div>
               </div>
               <div className="text-center">
                 <div className="text-xl font-bold">{trendStats.activeDays}</div>
-                <div className="text-xs text-muted-foreground">{t("stats.activeDays") || "Active Days"}</div>
+                <div className="text-muted-foreground text-xs">
+                  {t("stats.activeDays") || "Active Days"}
+                </div>
               </div>
               <div className="text-center">
-                <div className="text-xl font-bold text-primary">{trendStats.bestDay.total}</div>
-                <div className="text-xs text-muted-foreground">{t("stats.bestDay") || "Best Day"}</div>
+                <div className="text-primary text-xl font-bold">{trendStats.bestDay.total}</div>
+                <div className="text-muted-foreground text-xs">
+                  {t("stats.bestDay") || "Best Day"}
+                </div>
               </div>
             </div>
           )}
@@ -530,7 +521,7 @@ export default function StatsPage() {
               </ResponsiveContainer>
             </div>
           ) : (
-            <div className="h-[200px] flex items-center justify-center text-muted-foreground">
+            <div className="text-muted-foreground flex h-[200px] items-center justify-center">
               {t("stats.noDataYet") || "No data yet. Start practicing!"}
             </div>
           )}
@@ -563,9 +554,7 @@ export default function StatsPage() {
                       outerRadius={70}
                       paddingAngle={2}
                       dataKey="value"
-                      label={({ name, percent }) =>
-                        `${name} ${((percent ?? 0) * 100).toFixed(0)}%`
-                      }
+                      label={({ name, percent }) => `${name} ${((percent ?? 0) * 100).toFixed(0)}%`}
                       labelLine={false}
                     >
                       {pieData.map((_, index) => (
@@ -586,7 +575,7 @@ export default function StatsPage() {
                 </ResponsiveContainer>
               </div>
             ) : (
-              <div className="h-[200px] flex items-center justify-center text-muted-foreground">
+              <div className="text-muted-foreground flex h-[200px] items-center justify-center">
                 {t("stats.noDataYet") || "No data yet. Start practicing!"}
               </div>
             )}
@@ -609,22 +598,30 @@ export default function StatsPage() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <div className="text-center p-4 bg-muted/50 rounded-lg">
+              <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+                <div className="bg-muted/50 rounded-lg p-4 text-center">
                   <div className="text-2xl font-bold">{quizStats.total}</div>
-                  <div className="text-xs text-muted-foreground">{t("stats.totalQuestions") || "Total Questions"}</div>
+                  <div className="text-muted-foreground text-xs">
+                    {t("stats.totalQuestions") || "Total Questions"}
+                  </div>
                 </div>
-                <div className="text-center p-4 bg-blue-500/10 rounded-lg">
+                <div className="rounded-lg bg-blue-500/10 p-4 text-center">
                   <div className="text-2xl font-bold text-blue-500">{quizStats.attempted}</div>
-                  <div className="text-xs text-muted-foreground">{t("stats.attempted") || "Attempted"}</div>
+                  <div className="text-muted-foreground text-xs">
+                    {t("stats.attempted") || "Attempted"}
+                  </div>
                 </div>
-                <div className="text-center p-4 bg-green-500/10 rounded-lg">
+                <div className="rounded-lg bg-green-500/10 p-4 text-center">
                   <div className="text-2xl font-bold text-green-500">{quizStats.mastered}</div>
-                  <div className="text-xs text-muted-foreground">{t("stats.mastered") || "Mastered"}</div>
+                  <div className="text-muted-foreground text-xs">
+                    {t("stats.mastered") || "Mastered"}
+                  </div>
                 </div>
-                <div className="text-center p-4 bg-amber-500/10 rounded-lg">
+                <div className="rounded-lg bg-amber-500/10 p-4 text-center">
                   <div className="text-2xl font-bold text-amber-500">{quizStats.needsReview}</div>
-                  <div className="text-xs text-muted-foreground">{t("stats.needsReview") || "Needs Review"}</div>
+                  <div className="text-muted-foreground text-xs">
+                    {t("stats.needsReview") || "Needs Review"}
+                  </div>
                 </div>
               </div>
               <div className="mt-4 space-y-2">
@@ -642,7 +639,7 @@ export default function StatsPage() {
                 <Progress value={quizStats.masteryRate} className="h-2 [&>div]:bg-green-500" />
               </div>
               <Link href="/exam">
-                <Button className="w-full mt-4">
+                <Button className="mt-4 w-full">
                   <Award className="mr-2 h-4 w-4" />
                   {t("stats.takeExam") || "Take Exam"}
                 </Button>
@@ -670,25 +667,25 @@ export default function StatsPage() {
                 <div key={drill} className="space-y-2">
                   <div className="flex items-center justify-between">
                     <Link href={DRILL_LABELS[drill].href}>
-                      <span className="font-medium hover:text-primary hover:underline">
+                      <span className="hover:text-primary font-medium hover:underline">
                         {DRILL_LABELS[drill].en}
                       </span>
                     </Link>
-                    <span className="text-sm text-muted-foreground">
+                    <span className="text-muted-foreground text-sm">
                       {total} {t("stats.hands") || "hands"}
                     </span>
                   </div>
-                  <div className="h-2 rounded-full bg-muted overflow-hidden">
+                  <div className="bg-muted h-2 overflow-hidden rounded-full">
                     <div
                       className={cn(
                         "h-full transition-all duration-300",
                         accuracy >= 80
                           ? "bg-green-500"
                           : accuracy >= 60
-                          ? "bg-yellow-500"
-                          : accuracy > 0
-                          ? "bg-red-500"
-                          : "bg-muted"
+                            ? "bg-yellow-500"
+                            : accuracy > 0
+                              ? "bg-red-500"
+                              : "bg-muted"
                       )}
                       style={{ width: `${Math.max(accuracy, 0)}%` }}
                     />
@@ -734,15 +731,15 @@ export default function StatsPage() {
                 ))}
               </div>
             ) : totalHands > 0 ? (
-              <div className="text-center py-8">
-                <Trophy className="h-12 w-12 mx-auto text-green-500 mb-2" />
+              <div className="py-8 text-center">
+                <Trophy className="mx-auto mb-2 h-12 w-12 text-green-500" />
                 <p className="text-muted-foreground">
                   {t("stats.noWeakSpots") || "Great job! No weak spots detected."}
                 </p>
               </div>
             ) : (
-              <div className="text-center py-8">
-                <Activity className="h-12 w-12 mx-auto text-muted-foreground/50 mb-2" />
+              <div className="py-8 text-center">
+                <Activity className="text-muted-foreground/50 mx-auto mb-2 h-12 w-12" />
                 <p className="text-muted-foreground">
                   {t("stats.startPracticing") || "Start practicing to see your weak spots"}
                 </p>
@@ -772,9 +769,9 @@ export default function StatsPage() {
             <table className="w-full text-sm">
               <thead>
                 <tr>
-                  <th className="text-left p-2 font-medium">{t("drill.position")}</th>
+                  <th className="p-2 text-left font-medium">{t("drill.position")}</th>
                   {(Object.keys(stats) as DrillType[]).map((drill) => (
-                    <th key={drill} className="text-center p-2 font-medium">
+                    <th key={drill} className="p-2 text-center font-medium">
                       {DRILL_LABELS[drill].en}
                     </th>
                   ))}
@@ -790,7 +787,7 @@ export default function StatsPage() {
                         <td key={drill} className="p-2 text-center">
                           <div
                             className={cn(
-                              "inline-block px-3 py-1 rounded-md min-w-[60px]",
+                              "inline-block min-w-[60px] rounded-md px-3 py-1",
                               getAccuracyBgColor(data.accuracy, data.total)
                             )}
                           >
@@ -831,12 +828,12 @@ export default function StatsPage() {
                 <div
                   key={idx}
                   className={cn(
-                    "flex items-center justify-between p-2 rounded-lg",
+                    "flex items-center justify-between rounded-lg p-2",
                     result.is_correct
                       ? "bg-green-500/10"
                       : result.is_acceptable
-                      ? "bg-yellow-500/10"
-                      : "bg-red-500/10"
+                        ? "bg-yellow-500/10"
+                        : "bg-red-500/10"
                   )}
                 >
                   <div className="flex items-center gap-3">
@@ -849,7 +846,7 @@ export default function StatsPage() {
                     </Badge>
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className="text-sm text-muted-foreground">
+                    <span className="text-muted-foreground text-sm">
                       {result.player_action} → {result.correct_action}
                     </span>
                     {result.is_correct ? (
@@ -864,7 +861,7 @@ export default function StatsPage() {
               ))}
             </div>
           ) : (
-            <div className="text-center py-8 text-muted-foreground">
+            <div className="text-muted-foreground py-8 text-center">
               {t("stats.noRecentActivity") || "No recent activity. Start practicing!"}
             </div>
           )}
@@ -873,9 +870,8 @@ export default function StatsPage() {
 
       {/* Sync Info */}
       {lastSyncedAt && (
-        <p className="mt-4 text-center text-sm text-muted-foreground">
-          {t("stats.lastSynced") || "Last synced"}:{" "}
-          {new Date(lastSyncedAt).toLocaleString()}
+        <p className="text-muted-foreground mt-4 text-center text-sm">
+          {t("stats.lastSynced") || "Last synced"}: {new Date(lastSyncedAt).toLocaleString()}
         </p>
       )}
     </div>

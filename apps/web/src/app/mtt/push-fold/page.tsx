@@ -3,13 +3,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
@@ -64,10 +58,10 @@ function getHandKey(row: number, col: number): string {
 
 // Colors for different chart types
 const COLORS = {
-  push: "#22c55e",      // Green for push
-  fold: "#1e293b",      // Dark for fold
-  call: "#3b82f6",      // Blue for call
-  resteal: "#f97316",   // Orange for resteal
+  push: "#22c55e", // Green for push
+  fold: "#1e293b", // Dark for fold
+  call: "#3b82f6", // Blue for call
+  resteal: "#f97316", // Orange for resteal
 };
 
 interface PushFoldGridProps {
@@ -81,7 +75,7 @@ function PushFoldGrid({ hands, colorType, onHandClick }: PushFoldGridProps) {
 
   return (
     <div
-      className="grid gap-[1px] bg-border rounded-lg overflow-hidden"
+      className="bg-border grid gap-[1px] overflow-hidden rounded-lg"
       style={{ gridTemplateColumns: "repeat(13, 1fr)" }}
     >
       {RANKS.map((_, rowIndex) =>
@@ -94,9 +88,9 @@ function PushFoldGrid({ hands, colorType, onHandClick }: PushFoldGridProps) {
             <button
               key={hand}
               className={cn(
-                "aspect-square flex items-center justify-center",
-                "text-[8px] sm:text-[10px] md:text-xs font-medium transition-all",
-                "hover:scale-110 hover:z-10",
+                "flex aspect-square items-center justify-center",
+                "text-[8px] font-medium transition-all sm:text-[10px] md:text-xs",
+                "hover:z-10 hover:scale-110",
                 isPair && "font-bold"
               )}
               style={{
@@ -104,9 +98,7 @@ function PushFoldGrid({ hands, colorType, onHandClick }: PushFoldGridProps) {
               }}
               onClick={() => onHandClick?.(hand)}
             >
-              <span className="text-white drop-shadow-[0_1px_1px_rgba(0,0,0,0.8)]">
-                {hand}
-              </span>
+              <span className="text-white drop-shadow-[0_1px_1px_rgba(0,0,0,0.8)]">{hand}</span>
             </button>
           );
         })
@@ -134,10 +126,14 @@ export default function PushFoldPage() {
   const [activeTab, setActiveTab] = useState(stored?.activeTab || "push");
   const [position, setPosition] = useState(stored?.position || "BTN");
   const [stackDepth, setStackDepth] = useState(stored?.stackDepth || "10bb");
-  const [defenseScenario, setDefenseScenario] = useState(stored?.defenseScenario || "BB_vs_SB_shove");
+  const [defenseScenario, setDefenseScenario] = useState(
+    stored?.defenseScenario || "BB_vs_SB_shove"
+  );
   const [pushHands, setPushHands] = useState<string[]>([]);
   const [defenseHands, setDefenseHands] = useState<string[]>([]);
-  const [restealScenario, setRestealScenario] = useState(stored?.restealScenario || "SB_resteal_vs_BTN");
+  const [restealScenario, setRestealScenario] = useState(
+    stored?.restealScenario || "SB_resteal_vs_BTN"
+  );
   const [restealStack, setRestealStack] = useState(stored?.restealStack || "10bb");
   const [restealHands, setRestealHands] = useState<string[]>([]);
   const [huScenario, setHuScenario] = useState(stored?.huScenario || "SB_push");
@@ -160,7 +156,16 @@ export default function PushFoldPage() {
         huStack,
       })
     );
-  }, [activeTab, position, stackDepth, defenseScenario, restealScenario, restealStack, huScenario, huStack]);
+  }, [
+    activeTab,
+    position,
+    stackDepth,
+    defenseScenario,
+    restealScenario,
+    restealStack,
+    huScenario,
+    huStack,
+  ]);
 
   // Fetch push/fold data
   useEffect(() => {
@@ -241,19 +246,26 @@ export default function PushFoldPage() {
   // Calculate range percentage
   const currentHands = useMemo(() => {
     switch (activeTab) {
-      case "push": return pushHands;
-      case "defense": return defenseHands;
-      case "resteal": return restealHands;
-      case "hu": return huHands;
-      default: return [];
+      case "push":
+        return pushHands;
+      case "defense":
+        return defenseHands;
+      case "resteal":
+        return restealHands;
+      case "hu":
+        return huHands;
+      default:
+        return [];
     }
   }, [activeTab, pushHands, defenseHands, restealHands, huHands]);
 
   const rangePercentage = useMemo(() => {
     let combos = 0;
     currentHands.forEach((hand) => {
-      if (hand.length === 2) combos += 6; // Pairs
-      else if (hand.endsWith("s")) combos += 4; // Suited
+      if (hand.length === 2)
+        combos += 6; // Pairs
+      else if (hand.endsWith("s"))
+        combos += 4; // Suited
       else combos += 12; // Offsuit
     });
     return Math.round((combos / 1326) * 100);
@@ -306,14 +318,18 @@ export default function PushFoldPage() {
                 </div>
                 <div className="text-right">
                   <div className="text-2xl font-bold text-green-500">{rangePercentage}%</div>
-                  <div className="text-sm text-muted-foreground">{pushHands.length} {t("mtt.pushFold.hands")}</div>
+                  <div className="text-muted-foreground text-sm">
+                    {pushHands.length} {t("mtt.pushFold.hands")}
+                  </div>
                 </div>
               </div>
             </CardHeader>
             <CardContent>
               {/* Position Selector */}
               <div className="mb-4">
-                <div className="text-sm text-muted-foreground mb-2">{t("mtt.pushFold.selectPosition")}</div>
+                <div className="text-muted-foreground mb-2 text-sm">
+                  {t("mtt.pushFold.selectPosition")}
+                </div>
                 <div className="flex flex-wrap gap-2">
                   {POSITIONS.map((pos) => (
                     <Button
@@ -330,7 +346,9 @@ export default function PushFoldPage() {
 
               {/* Stack Depth Selector */}
               <div className="mb-6">
-                <div className="text-sm text-muted-foreground mb-2">{t("mtt.pushFold.selectStack")}</div>
+                <div className="text-muted-foreground mb-2 text-sm">
+                  {t("mtt.pushFold.selectStack")}
+                </div>
                 <div className="flex flex-wrap gap-2">
                   {STACK_DEPTHS.map((depth) => (
                     <Button
@@ -340,7 +358,7 @@ export default function PushFoldPage() {
                       onClick={() => setStackDepth(depth)}
                       className="min-w-[60px]"
                     >
-                      <Coins className="h-3 w-3 mr-1" />
+                      <Coins className="mr-1 h-3 w-3" />
                       {depth}
                     </Button>
                   ))}
@@ -350,20 +368,20 @@ export default function PushFoldPage() {
               {/* Grid */}
               {loading ? (
                 <div className="flex items-center justify-center py-12">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
+                  <div className="border-primary h-8 w-8 animate-spin rounded-full border-b-2" />
                 </div>
               ) : (
                 <PushFoldGrid hands={pushHands} colorType="push" />
               )}
 
               {/* Legend */}
-              <div className="flex justify-center gap-6 mt-4 text-sm">
+              <div className="mt-4 flex justify-center gap-6 text-sm">
                 <div className="flex items-center gap-1.5">
-                  <div className="w-4 h-4 rounded" style={{ backgroundColor: COLORS.push }} />
+                  <div className="h-4 w-4 rounded" style={{ backgroundColor: COLORS.push }} />
                   <span>Push</span>
                 </div>
                 <div className="flex items-center gap-1.5">
-                  <div className="w-4 h-4 rounded" style={{ backgroundColor: COLORS.fold }} />
+                  <div className="h-4 w-4 rounded" style={{ backgroundColor: COLORS.fold }} />
                   <span>Fold</span>
                 </div>
               </div>
@@ -385,14 +403,18 @@ export default function PushFoldPage() {
                 </div>
                 <div className="text-right">
                   <div className="text-2xl font-bold text-blue-500">{rangePercentage}%</div>
-                  <div className="text-sm text-muted-foreground">{defenseHands.length} {t("mtt.pushFold.hands")}</div>
+                  <div className="text-muted-foreground text-sm">
+                    {defenseHands.length} {t("mtt.pushFold.hands")}
+                  </div>
                 </div>
               </div>
             </CardHeader>
             <CardContent>
               {/* Scenario Selector */}
               <div className="mb-4">
-                <div className="text-sm text-muted-foreground mb-2">{t("mtt.pushFold.selectScenario")}</div>
+                <div className="text-muted-foreground mb-2 text-sm">
+                  {t("mtt.pushFold.selectScenario")}
+                </div>
                 <div className="flex flex-wrap gap-2">
                   {DEFENSE_SCENARIOS.map((scenario) => (
                     <Button
@@ -401,7 +423,7 @@ export default function PushFoldPage() {
                       size="sm"
                       onClick={() => setDefenseScenario(scenario.key)}
                     >
-                      <Users className="h-3 w-3 mr-1" />
+                      <Users className="mr-1 h-3 w-3" />
                       {scenario.hero} vs {scenario.villain}
                     </Button>
                   ))}
@@ -410,7 +432,9 @@ export default function PushFoldPage() {
 
               {/* Stack Depth Selector */}
               <div className="mb-6">
-                <div className="text-sm text-muted-foreground mb-2">{t("mtt.pushFold.selectStack")}</div>
+                <div className="text-muted-foreground mb-2 text-sm">
+                  {t("mtt.pushFold.selectStack")}
+                </div>
                 <div className="flex flex-wrap gap-2">
                   {DEFENSE_STACKS.map((depth) => (
                     <Button
@@ -420,7 +444,7 @@ export default function PushFoldPage() {
                       onClick={() => setStackDepth(depth)}
                       className="min-w-[60px]"
                     >
-                      <Coins className="h-3 w-3 mr-1" />
+                      <Coins className="mr-1 h-3 w-3" />
                       {depth}
                     </Button>
                   ))}
@@ -430,20 +454,20 @@ export default function PushFoldPage() {
               {/* Grid */}
               {loading ? (
                 <div className="flex items-center justify-center py-12">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
+                  <div className="border-primary h-8 w-8 animate-spin rounded-full border-b-2" />
                 </div>
               ) : (
                 <PushFoldGrid hands={defenseHands} colorType="call" />
               )}
 
               {/* Legend */}
-              <div className="flex justify-center gap-6 mt-4 text-sm">
+              <div className="mt-4 flex justify-center gap-6 text-sm">
                 <div className="flex items-center gap-1.5">
-                  <div className="w-4 h-4 rounded" style={{ backgroundColor: COLORS.call }} />
+                  <div className="h-4 w-4 rounded" style={{ backgroundColor: COLORS.call }} />
                   <span>Call</span>
                 </div>
                 <div className="flex items-center gap-1.5">
-                  <div className="w-4 h-4 rounded" style={{ backgroundColor: COLORS.fold }} />
+                  <div className="h-4 w-4 rounded" style={{ backgroundColor: COLORS.fold }} />
                   <span>Fold</span>
                 </div>
               </div>
@@ -465,14 +489,18 @@ export default function PushFoldPage() {
                 </div>
                 <div className="text-right">
                   <div className="text-2xl font-bold text-orange-500">{rangePercentage}%</div>
-                  <div className="text-sm text-muted-foreground">{restealHands.length} {t("mtt.pushFold.hands")}</div>
+                  <div className="text-muted-foreground text-sm">
+                    {restealHands.length} {t("mtt.pushFold.hands")}
+                  </div>
                 </div>
               </div>
             </CardHeader>
             <CardContent>
               {/* Scenario Selector */}
               <div className="mb-4">
-                <div className="text-sm text-muted-foreground mb-2">{t("mtt.pushFold.selectScenario")}</div>
+                <div className="text-muted-foreground mb-2 text-sm">
+                  {t("mtt.pushFold.selectScenario")}
+                </div>
                 <div className="flex flex-wrap gap-2">
                   {RESTEAL_SCENARIOS.map((scenario) => (
                     <Button
@@ -481,7 +509,7 @@ export default function PushFoldPage() {
                       size="sm"
                       onClick={() => setRestealScenario(scenario.key)}
                     >
-                      <Zap className="h-3 w-3 mr-1" />
+                      <Zap className="mr-1 h-3 w-3" />
                       {scenario.hero} vs {scenario.villain}
                     </Button>
                   ))}
@@ -490,7 +518,9 @@ export default function PushFoldPage() {
 
               {/* Stack Depth Selector */}
               <div className="mb-6">
-                <div className="text-sm text-muted-foreground mb-2">{t("mtt.pushFold.selectStack")}</div>
+                <div className="text-muted-foreground mb-2 text-sm">
+                  {t("mtt.pushFold.selectStack")}
+                </div>
                 <div className="flex flex-wrap gap-2">
                   {RESTEAL_STACKS.map((depth) => (
                     <Button
@@ -500,7 +530,7 @@ export default function PushFoldPage() {
                       onClick={() => setRestealStack(depth)}
                       className="min-w-[60px]"
                     >
-                      <Coins className="h-3 w-3 mr-1" />
+                      <Coins className="mr-1 h-3 w-3" />
                       {depth}
                     </Button>
                   ))}
@@ -510,20 +540,20 @@ export default function PushFoldPage() {
               {/* Grid */}
               {loading ? (
                 <div className="flex items-center justify-center py-12">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
+                  <div className="border-primary h-8 w-8 animate-spin rounded-full border-b-2" />
                 </div>
               ) : (
                 <PushFoldGrid hands={restealHands} colorType="resteal" />
               )}
 
               {/* Legend */}
-              <div className="flex justify-center gap-6 mt-4 text-sm">
+              <div className="mt-4 flex justify-center gap-6 text-sm">
                 <div className="flex items-center gap-1.5">
-                  <div className="w-4 h-4 rounded" style={{ backgroundColor: COLORS.resteal }} />
+                  <div className="h-4 w-4 rounded" style={{ backgroundColor: COLORS.resteal }} />
                   <span>Resteal (3bet Shove)</span>
                 </div>
                 <div className="flex items-center gap-1.5">
-                  <div className="w-4 h-4 rounded" style={{ backgroundColor: COLORS.fold }} />
+                  <div className="h-4 w-4 rounded" style={{ backgroundColor: COLORS.fold }} />
                   <span>Fold</span>
                 </div>
               </div>
@@ -544,15 +574,24 @@ export default function PushFoldPage() {
                   <CardDescription>{t("mtt.pushFold.huDesc")}</CardDescription>
                 </div>
                 <div className="text-right">
-                  <div className="text-2xl font-bold" style={{ color: huScenario === "SB_push" ? COLORS.push : COLORS.call }}>{rangePercentage}%</div>
-                  <div className="text-sm text-muted-foreground">{huHands.length} {t("mtt.pushFold.hands")}</div>
+                  <div
+                    className="text-2xl font-bold"
+                    style={{ color: huScenario === "SB_push" ? COLORS.push : COLORS.call }}
+                  >
+                    {rangePercentage}%
+                  </div>
+                  <div className="text-muted-foreground text-sm">
+                    {huHands.length} {t("mtt.pushFold.hands")}
+                  </div>
                 </div>
               </div>
             </CardHeader>
             <CardContent>
               {/* Scenario Selector */}
               <div className="mb-4">
-                <div className="text-sm text-muted-foreground mb-2">{t("mtt.pushFold.selectScenario")}</div>
+                <div className="text-muted-foreground mb-2 text-sm">
+                  {t("mtt.pushFold.selectScenario")}
+                </div>
                 <div className="flex flex-wrap gap-2">
                   {HU_SCENARIOS.map((scenario) => (
                     <Button
@@ -561,7 +600,7 @@ export default function PushFoldPage() {
                       size="sm"
                       onClick={() => setHuScenario(scenario.key)}
                     >
-                      <UserRound className="h-3 w-3 mr-1" />
+                      <UserRound className="mr-1 h-3 w-3" />
                       {scenario.label}
                     </Button>
                   ))}
@@ -570,7 +609,9 @@ export default function PushFoldPage() {
 
               {/* Stack Depth Selector */}
               <div className="mb-6">
-                <div className="text-sm text-muted-foreground mb-2">{t("mtt.pushFold.selectStack")}</div>
+                <div className="text-muted-foreground mb-2 text-sm">
+                  {t("mtt.pushFold.selectStack")}
+                </div>
                 <div className="flex flex-wrap gap-2">
                   {HU_STACKS.map((depth) => (
                     <Button
@@ -580,7 +621,7 @@ export default function PushFoldPage() {
                       onClick={() => setHuStack(depth)}
                       className="min-w-[60px]"
                     >
-                      <Coins className="h-3 w-3 mr-1" />
+                      <Coins className="mr-1 h-3 w-3" />
                       {depth}
                     </Button>
                   ))}
@@ -590,20 +631,28 @@ export default function PushFoldPage() {
               {/* Grid */}
               {loading ? (
                 <div className="flex items-center justify-center py-12">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
+                  <div className="border-primary h-8 w-8 animate-spin rounded-full border-b-2" />
                 </div>
               ) : (
-                <PushFoldGrid hands={huHands} colorType={huScenario === "SB_push" ? "push" : "call"} />
+                <PushFoldGrid
+                  hands={huHands}
+                  colorType={huScenario === "SB_push" ? "push" : "call"}
+                />
               )}
 
               {/* Legend */}
-              <div className="flex justify-center gap-6 mt-4 text-sm">
+              <div className="mt-4 flex justify-center gap-6 text-sm">
                 <div className="flex items-center gap-1.5">
-                  <div className="w-4 h-4 rounded" style={{ backgroundColor: huScenario === "SB_push" ? COLORS.push : COLORS.call }} />
+                  <div
+                    className="h-4 w-4 rounded"
+                    style={{
+                      backgroundColor: huScenario === "SB_push" ? COLORS.push : COLORS.call,
+                    }}
+                  />
                   <span>{huScenario === "SB_push" ? "Push" : "Call"}</span>
                 </div>
                 <div className="flex items-center gap-1.5">
-                  <div className="w-4 h-4 rounded" style={{ backgroundColor: COLORS.fold }} />
+                  <div className="h-4 w-4 rounded" style={{ backgroundColor: COLORS.fold }} />
                   <span>Fold</span>
                 </div>
               </div>
@@ -617,7 +666,7 @@ export default function PushFoldPage() {
         <CardHeader>
           <CardTitle className="text-base">{t("mtt.pushFold.tipsTitle")}</CardTitle>
         </CardHeader>
-        <CardContent className="text-sm text-muted-foreground space-y-2">
+        <CardContent className="text-muted-foreground space-y-2 text-sm">
           <p>{t("mtt.pushFold.tip1")}</p>
           <p>{t("mtt.pushFold.tip2")}</p>
           <p>{t("mtt.pushFold.tip3")}</p>
