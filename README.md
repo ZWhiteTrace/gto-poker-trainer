@@ -23,6 +23,8 @@ data/             # Training data (bundled into frontend for offline use)
 
 ## Local Development
 
+Node.js requirement (web): `>=20.19.0`
+
 **API**
 ```bash
 cd apps/api

@@ -13,6 +13,8 @@ Next.js 16 App Router frontend for [grindgto.com](https://grindgto.com).
 
 ## Development
 
+Node.js: `>=20.19.0`
+
 ```bash
 npm ci
 npm run dev       # http://localhost:3000

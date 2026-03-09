@@ -44,3 +44,45 @@ cd apps/api && uvicorn main:app --reload
 ## 部署
 - Frontend: Vercel (`grindgto.com`)
 - API: Railway (`api.grindgto.com`)
+
+## Build 驗證
+
+修改後必須跑：
+- **Web build**: `cd apps/web && npm run build`
+- **Web test**: `cd apps/web && npx vitest run` (249 unit tests)
+- **Web E2E**: `cd apps/web && npx playwright test` (17 specs，需先 build)
+- **API test**: `cd apps/api && pytest -v` (127 tests)
+
+## 常見陷阱
+
+```typescript
+// ❌ tableStore test 中 AI turn 測試 — 多人桌 AI chain 難以預測
+// ✅ reduce 到 2 players (hero + 1 AI) 來測 AI thinking state
+
+// ❌ data/ JSON import 在 test 中失敗
+// ✅ vitest.config.ts 已設 @data alias，確認 resolve.alias 存在
+```
+
+```typescript
+// ❌ i18n key 直接寫中文字串
+label: "最小防禦頻率"
+
+// ✅ 用 labelKey，在 render 時 t() 解析
+labelKey: "drill.squeeze.mdfLabel"
+// component: {t(item.labelKey)}
+```
+
+## 不確定時的 Default
+
+- 不確定 drill type → 查 `TrackedDrillType` enum（10 種）
+- 不確定考題 ID 格式 → 類型縮寫 + 數字：`pf1`, `e1`, `post1`, `sz1`, `rg1`
+- 不確定翻譯 key 放哪 → `apps/web/messages/zh-TW.json`，按 page 分 namespace
+- 不確定 data 檔放哪 → root `data/`（前端 @data alias）+ `apps/api/data/`（後端），兩邊保持同步
+- 不確定 guide 放哪 → 只放 root `content/guides/`（apps/web/content/guides/ 已刪）
+
+## 禁止事項
+
+- 不要在 `apps/web/content/guides/` 建檔（已刪除，只用 root `content/guides/`）
+- 不要改 `data/` 而不同步 `apps/api/data/`
+- 不要在 component 中硬編碼中文，用 i18n key
+- 不要跳過 vitest 直接 build — test 先過才 build
