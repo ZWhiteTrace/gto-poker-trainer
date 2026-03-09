@@ -3,12 +3,14 @@ Range data endpoints.
 """
 
 import json
+import logging
 from pathlib import Path
 
 from fastapi import APIRouter, HTTPException, Query
 from pydantic import BaseModel
 
 router = APIRouter()
+logger = logging.getLogger(__name__)
 
 
 class RangeResponse(BaseModel):
@@ -87,8 +89,9 @@ def get_rfi_range(
         )
     except HTTPException:
         raise
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+    except Exception:
+        logger.exception("Unexpected error")
+        raise HTTPException(status_code=500, detail="Internal server error")
 
 
 @router.get("/vs_rfi/{hero_position}/{villain_position}", response_model=RangeResponse)
@@ -122,8 +125,9 @@ def get_vs_rfi_range(
         )
     except HTTPException:
         raise
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+    except Exception:
+        logger.exception("Unexpected error")
+        raise HTTPException(status_code=500, detail="Internal server error")
 
 
 @router.get("/vs_3bet/{hero_position}/{villain_position}", response_model=RangeResponse)
@@ -157,8 +161,9 @@ def get_vs_3bet_range(
         )
     except HTTPException:
         raise
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+    except Exception:
+        logger.exception("Unexpected error")
+        raise HTTPException(status_code=500, detail="Internal server error")
 
 
 @router.get("/vs_4bet/{hero_position}/{villain_position}", response_model=RangeResponse)
@@ -192,8 +197,9 @@ def get_vs_4bet_range(
         )
     except HTTPException:
         raise
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+    except Exception:
+        logger.exception("Unexpected error")
+        raise HTTPException(status_code=500, detail="Internal server error")
 
 
 @router.get("/list")
@@ -215,5 +221,8 @@ def list_available_ranges(
             available["vs_4bet"] = list(data["vs_4bet"].keys())
 
         return {"format": format, "available": available}
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+    except HTTPException:
+        raise
+    except Exception:
+        logger.exception("Unexpected error")
+        raise HTTPException(status_code=500, detail="Internal server error")

@@ -2,6 +2,8 @@
 Drill generation endpoints.
 """
 
+import logging
+
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 
@@ -10,6 +12,7 @@ from core.scenario import ActionType
 from trainer.drill import PreflopDrill
 
 router = APIRouter()
+logger = logging.getLogger(__name__)
 
 
 class DrillRequest(BaseModel):
@@ -77,5 +80,8 @@ def generate_spot(request: DrillRequest):
             available_actions=spot.scenario.available_actions,
             scenario_key=spot.scenario.scenario_key,
         )
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+    except HTTPException:
+        raise
+    except Exception:
+        logger.exception("Unexpected error in generate_spot")
+        raise HTTPException(status_code=500, detail="Internal server error")

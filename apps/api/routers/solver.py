@@ -3,6 +3,7 @@ GTO Solver API - Precomputed postflop strategies from Desktop Postflop.
 """
 
 import json
+import logging
 import os
 import random
 from pathlib import Path
@@ -11,6 +12,7 @@ from fastapi import APIRouter, Header, HTTPException, Query
 from pydantic import BaseModel
 
 router = APIRouter()
+logger = logging.getLogger(__name__)
 
 # Cache for solver data
 _solver_cache: dict[str, dict] = {}
@@ -251,8 +253,11 @@ def get_postflop_strategy(
             hand=normalized_hand,
             strategy=hand_strategy,
         )
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+    except HTTPException:
+        raise
+    except Exception:
+        logger.exception("Unexpected error in get_postflop_strategy")
+        raise HTTPException(status_code=500, detail="Internal server error")
 
 
 @router.get("/textures")

@@ -99,9 +99,9 @@ export default async function Home() {
       href: "/drill/vs-rfi",
     },
     {
-      name: t("home.drills.vs3bet.name"),
-      description: t("home.drills.vs3bet.description"),
-      href: "/drill/vs-3bet",
+      name: t("home.drills.pushFold.name"),
+      description: t("home.drills.pushFold.description"),
+      href: "/drill/push-fold",
     },
     {
       name: t("home.drills.rangeViewer.name"),

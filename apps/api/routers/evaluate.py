@@ -2,6 +2,7 @@
 Evaluation endpoints for checking player actions.
 """
 
+import logging
 from pathlib import Path
 
 from fastapi import APIRouter, HTTPException
@@ -13,6 +14,7 @@ from core.position import Position
 from core.scenario import ActionType, Scenario
 
 router = APIRouter()
+logger = logging.getLogger(__name__)
 
 
 class EvaluateRequest(BaseModel):
@@ -97,5 +99,8 @@ def evaluate_action(request: EvaluateRequest):
             explanation=result.explanation,
             explanation_zh=result.explanation_zh,
         )
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+    except HTTPException:
+        raise
+    except Exception:
+        logger.exception("Unexpected error in evaluate_action")
+        raise HTTPException(status_code=500, detail="Internal server error")

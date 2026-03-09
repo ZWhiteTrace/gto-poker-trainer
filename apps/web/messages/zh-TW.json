@@ -82,6 +82,10 @@
         "name": "VS 3-Bet",
         "description": "面對 3-bet 做出正確決策"
       },
+      "pushFold": {
+        "name": "Push/Fold",
+        "description": "MTT 短籌碼推入或棄牌決策"
+      },
       "rangeViewer": {
         "name": "範圍查看器",
         "description": "以視覺方式探索完整 GTO 範圍"

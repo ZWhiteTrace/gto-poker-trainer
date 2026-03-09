@@ -83,6 +83,10 @@
         "name": "VS 3-Bet",
         "description": "Face 3-bets and make correct decisions"
       },
+      "pushFold": {
+        "name": "Push/Fold",
+        "description": "MTT short-stack push or fold decisions"
+      },
       "rangeViewer": {
         "name": "Range Viewer",
         "description": "Explore full GTO ranges visually"

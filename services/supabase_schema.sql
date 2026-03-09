@@ -259,6 +259,12 @@ END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
 -- ═══════════════════════════════════════════════════════════════════════════
+-- LEGACY NOTE: This file is superseded by supabase/migrations/ (001-004).
+-- Do NOT use this file to provision new environments.
+-- Kept for historical reference only.
+-- ═══════════════════════════════════════════════════════════════════════════
+
+-- ═══════════════════════════════════════════════════════════════════════════
 -- ACHIEVEMENT SYSTEM
 -- ═══════════════════════════════════════════════════════════════════════════
 

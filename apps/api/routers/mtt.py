@@ -3,6 +3,7 @@ MTT Push/Fold range endpoints and drill mode.
 """
 
 import json
+import logging
 import random
 from pathlib import Path
 
@@ -10,6 +11,7 @@ from fastapi import APIRouter, HTTPException, Query
 from pydantic import BaseModel
 
 router = APIRouter()
+logger = logging.getLogger(__name__)
 
 # Cache for MTT data
 _mtt_cache: dict[str, dict] = {}
@@ -104,8 +106,9 @@ def get_push_fold_range(
         )
     except HTTPException:
         raise
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+    except Exception:
+        logger.exception("Unexpected error")
+        raise HTTPException(status_code=500, detail="Internal server error")
 
 
 @router.get("/defense/{scenario}/{stack_depth}", response_model=DefenseResponse)
@@ -139,8 +142,9 @@ def get_defense_range(
         )
     except HTTPException:
         raise
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+    except Exception:
+        logger.exception("Unexpected error")
+        raise HTTPException(status_code=500, detail="Internal server error")
 
 
 @router.get("/resteal/{scenario}/{stack_depth}", response_model=DefenseResponse)
@@ -174,8 +178,9 @@ def get_resteal_range(
         )
     except HTTPException:
         raise
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+    except Exception:
+        logger.exception("Unexpected error")
+        raise HTTPException(status_code=500, detail="Internal server error")
 
 
 @router.get("/hu/{scenario}/{stack_depth}", response_model=DefenseResponse)
@@ -209,8 +214,9 @@ def get_hu_range(
         )
     except HTTPException:
         raise
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+    except Exception:
+        logger.exception("Unexpected error")
+        raise HTTPException(status_code=500, detail="Internal server error")
 
 
 @router.get("/list")
@@ -263,8 +269,11 @@ def list_mtt_ranges(format: str = Query(default="6max", description="Game format
             pass
 
         return {"format": format, "available": result}
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+    except HTTPException:
+        raise
+    except Exception:
+        logger.exception("Unexpected error")
+        raise HTTPException(status_code=500, detail="Internal server error")
 
 
 # =====================
@@ -511,8 +520,9 @@ def generate_drill_spot(request: DrillSpotRequest):
 
     except HTTPException:
         raise
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+    except Exception:
+        logger.exception("Unexpected error")
+        raise HTTPException(status_code=500, detail="Internal server error")
 
 
 @router.post("/drill/evaluate", response_model=DrillEvaluateResponse)
@@ -629,5 +639,6 @@ def evaluate_drill_answer(request: DrillEvaluateRequest):
 
     except HTTPException:
         raise
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+    except Exception:
+        logger.exception("Unexpected error")
+        raise HTTPException(status_code=500, detail="Internal server error")

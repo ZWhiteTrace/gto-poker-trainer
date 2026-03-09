@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useTranslations, useLocale } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { Menu, Spade, User, LogOut, BarChart3, Trophy, Award } from "lucide-react";
+import { Menu, Spade, User, LogOut, BarChart3, Trophy, Award, FlaskConical } from "lucide-react";
 import { useState } from "react";
 import { LanguageSwitcher } from "./LanguageSwitcher";
 import { useAuthStore } from "@/stores/authStore";
@@ -17,18 +17,10 @@ export function Navbar() {
 
   // Organized drill items by category
   const drillItems = [
-    // Featured
-    { href: "/drill/endless", label: t("nav.endlessDrill") || "無限練習" },
-    // Preflop
     { href: "/drill/rfi", label: t("nav.rfiDrill") },
     { href: "/drill/vs-rfi", label: t("nav.vsRfiDrill") },
     { href: "/drill/vs-3bet", label: t("nav.vs3betDrill") },
     { href: "/drill/vs-4bet", label: t("nav.vs4betDrill") },
-    // Postflop
-    { href: "/drill/table-trainer", label: t("nav.tableTrainer") || "牌桌訓練" },
-    { href: "/drill/multistreet", label: t("nav.multistreetDrill") || "多街道練習" },
-    { href: "/drill/postflop", label: t("nav.postflopDrill") },
-    { href: "/drill/flop-texture", label: t("nav.flopTexture") || "翻牌質地" },
   ];
 
   const mttItems = [
@@ -37,12 +29,22 @@ export function Navbar() {
     { href: "/mtt/icm", label: t("nav.icm") || "ICM 計算器" },
   ];
 
+  const labsItems = [
+    { href: "/drill/endless", label: t("nav.endlessDrill") || "Endless Drill" },
+    { href: "/drill/table-trainer", label: t("nav.tableTrainer") || "GTO Table" },
+    { href: "/drill/multistreet", label: t("nav.multistreetDrill") || "Multi-Street" },
+    { href: "/drill/postflop", label: t("nav.postflopDrill") || "Postflop C-bet" },
+    { href: "/drill/flop-texture", label: t("nav.flopTexture") || "Flop Texture" },
+    { href: "/drill/squeeze", label: t("nav.squeeze") || "Squeeze" },
+    { href: "/drill/texture-training", label: t("nav.textureTraining") || "Texture Training" },
+    { href: "/analyze", label: t("nav.analyze") || "Analyze" },
+  ];
+
   const navItems = [
     { href: "/range", label: t("nav.ranges") },
     { href: "/quiz", label: t("nav.quiz") },
     { href: "/exam", label: t("exam.title") || "Mock Exam" },
     { href: "/learn", label: t("nav.learn") },
-    { href: "/analyze", label: t("nav.analyze") },
     { href: "/leaderboard", label: t("leaderboard.title") || "Leaderboard" },
     { href: "/stats", label: t("stats.title") || "Stats" },
   ];
@@ -86,6 +88,26 @@ export function Navbar() {
               <div className="bg-background invisible absolute left-0 z-50 mt-2 w-48 rounded-md border opacity-0 shadow-lg transition-all group-hover:visible group-hover:opacity-100">
                 <div className="py-1">
                   {mttItems.map((item) => (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      className="text-muted-foreground hover:bg-muted hover:text-primary block px-4 py-2 text-sm"
+                    >
+                      {item.label}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            </div>
+            {/* Labs dropdown */}
+            <div className="group relative">
+              <span className="text-muted-foreground hover:text-primary cursor-pointer text-sm font-medium transition-colors">
+                <FlaskConical className="mr-1 inline-block h-3.5 w-3.5" />
+                Labs
+              </span>
+              <div className="bg-background invisible absolute left-0 z-50 mt-2 w-48 rounded-md border opacity-0 shadow-lg transition-all group-hover:visible group-hover:opacity-100">
+                <div className="py-1">
+                  {labsItems.map((item) => (
                     <Link
                       key={item.href}
                       href={item.href}
@@ -227,6 +249,21 @@ export function Navbar() {
                   {t("nav.mtt")}
                 </div>
                 {mttItems.map((item) => (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    onClick={() => setIsOpen(false)}
+                    className="hover:text-primary pl-2 text-lg font-medium transition-colors"
+                  >
+                    {item.label}
+                  </Link>
+                ))}
+                <hr className="my-2" />
+                <div className="text-muted-foreground flex items-center gap-1 text-sm font-semibold tracking-wide uppercase">
+                  <FlaskConical className="h-3.5 w-3.5" />
+                  Labs
+                </div>
+                {labsItems.map((item) => (
                   <Link
                     key={item.href}
                     href={item.href}

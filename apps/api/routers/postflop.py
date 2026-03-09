@@ -3,6 +3,7 @@ Postflop C-bet practice endpoints.
 """
 
 import json
+import logging
 import random
 from pathlib import Path
 
@@ -10,6 +11,7 @@ from fastapi import APIRouter, HTTPException, Query
 from pydantic import BaseModel
 
 router = APIRouter()
+logger = logging.getLogger(__name__)
 
 # Cache for postflop data
 _postflop_cache: dict[str, dict] = {}
@@ -165,8 +167,9 @@ def get_random_cbet_scenario(
         )
     except HTTPException:
         raise
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+    except Exception:
+        logger.exception("Unexpected error")
+        raise HTTPException(status_code=500, detail="Internal server error")
 
 
 @router.post("/cbet/evaluate", response_model=CbetEvaluateResponse)
@@ -201,8 +204,9 @@ def evaluate_cbet_decision(request: CbetEvaluateRequest):
         )
     except HTTPException:
         raise
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+    except Exception:
+        logger.exception("Unexpected error")
+        raise HTTPException(status_code=500, detail="Internal server error")
 
 
 @router.get("/cbet/textures")
@@ -220,8 +224,11 @@ def list_textures():
                 textures[texture] = texture_zh
 
         return {"textures": textures}
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+    except HTTPException:
+        raise
+    except Exception:
+        logger.exception("Unexpected error")
+        raise HTTPException(status_code=500, detail="Internal server error")
 
 
 @router.get("/cbet/scenarios")
@@ -241,8 +248,11 @@ def list_scenarios(
             "total": len(scenarios),
             "scenarios": scenarios[:limit],
         }
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+    except HTTPException:
+        raise
+    except Exception:
+        logger.exception("Unexpected error")
+        raise HTTPException(status_code=500, detail="Internal server error")
 
 
 # ============ Turn Barrel Endpoints ============
@@ -296,8 +306,9 @@ def get_random_turn_scenario(
         )
     except HTTPException:
         raise
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+    except Exception:
+        logger.exception("Unexpected error")
+        raise HTTPException(status_code=500, detail="Internal server error")
 
 
 @router.post("/turn/evaluate", response_model=PostflopEvaluateResponse)
@@ -332,8 +343,9 @@ def evaluate_turn_decision(request: PostflopEvaluateRequest):
         )
     except HTTPException:
         raise
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+    except Exception:
+        logger.exception("Unexpected error")
+        raise HTTPException(status_code=500, detail="Internal server error")
 
 
 @router.get("/turn/textures")
@@ -351,8 +363,11 @@ def list_turn_textures():
                 textures[texture] = texture_zh
 
         return {"textures": textures}
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+    except HTTPException:
+        raise
+    except Exception:
+        logger.exception("Unexpected error")
+        raise HTTPException(status_code=500, detail="Internal server error")
 
 
 # ============ River Decision Endpoints ============
@@ -406,8 +421,9 @@ def get_random_river_scenario(
         )
     except HTTPException:
         raise
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+    except Exception:
+        logger.exception("Unexpected error")
+        raise HTTPException(status_code=500, detail="Internal server error")
 
 
 @router.post("/river/evaluate", response_model=PostflopEvaluateResponse)
@@ -442,8 +458,9 @@ def evaluate_river_decision(request: PostflopEvaluateRequest):
         )
     except HTTPException:
         raise
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+    except Exception:
+        logger.exception("Unexpected error")
+        raise HTTPException(status_code=500, detail="Internal server error")
 
 
 @router.get("/river/textures")
@@ -461,5 +478,8 @@ def list_river_textures():
                 textures[texture] = texture_zh
 
         return {"textures": textures}
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+    except HTTPException:
+        raise
+    except Exception:
+        logger.exception("Unexpected error")
+        raise HTTPException(status_code=500, detail="Internal server error")

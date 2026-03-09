@@ -124,7 +124,7 @@ class TestEvaluateAction:
                 "action": "raise",
             },
         )
-        assert response.status_code == 500
+        assert response.status_code == 422
 
     def test_evaluate_acceptable_action(self, client: TestClient):
         """Test is_acceptable field for mixed frequency hands."""
