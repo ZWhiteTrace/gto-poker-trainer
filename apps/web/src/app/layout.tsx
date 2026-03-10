@@ -97,6 +97,11 @@ export const metadata: Metadata = {
   },
   alternates: {
     canonical: "https://grindgto.com",
+    languages: {
+      "zh-TW": "https://grindgto.com",
+      en: "https://grindgto.com",
+      "x-default": "https://grindgto.com",
+    },
   },
   verification: {
     google: "qpFj8lm0xp4HSdFNKqKKNshhirIaQeKa-Sgd9zzsHis",
@@ -113,7 +118,7 @@ function StructuredDataJsonLd() {
         name: "GTO 撲克訓練器 - 免費德州撲克練習工具",
         url: "https://grindgto.com",
         description: "提升德撲技巧的免費 GTO 訓練器。提供翻前範圍表、推圖練習及 ICM 計算。",
-        inLanguage: ["zh-TW", "zh-CN"],
+        inLanguage: ["zh-TW", "en"],
         publisher: { "@id": "https://grindgto.com/#organization" },
         potentialAction: {
           "@type": "SearchAction",
