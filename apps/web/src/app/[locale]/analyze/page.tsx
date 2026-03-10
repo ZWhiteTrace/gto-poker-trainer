@@ -20,7 +20,7 @@ import {
   CheckCircle,
   AlertTriangle,
 } from "lucide-react";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { api, AIReviewResponse } from "@/lib/api";
 import { cn } from "@/lib/utils";
 

@@ -20,7 +20,7 @@ import {
   BookOpen,
   TrendingUp,
 } from "lucide-react";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { useAuthStore } from "@/stores/authStore";
 import { useQuizProgressStore } from "@/stores/quizProgressStore";
 import { createClient } from "@/lib/supabase/client";

@@ -29,7 +29,7 @@ import {
 import { Progress } from "@/components/ui/progress";
 import { WeaknessHeatmap } from "@/components/stats/WeaknessHeatmap";
 import { ShareCard } from "@/components/stats/ShareCard";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { TrackedDrillType, DRILL_LABELS, POSITIONS, drillTypeToPath } from "@/lib/constants/drills";
 
 // Dynamic import for recharts to reduce initial bundle size

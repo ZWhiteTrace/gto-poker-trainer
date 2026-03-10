@@ -1,117 +1,56 @@
 import { MetadataRoute } from "next";
 import { getAllGuides } from "@/lib/guides";
+import { routing } from "@/i18n/routing";
 
 const BASE_URL = "https://grindgto.com";
 
-/**
- * Optimized sitemap for SEO
- * - Focus on content-rich pages (learn, guides)
- * - Include main tool entry points only
- * - Exclude user-specific pages (profile, stats, achievements)
- * - Exclude pages blocked by robots.txt
- */
+function alternates(path: string) {
+  return {
+    languages: Object.fromEntries(
+      routing.locales.map((locale) => [
+        locale,
+        locale === routing.defaultLocale ? `${BASE_URL}${path}` : `${BASE_URL}/${locale}${path}`,
+      ])
+    ),
+  };
+}
+
+function entry(
+  path: string,
+  opts: { changeFrequency: MetadataRoute.Sitemap[0]["changeFrequency"]; priority: number }
+): MetadataRoute.Sitemap[0] {
+  return {
+    url: `${BASE_URL}${path}`,
+    lastModified: new Date(),
+    changeFrequency: opts.changeFrequency,
+    priority: opts.priority,
+    alternates: alternates(path),
+  };
+}
+
 export default function sitemap(): MetadataRoute.Sitemap {
   const guides = getAllGuides();
 
-  // High-priority content pages
   const contentPages: MetadataRoute.Sitemap = [
-    {
-      url: BASE_URL,
-      lastModified: new Date(),
-      changeFrequency: "weekly",
-      priority: 1,
-    },
-    {
-      url: `${BASE_URL}/learn`,
-      lastModified: new Date(),
-      changeFrequency: "weekly",
-      priority: 0.9,
-    },
-    // Core drill pages
-    {
-      url: `${BASE_URL}/drill/rfi`,
-      lastModified: new Date(),
-      changeFrequency: "monthly",
-      priority: 0.9,
-    },
-    {
-      url: `${BASE_URL}/drill/vs-rfi`,
-      lastModified: new Date(),
-      changeFrequency: "monthly",
-      priority: 0.9,
-    },
-    {
-      url: `${BASE_URL}/drill/vs-3bet`,
-      lastModified: new Date(),
-      changeFrequency: "monthly",
-      priority: 0.8,
-    },
-    {
-      url: `${BASE_URL}/drill/vs-4bet`,
-      lastModified: new Date(),
-      changeFrequency: "monthly",
-      priority: 0.8,
-    },
-    {
-      url: `${BASE_URL}/drill/push-fold`,
-      lastModified: new Date(),
-      changeFrequency: "monthly",
-      priority: 0.9,
-    },
-    // MTT tools
-    {
-      url: `${BASE_URL}/mtt/push-fold`,
-      lastModified: new Date(),
-      changeFrequency: "monthly",
-      priority: 0.8,
-    },
-    {
-      url: `${BASE_URL}/mtt/icm`,
-      lastModified: new Date(),
-      changeFrequency: "monthly",
-      priority: 0.8,
-    },
-    // Main tool landing pages
-    {
-      url: `${BASE_URL}/range`,
-      lastModified: new Date(),
-      changeFrequency: "monthly",
-      priority: 0.8,
-    },
-    {
-      url: `${BASE_URL}/quiz`,
-      lastModified: new Date(),
-      changeFrequency: "monthly",
-      priority: 0.8,
-    },
-    {
-      url: `${BASE_URL}/exam`,
-      lastModified: new Date(),
-      changeFrequency: "monthly",
-      priority: 0.8,
-    },
-    // Legal (required pages)
-    {
-      url: `${BASE_URL}/privacy`,
-      lastModified: new Date(),
-      changeFrequency: "yearly",
-      priority: 0.3,
-    },
-    {
-      url: `${BASE_URL}/terms`,
-      lastModified: new Date(),
-      changeFrequency: "yearly",
-      priority: 0.3,
-    },
+    entry("", { changeFrequency: "weekly", priority: 1 }),
+    entry("/learn", { changeFrequency: "weekly", priority: 0.9 }),
+    entry("/drill/rfi", { changeFrequency: "monthly", priority: 0.9 }),
+    entry("/drill/vs-rfi", { changeFrequency: "monthly", priority: 0.9 }),
+    entry("/drill/vs-3bet", { changeFrequency: "monthly", priority: 0.8 }),
+    entry("/drill/vs-4bet", { changeFrequency: "monthly", priority: 0.8 }),
+    entry("/drill/push-fold", { changeFrequency: "monthly", priority: 0.9 }),
+    entry("/mtt/push-fold", { changeFrequency: "monthly", priority: 0.8 }),
+    entry("/mtt/icm", { changeFrequency: "monthly", priority: 0.8 }),
+    entry("/range", { changeFrequency: "monthly", priority: 0.8 }),
+    entry("/quiz", { changeFrequency: "monthly", priority: 0.8 }),
+    entry("/exam", { changeFrequency: "monthly", priority: 0.8 }),
+    entry("/privacy", { changeFrequency: "yearly", priority: 0.3 }),
+    entry("/terms", { changeFrequency: "yearly", priority: 0.3 }),
   ];
 
-  // Dynamic guide pages (high SEO value - actual content)
-  const guidePages: MetadataRoute.Sitemap = guides.map((guide) => ({
-    url: `${BASE_URL}/learn/${guide.slug}`,
-    lastModified: new Date(),
-    changeFrequency: "monthly" as const,
-    priority: 0.8,
-  }));
+  const guidePages: MetadataRoute.Sitemap = guides.map((guide) =>
+    entry(`/learn/${guide.slug}`, { changeFrequency: "monthly", priority: 0.8 })
+  );
 
   return [...contentPages, ...guidePages];
 }

@@ -1,15 +1,8 @@
 import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
-import { NextIntlClientProvider } from "next-intl";
-import { getLocale, getMessages } from "next-intl/server";
+import { getLocale } from "next-intl/server";
 import { GoogleAnalytics } from "@next/third-parties/google";
 import "./globals.css";
-import { Navbar } from "@/components/layout/Navbar";
-import { Footer } from "@/components/layout/Footer";
-import { AuthProvider } from "@/components/providers/AuthProvider";
-import { ServiceWorkerProvider } from "@/components/providers/ServiceWorkerProvider";
-import { AchievementToast } from "@/components/AchievementToast";
-import { OfflineIndicator } from "@/components/providers/OfflineIndicator";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -99,7 +92,7 @@ export const metadata: Metadata = {
     canonical: "https://grindgto.com",
     languages: {
       "zh-TW": "https://grindgto.com",
-      en: "https://grindgto.com",
+      en: "https://grindgto.com/en",
       "x-default": "https://grindgto.com",
     },
   },
@@ -197,13 +190,11 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const locale = await getLocale();
-  const messages = await getMessages();
 
   return (
     <html lang={locale} className="dark" suppressHydrationWarning>
       <head>
         <StructuredDataJsonLd />
-        {/* Apple splash screens for PWA */}
         <link
           rel="apple-touch-startup-image"
           href="/api/splash?w=1290&h=2796"
@@ -266,18 +257,7 @@ export default async function RootLayout({
         />
       </head>
       <body className={`${inter.variable} font-sans antialiased`}>
-        <NextIntlClientProvider messages={messages}>
-          <AuthProvider>
-            <OfflineIndicator />
-            <div className="relative flex min-h-screen flex-col">
-              <Navbar />
-              <main className="flex-1">{children}</main>
-              <Footer />
-            </div>
-            <ServiceWorkerProvider />
-            <AchievementToast />
-          </AuthProvider>
-        </NextIntlClientProvider>
+        {children}
         {process.env.NEXT_PUBLIC_GA_ID && <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID} />}
       </body>
     </html>

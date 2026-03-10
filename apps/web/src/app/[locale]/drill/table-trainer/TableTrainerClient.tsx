@@ -50,7 +50,7 @@ import {
 } from "@/lib/poker/statsFeedback";
 import { cn } from "@/lib/utils";
 import { ChevronUp, ChevronDown, History, RotateCw, BarChart3, FileText, Home } from "lucide-react";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { HandHistoryPanel } from "@/components/poker/HandHistoryPanel";
 import { GTOHintPanel, HintModeSelector } from "@/components/poker/GTOHintPanel";
 import { AIExploitAnalysis } from "@/components/poker/AIExploitAnalysis";

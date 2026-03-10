@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { Spade } from "lucide-react";
 
 export function Footer() {

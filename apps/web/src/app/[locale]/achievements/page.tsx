@@ -19,7 +19,7 @@ import {
   type LeaderboardStats,
 } from "@/lib/supabase/leaderboard";
 import { useAuthStore } from "@/stores/authStore";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 
 const TIER_COLORS = {
   bronze: "border-amber-700 bg-amber-700/10 text-amber-700",
