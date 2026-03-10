@@ -284,7 +284,7 @@ export default function MockExamPage() {
       <div className="container max-w-2xl py-8">
         <Card>
           <CardHeader className="text-center">
-            <CardTitle className="text-3xl">{t("exam.title") || "GTO Mock Exam"}</CardTitle>
+            <h1 className="text-3xl leading-none font-semibold">{t("exam.title") || "GTO Mock Exam"}</h1>
             <CardDescription>
               {t("exam.description") || "Test your GTO knowledge with a comprehensive timed exam"}
             </CardDescription>

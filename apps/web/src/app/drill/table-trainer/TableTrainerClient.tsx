@@ -409,6 +409,7 @@ export default function TableTrainerClient() {
             >
               <Home className="h-5 w-5" />
             </Link>
+            <h1 className="sr-only">GTO Table Trainer</h1>
             <Badge variant="outline" className="text-xs">
               Beta
             </Badge>
