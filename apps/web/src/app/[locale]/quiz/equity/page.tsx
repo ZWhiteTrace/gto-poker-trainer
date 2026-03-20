@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -162,6 +162,7 @@ function HandDisplay({ hand, label }: { hand: string; label: string }) {
 
 export default function EquityQuizPage() {
   const t = useTranslations();
+  const locale = useLocale() === "en" ? "en" : "zh-TW";
   const [question, setQuestion] = useState<Question | null>(null);
   const [choices, setChoices] = useState<Choice[]>([]);
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
@@ -212,6 +213,11 @@ export default function EquityQuizPage() {
   }
 
   const categoryData = EQUITY_DATA[question.category];
+  const copy = {
+    handOne: locale === "en" ? "Hand 1" : "手牌 1",
+    handTwo: locale === "en" ? "Hand 2" : "手牌 2",
+    versus: locale === "en" ? "vs" : "對",
+  };
 
   return (
     <div className="container max-w-2xl py-8">
@@ -247,7 +253,7 @@ export default function EquityQuizPage() {
           <option value="all">{t("quiz.allCategories")}</option>
           {Object.entries(EQUITY_DATA).map(([key, data]) => (
             <option key={key} value={key}>
-              {data.descriptionZh}
+              {locale === "en" ? data.description : data.descriptionZh}
             </option>
           ))}
         </select>
@@ -266,7 +272,7 @@ export default function EquityQuizPage() {
                     : "destructive"
               }
             >
-              {categoryData.descriptionZh}
+              {locale === "en" ? categoryData.description : categoryData.descriptionZh}
             </Badge>
           </CardDescription>
           <CardTitle className="text-lg">{t("quiz.equity.question")}</CardTitle>
@@ -274,9 +280,9 @@ export default function EquityQuizPage() {
         <CardContent>
           {/* Hands Display */}
           <div className="bg-muted/30 mb-6 flex items-center justify-center gap-8 rounded-lg py-6">
-            <HandDisplay hand={question.hand1} label="Hand 1" />
-            <div className="text-muted-foreground text-2xl font-bold">vs</div>
-            <HandDisplay hand={question.hand2} label="Hand 2" />
+            <HandDisplay hand={question.hand1} label={copy.handOne} />
+            <div className="text-muted-foreground text-2xl font-bold">{copy.versus}</div>
+            <HandDisplay hand={question.hand2} label={copy.handTwo} />
           </div>
 
           {/* Choices */}

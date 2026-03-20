@@ -1,9 +1,18 @@
 "use client";
 
 import { useState, useEffect, type ReactNode } from "react";
+import { useLocale } from "next-intl";
 import { cn } from "@/lib/utils";
-import type { HandHistory, Card, Position } from "@/lib/poker/types";
+import type { HandHistory, Card } from "@/lib/poker/types";
 import { SUIT_SYMBOLS, SUIT_COLORS } from "@/lib/poker/types";
+import {
+  getDisplayHandDescription,
+  getDisplayPlayerNameByPosition,
+  getHandHistoryStreetLabel,
+  getPokerActionLabel,
+  localizeCommonMistake,
+  localizeImprovementArea,
+} from "@/lib/poker/handHistoryDisplay";
 import {
   getStoredHandHistories,
   clearHandHistories,
@@ -14,11 +23,83 @@ import {
   analyzeHandHistory,
   analyzeMultipleHands,
   type HandAnalysis,
-  type GTOComparison,
 } from "@/lib/poker/handAnalyzer";
 
 interface HandHistoryPanelProps {
   className?: string;
+}
+
+const historyCopy = {
+  "zh-TW": {
+    deviationScore: "偏離分數",
+    decisionAnalysis: "決策分析：",
+    biggestMistake: "最大錯誤：",
+    shouldHave: "應",
+    insteadOf: "而非",
+    sessionAnalysis: "Session 分析",
+    average: "平均",
+    totalHands: "總手數",
+    averageDeviation: "平均偏離",
+    commonMistake: "最常見錯誤：",
+    improvementAreas: "改進建議：",
+    analyzing: "分析中...",
+    analyze: "GTO 分析",
+    hero: "Hero",
+    board: "公共牌",
+    winner: "贏家",
+    clearConfirm: "確定要清除所有手牌記錄嗎？",
+    handHistory: "手牌歷史",
+    session: "Session",
+    noHands: "尚未有任何手牌記錄",
+    copied: "已複製",
+    copy: "複製",
+    export: "匯出",
+    exporting: "匯出中...",
+    clear: "清除",
+    hands: (count: number) => `${count} 手`,
+    handNumber: (count: number) => `手牌 #${count}`,
+  },
+  en: {
+    deviationScore: "Deviation Score",
+    decisionAnalysis: "Decision Analysis:",
+    biggestMistake: "Biggest Mistake:",
+    shouldHave: "Should have",
+    insteadOf: "instead of",
+    sessionAnalysis: "Session Analysis",
+    average: "Average",
+    totalHands: "Total Hands",
+    averageDeviation: "Average Deviation",
+    commonMistake: "Most Common Mistake:",
+    improvementAreas: "Improvement Areas:",
+    analyzing: "Analyzing...",
+    analyze: "GTO Analysis",
+    hero: "Hero",
+    board: "Board",
+    winner: "Winner",
+    clearConfirm: "Clear all hand history?",
+    handHistory: "Hand History",
+    session: "Session",
+    noHands: "No hands played yet",
+    copied: "Copied!",
+    copy: "Copy",
+    export: "Export",
+    exporting: "Exporting...",
+    clear: "Clear",
+    hands: (count: number) => `${count} hands`,
+    handNumber: (count: number) => `Hand #${count}`,
+  },
+} as const;
+
+function formatActionSummary(history: HandHistory, locale: "en" | "zh-TW") {
+  return (street: keyof HandHistory["actions"]) =>
+    history.actions[street]
+      .map(
+        (action) =>
+          `${action.position} ${getPokerActionLabel(action.action, locale)}${
+            action.amount ? ` ${action.amount.toFixed(1)}` : ""
+          }`
+      )
+      .join(" → ");
 }
 
 function formatCard(card: Card): ReactNode {
@@ -92,6 +173,8 @@ function HandHistoryRow({
 
 // GTO Analysis Display Component
 function GTOAnalysisDisplay({ analysis }: { analysis: HandAnalysis }) {
+  const locale = useLocale() === "en" ? "en" : "zh-TW";
+  const copy = historyCopy[locale];
   const gradeColors: Record<string, string> = {
     A: "bg-green-600",
     B: "bg-blue-600",
@@ -117,35 +200,39 @@ function GTOAnalysisDisplay({ analysis }: { analysis: HandAnalysis }) {
           >
             {analysis.grade}
           </span>
-          <span className="text-gray-300">{analysis.gradeDescriptionZh}</span>
+          <span className="text-gray-300">
+            {locale === "en" ? analysis.gradeDescription : analysis.gradeDescriptionZh}
+          </span>
         </div>
         <span className="text-xs text-gray-500">
-          偏離分數: {analysis.averageDeviationScore.toFixed(1)}
+          {copy.deviationScore}: {analysis.averageDeviationScore.toFixed(1)}
         </span>
       </div>
 
       {/* Decisions */}
       {analysis.decisions.length > 0 && (
         <div className="space-y-2">
-          <div className="text-xs font-semibold text-gray-400">決策分析：</div>
+          <div className="text-xs font-semibold text-gray-400">{copy.decisionAnalysis}</div>
           {analysis.decisions.map((d, i) => (
             <div key={i} className="flex items-start gap-2 rounded bg-gray-900/50 p-2">
               <span className="rounded bg-gray-700 px-1.5 py-0.5 text-xs capitalize">
-                {d.decisionPoint.street}
+                {getHandHistoryStreetLabel(d.decisionPoint.street, locale)}
               </span>
               <div className="flex-1">
                 <div className="flex items-center gap-2">
                   <span
                     className={cn("font-semibold capitalize", deviationColors[d.deviationType])}
                   >
-                    {d.heroAction}
+                    {getPokerActionLabel(d.heroAction, locale)}
                     {d.heroAmount && ` ${d.heroAmount.toFixed(1)}`}
                   </span>
                   <span className="text-xs text-gray-500">
                     (GTO: {d.heroActionFrequency.toFixed(0)}%)
                   </span>
                 </div>
-                <div className="mt-1 text-xs text-gray-400">{d.analysisZh}</div>
+                <div className="mt-1 text-xs text-gray-400">
+                  {locale === "en" ? d.analysis : d.analysisZh}
+                </div>
               </div>
             </div>
           ))}
@@ -155,12 +242,12 @@ function GTOAnalysisDisplay({ analysis }: { analysis: HandAnalysis }) {
       {/* Biggest Mistake */}
       {analysis.biggestMistake && analysis.biggestMistake.deviationType !== "correct" && (
         <div className="rounded border border-red-800/50 bg-red-900/30 p-2">
-          <div className="mb-1 text-xs font-semibold text-red-400">最大錯誤：</div>
-          <div className="text-sm text-gray-300">
-            {analysis.biggestMistake.decisionPoint.street} 街： 應{" "}
-            {analysis.biggestMistake.recommendedAction} (
-            {analysis.biggestMistake.recommendedFrequency.toFixed(0)}%) 而非{" "}
-            {analysis.biggestMistake.heroAction} (
+        <div className="mb-1 text-xs font-semibold text-red-400">{copy.biggestMistake}</div>
+        <div className="text-sm text-gray-300">
+            {getHandHistoryStreetLabel(analysis.biggestMistake.decisionPoint.street, locale)}:{" "}
+            {copy.shouldHave} {getPokerActionLabel(analysis.biggestMistake.recommendedAction, locale)} (
+            {analysis.biggestMistake.recommendedFrequency.toFixed(0)}%) {copy.insteadOf}{" "}
+            {getPokerActionLabel(analysis.biggestMistake.heroAction, locale)} (
             {analysis.biggestMistake.heroActionFrequency.toFixed(0)}%)
           </div>
         </div>
@@ -181,6 +268,8 @@ function SessionAnalysisSummary({
     improvementAreas: string[];
   };
 }) {
+  const locale = useLocale() === "en" ? "en" : "zh-TW";
+  const copy = historyCopy[locale];
   const gradeColors: Record<string, string> = {
     A: "bg-green-600",
     B: "bg-blue-600",
@@ -192,24 +281,24 @@ function SessionAnalysisSummary({
   return (
     <div className="space-y-3 rounded-lg border border-gray-700/50 bg-gradient-to-br from-gray-800/80 to-gray-900/80 p-3 text-sm">
       <div className="flex items-center justify-between">
-        <div className="font-semibold text-gray-300">Session 分析</div>
+        <div className="font-semibold text-gray-300">{copy.sessionAnalysis}</div>
         <span
           className={cn(
             "rounded px-2 py-1 font-bold text-white",
             gradeColors[summary.averageGrade]
           )}
         >
-          平均 {summary.averageGrade}
+          {copy.average} {summary.averageGrade}
         </span>
       </div>
 
       <div className="grid grid-cols-2 gap-2 text-xs">
         <div className="rounded bg-gray-900/50 p-2">
-          <div className="text-gray-500">總手數</div>
+          <div className="text-gray-500">{copy.totalHands}</div>
           <div className="text-lg font-bold text-gray-200">{summary.totalHands}</div>
         </div>
         <div className="rounded bg-gray-900/50 p-2">
-          <div className="text-gray-500">平均偏離</div>
+          <div className="text-gray-500">{copy.averageDeviation}</div>
           <div className="text-lg font-bold text-gray-200">
             {summary.averageDeviationScore.toFixed(1)}
           </div>
@@ -218,17 +307,17 @@ function SessionAnalysisSummary({
 
       {summary.mostCommonMistake !== "None" && (
         <div className="rounded border border-orange-800/50 bg-orange-900/30 p-2">
-          <div className="text-xs font-semibold text-orange-400">最常見錯誤：</div>
-          <div className="text-gray-300">{summary.mostCommonMistake}</div>
+          <div className="text-xs font-semibold text-orange-400">{copy.commonMistake}</div>
+          <div className="text-gray-300">{localizeCommonMistake(summary.mostCommonMistake, locale)}</div>
         </div>
       )}
 
       {summary.improvementAreas.length > 0 && (
         <div className="rounded border border-blue-800/50 bg-blue-900/30 p-2">
-          <div className="mb-1 text-xs font-semibold text-blue-400">改進建議：</div>
+          <div className="mb-1 text-xs font-semibold text-blue-400">{copy.improvementAreas}</div>
           <ul className="space-y-1 text-xs text-gray-300">
             {summary.improvementAreas.map((area, i) => (
-              <li key={i}>• {area}</li>
+              <li key={i}>• {localizeImprovementArea(area, locale)}</li>
             ))}
           </ul>
         </div>
@@ -238,6 +327,8 @@ function SessionAnalysisSummary({
 }
 
 function HandHistoryDetail({ history }: { history: HandHistory }) {
+  const locale = useLocale() === "en" ? "en" : "zh-TW";
+  const copy = historyCopy[locale];
   const [copied, setCopied] = useState(false);
   const [analysis, setAnalysis] = useState<HandAnalysis | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
@@ -254,7 +345,7 @@ function HandHistoryDetail({ history }: { history: HandHistory }) {
     try {
       const result = await analyzeHandHistory(history);
       setAnalysis(result);
-    } catch (error) {
+    } catch {
       // Analysis failed silently
     }
     setIsAnalyzing(false);
@@ -262,13 +353,14 @@ function HandHistoryDetail({ history }: { history: HandHistory }) {
 
   const heroPlayer = history.players.find((p) => p.isHero);
   const heroCards = heroPlayer?.holeCards;
+  const summarizeStreet = formatActionSummary(history, locale);
 
   return (
     <div className="space-y-3 rounded-lg bg-gray-800/50 p-3 text-sm">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <span className="font-semibold">Hand #{history.handNumber}</span>
+          <span className="font-semibold">{copy.handNumber(history.handNumber)}</span>
           <span className="text-xs text-gray-400">
             {new Date(history.timestamp).toLocaleString()}
           </span>
@@ -284,7 +376,7 @@ function HandHistoryDetail({ history }: { history: HandHistory }) {
                 : "bg-purple-600 text-white hover:bg-purple-500"
             )}
           >
-            {isAnalyzing ? "分析中..." : "GTO 分析"}
+            {isAnalyzing ? copy.analyzing : copy.analyze}
           </button>
           <button
             onClick={handleCopy}
@@ -293,14 +385,14 @@ function HandHistoryDetail({ history }: { history: HandHistory }) {
               copied ? "bg-green-600 text-white" : "bg-gray-700 text-gray-300 hover:bg-gray-600"
             )}
           >
-            {copied ? "Copied!" : "Copy"}
+            {copied ? copy.copied : copy.copy}
           </button>
         </div>
       </div>
 
       {/* Hero info */}
       <div className="flex items-center gap-3">
-        <span className="text-gray-400">Hero:</span>
+        <span className="text-gray-400">{copy.hero}:</span>
         <span className="rounded bg-yellow-600/30 px-1.5 py-0.5 text-xs font-semibold text-yellow-400">
           {history.heroPosition}
         </span>
@@ -316,7 +408,7 @@ function HandHistoryDetail({ history }: { history: HandHistory }) {
       {/* Board */}
       {history.board.flop && (
         <div className="flex items-center gap-2">
-          <span className="text-gray-400">Board:</span>
+          <span className="text-gray-400">{copy.board}:</span>
           <div className="flex gap-1 font-mono">
             {history.board.flop.map((c, i) => (
               <span key={`flop-${i}`}>{formatCard(c)}</span>
@@ -329,11 +421,13 @@ function HandHistoryDetail({ history }: { history: HandHistory }) {
 
       {/* Winners */}
       <div className="flex items-center gap-2">
-        <span className="text-gray-400">Winner:</span>
+        <span className="text-gray-400">{copy.winner}:</span>
         {history.result.winners.map((w, i) => (
           <span key={i} className="text-green-400">
-            {w.position} ({w.amount.toFixed(1)} BB)
-            {w.handDescription && ` - ${w.handDescription}`}
+            {getDisplayPlayerNameByPosition(history.players, w.position, locale)} ({w.position},{" "}
+            {w.amount.toFixed(1)} BB)
+            {getDisplayHandDescription(w.handDescription, w.handDescriptionZh, locale) &&
+              ` - ${getDisplayHandDescription(w.handDescription, w.handDescriptionZh, locale)}`}
           </span>
         ))}
       </div>
@@ -342,34 +436,22 @@ function HandHistoryDetail({ history }: { history: HandHistory }) {
       <div className="space-y-1 text-xs text-gray-500">
         {history.actions.preflop.length > 0 && (
           <div>
-            Preflop:{" "}
-            {history.actions.preflop
-              .map((a) => `${a.position} ${a.action}${a.amount ? ` ${a.amount.toFixed(1)}` : ""}`)
-              .join(" → ")}
+            {getHandHistoryStreetLabel("preflop", locale)}: {summarizeStreet("preflop")}
           </div>
         )}
         {history.actions.flop.length > 0 && (
           <div>
-            Flop:{" "}
-            {history.actions.flop
-              .map((a) => `${a.position} ${a.action}${a.amount ? ` ${a.amount.toFixed(1)}` : ""}`)
-              .join(" → ")}
+            {getHandHistoryStreetLabel("flop", locale)}: {summarizeStreet("flop")}
           </div>
         )}
         {history.actions.turn.length > 0 && (
           <div>
-            Turn:{" "}
-            {history.actions.turn
-              .map((a) => `${a.position} ${a.action}${a.amount ? ` ${a.amount.toFixed(1)}` : ""}`)
-              .join(" → ")}
+            {getHandHistoryStreetLabel("turn", locale)}: {summarizeStreet("turn")}
           </div>
         )}
         {history.actions.river.length > 0 && (
           <div>
-            River:{" "}
-            {history.actions.river
-              .map((a) => `${a.position} ${a.action}${a.amount ? ` ${a.amount.toFixed(1)}` : ""}`)
-              .join(" → ")}
+            {getHandHistoryStreetLabel("river", locale)}: {summarizeStreet("river")}
           </div>
         )}
       </div>
@@ -385,7 +467,9 @@ function HandHistoryDetail({ history }: { history: HandHistory }) {
 }
 
 export function HandHistoryPanel({ className }: HandHistoryPanelProps) {
-  const [histories, setHistories] = useState<HandHistory[]>([]);
+  const locale = useLocale() === "en" ? "en" : "zh-TW";
+  const copy = historyCopy[locale];
+  const [histories, setHistories] = useState<HandHistory[]>(() => getStoredHandHistories());
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [isExporting, setIsExporting] = useState(false);
   const [sessionAnalysis, setSessionAnalysis] = useState<Awaited<
@@ -393,11 +477,6 @@ export function HandHistoryPanel({ className }: HandHistoryPanelProps) {
   > | null>(null);
   const [isAnalyzingSession, setIsAnalyzingSession] = useState(false);
 
-  useEffect(() => {
-    setHistories(getStoredHandHistories());
-  }, []);
-
-  // Refresh histories periodically
   useEffect(() => {
     const interval = setInterval(() => {
       setHistories(getStoredHandHistories());
@@ -428,7 +507,7 @@ export function HandHistoryPanel({ className }: HandHistoryPanelProps) {
   };
 
   const handleClear = () => {
-    if (confirm("Clear all hand history?")) {
+    if (confirm(copy.clearConfirm)) {
       clearHandHistories();
       setHistories([]);
       setSelectedId(null);
@@ -442,7 +521,7 @@ export function HandHistoryPanel({ className }: HandHistoryPanelProps) {
     try {
       const result = await analyzeMultipleHands(histories);
       setSessionAnalysis(result);
-    } catch (error) {
+    } catch {
       // Analysis failed silently
     }
     setIsAnalyzingSession(false);
@@ -455,8 +534,8 @@ export function HandHistoryPanel({ className }: HandHistoryPanelProps) {
       {/* Header */}
       <div className="mb-3 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <h3 className="text-sm font-semibold text-gray-200">Hand History</h3>
-          <span className="text-xs text-gray-500">({histories.length} hands)</span>
+          <h3 className="text-sm font-semibold text-gray-200">{copy.handHistory}</h3>
+          <span className="text-xs text-gray-500">({copy.hands(histories.length)})</span>
         </div>
         <div className="flex items-center gap-2">
           {histories.length > 0 && (
@@ -466,20 +545,20 @@ export function HandHistoryPanel({ className }: HandHistoryPanelProps) {
                 disabled={isAnalyzingSession}
                 className="rounded bg-purple-600 px-2 py-1 text-xs transition-colors hover:bg-purple-500 disabled:opacity-50"
               >
-                {isAnalyzingSession ? "分析中..." : "GTO 分析"}
+                {isAnalyzingSession ? copy.analyzing : copy.analyze}
               </button>
               <button
                 onClick={handleExportAll}
                 disabled={isExporting}
                 className="rounded bg-blue-600 px-2 py-1 text-xs transition-colors hover:bg-blue-500 disabled:opacity-50"
               >
-                {isExporting ? "Exporting..." : "Export"}
+                {isExporting ? copy.exporting : copy.export}
               </button>
               <button
                 onClick={handleClear}
                 className="rounded bg-red-600/50 px-2 py-1 text-xs transition-colors hover:bg-red-600"
               >
-                Clear
+                {copy.clear}
               </button>
             </>
           )}
@@ -489,7 +568,7 @@ export function HandHistoryPanel({ className }: HandHistoryPanelProps) {
       {/* Total profit */}
       {histories.length > 0 && (
         <div className="mb-3 flex items-center gap-2 rounded bg-gray-800/50 px-2 py-1.5">
-          <span className="text-xs text-gray-400">Session:</span>
+          <span className="text-xs text-gray-400">{copy.session}:</span>
           {formatProfit(totalProfit)}
         </div>
       )}
@@ -504,7 +583,7 @@ export function HandHistoryPanel({ className }: HandHistoryPanelProps) {
       {/* History list */}
       <div className="max-h-[300px] min-h-[100px] flex-1 space-y-1 overflow-y-auto">
         {histories.length === 0 ? (
-          <div className="py-8 text-center text-sm text-gray-500">No hands played yet</div>
+          <div className="py-8 text-center text-sm text-gray-500">{copy.noHands}</div>
         ) : (
           histories.map((h) => (
             <HandHistoryRow

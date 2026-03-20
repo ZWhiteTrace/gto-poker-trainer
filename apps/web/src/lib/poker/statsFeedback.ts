@@ -29,7 +29,9 @@ export interface StatFeedback {
   target: [number, number];
   status: StatStatus;
   feedback: string;
+  feedbackZh: string;
   suggestion: string;
+  suggestionZh: string;
   priority: number; // 1-5, higher = more important
 }
 
@@ -59,7 +61,7 @@ const STAT_TARGETS = {
 // Feedback Templates
 // ============================================
 
-const FEEDBACK_TEMPLATES: Record<
+const FEEDBACK_TEMPLATES_ZH: Record<
   string,
   {
     tooHigh: { feedback: string; suggestion: string };
@@ -158,6 +160,105 @@ const FEEDBACK_TEMPLATES: Record<
   },
 };
 
+const FEEDBACK_TEMPLATES_EN: Record<
+  string,
+  {
+    tooHigh: { feedback: string; suggestion: string };
+    tooLow: { feedback: string; suggestion: string };
+  }
+> = {
+  vpip: {
+    tooHigh: {
+      feedback: "You are entering too many pots.",
+      suggestion: "Tighten up: keep speculative hands mostly in position and cut back on out-of-position entries.",
+    },
+    tooLow: {
+      feedback: "You are playing too tight and leaving money behind.",
+      suggestion: "Widen up: add more suited connectors like 76s/98s and more suited Ax opens.",
+    },
+  },
+  pfr: {
+    tooHigh: {
+      feedback: "Your preflop raising frequency is too high for the range quality.",
+      suggestion: "Trim the fringe: tighten your 3-bet and open-raise ranges.",
+    },
+    tooLow: {
+      feedback: "You are too passive preflop and giving up initiative.",
+      suggestion: "Raise more often: stop limping and replace too many flats with raises.",
+    },
+  },
+  threeBet: {
+    tooHigh: {
+      feedback: "You are 3-betting too aggressively with too many weak combos.",
+      suggestion: "Reduce random bluff 3-bets and keep better blocker-based candidates like A5s or 67s.",
+    },
+    tooLow: {
+      feedback: "Your 3-bet frequency is too low and opponents get to play too comfortably.",
+      suggestion: "Add more bluff 3-bets with hands like A2s-A5s, 67s, and 78s.",
+    },
+  },
+  ats: {
+    tooHigh: {
+      feedback: "You are stealing too often and opening yourself up to 3-bet punishment.",
+      suggestion: "Choose better steal spots and pay more attention to blind defense tendencies.",
+    },
+    tooLow: {
+      feedback: "You are not stealing enough and wasting positional edge.",
+      suggestion: "Steal more aggressively: BTN can usually open 40%+ and CO around 28%+.",
+    },
+  },
+  flopCbet: {
+    tooHigh: {
+      feedback: "You are c-betting too often with too much air.",
+      suggestion: "Check more on wet boards and in multiway pots.",
+    },
+    tooLow: {
+      feedback: "You are missing too many value bets and bluff spots with c-bets.",
+      suggestion: "Bet more often on dry boards and in heads-up pots.",
+    },
+  },
+  foldToCbet: {
+    tooHigh: {
+      feedback: "You fold too much versus c-bets and get run over.",
+      suggestion: "Defend more with floats and check-raises in the right spots.",
+    },
+    tooLow: {
+      feedback: "You call c-bets too often and pay off too much value.",
+      suggestion: "Fold more decisively when you lack showdown value and usable equity.",
+    },
+  },
+  wtsd: {
+    tooHigh: {
+      feedback: "Your showdown frequency is too high and you are calling down too wide.",
+      suggestion: "Cut back on bluff-catching unless you have a clear reason to continue.",
+    },
+    tooLow: {
+      feedback: "Your showdown frequency is too low and you may be over-folding to pressure.",
+      suggestion: "Bluff-catch a bit more with medium-strength hands that block value.",
+    },
+  },
+  wsd: {
+    tooHigh: {
+      feedback: "Your win-at-showdown is very high, which can mean you are arriving too tight.",
+      suggestion: "You can widen some showdown decisions and add a few more marginal bluff-catches.",
+    },
+    tooLow: {
+      feedback: "Your win-at-showdown is low and you may be hero-calling too loose.",
+      suggestion: "Tighten your call-down range and continue mostly with strong hands plus good blockers.",
+    },
+  },
+  taf: {
+    tooHigh: {
+      feedback: "Your aggression factor is too high and you are likely over-bluffing.",
+      suggestion: "Rebalance value versus bluffs and cut back on thin bluff lines.",
+    },
+    tooLow: {
+      feedback: "Your aggression factor is too low and you are missing bluff opportunities.",
+      suggestion: "Add more semi-bluffs with draws and blocker-heavy hands.",
+    },
+  },
+};
+
 // ============================================
 // Analysis Functions
 // ============================================
@@ -178,15 +279,19 @@ export function analyzePlayerStats(stats: HeroStats): StatFeedback[] {
   const vpip = getPlayerVPIP(stats);
   const vpipStatus = analyzeStatValue(vpip, STAT_TARGETS.vpip.min, STAT_TARGETS.vpip.max);
   if (vpipStatus !== "good") {
-    const template = FEEDBACK_TEMPLATES.vpip[vpipStatus === "too_high" ? "tooHigh" : "tooLow"];
+    const templateKey = vpipStatus === "too_high" ? "tooHigh" : "tooLow";
+    const templateEn = FEEDBACK_TEMPLATES_EN.vpip[templateKey];
+    const templateZh = FEEDBACK_TEMPLATES_ZH.vpip[templateKey];
     feedback.push({
       stat: "VPIP",
       statZh: "自願進池率",
       value: vpip,
       target: [STAT_TARGETS.vpip.min, STAT_TARGETS.vpip.max],
       status: vpipStatus,
-      feedback: template.feedback,
-      suggestion: template.suggestion,
+      feedback: templateEn.feedback,
+      feedbackZh: templateZh.feedback,
+      suggestion: templateEn.suggestion,
+      suggestionZh: templateZh.suggestion,
       priority: 5, // VPIP 最重要
     });
   }
@@ -195,15 +300,19 @@ export function analyzePlayerStats(stats: HeroStats): StatFeedback[] {
   const pfr = getPlayerPFR(stats);
   const pfrStatus = analyzeStatValue(pfr, STAT_TARGETS.pfr.min, STAT_TARGETS.pfr.max);
   if (pfrStatus !== "good") {
-    const template = FEEDBACK_TEMPLATES.pfr[pfrStatus === "too_high" ? "tooHigh" : "tooLow"];
+    const templateKey = pfrStatus === "too_high" ? "tooHigh" : "tooLow";
+    const templateEn = FEEDBACK_TEMPLATES_EN.pfr[templateKey];
+    const templateZh = FEEDBACK_TEMPLATES_ZH.pfr[templateKey];
     feedback.push({
       stat: "PFR",
       statZh: "翻前加注率",
       value: pfr,
       target: [STAT_TARGETS.pfr.min, STAT_TARGETS.pfr.max],
       status: pfrStatus,
-      feedback: template.feedback,
-      suggestion: template.suggestion,
+      feedback: templateEn.feedback,
+      feedbackZh: templateZh.feedback,
+      suggestion: templateEn.suggestion,
+      suggestionZh: templateZh.suggestion,
       priority: 5,
     });
   }
@@ -216,16 +325,19 @@ export function analyzePlayerStats(stats: HeroStats): StatFeedback[] {
     STAT_TARGETS.threeBet.max
   );
   if (threeBetStatus !== "good") {
-    const template =
-      FEEDBACK_TEMPLATES.threeBet[threeBetStatus === "too_high" ? "tooHigh" : "tooLow"];
+    const templateKey = threeBetStatus === "too_high" ? "tooHigh" : "tooLow";
+    const templateEn = FEEDBACK_TEMPLATES_EN.threeBet[templateKey];
+    const templateZh = FEEDBACK_TEMPLATES_ZH.threeBet[templateKey];
     feedback.push({
       stat: "3-Bet",
       statZh: "3-Bet 頻率",
       value: threeBet,
       target: [STAT_TARGETS.threeBet.min, STAT_TARGETS.threeBet.max],
       status: threeBetStatus,
-      feedback: template.feedback,
-      suggestion: template.suggestion,
+      feedback: templateEn.feedback,
+      feedbackZh: templateZh.feedback,
+      suggestion: templateEn.suggestion,
+      suggestionZh: templateZh.suggestion,
       priority: 4,
     });
   }
@@ -234,15 +346,19 @@ export function analyzePlayerStats(stats: HeroStats): StatFeedback[] {
   const ats = getPlayerATS(stats);
   const atsStatus = analyzeStatValue(ats, STAT_TARGETS.ats.min, STAT_TARGETS.ats.max);
   if (atsStatus !== "good") {
-    const template = FEEDBACK_TEMPLATES.ats[atsStatus === "too_high" ? "tooHigh" : "tooLow"];
+    const templateKey = atsStatus === "too_high" ? "tooHigh" : "tooLow";
+    const templateEn = FEEDBACK_TEMPLATES_EN.ats[templateKey];
+    const templateZh = FEEDBACK_TEMPLATES_ZH.ats[templateKey];
     feedback.push({
       stat: "ATS",
       statZh: "偷盲嘗試率",
       value: ats,
       target: [STAT_TARGETS.ats.min, STAT_TARGETS.ats.max],
       status: atsStatus,
-      feedback: template.feedback,
-      suggestion: template.suggestion,
+      feedback: templateEn.feedback,
+      feedbackZh: templateZh.feedback,
+      suggestion: templateEn.suggestion,
+      suggestionZh: templateZh.suggestion,
       priority: 3,
     });
   }
@@ -255,16 +371,19 @@ export function analyzePlayerStats(stats: HeroStats): StatFeedback[] {
     STAT_TARGETS.flopCbet.max
   );
   if (flopCbetStatus !== "good") {
-    const template =
-      FEEDBACK_TEMPLATES.flopCbet[flopCbetStatus === "too_high" ? "tooHigh" : "tooLow"];
+    const templateKey = flopCbetStatus === "too_high" ? "tooHigh" : "tooLow";
+    const templateEn = FEEDBACK_TEMPLATES_EN.flopCbet[templateKey];
+    const templateZh = FEEDBACK_TEMPLATES_ZH.flopCbet[templateKey];
     feedback.push({
       stat: "Flop CB",
       statZh: "翻牌 C-Bet",
       value: flopCbet,
       target: [STAT_TARGETS.flopCbet.min, STAT_TARGETS.flopCbet.max],
       status: flopCbetStatus,
-      feedback: template.feedback,
-      suggestion: template.suggestion,
+      feedback: templateEn.feedback,
+      feedbackZh: templateZh.feedback,
+      suggestion: templateEn.suggestion,
+      suggestionZh: templateZh.suggestion,
       priority: 3,
     });
   }
@@ -277,16 +396,19 @@ export function analyzePlayerStats(stats: HeroStats): StatFeedback[] {
     STAT_TARGETS.foldToCbet.max
   );
   if (foldToCbetStatus !== "good") {
-    const template =
-      FEEDBACK_TEMPLATES.foldToCbet[foldToCbetStatus === "too_high" ? "tooHigh" : "tooLow"];
+    const templateKey = foldToCbetStatus === "too_high" ? "tooHigh" : "tooLow";
+    const templateEn = FEEDBACK_TEMPLATES_EN.foldToCbet[templateKey];
+    const templateZh = FEEDBACK_TEMPLATES_ZH.foldToCbet[templateKey];
     feedback.push({
       stat: "Fold to CB",
       statZh: "面對 C-Bet 棄牌率",
       value: foldToCbet,
       target: [STAT_TARGETS.foldToCbet.min, STAT_TARGETS.foldToCbet.max],
       status: foldToCbetStatus,
-      feedback: template.feedback,
-      suggestion: template.suggestion,
+      feedback: templateEn.feedback,
+      feedbackZh: templateZh.feedback,
+      suggestion: templateEn.suggestion,
+      suggestionZh: templateZh.suggestion,
       priority: 2,
     });
   }
@@ -295,15 +417,19 @@ export function analyzePlayerStats(stats: HeroStats): StatFeedback[] {
   const wtsd = getWTSD(stats);
   const wtsdStatus = analyzeStatValue(wtsd, STAT_TARGETS.wtsd.min, STAT_TARGETS.wtsd.max);
   if (wtsdStatus !== "good") {
-    const template = FEEDBACK_TEMPLATES.wtsd[wtsdStatus === "too_high" ? "tooHigh" : "tooLow"];
+    const templateKey = wtsdStatus === "too_high" ? "tooHigh" : "tooLow";
+    const templateEn = FEEDBACK_TEMPLATES_EN.wtsd[templateKey];
+    const templateZh = FEEDBACK_TEMPLATES_ZH.wtsd[templateKey];
     feedback.push({
       stat: "WTSD",
       statZh: "攤牌率",
       value: wtsd,
       target: [STAT_TARGETS.wtsd.min, STAT_TARGETS.wtsd.max],
       status: wtsdStatus,
-      feedback: template.feedback,
-      suggestion: template.suggestion,
+      feedback: templateEn.feedback,
+      feedbackZh: templateZh.feedback,
+      suggestion: templateEn.suggestion,
+      suggestionZh: templateZh.suggestion,
       priority: 2,
     });
   }
@@ -312,15 +438,19 @@ export function analyzePlayerStats(stats: HeroStats): StatFeedback[] {
   const wsd = getWSD(stats);
   const wsdStatus = analyzeStatValue(wsd, STAT_TARGETS.wsd.min, STAT_TARGETS.wsd.max);
   if (wsdStatus !== "good") {
-    const template = FEEDBACK_TEMPLATES.wsd[wsdStatus === "too_high" ? "tooHigh" : "tooLow"];
+    const templateKey = wsdStatus === "too_high" ? "tooHigh" : "tooLow";
+    const templateEn = FEEDBACK_TEMPLATES_EN.wsd[templateKey];
+    const templateZh = FEEDBACK_TEMPLATES_ZH.wsd[templateKey];
     feedback.push({
       stat: "W$SD",
       statZh: "攤牌勝率",
       value: wsd,
       target: [STAT_TARGETS.wsd.min, STAT_TARGETS.wsd.max],
       status: wsdStatus,
-      feedback: template.feedback,
-      suggestion: template.suggestion,
+      feedback: templateEn.feedback,
+      feedbackZh: templateZh.feedback,
+      suggestion: templateEn.suggestion,
+      suggestionZh: templateZh.suggestion,
       priority: 2,
     });
   }
@@ -329,15 +459,19 @@ export function analyzePlayerStats(stats: HeroStats): StatFeedback[] {
   const taf = getTAF(stats);
   const tafStatus = analyzeStatValue(taf, STAT_TARGETS.taf.min, STAT_TARGETS.taf.max);
   if (tafStatus !== "good") {
-    const template = FEEDBACK_TEMPLATES.taf[tafStatus === "too_high" ? "tooHigh" : "tooLow"];
+    const templateKey = tafStatus === "too_high" ? "tooHigh" : "tooLow";
+    const templateEn = FEEDBACK_TEMPLATES_EN.taf[templateKey];
+    const templateZh = FEEDBACK_TEMPLATES_ZH.taf[templateKey];
     feedback.push({
       stat: "TAF",
       statZh: "侵略因子",
       value: taf,
       target: [STAT_TARGETS.taf.min, STAT_TARGETS.taf.max],
       status: tafStatus,
-      feedback: template.feedback,
-      suggestion: template.suggestion,
+      feedback: templateEn.feedback,
+      feedbackZh: templateZh.feedback,
+      suggestion: templateEn.suggestion,
+      suggestionZh: templateZh.suggestion,
       priority: 1,
     });
   }
@@ -359,8 +493,10 @@ export function getTopImprovementAreas(stats: HeroStats, limit = 3): StatFeedbac
  */
 export function getOverallPerformance(stats: HeroStats): {
   level: "excellent" | "good" | "needs_work" | "poor";
+  levelLabel: string;
   levelZh: string;
   description: string;
+  descriptionZh: string;
 } {
   const feedback = analyzePlayerStats(stats);
   const highPriorityIssues = feedback.filter((f) => f.priority >= 4).length;
@@ -369,30 +505,38 @@ export function getOverallPerformance(stats: HeroStats): {
   if (totalIssues === 0) {
     return {
       level: "excellent",
+      levelLabel: "Excellent",
       levelZh: "優秀",
-      description: "你的數據非常接近 GTO！繼續保持。",
+      description: "Your stats are very close to GTO baselines. Keep the process stable.",
+      descriptionZh: "你的數據非常接近 GTO！繼續保持。",
     };
   }
 
   if (highPriorityIssues === 0 && totalIssues <= 2) {
     return {
       level: "good",
+      levelLabel: "Good",
       levelZh: "良好",
-      description: "整體表現不錯，有小幅改進空間。",
+      description: "Overall performance is solid with a few manageable leaks to clean up.",
+      descriptionZh: "整體表現不錯，有小幅改進空間。",
     };
   }
 
   if (highPriorityIssues <= 1) {
     return {
       level: "needs_work",
+      levelLabel: "Needs Work",
       levelZh: "需改進",
-      description: "有些關鍵數據偏離 GTO，建議針對性練習。",
+      description: "Some important stats are drifting away from target and need focused reps.",
+      descriptionZh: "有些關鍵數據偏離 GTO，建議針對性練習。",
     };
   }
 
   return {
     level: "poor",
+    levelLabel: "Needs Improvement",
     levelZh: "需加強",
-    description: "多個核心數據偏離目標，建議系統性學習。",
+    description: "Several core stats are off target. This needs a more systematic correction pass.",
+    descriptionZh: "多個核心數據偏離目標，建議系統性學習。",
   };
 }

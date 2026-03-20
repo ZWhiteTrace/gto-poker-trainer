@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import dynamic from "next/dynamic";
 import { useProgressStore } from "@/stores/progressStore";
 import { useQuizProgressStore } from "@/stores/quizProgressStore";
@@ -30,7 +30,7 @@ import { Progress } from "@/components/ui/progress";
 import { WeaknessHeatmap } from "@/components/stats/WeaknessHeatmap";
 import { ShareCard } from "@/components/stats/ShareCard";
 import { Link } from "@/i18n/navigation";
-import { TrackedDrillType, DRILL_LABELS, POSITIONS, drillTypeToPath } from "@/lib/constants/drills";
+import { TrackedDrillType, DRILL_LABELS, POSITIONS } from "@/lib/constants/drills";
 
 // Dynamic import for recharts to reduce initial bundle size
 const AreaChart = dynamic(() => import("recharts").then((mod) => mod.AreaChart), { ssr: false });
@@ -67,8 +67,57 @@ const CHART_COLORS = ["#22c55e", "#3b82f6", "#f59e0b", "#ef4444", "#8b5cf6"];
 
 type TrendRange = 7 | 30;
 
+const recommendationCopy = {
+  "zh-TW": {
+    weakPositionTitle: (position: string, drillLabel: string) => `${position} 在 ${drillLabel} 表現偏弱`,
+    weakPositionDescription: (accuracy: string, total: number) =>
+      `準確率 ${accuracy}%（${total} 手）需要加強練習`,
+    weakPositionAction: "立即練習",
+    weakVolumeTitle: (drillLabel: string) => `${drillLabel} 練習量不足`,
+    weakVolumeDescription: (total: number) => `只有 ${total} 手，建議至少練習 50 手以建立穩定數據`,
+    weakVolumeAction: "增加練習",
+    quizCompletionTitle: "完成更多考題",
+    quizCompletionDescription: (completionRate: number) =>
+      `題庫完成度 ${completionRate}%，繼續作答可強化概念理解`,
+    quizCompletionAction: "前往考題",
+    reviewTitle: (count: number) => `${count} 題需要複習`,
+    reviewDescription: "這些題目上次答錯，建議重新練習",
+    reviewAction: "複習錯題",
+    habitTitle: "保持練習習慣！",
+    habitDescription: "已經 3 天沒有練習了，每天 10-20 手可維持手感",
+    habitAction: "開始練習",
+    excellentTitle: "表現優異！",
+    excellentDescription: "目前沒有明顯弱點，繼續保持練習以維持水準",
+  },
+  en: {
+    weakPositionTitle: (position: string, drillLabel: string) =>
+      `${position} is underperforming in ${drillLabel}`,
+    weakPositionDescription: (accuracy: string, total: number) =>
+      `${accuracy}% accuracy across ${total} hands. This spot needs more practice.`,
+    weakPositionAction: "Practice Now",
+    weakVolumeTitle: (drillLabel: string) => `${drillLabel} needs more volume`,
+    weakVolumeDescription: (total: number) =>
+      `Only ${total} hands logged. Aim for at least 50 hands before trusting the sample.`,
+    weakVolumeAction: "Add Volume",
+    quizCompletionTitle: "Finish more quizzes",
+    quizCompletionDescription: (completionRate: number) =>
+      `Question bank completion is ${completionRate}%. More reps will sharpen the underlying concepts.`,
+    quizCompletionAction: "Go to Quiz",
+    reviewTitle: (count: number) => `${count} questions need review`,
+    reviewDescription: "These spots were missed previously. Run them again before they calcify.",
+    reviewAction: "Review Misses",
+    habitTitle: "Get back into rhythm",
+    habitDescription: "No practice in the last 3 days. Even 10-20 hands a day is enough to keep the pattern fresh.",
+    habitAction: "Start Practicing",
+    excellentTitle: "Strong work",
+    excellentDescription: "No obvious leaks stand out right now. Keep the volume steady so the baseline holds.",
+  },
+} as const;
+
 export default function StatsPage() {
   const t = useTranslations();
+  const locale = useLocale() === "en" ? "en" : "zh-TW";
+  const copy = recommendationCopy[locale];
   const { stats, recentResults, lastSyncedAt, resetStats, getWeakPositions, getDailyHistory } =
     useProgressStore();
   const { getQuizCompletionStats } = useQuizProgressStore();
@@ -174,6 +223,9 @@ export default function StatsPage() {
     return "bg-red-500/20";
   };
 
+  const getDrillLabel = (drill: DrillType) =>
+    locale === "zh-TW" ? DRILL_LABELS[drill].zh || DRILL_LABELS[drill].en : DRILL_LABELS[drill].en;
+
   return (
     <div className="container max-w-6xl py-8">
       {/* Header */}
@@ -271,9 +323,12 @@ export default function StatsPage() {
             recommendations.push({
               priority: accuracy < 50 ? "high" : "medium",
               icon: <AlertTriangle className="h-5 w-5 text-amber-500" />,
-              title: `${pos} 在 ${DRILL_LABELS[drill].zh || DRILL_LABELS[drill].en} 表現偏弱`,
-              description: `準確率 ${accuracy.toFixed(0)}%（${posStats?.total || 0} 手）需要加強練習`,
-              action: "立即練習",
+              title: copy.weakPositionTitle(pos, getDrillLabel(drill)),
+              description: copy.weakPositionDescription(
+                accuracy.toFixed(0),
+                posStats?.total || 0
+              ),
+              action: copy.weakPositionAction,
               href: `${DRILL_LABELS[drill].href}?position=${pos}`,
             });
           });
@@ -285,9 +340,9 @@ export default function StatsPage() {
             recommendations.push({
               priority: "low",
               icon: <Zap className="h-5 w-5 text-blue-500" />,
-              title: `${DRILL_LABELS[drill].zh || DRILL_LABELS[drill].en} 練習量不足`,
-              description: `只有 ${stats[drill].total} 手，建議至少練習 50 手以建立穩定數據`,
-              action: "增加練習",
+              title: copy.weakVolumeTitle(getDrillLabel(drill)),
+              description: copy.weakVolumeDescription(stats[drill].total),
+              action: copy.weakVolumeAction,
               href: DRILL_LABELS[drill].href,
             });
           }
@@ -299,9 +354,9 @@ export default function StatsPage() {
           recommendations.push({
             priority: "medium",
             icon: <BookOpen className="h-5 w-5 text-purple-500" />,
-            title: "完成更多考題",
-            description: `題庫完成度 ${quizStats.completionRate}%，繼續作答可強化概念理解`,
-            action: "前往考題",
+            title: copy.quizCompletionTitle,
+            description: copy.quizCompletionDescription(quizStats.completionRate),
+            action: copy.quizCompletionAction,
             href: "/exam",
           });
         }
@@ -311,9 +366,9 @@ export default function StatsPage() {
           recommendations.push({
             priority: "high",
             icon: <Flame className="h-5 w-5 text-red-500" />,
-            title: `${quizStats.needsReview} 題需要複習`,
-            description: "這些題目上次答錯，建議重新練習",
-            action: "複習錯題",
+            title: copy.reviewTitle(quizStats.needsReview),
+            description: copy.reviewDescription,
+            action: copy.reviewAction,
             href: "/exam?mode=review",
           });
         }
@@ -325,9 +380,9 @@ export default function StatsPage() {
           recommendations.push({
             priority: "high",
             icon: <Activity className="h-5 w-5 text-green-500" />,
-            title: "保持練習習慣！",
-            description: "已經 3 天沒有練習了，每天 10-20 手可維持手感",
-            action: "開始練習",
+            title: copy.habitTitle,
+            description: copy.habitDescription,
+            action: copy.habitAction,
             href: "/drill/rfi",
           });
         }
@@ -344,8 +399,8 @@ export default function StatsPage() {
             <Card className="mb-8 border-green-500/30 bg-green-500/5">
               <CardContent className="p-6 text-center">
                 <Trophy className="mx-auto mb-3 h-12 w-12 text-green-500" />
-                <h3 className="mb-2 text-lg font-semibold">表現優異！</h3>
-                <p className="text-muted-foreground">目前沒有明顯弱點，繼續保持練習以維持水準</p>
+                <h3 className="mb-2 text-lg font-semibold">{copy.excellentTitle}</h3>
+                <p className="text-muted-foreground">{copy.excellentDescription}</p>
               </CardContent>
             </Card>
           );

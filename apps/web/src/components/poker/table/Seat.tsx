@@ -1,6 +1,7 @@
 "use client";
 
 import { memo } from "react";
+import { useLocale } from "next-intl";
 import { cn } from "@/lib/utils";
 import type { Player, Position } from "@/lib/poker/types";
 import { HoleCards, CardBack } from "../cards";
@@ -46,6 +47,7 @@ export const Seat = memo(function Seat({
   devMode = false,
   className,
 }: SeatProps) {
+  const locale = useLocale() === "en" ? "en" : "zh-TW";
   if (!player) {
     // 空座位
     return (
@@ -62,6 +64,8 @@ export const Seat = memo(function Seat({
       </div>
     );
   }
+
+  const displayName = locale === "en" ? player.name : player.nameZh || player.name;
 
   return (
     <div
@@ -122,8 +126,8 @@ export const Seat = memo(function Seat({
           </span>
           {/* 玩家名字（非 Hero 時顯示） */}
           {!isHero && (
-            <span className="max-w-[50px] truncate text-[10px] text-gray-400" title={player.name}>
-              {player.name}
+            <span className="max-w-[50px] truncate text-[10px] text-gray-400" title={displayName}>
+              {displayName}
             </span>
           )}
         </div>
@@ -173,6 +177,8 @@ export const MiniSeat = memo(function MiniSeat({
   isActive = false,
   className,
 }: MiniSeatProps) {
+  const locale = useLocale() === "en" ? "en" : "zh-TW";
+  const displayName = locale === "en" ? player.name : player.nameZh || player.name;
   return (
     <div
       className={cn(
@@ -184,7 +190,7 @@ export const MiniSeat = memo(function MiniSeat({
       )}
     >
       <span className="text-xs font-semibold text-gray-400">{player.position}</span>
-      <span className="text-sm text-white">{player.name}</span>
+      <span className="text-sm text-white">{displayName}</span>
       <span className="text-xs text-green-400">{player.stack.toFixed(1)}</span>
       {player.currentBet > 0 && (
         <span className="text-xs text-orange-400">({player.currentBet})</span>

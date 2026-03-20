@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -244,6 +244,7 @@ function ChipStack({ amount, label }: { amount: number; label: string }) {
 
 export default function EVQuizPage() {
   const t = useTranslations();
+  const locale = useLocale() === "en" ? "en" : "zh-TW";
   const [question, setQuestion] = useState<Question | null>(null);
   const [selectedAnswer, setSelectedAnswer] = useState<string | number | null>(null);
   const [choices, setChoices] = useState<(string | number)[]>([]);
@@ -303,6 +304,9 @@ export default function EVQuizPage() {
   }
 
   const questionConfig = QUESTION_CONFIGS[question.type];
+  const copy = {
+    questionName: (name: string, nameZh: string) => (locale === "en" ? name : nameZh),
+  };
 
   return (
     <div className="container max-w-2xl py-8">
@@ -337,7 +341,7 @@ export default function EVQuizPage() {
           <option value="all">{t("quiz.allCategories")}</option>
           {Object.entries(QUESTION_CONFIGS).map(([key, data]) => (
             <option key={key} value={key}>
-              {data.nameZh}
+              {copy.questionName(data.name, data.nameZh)}
             </option>
           ))}
         </select>
@@ -356,7 +360,7 @@ export default function EVQuizPage() {
                     : "destructive"
               }
             >
-              {questionConfig.nameZh}
+              {copy.questionName(questionConfig.name, questionConfig.nameZh)}
             </Badge>
           </CardDescription>
           <CardTitle className="text-lg">

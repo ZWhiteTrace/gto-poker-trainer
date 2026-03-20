@@ -38,6 +38,7 @@ export type HoleCards = [Card, Card];
 export interface Player {
   id: string;
   name: string;
+  nameZh?: string;
   position: Position;
   stack: number; // In BB
   holeCards: HoleCards | null;
@@ -58,6 +59,7 @@ export interface Player {
 export interface ActionRecord {
   playerId: string;
   playerName: string;
+  playerNameZh?: string;
   position: Position;
   action: ActionType;
   amount?: number;
@@ -181,7 +183,7 @@ export interface AIOpponentStat {
 // 雙層追蹤：按類型 + 按個體
 export interface AIOpponentStats {
   byStyle: Record<AIStyle, AIOpponentStat>;
-  byPlayer: Record<string, AIOpponentStat & { name: string; style: AIStyle }>;
+  byPlayer: Record<string, AIOpponentStat & { name: string; nameZh?: string; style: AIStyle }>;
 }
 
 export const DEFAULT_AI_OPPONENT_STAT: AIOpponentStat = {
@@ -558,6 +560,7 @@ export const DEFAULT_CONFIG: GameConfig = {
 
 export interface HandHistoryPlayer {
   name: string;
+  nameZh?: string;
   position: Position;
   stack: number; // Starting stack for this hand
   holeCards: HoleCards | null; // null if not shown
@@ -587,12 +590,14 @@ export interface HandHistoryResult {
     amount: number;
     handRank?: HandRank;
     handDescription?: string;
+    handDescriptionZh?: string;
   }[];
   showdownHands?: {
     position: Position;
     cards: HoleCards;
     handRank: HandRank;
     handDescription: string;
+    handDescriptionZh?: string;
   }[];
 }
 

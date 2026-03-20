@@ -13,10 +13,8 @@ import type {
   Card,
   HoleCards,
   Position,
-  Street,
   HandEvaluation,
   AIStyle,
-  SUIT_SYMBOLS,
 } from "./types";
 
 // Re-export types for convenience
@@ -61,6 +59,7 @@ export function createHandHistory(
     const aiProfile = aiProfileMap.get(p.seatIndex);
     return {
       name: p.name,
+      nameZh: p.nameZh,
       position: p.position,
       stack: p.stack + p.totalInvested, // Restore starting stack
       holeCards: p.holeCards,
@@ -116,6 +115,7 @@ export function createHandHistory(
       amount: pot / winners.length,
       handRank: handEvaluations.get(w.id)?.rank,
       handDescription: handEvaluations.get(w.id)?.description,
+      handDescriptionZh: handEvaluations.get(w.id)?.descriptionZh,
     })),
   };
 
@@ -128,6 +128,7 @@ export function createHandHistory(
         cards: p.holeCards!,
         handRank: handEvaluations.get(p.id)?.rank || "high_card",
         handDescription: handEvaluations.get(p.id)?.description || "",
+        handDescriptionZh: handEvaluations.get(p.id)?.descriptionZh,
       }));
     }
   }

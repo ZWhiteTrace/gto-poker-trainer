@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
+import { useLocale } from "next-intl";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -30,10 +31,58 @@ import {
   type HandHistory,
 } from "@/lib/poker/handHistory";
 import { SUIT_SYMBOLS, SUIT_CARD_COLORS } from "@/lib/poker/types";
+import {
+  getDisplayHandDescription,
+  getHandHistoryStreetLabel,
+  getPokerActionLabel,
+} from "@/lib/poker/handHistoryDisplay";
 
 interface HandHistoryViewerProps {
   className?: string;
 }
+
+const viewerCopy = {
+  "zh-TW": {
+    backToList: "返回列表",
+    board: "公共牌",
+    showdown: "攤牌",
+    copied: "已複製",
+    copy: "複製",
+    download: "下載",
+    clearConfirm: "確定要清除所有手牌記錄嗎？",
+    hands: "手數",
+    sessionProfit: "BB 盈虧",
+    winRate: "勝率",
+    exportAll: "匯出全部",
+    noHands: "尚無手牌記錄",
+    noHandsHint: "開始練習後會自動記錄",
+    review: "手牌回顧",
+    handHistory: "手牌歷史",
+    description: "查看並匯出你的練習記錄",
+    hero: "Hero",
+    handNumber: (count: number) => `手牌 #${count}`,
+  },
+  en: {
+    backToList: "Back to list",
+    board: "Board",
+    showdown: "Showdown",
+    copied: "Copied",
+    copy: "Copy",
+    download: "Download",
+    clearConfirm: "Clear all hand history?",
+    hands: "Hands",
+    sessionProfit: "BB P/L",
+    winRate: "Win Rate",
+    exportAll: "Export All",
+    noHands: "No hands recorded yet",
+    noHandsHint: "Hands will be recorded automatically once you start practicing",
+    review: "Hand Review",
+    handHistory: "Hand History",
+    description: "Review and export your practice hands",
+    hero: "Hero",
+    handNumber: (count: number) => `Hand #${count}`,
+  },
+} as const;
 
 function formatCard(card: { rank: string; suit: string }) {
   return (
@@ -44,7 +93,16 @@ function formatCard(card: { rank: string; suit: string }) {
   );
 }
 
-function HandSummaryCard({ hand, onClick }: { hand: HandHistory; onClick: () => void }) {
+function HandSummaryCard({
+  hand,
+  locale,
+  onClick,
+}: {
+  hand: HandHistory;
+  locale: "en" | "zh-TW";
+  onClick: () => void;
+}) {
+  const copy = viewerCopy[locale];
   const isWin = hand.heroProfit > 0;
   const isLoss = hand.heroProfit < 0;
 
@@ -93,7 +151,7 @@ function HandSummaryCard({ hand, onClick }: { hand: HandHistory; onClick: () => 
         </div>
       </div>
       <div className="text-muted-foreground mt-2 flex items-center gap-2 text-xs">
-        <span>Hand #{hand.handNumber}</span>
+        <span>{copy.handNumber(hand.handNumber)}</span>
         <span>•</span>
         <span>
           {new Date(hand.timestamp).toLocaleTimeString([], {
@@ -118,7 +176,16 @@ function HandSummaryCard({ hand, onClick }: { hand: HandHistory; onClick: () => 
   );
 }
 
-function HandDetailView({ hand, onBack }: { hand: HandHistory; onBack: () => void }) {
+function HandDetailView({
+  hand,
+  locale,
+  onBack,
+}: {
+  hand: HandHistory;
+  locale: "en" | "zh-TW";
+  onBack: () => void;
+}) {
+  const copy = viewerCopy[locale];
   const [copied, setCopied] = useState(false);
 
   const handleCopy = async () => {
@@ -145,7 +212,7 @@ function HandDetailView({ hand, onBack }: { hand: HandHistory; onBack: () => voi
   return (
     <div className="space-y-4">
       <Button variant="ghost" size="sm" onClick={onBack}>
-        ← 返回列表
+        ← {copy.backToList}
       </Button>
 
       {/* Summary */}
@@ -156,7 +223,7 @@ function HandDetailView({ hand, onBack }: { hand: HandHistory; onBack: () => voi
         )}
       >
         <div className="mb-2 flex items-center justify-between">
-          <span className="text-muted-foreground text-sm">Hand #{hand.handNumber}</span>
+          <span className="text-muted-foreground text-sm">{copy.handNumber(hand.handNumber)}</span>
           <span
             className={cn(
               "text-lg font-bold",
@@ -168,7 +235,9 @@ function HandDetailView({ hand, onBack }: { hand: HandHistory; onBack: () => voi
           </span>
         </div>
         <div className="flex items-center gap-3">
-          <span>Hero ({hand.heroPosition}):</span>
+          <span>
+            {copy.hero} ({hand.heroPosition}):
+          </span>
           {hero?.holeCards && (
             <span className="text-lg">
               {formatCard(hero.holeCards[0])} {formatCard(hero.holeCards[1])}
@@ -180,7 +249,7 @@ function HandDetailView({ hand, onBack }: { hand: HandHistory; onBack: () => voi
       {/* Board */}
       {hand.board.flop && (
         <div className="bg-muted/30 rounded-lg p-4">
-          <div className="text-muted-foreground mb-2 text-sm">Board</div>
+          <div className="text-muted-foreground mb-2 text-sm">{copy.board}</div>
           <div className="flex gap-2 text-lg">
             {hand.board.flop.map((c, i) => (
               <span key={`flop-${i}`} className="bg-background rounded px-2 py-1">
@@ -205,7 +274,9 @@ function HandDetailView({ hand, onBack }: { hand: HandHistory; onBack: () => voi
       <div className="space-y-3">
         {hand.actions.preflop.length > 0 && (
           <div>
-            <div className="mb-1 text-sm font-medium">Preflop</div>
+            <div className="mb-1 text-sm font-medium">
+              {getHandHistoryStreetLabel("preflop", locale)}
+            </div>
             <div className="text-muted-foreground text-sm">
               {hand.actions.preflop.map((a, i) => (
                 <span key={i}>
@@ -213,7 +284,7 @@ function HandDetailView({ hand, onBack }: { hand: HandHistory; onBack: () => voi
                   <span
                     className={a.position === hand.heroPosition ? "text-primary font-medium" : ""}
                   >
-                    {a.position}: {a.action}
+                    {a.position}: {getPokerActionLabel(a.action, locale)}
                     {a.amount ? ` ${a.amount.toFixed(1)}` : ""}
                   </span>
                 </span>
@@ -223,7 +294,7 @@ function HandDetailView({ hand, onBack }: { hand: HandHistory; onBack: () => voi
         )}
         {hand.actions.flop.length > 0 && (
           <div>
-            <div className="mb-1 text-sm font-medium">Flop</div>
+            <div className="mb-1 text-sm font-medium">{getHandHistoryStreetLabel("flop", locale)}</div>
             <div className="text-muted-foreground text-sm">
               {hand.actions.flop.map((a, i) => (
                 <span key={i}>
@@ -231,7 +302,7 @@ function HandDetailView({ hand, onBack }: { hand: HandHistory; onBack: () => voi
                   <span
                     className={a.position === hand.heroPosition ? "text-primary font-medium" : ""}
                   >
-                    {a.position}: {a.action}
+                    {a.position}: {getPokerActionLabel(a.action, locale)}
                     {a.amount ? ` ${a.amount.toFixed(1)}` : ""}
                   </span>
                 </span>
@@ -241,7 +312,7 @@ function HandDetailView({ hand, onBack }: { hand: HandHistory; onBack: () => voi
         )}
         {hand.actions.turn.length > 0 && (
           <div>
-            <div className="mb-1 text-sm font-medium">Turn</div>
+            <div className="mb-1 text-sm font-medium">{getHandHistoryStreetLabel("turn", locale)}</div>
             <div className="text-muted-foreground text-sm">
               {hand.actions.turn.map((a, i) => (
                 <span key={i}>
@@ -249,7 +320,7 @@ function HandDetailView({ hand, onBack }: { hand: HandHistory; onBack: () => voi
                   <span
                     className={a.position === hand.heroPosition ? "text-primary font-medium" : ""}
                   >
-                    {a.position}: {a.action}
+                    {a.position}: {getPokerActionLabel(a.action, locale)}
                     {a.amount ? ` ${a.amount.toFixed(1)}` : ""}
                   </span>
                 </span>
@@ -259,7 +330,7 @@ function HandDetailView({ hand, onBack }: { hand: HandHistory; onBack: () => voi
         )}
         {hand.actions.river.length > 0 && (
           <div>
-            <div className="mb-1 text-sm font-medium">River</div>
+            <div className="mb-1 text-sm font-medium">{getHandHistoryStreetLabel("river", locale)}</div>
             <div className="text-muted-foreground text-sm">
               {hand.actions.river.map((a, i) => (
                 <span key={i}>
@@ -267,7 +338,7 @@ function HandDetailView({ hand, onBack }: { hand: HandHistory; onBack: () => voi
                   <span
                     className={a.position === hand.heroPosition ? "text-primary font-medium" : ""}
                   >
-                    {a.position}: {a.action}
+                    {a.position}: {getPokerActionLabel(a.action, locale)}
                     {a.amount ? ` ${a.amount.toFixed(1)}` : ""}
                   </span>
                 </span>
@@ -280,14 +351,16 @@ function HandDetailView({ hand, onBack }: { hand: HandHistory; onBack: () => voi
       {/* Result */}
       {hand.result.showdownHands && hand.result.showdownHands.length > 0 && (
         <div className="bg-muted/30 rounded-lg p-4">
-          <div className="mb-2 text-sm font-medium">Showdown</div>
+          <div className="mb-2 text-sm font-medium">{copy.showdown}</div>
           <div className="space-y-1 text-sm">
             {hand.result.showdownHands.map((sh, i) => (
               <div key={i} className="flex items-center justify-between">
                 <span>
                   {sh.position}: {formatCard(sh.cards[0])} {formatCard(sh.cards[1])}
                 </span>
-                <span className="text-muted-foreground">{sh.handDescription}</span>
+                <span className="text-muted-foreground">
+                  {getDisplayHandDescription(sh.handDescription, sh.handDescriptionZh, locale)}
+                </span>
               </div>
             ))}
           </div>
@@ -298,11 +371,11 @@ function HandDetailView({ hand, onBack }: { hand: HandHistory; onBack: () => voi
       <div className="flex gap-2">
         <Button variant="outline" size="sm" onClick={handleCopy}>
           {copied ? <Check className="mr-2 h-4 w-4" /> : <Copy className="mr-2 h-4 w-4" />}
-          {copied ? "已複製" : "複製"}
+          {copied ? copy.copied : copy.copy}
         </Button>
         <Button variant="outline" size="sm" onClick={handleDownload}>
           <Download className="mr-2 h-4 w-4" />
-          下載
+          {copy.download}
         </Button>
       </div>
     </div>
@@ -310,18 +383,14 @@ function HandDetailView({ hand, onBack }: { hand: HandHistory; onBack: () => voi
 }
 
 export function HandHistoryViewer({ className }: HandHistoryViewerProps) {
+  const locale = useLocale() === "en" ? "en" : "zh-TW";
+  const copy = viewerCopy[locale];
   const [histories, setHistories] = useState<HandHistory[]>([]);
   const [selectedHand, setSelectedHand] = useState<HandHistory | null>(null);
   const [isOpen, setIsOpen] = useState(false);
 
-  useEffect(() => {
-    if (isOpen) {
-      setHistories(getStoredHandHistories());
-    }
-  }, [isOpen]);
-
   const handleClear = () => {
-    if (confirm("確定要清除所有手牌記錄嗎？")) {
+    if (confirm(copy.clearConfirm)) {
       clearHandHistories();
       setHistories([]);
       setSelectedHand(null);
@@ -347,13 +416,13 @@ export function HandHistoryViewer({ className }: HandHistoryViewerProps) {
   const winRate = totalHands > 0 ? ((wins / totalHands) * 100).toFixed(0) : 0;
 
   const content = (
-    <div className="flex h-full flex-col">
+    <div className={cn("flex h-full flex-col", className)}>
       {/* Stats Summary */}
       {totalHands > 0 && (
         <div className="bg-muted/30 mb-4 grid grid-cols-3 gap-2 rounded-lg p-3">
           <div className="text-center">
             <div className="text-lg font-bold">{totalHands}</div>
-            <div className="text-muted-foreground text-xs">Hands</div>
+            <div className="text-muted-foreground text-xs">{copy.hands}</div>
           </div>
           <div className="text-center">
             <div
@@ -365,11 +434,11 @@ export function HandHistoryViewer({ className }: HandHistoryViewerProps) {
               {totalProfit > 0 && "+"}
               {totalProfit.toFixed(1)}
             </div>
-            <div className="text-muted-foreground text-xs">BB P/L</div>
+            <div className="text-muted-foreground text-xs">{copy.sessionProfit}</div>
           </div>
           <div className="text-center">
             <div className="text-lg font-bold">{winRate}%</div>
-            <div className="text-muted-foreground text-xs">Win Rate</div>
+            <div className="text-muted-foreground text-xs">{copy.winRate}</div>
           </div>
         </div>
       )}
@@ -384,7 +453,7 @@ export function HandHistoryViewer({ className }: HandHistoryViewerProps) {
           className="flex-1"
         >
           <Download className="mr-2 h-4 w-4" />
-          匯出全部
+          {copy.exportAll}
         </Button>
         <Button
           variant="outline"
@@ -400,18 +469,23 @@ export function HandHistoryViewer({ className }: HandHistoryViewerProps) {
       {/* Hand List or Detail */}
       <div className="flex-1 overflow-y-auto">
         {selectedHand ? (
-          <HandDetailView hand={selectedHand} onBack={() => setSelectedHand(null)} />
+          <HandDetailView hand={selectedHand} locale={locale} onBack={() => setSelectedHand(null)} />
         ) : histories.length > 0 ? (
           <div className="space-y-2">
             {histories.map((hand) => (
-              <HandSummaryCard key={hand.id} hand={hand} onClick={() => setSelectedHand(hand)} />
+              <HandSummaryCard
+                key={hand.id}
+                hand={hand}
+                locale={locale}
+                onClick={() => setSelectedHand(hand)}
+              />
             ))}
           </div>
         ) : (
           <div className="text-muted-foreground py-8 text-center">
             <History className="mx-auto mb-2 h-12 w-12 opacity-50" />
-            <p>尚無手牌記錄</p>
-            <p className="text-sm">開始練習後會自動記錄</p>
+            <p>{copy.noHands}</p>
+            <p className="text-sm">{copy.noHandsHint}</p>
           </div>
         )}
       </div>
@@ -419,17 +493,25 @@ export function HandHistoryViewer({ className }: HandHistoryViewerProps) {
   );
 
   return (
-    <Sheet open={isOpen} onOpenChange={setIsOpen}>
+    <Sheet
+      open={isOpen}
+      onOpenChange={(open) => {
+        setIsOpen(open);
+        if (open) {
+          setHistories(getStoredHandHistories());
+        }
+      }}
+    >
       <SheetTrigger asChild>
         <Button variant="outline" size="sm">
           <History className="mr-2 h-4 w-4" />
-          手牌回顧
+          {copy.review}
         </Button>
       </SheetTrigger>
       <SheetContent className="w-full sm:max-w-md">
         <SheetHeader>
-          <SheetTitle>手牌歷史</SheetTitle>
-          <SheetDescription>查看並匯出你的練習記錄</SheetDescription>
+          <SheetTitle>{copy.handHistory}</SheetTitle>
+          <SheetDescription>{copy.description}</SheetDescription>
         </SheetHeader>
         <div className="mt-4 h-[calc(100vh-120px)]">{content}</div>
       </SheetContent>

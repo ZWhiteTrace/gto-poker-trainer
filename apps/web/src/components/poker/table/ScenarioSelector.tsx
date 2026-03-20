@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useLocale } from "next-intl";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -18,6 +19,7 @@ interface ScenarioSelectorProps {
 }
 
 export function ScenarioSelector({ onSelect, onClose }: ScenarioSelectorProps) {
+  const locale = useLocale() === "en" ? "en" : "zh-TW";
   const [selectedCategory, setSelectedCategory] = useState<ScenarioCategory | null>(null);
 
   const scenarios = selectedCategory ? getScenariosByCategory(selectedCategory) : SCENARIO_PRESETS;
@@ -27,7 +29,7 @@ export function ScenarioSelector({ onSelect, onClose }: ScenarioSelectorProps) {
       <Card className="max-h-[80vh] w-full max-w-3xl overflow-hidden border-gray-700 bg-gray-900">
         <CardHeader className="border-b border-gray-700">
           <div className="flex items-center justify-between">
-            <CardTitle className="text-xl">選擇訓練場景</CardTitle>
+            <CardTitle className="text-xl">{locale === "en" ? "Choose Training Scenario" : "選擇訓練場景"}</CardTitle>
             <Button variant="ghost" size="sm" onClick={onClose}>
               ✕
             </Button>
@@ -42,7 +44,7 @@ export function ScenarioSelector({ onSelect, onClose }: ScenarioSelectorProps) {
               size="sm"
               onClick={() => setSelectedCategory(null)}
             >
-              全部
+              {locale === "en" ? "All" : "全部"}
             </Button>
             {SCENARIO_CATEGORIES.map((cat) => (
               <Button
@@ -51,7 +53,7 @@ export function ScenarioSelector({ onSelect, onClose }: ScenarioSelectorProps) {
                 size="sm"
                 onClick={() => setSelectedCategory(cat.id)}
               >
-                {cat.nameZh}
+                {locale === "en" ? cat.name : cat.nameZh}
               </Button>
             ))}
           </div>
@@ -78,6 +80,7 @@ interface ScenarioCardProps {
 }
 
 function ScenarioCard({ scenario, onClick }: ScenarioCardProps) {
+  const locale = useLocale() === "en" ? "en" : "zh-TW";
   const categoryInfo = SCENARIO_CATEGORIES.find((c) => c.id === scenario.category);
 
   return (
@@ -90,13 +93,15 @@ function ScenarioCard({ scenario, onClick }: ScenarioCardProps) {
       )}
     >
       <div className="mb-2 flex items-start justify-between">
-        <h3 className="font-semibold text-white">{scenario.nameZh}</h3>
+        <h3 className="font-semibold text-white">{locale === "en" ? scenario.name : scenario.nameZh}</h3>
         <Badge variant="outline" className="shrink-0 text-xs">
-          {categoryInfo?.nameZh}
+          {locale === "en" ? categoryInfo?.name : categoryInfo?.nameZh}
         </Badge>
       </div>
 
-      <p className="mb-3 text-sm text-gray-400">{scenario.descriptionZh}</p>
+      <p className="mb-3 text-sm text-gray-400">
+        {locale === "en" ? scenario.description : scenario.descriptionZh}
+      </p>
 
       <div className="flex flex-wrap gap-2 text-xs">
         <span className="rounded bg-blue-500/20 px-2 py-0.5 text-blue-400">
@@ -106,7 +111,7 @@ function ScenarioCard({ scenario, onClick }: ScenarioCardProps) {
           {scenario.effectiveStack}BB
         </span>
         <span className="rounded bg-purple-500/20 px-2 py-0.5 text-purple-400">
-          {scenario.numPlayers} 人
+          {locale === "en" ? `${scenario.numPlayers} players` : `${scenario.numPlayers} 人`}
         </span>
       </div>
 
@@ -130,6 +135,7 @@ interface ScenarioButtonProps {
 }
 
 export function ScenarioButton({ onClick, className }: ScenarioButtonProps) {
+  const locale = useLocale() === "en" ? "en" : "zh-TW";
   return (
     <Button variant="outline" size="sm" onClick={onClick} className={cn("gap-2", className)}>
       <svg
@@ -147,7 +153,7 @@ export function ScenarioButton({ onClick, className }: ScenarioButtonProps) {
         <path d="M8 11h8" />
         <path d="M8 7h6" />
       </svg>
-      場景
+      {locale === "en" ? "Scenarios" : "場景"}
     </Button>
   );
 }

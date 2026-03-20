@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -13,11 +13,9 @@ import {
   FLOP_TEXTURE_CATEGORIES,
   analyzeFlop,
   generateFlopOfTexture,
-  getIpCbetMidpoint,
-  getOopCbetMidpoint,
   getAdvantageColor,
   type FlopTextureType,
-  type AdvantageTier,
+  type FlopTextureCategory,
   type FrequencyAdjust,
   type SizingAdjust,
 } from "@/lib/poker/flopTexture";
@@ -605,6 +603,18 @@ function FlopDisplay({ flop, suits }: { flop: Rank[]; suits: Suit[] }) {
   );
 }
 
+function getPageLocale(locale: string): "en" | "zh-TW" {
+  return locale === "en" ? "en" : "zh-TW";
+}
+
+function getTextureName(category: FlopTextureCategory, locale: "en" | "zh-TW"): string {
+  return locale === "en" ? category.nameEn : category.nameZh;
+}
+
+function getTextureDescription(category: FlopTextureCategory, locale: "en" | "zh-TW"): string {
+  return locale === "en" ? category.description : category.descriptionZh;
+}
+
 // ============================================
 // Classify Drill
 // ============================================
@@ -612,7 +622,8 @@ function FlopDisplay({ flop, suits }: { flop: Rank[]; suits: Suit[] }) {
 function ClassifyDrill() {
   const t = useTranslations("drill");
   const tCommon = useTranslations("common");
-  const [scenario, setScenario] = useState<ClassifyScenario | null>(null);
+  const locale = getPageLocale(useLocale());
+  const [scenario, setScenario] = useState<ClassifyScenario>(() => generateClassifyScenario());
   const [selectedAnswer, setSelectedAnswer] = useState<FlopTextureType | null>(null);
   const [showResult, setShowResult] = useState(false);
   const [score, setScore] = useState({ correct: 0, total: 0 });
@@ -622,10 +633,6 @@ function ClassifyDrill() {
     setSelectedAnswer(null);
     setShowResult(false);
   }, []);
-
-  useEffect(() => {
-    loadScenario();
-  }, [loadScenario]);
 
   const handleAnswer = (texture: FlopTextureType) => {
     if (showResult) return;
@@ -690,7 +697,7 @@ function ClassifyDrill() {
                   onClick={() => handleAnswer(cat.id)}
                   disabled={showResult}
                 >
-                  <span className="truncate">{cat.nameZh}</span>
+                  <span className="truncate">{getTextureName(cat, locale)}</span>
                   {showResult && isCorrectAnswer && (
                     <CheckCircle2 className="ml-auto h-3 w-3 shrink-0 sm:h-4 sm:w-4" />
                   )}
@@ -716,9 +723,13 @@ function ClassifyDrill() {
                 </div>
                 <p className="mb-2 text-sm text-gray-300">
                   {tCommon("correct")}:{" "}
-                  <span className="font-semibold text-white">{correctCategory.nameZh}</span>
+                  <span className="font-semibold text-white">
+                    {getTextureName(correctCategory, locale)}
+                  </span>
                 </p>
-                <p className="text-sm text-gray-400">{correctCategory.descriptionZh}</p>
+                <p className="text-sm text-gray-400">
+                  {getTextureDescription(correctCategory, locale)}
+                </p>
                 <div className="mt-3 flex flex-wrap items-center gap-4 text-sm">
                   <span className="text-gray-400">
                     IP C-bet:{" "}
@@ -756,7 +767,8 @@ function ClassifyDrill() {
 function CbetDrill() {
   const t = useTranslations("drill");
   const tCommon = useTranslations("common");
-  const [scenario, setScenario] = useState<CbetScenario | null>(null);
+  const locale = getPageLocale(useLocale());
+  const [scenario, setScenario] = useState<CbetScenario>(() => generateCbetScenario());
   const [selectedFreq, setSelectedFreq] = useState<string | null>(null);
   const [selectedSizing, setSelectedSizing] = useState<string | null>(null);
   const [showResult, setShowResult] = useState(false);
@@ -768,10 +780,6 @@ function CbetDrill() {
     setSelectedSizing(null);
     setShowResult(false);
   }, []);
-
-  useEffect(() => {
-    loadScenario();
-  }, [loadScenario]);
 
   const handleSubmit = () => {
     if (!selectedFreq || !selectedSizing) return;
@@ -824,7 +832,7 @@ function CbetDrill() {
             >
               {scenario.position === "IP" ? t("flopTexture.ipBadge") : t("flopTexture.oopBadge")}
             </Badge>
-            <Badge variant="secondary">{category.nameZh}</Badge>
+            <Badge variant="secondary">{getTextureName(category, locale)}</Badge>
           </div>
 
           {/* Question */}
@@ -909,7 +917,7 @@ function CbetDrill() {
                 </div>
                 <p className="text-sm text-gray-300">
                   {t("flopTexture.cbet.explanation", {
-                    texture: category.nameZh,
+                    texture: getTextureName(category, locale),
                     position: scenario.position,
                     freqRange:
                       scenario.position === "IP"
@@ -918,7 +926,9 @@ function CbetDrill() {
                     sizing: scenario.position === "IP" ? category.ip.sizing : category.oop.sizing,
                   })}
                 </p>
-                <p className="mt-2 text-sm text-gray-400">{category.descriptionZh}</p>
+                <p className="mt-2 text-sm text-gray-400">
+                  {getTextureDescription(category, locale)}
+                </p>
               </CardContent>
             </Card>
           )}
@@ -942,12 +952,13 @@ function CbetDrill() {
 function QuickDrill() {
   const t = useTranslations("drill");
   const tCommon = useTranslations("common");
-  const [scenario, setScenario] = useState<QuickScenario | null>(null);
+  const locale = getPageLocale(useLocale());
+  const [scenario, setScenario] = useState<QuickScenario>(() => generateQuickScenario());
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
   const [showResult, setShowResult] = useState(false);
   const [score, setScore] = useState({ correct: 0, total: 0 });
   const [timeLeft, setTimeLeft] = useState(10);
-  const [isTimerActive, setIsTimerActive] = useState(false);
+  const [isTimerActive, setIsTimerActive] = useState(true);
 
   const loadScenario = useCallback(() => {
     setScenario(generateQuickScenario());
@@ -956,10 +967,6 @@ function QuickDrill() {
     setTimeLeft(10);
     setIsTimerActive(true);
   }, []);
-
-  useEffect(() => {
-    loadScenario();
-  }, [loadScenario]);
 
   // Timer
   useEffect(() => {
@@ -1022,7 +1029,7 @@ function QuickDrill() {
         ];
       case "texture_category": {
         const allTypes = Object.values(FLOP_TEXTURE_CATEGORIES);
-        return allTypes.map((cat) => ({ key: cat.id, label: cat.nameZh }));
+        return allTypes.map((cat) => ({ key: cat.id, label: getTextureName(cat, locale) }));
       }
       case "advantage_tier":
         return [
@@ -1201,7 +1208,8 @@ const THREE_LAYER_OPTIONS: Record<
 function ThreeLayerDrill() {
   const t = useTranslations("drill");
   const tCommon = useTranslations("common");
-  const [scenario, setScenario] = useState<ThreeLayerScenario | null>(null);
+  const locale = getPageLocale(useLocale());
+  const [scenario, setScenario] = useState<ThreeLayerScenario>(() => generateThreeLayerScenario());
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
   const [showResult, setShowResult] = useState(false);
   const [score, setScore] = useState({ correct: 0, total: 0 });
@@ -1211,10 +1219,6 @@ function ThreeLayerDrill() {
     setSelectedAnswer(null);
     setShowResult(false);
   }, []);
-
-  useEffect(() => {
-    loadScenario();
-  }, [loadScenario]);
 
   const handleAnswer = (answer: string) => {
     if (showResult) return;
@@ -1307,7 +1311,7 @@ function ThreeLayerDrill() {
             >
               {scenario.position}
             </Badge>
-            <Badge variant="secondary">{category?.nameZh}</Badge>
+            <Badge variant="secondary">{category ? getTextureName(category, locale) : null}</Badge>
           </div>
 
           {/* Ranges */}
@@ -1402,7 +1406,8 @@ function ThreeLayerDrill() {
 function MustCheckDrill() {
   const t = useTranslations("drill");
   const tCommon = useTranslations("common");
-  const [scenario, setScenario] = useState<MustCheckScenario | null>(null);
+  const locale = getPageLocale(useLocale());
+  const [scenario, setScenario] = useState<MustCheckScenario>(() => generateMustCheckScenario());
   const [selectedAnswer, setSelectedAnswer] = useState<boolean | null>(null);
   const [showResult, setShowResult] = useState(false);
   const [score, setScore] = useState({ correct: 0, total: 0 });
@@ -1412,10 +1417,6 @@ function MustCheckDrill() {
     setSelectedAnswer(null);
     setShowResult(false);
   }, []);
-
-  useEffect(() => {
-    loadScenario();
-  }, [loadScenario]);
 
   const handleAnswer = (answer: boolean) => {
     if (showResult) return;
@@ -1471,7 +1472,7 @@ function MustCheckDrill() {
             >
               {scenario.position}
             </Badge>
-            <Badge variant="secondary">{category?.nameZh}</Badge>
+            <Badge variant="secondary">{category ? getTextureName(category, locale) : null}</Badge>
           </div>
 
           {/* Hero Hand */}
@@ -1567,7 +1568,8 @@ const CHECK_FIRST_TARGET = 10; // Need 10 consecutive correct to win
 function CheckFirstDrill() {
   const t = useTranslations("drill");
   const tCommon = useTranslations("common");
-  const [scenario, setScenario] = useState<MustCheckScenario | null>(null);
+  const locale = getPageLocale(useLocale());
+  const [scenario, setScenario] = useState<MustCheckScenario>(() => generateCheckFirstScenario());
   const [selectedAnswer, setSelectedAnswer] = useState<boolean | null>(null);
   const [showResult, setShowResult] = useState(false);
   const [streak, setStreak] = useState(0);
@@ -1579,10 +1581,6 @@ function CheckFirstDrill() {
     setSelectedAnswer(null);
     setShowResult(false);
   }, []);
-
-  useEffect(() => {
-    loadScenario();
-  }, [loadScenario]);
 
   const handleAnswer = (answer: boolean) => {
     if (showResult || isComplete) return;
@@ -1712,7 +1710,7 @@ function CheckFirstDrill() {
             >
               {scenario.position}
             </Badge>
-            <Badge variant="secondary">{category?.nameZh}</Badge>
+            <Badge variant="secondary">{category ? getTextureName(category, locale) : null}</Badge>
           </div>
 
           {/* Hero Hand */}
@@ -2049,9 +2047,65 @@ interface LiveQuizState {
   leakAnswer?: string | null;
 }
 
+function createLiveQuizScenario(): LiveQuizState {
+  const quizTypes: LiveQuizType[] = ["adjustment", "multiway", "dangerSign", "leakExploit"];
+  const randomType = quizTypes[Math.floor(Math.random() * quizTypes.length)];
+
+  if (randomType === "adjustment") {
+    const textures = Object.keys(FLOP_TEXTURE_CATEGORIES) as FlopTextureType[];
+    const randomTexture = textures[Math.floor(Math.random() * textures.length)];
+    const { ranks, suits } = generateFlopOfTexture(randomTexture);
+    return {
+      type: "adjustment",
+      texture: randomTexture,
+      flop: ranks,
+      suits,
+      adjustmentAnswer: { freq: null, sizing: null },
+    };
+  }
+
+  if (randomType === "multiway") {
+    const scenario = MULTIWAY_SCENARIOS[Math.floor(Math.random() * MULTIWAY_SCENARIOS.length)];
+    const { ranks, suits } = generateFlopOfTexture(scenario.texture);
+    return {
+      type: "multiway",
+      texture: scenario.texture,
+      flop: ranks,
+      suits,
+      multiwayScenario: scenario,
+      multiwayAnswer: null,
+    };
+  }
+
+  if (randomType === "dangerSign") {
+    const scenario = DANGER_SIGN_SCENARIOS[Math.floor(Math.random() * DANGER_SIGN_SCENARIOS.length)];
+    const { ranks, suits } = generateFlopOfTexture(scenario.texture);
+    return {
+      type: "dangerSign",
+      texture: scenario.texture,
+      flop: ranks,
+      suits,
+      dangerScenario: scenario,
+      dangerAnswer: null,
+    };
+  }
+
+  const scenario = LEAK_EXPLOIT_SCENARIOS[Math.floor(Math.random() * LEAK_EXPLOIT_SCENARIOS.length)];
+  const { ranks, suits } = generateFlopOfTexture(scenario.texture);
+  return {
+    type: "leakExploit",
+    texture: scenario.texture,
+    flop: ranks,
+    suits,
+    leakScenario: scenario,
+    leakAnswer: null,
+  };
+}
+
 function LiveExploitDrill() {
   const t = useTranslations("drill");
   const tCommon = useTranslations("common");
+  const locale = getPageLocale(useLocale());
   const [subMode, setSubMode] = useState<LiveExploitSubMode>("notes");
   const [selectedTexture, setSelectedTexture] = useState<FlopTextureType | null>(null);
   const [quiz, setQuiz] = useState<LiveQuizState | null>(null);
@@ -2061,65 +2115,17 @@ function LiveExploitDrill() {
   const allTextures = Object.values(FLOP_TEXTURE_CATEGORIES);
 
   const loadQuizScenario = useCallback(() => {
-    // Randomly pick a quiz type
-    const quizTypes: LiveQuizType[] = ["adjustment", "multiway", "dangerSign", "leakExploit"];
-    const randomType = quizTypes[Math.floor(Math.random() * quizTypes.length)];
-
-    if (randomType === "adjustment") {
-      const textures = Object.keys(FLOP_TEXTURE_CATEGORIES) as FlopTextureType[];
-      const randomTexture = textures[Math.floor(Math.random() * textures.length)];
-      const { ranks, suits } = generateFlopOfTexture(randomTexture);
-      setQuiz({
-        type: "adjustment",
-        texture: randomTexture,
-        flop: ranks,
-        suits,
-        adjustmentAnswer: { freq: null, sizing: null },
-      });
-    } else if (randomType === "multiway") {
-      const scenario = MULTIWAY_SCENARIOS[Math.floor(Math.random() * MULTIWAY_SCENARIOS.length)];
-      const { ranks, suits } = generateFlopOfTexture(scenario.texture);
-      setQuiz({
-        type: "multiway",
-        texture: scenario.texture,
-        flop: ranks,
-        suits,
-        multiwayScenario: scenario,
-        multiwayAnswer: null,
-      });
-    } else if (randomType === "dangerSign") {
-      const scenario =
-        DANGER_SIGN_SCENARIOS[Math.floor(Math.random() * DANGER_SIGN_SCENARIOS.length)];
-      const { ranks, suits } = generateFlopOfTexture(scenario.texture);
-      setQuiz({
-        type: "dangerSign",
-        texture: scenario.texture,
-        flop: ranks,
-        suits,
-        dangerScenario: scenario,
-        dangerAnswer: null,
-      });
-    } else {
-      const scenario =
-        LEAK_EXPLOIT_SCENARIOS[Math.floor(Math.random() * LEAK_EXPLOIT_SCENARIOS.length)];
-      const { ranks, suits } = generateFlopOfTexture(scenario.texture);
-      setQuiz({
-        type: "leakExploit",
-        texture: scenario.texture,
-        flop: ranks,
-        suits,
-        leakScenario: scenario,
-        leakAnswer: null,
-      });
-    }
+    setQuiz(createLiveQuizScenario());
     setShowQuizResult(false);
   }, []);
 
-  useEffect(() => {
-    if (subMode === "quiz" && !quiz) {
-      loadQuizScenario();
+  const handleSubModeChange = (mode: LiveExploitSubMode) => {
+    setSubMode(mode);
+    if (mode === "quiz" && !quiz) {
+      setQuiz(createLiveQuizScenario());
+      setShowQuizResult(false);
     }
-  }, [subMode, quiz, loadQuizScenario]);
+  };
 
   const handleQuizSubmit = () => {
     if (!quiz) return;
@@ -2154,10 +2160,10 @@ function LiveExploitDrill() {
       <div className="space-y-4">
         {/* Sub-mode toggle */}
         <div className="flex gap-2">
-          <Button size="sm" variant="default" onClick={() => setSubMode("notes")}>
+          <Button size="sm" variant="default" onClick={() => handleSubModeChange("notes")}>
             📋 {t("flopTexture.liveExploit.notesTab")}
           </Button>
-          <Button size="sm" variant="outline" onClick={() => setSubMode("quiz")}>
+          <Button size="sm" variant="outline" onClick={() => handleSubModeChange("quiz")}>
             🎯 {t("flopTexture.liveExploit.quizTab")}
           </Button>
         </div>
@@ -2172,7 +2178,7 @@ function LiveExploitDrill() {
               className="h-auto py-2 text-xs"
               onClick={() => setSelectedTexture(cat.id)}
             >
-              {cat.nameZh}
+              {getTextureName(cat, locale)}
             </Button>
           ))}
         </div>
@@ -2182,7 +2188,9 @@ function LiveExploitDrill() {
           <Card className="border-amber-700/50 bg-gray-900/50">
             <CardHeader className="pb-2">
               <div className="flex items-center justify-between">
-                <CardTitle className="text-lg text-amber-400">{selected.nameZh}</CardTitle>
+                <CardTitle className="text-lg text-amber-400">
+                  {getTextureName(selected, locale)}
+                </CardTitle>
                 <Badge className={getAdvantageColor(selected.advantageTier)}>
                   {selected.advantageTier}
                 </Badge>
@@ -2295,10 +2303,10 @@ function LiveExploitDrill() {
     <div className="space-y-4">
       {/* Sub-mode toggle */}
       <div className="flex gap-2">
-        <Button size="sm" variant="outline" onClick={() => setSubMode("notes")}>
+        <Button size="sm" variant="outline" onClick={() => handleSubModeChange("notes")}>
           📋 {t("flopTexture.liveExploit.notesTab")}
         </Button>
-        <Button size="sm" variant="default" onClick={() => setSubMode("quiz")}>
+        <Button size="sm" variant="default" onClick={() => handleSubModeChange("quiz")}>
           🎯 {t("flopTexture.liveExploit.quizTab")}
         </Button>
       </div>
@@ -2329,7 +2337,7 @@ function LiveExploitDrill() {
 
           {/* Texture info */}
           <div className="flex items-center justify-center gap-2">
-            <Badge variant="outline">{quizCategory.nameZh}</Badge>
+            <Badge variant="outline">{getTextureName(quizCategory, locale)}</Badge>
           </div>
 
           {/* ========== Adjustment Quiz ========== */}
@@ -2795,6 +2803,7 @@ function LiveExploitDrill() {
 
 export default function FlopTextureDrillPage() {
   const t = useTranslations("drill");
+  const locale = getPageLocale(useLocale());
   const [mode, setMode] = useState<DrillMode>("threelayer");
 
   return (
@@ -2945,7 +2954,7 @@ export default function FlopTextureDrillPage() {
                     >
                       {cat.advantageTier}
                     </Badge>
-                    <span className="truncate text-gray-300">{cat.nameZh}</span>
+                    <span className="truncate text-gray-300">{getTextureName(cat, locale)}</span>
                   </div>
                   <div className="flex shrink-0 gap-3 text-xs">
                     <span className="text-gray-500">{cat.frequencyPct}%</span>

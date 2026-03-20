@@ -12,10 +12,6 @@ import type {
   ActionRecord,
   AvailableAction,
   ScenarioPreset,
-  Rank,
-  Suit,
-  GamePhase,
-  HandHistory,
 } from "@/lib/poker/types";
 import {
   POSITIONS,
@@ -33,7 +29,6 @@ import {
   getAIDecision,
   AI_PROFILES,
   AIPlayerProfile,
-  getAIProfile,
 } from "@/lib/poker/aiDecisionEngine";
 import { createHandHistory, saveHandHistory } from "@/lib/poker/handHistory";
 
@@ -108,7 +103,8 @@ function createPlayers(
 
     return {
       id: `player_${index}`,
-      name: isHero ? "Hero" : aiProfile?.nameZh || `AI_${position}`,
+      name: isHero ? "Hero" : aiProfile?.name || `AI_${position}`,
+      nameZh: isHero ? "Hero" : aiProfile?.nameZh || aiProfile?.name || `AI_${position}`,
       position,
       stack: config.startingStack,
       holeCards: null,
@@ -180,7 +176,8 @@ function updateAIOpponentStats(
     // Update by player
     if (!newStats.byPlayer[profileId]) {
       newStats.byPlayer[profileId] = {
-        name: aiProfile.nameZh || aiProfile.name,
+        name: aiProfile.name,
+        nameZh: aiProfile.nameZh || aiProfile.name,
         style: style,
         handsPlayed: 0,
         handsWon: 0,
@@ -923,8 +920,6 @@ export const useTableStore = create<TableState & TableActions>()(
         }
 
         const newDeck = [...deck];
-        const newCommunityCards = [...communityCards];
-
         // Calculate how many cards we need to deal
         const cardsNeeded = 5 - communityCards.length;
 
@@ -1032,6 +1027,7 @@ export const useTableStore = create<TableState & TableActions>()(
         const actionRecord: ActionRecord = {
           playerId: player.id,
           playerName: player.name,
+          playerNameZh: player.nameZh || player.name,
           position: player.position,
           action,
           amount,
@@ -1148,7 +1144,7 @@ export const useTableStore = create<TableState & TableActions>()(
         let newHeroStats = state.heroStats;
         if (player.isHero) {
           newHeroStats = { ...state.heroStats };
-          const { actionHistory, lastAggressorIndex, dealerSeatIndex } = state;
+          const { actionHistory } = state;
 
           // ============================================
           // Basic action tracking (all streets)

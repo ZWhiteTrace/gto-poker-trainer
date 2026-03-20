@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -212,6 +212,7 @@ function getStreetTitle(street: Street, mode: DrillMode): string {
 
 export default function PostflopDrillPage() {
   const t = useTranslations();
+  const locale = useLocale() === "en" ? "en" : "zh-TW";
   const [street, setStreet] = useState<Street>("flop");
   const [drillMode, setDrillMode] = useState<DrillMode>("ip_bet");
   const [scenario, setScenario] = useState<Scenario | null>(null);
@@ -230,6 +231,43 @@ export default function PostflopDrillPage() {
   const [textures, setTextures] = useState<Record<string, string>>({});
   const { recordResult } = useProgressStore();
   const { user } = useAuthStore();
+  const postflopCopy =
+    locale === "en"
+      ? {
+          retry: "Retry",
+          streetTabs: { flop: "Flop", turn: "Turn", river: "River" },
+          boardLabels: { flop: "Flop", turn: "Board", river: "Board" },
+          previousAction: "Flop Action",
+          actions: { check: "Check", raise: "Raise", bet: "Bet" },
+        }
+      : {
+          retry: "重試",
+          streetTabs: { flop: "翻牌", turn: "轉牌", river: "河牌" },
+          boardLabels: { flop: "翻牌", turn: "牌面", river: "牌面" },
+          previousAction: "翻牌行動",
+          actions: { check: "過牌", raise: "加注", bet: "下注" },
+        };
+
+  const getLocalizedLabel = <T extends { label: string; labelZh: string }>(option: T) =>
+    locale === "en" ? option.label : option.labelZh;
+
+  const getLocalizedStreetTitle = (currentStreet: Street, mode: DrillMode) => {
+    if (locale === "en") return getStreetTitle(currentStreet, mode);
+    if (mode === "oop_defense") {
+      return `${postflopCopy.streetTabs[currentStreet]}防守`;
+    }
+    if (mode === "sizing_only") {
+      return `${postflopCopy.streetTabs[currentStreet]}尺寸`;
+    }
+    switch (currentStreet) {
+      case "flop":
+        return "翻牌 C-Bet";
+      case "turn":
+        return "轉牌二槍";
+      case "river":
+        return "河牌決策";
+    }
+  };
 
   // Load available textures for current street
   useEffect(() => {
@@ -294,7 +332,7 @@ export default function PostflopDrillPage() {
 
       setResult({
         correct: data.correct,
-        explanation: data.explanation_zh,
+        explanation: locale === "en" ? data.explanation_en : data.explanation_zh,
         correctAction: data.correct_action,
         correctSizing: data.correct_sizing,
         frequency: data.frequency,
@@ -336,7 +374,9 @@ export default function PostflopDrillPage() {
       const riverScenario = scenario as RiverScenario;
       return (
         <div className="mb-6">
-          <div className="text-muted-foreground mb-2 text-center text-sm">Board</div>
+          <div className="text-muted-foreground mb-2 text-center text-sm">
+            {postflopCopy.boardLabels.river}
+          </div>
           <div className="flex flex-wrap justify-center gap-2 rounded-lg bg-green-800/30 px-6 py-4">
             {riverScenario.board.map((rank, i) => (
               <BoardCard key={i} rank={rank} suit={riverScenario.board_suits?.[i]} />
@@ -350,7 +390,9 @@ export default function PostflopDrillPage() {
       const turnScenario = scenario as TurnScenario;
       return (
         <div className="mb-6">
-          <div className="text-muted-foreground mb-2 text-center text-sm">Board</div>
+          <div className="text-muted-foreground mb-2 text-center text-sm">
+            {postflopCopy.boardLabels.turn}
+          </div>
           <div className="flex justify-center gap-2 rounded-lg bg-green-800/30 px-6 py-4">
             {turnScenario.flop.map((rank, i) => (
               <BoardCard key={i} rank={rank} suit={turnScenario.flop_suits?.[i]} />
@@ -364,9 +406,11 @@ export default function PostflopDrillPage() {
 
     // Flop
     const flopScenario = scenario as FlopScenario;
-    return (
+  return (
       <div className="mb-6">
-        <div className="text-muted-foreground mb-2 text-center text-sm">Flop</div>
+        <div className="text-muted-foreground mb-2 text-center text-sm">
+          {postflopCopy.boardLabels.flop}
+        </div>
         <div className="flex justify-center gap-2 rounded-lg bg-green-800/30 px-6 py-4">
           {flopScenario.flop.map((rank, i) => (
             <BoardCard key={i} rank={rank} suit={flopScenario.flop_suits?.[i]} />
@@ -381,7 +425,7 @@ export default function PostflopDrillPage() {
       const turnScenario = scenario as TurnScenario;
       return (
         <div className="text-muted-foreground mb-2 text-center text-sm">
-          Flop Action: {turnScenario.flop_action}
+          {postflopCopy.previousAction}: {turnScenario.flop_action}
         </div>
       );
     }
@@ -398,9 +442,11 @@ export default function PostflopDrillPage() {
 
   const getCorrectActionDisplay = () => {
     if (!result) return "";
-    if (result.correctAction === "check") return "Check";
-    if (result.correctAction === "raise") return `Raise ${result.correctSizing}%`;
-    return `Bet ${result.correctSizing}%`;
+    if (result.correctAction === "check") return postflopCopy.actions.check;
+    if (result.correctAction === "raise") {
+      return `${postflopCopy.actions.raise} ${result.correctSizing}%`;
+    }
+    return `${postflopCopy.actions.bet} ${result.correctSizing}%`;
   };
 
   const isExactCorrect = (optionKey: string) => {
@@ -443,7 +489,7 @@ export default function PostflopDrillPage() {
               setScore({ correct: 0, total: 0 });
             }}
           >
-            {mode.labelZh}
+            {getLocalizedLabel(mode)}
           </Button>
         ))}
       </div>
@@ -456,13 +502,13 @@ export default function PostflopDrillPage() {
       >
         <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="flop" className="text-sm sm:text-base">
-            Flop
+            {postflopCopy.streetTabs.flop}
           </TabsTrigger>
           <TabsTrigger value="turn" className="text-sm sm:text-base">
-            Turn
+            {postflopCopy.streetTabs.turn}
           </TabsTrigger>
           <TabsTrigger value="river" className="text-sm sm:text-base">
-            River
+            {postflopCopy.streetTabs.river}
           </TabsTrigger>
         </TabsList>
       </Tabs>
@@ -497,7 +543,7 @@ export default function PostflopDrillPage() {
         <div className="bg-destructive/10 text-destructive mb-4 rounded-lg p-4 text-center">
           {error}
           <Button variant="outline" size="sm" className="ml-3" onClick={loadScenario}>
-            {t("common.retry") || "重試"}
+            {t("common.retry") || postflopCopy.retry}
           </Button>
         </div>
       )}
@@ -507,13 +553,17 @@ export default function PostflopDrillPage() {
           <CardHeader className="pb-2">
             <div className="flex items-center justify-between">
               <CardDescription>
-                <Badge variant="secondary">{scenario.texture_zh}</Badge>
+                <Badge variant="secondary">
+                  {locale === "en" ? scenario.texture : scenario.texture_zh}
+                </Badge>
               </CardDescription>
               <Badge variant="outline">
                 {scenario.hero_position} vs {scenario.villain_position}
               </Badge>
             </div>
-            <CardTitle className="mt-2 text-lg">{getStreetTitle(street, drillMode)}</CardTitle>
+            <CardTitle className="mt-2 text-lg">
+              {getLocalizedStreetTitle(street, drillMode)}
+            </CardTitle>
           </CardHeader>
           <CardContent>
             {/* Preflop Action */}
@@ -579,7 +629,7 @@ export default function PostflopDrillPage() {
                     onClick={() => handleAction(option.key)}
                     disabled={showResult}
                   >
-                    <span className="text-sm font-medium">{option.labelZh}</span>
+                    <span className="text-sm font-medium">{getLocalizedLabel(option)}</span>
                     {showResult && isCorrect && <CheckCircle2 className="ml-2 h-4 w-4" />}
                     {showResult && isSelected && !isCorrect && <XCircle className="ml-2 h-4 w-4" />}
                   </Button>

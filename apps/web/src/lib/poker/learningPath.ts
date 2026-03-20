@@ -28,6 +28,7 @@ export interface LearningPath {
   userId?: string;
   generatedAt: number;
   level: "beginner" | "intermediate" | "advanced" | "expert";
+  levelLabel: string;
   levelZh: string;
 
   // Current weaknesses
@@ -41,6 +42,7 @@ export interface LearningPath {
     area: string;
     areaZh: string;
     description: string;
+    descriptionZh: string;
     priority: number;
   }[];
 
@@ -243,43 +245,50 @@ const FOCUS_AREAS = {
   preflop_tight: {
     area: "Preflop Range Expansion",
     areaZh: "翻前範圍擴展",
-    description: "你的翻前範圍偏緊，需要學習更多 speculative hands 的價值。",
+    description: "Your preflop ranges are too tight and need more speculative hands in the mix.",
+    descriptionZh: "你的翻前範圍偏緊，需要學習更多 speculative hands 的價值。",
     drills: ["rfi", "vs-rfi"],
   },
   preflop_loose: {
     area: "Preflop Range Tightening",
     areaZh: "翻前範圍收緊",
-    description: "你的翻前範圍偏寬，需要學習更精確的位置感。",
+    description: "Your preflop ranges are too loose and need tighter position discipline.",
+    descriptionZh: "你的翻前範圍偏寬，需要學習更精確的位置感。",
     drills: ["rfi", "table-trainer"],
   },
   aggression_low: {
     area: "Aggression Development",
     areaZh: "侵略性提升",
-    description: "你的打法偏被動，需要增加下注和加注頻率。",
+    description: "Your current style is too passive and needs more betting and raising volume.",
+    descriptionZh: "你的打法偏被動，需要增加下注和加注頻率。",
     drills: ["postflop", "texture-training", "table-trainer"],
   },
   aggression_high: {
     area: "Aggression Control",
     areaZh: "侵略性控制",
-    description: "你的打法過於激進，需要學習選擇更好的詐唬時機。",
+    description: "Your aggression is running too hot and needs better bluff selection.",
+    descriptionZh: "你的打法過於激進，需要學習選擇更好的詐唬時機。",
     drills: ["postflop", "quiz-ev"],
   },
   cbet_issues: {
     area: "C-Bet Strategy",
     areaZh: "持續下注策略",
-    description: "你的 C-Bet 頻率需要調整，學習不同牌面的下注策略。",
+    description: "Your c-bet frequency is off target and needs better board-dependent adjustment.",
+    descriptionZh: "你的 C-Bet 頻率需要調整，學習不同牌面的下注策略。",
     drills: ["flop-texture", "texture-training", "postflop"],
   },
   showdown_issues: {
     area: "Showdown Value",
     areaZh: "攤牌價值",
-    description: "你的攤牌頻率或勝率有問題，需要改進河牌決策。",
+    description: "Your showdown frequency or win rate points to river decision leaks.",
+    descriptionZh: "你的攤牌頻率或勝率有問題，需要改進河牌決策。",
     drills: ["postflop", "table-trainer", "quiz-equity"],
   },
   threeBet_issues: {
     area: "3-Bet Dynamics",
     areaZh: "3-Bet 動態",
-    description: "你的 3-Bet 策略需要調整。",
+    description: "Your 3-bet strategy needs sharper construction and defense planning.",
+    descriptionZh: "你的 3-Bet 策略需要調整。",
     drills: ["vs-rfi", "vs-3bet"],
   },
 };
@@ -350,19 +359,20 @@ function getDrillsForWeaknesses(weaknesses: StatFeedback[]): DrillRecommendation
 
 function determineLevel(stats: HeroStats): {
   level: LearningPath["level"];
+  levelLabel: string;
   levelZh: string;
 } {
   const performance = getOverallPerformance(stats);
 
   switch (performance.level) {
     case "excellent":
-      return { level: "expert", levelZh: "專家" };
+      return { level: "expert", levelLabel: "Expert", levelZh: "專家" };
     case "good":
-      return { level: "advanced", levelZh: "進階" };
+      return { level: "advanced", levelLabel: "Advanced", levelZh: "進階" };
     case "needs_work":
-      return { level: "intermediate", levelZh: "中級" };
+      return { level: "intermediate", levelLabel: "Intermediate", levelZh: "中級" };
     default:
-      return { level: "beginner", levelZh: "初級" };
+      return { level: "beginner", levelLabel: "Beginner", levelZh: "初級" };
   }
 }
 
@@ -420,7 +430,7 @@ function generateWeeklyGoals(
  */
 export function generateLearningPath(stats: HeroStats, userId?: string): LearningPath {
   const weaknesses = analyzePlayerStats(stats);
-  const { level, levelZh } = determineLevel(stats);
+  const { level, levelLabel, levelZh } = determineLevel(stats);
   const focusAreas = determineFocusAreas(weaknesses);
   const recommendations = getDrillsForWeaknesses(weaknesses);
   const weeklyGoals = generateWeeklyGoals(weaknesses, stats);
@@ -434,6 +444,7 @@ export function generateLearningPath(stats: HeroStats, userId?: string): Learnin
     userId,
     generatedAt: Date.now(),
     level,
+    levelLabel,
     levelZh,
     weaknesses,
     recommendations: recommendations.slice(0, 5), // Top 5 recommendations
@@ -441,6 +452,7 @@ export function generateLearningPath(stats: HeroStats, userId?: string): Learnin
       area: area.area,
       areaZh: area.areaZh,
       description: area.description,
+      descriptionZh: area.descriptionZh,
       priority: 3 - i,
     })),
     weeklyGoals,

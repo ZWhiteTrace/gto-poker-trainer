@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -336,6 +336,7 @@ function PlayingCard({ card, size = "normal" }: { card: CardType; size?: "normal
 
 export default function OutsQuizPage() {
   const t = useTranslations();
+  const locale = useLocale() === "en" ? "en" : "zh-TW";
   const [question, setQuestion] = useState<Question | null>(null);
   const [choices, setChoices] = useState<number[]>([]);
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
@@ -390,6 +391,12 @@ export default function OutsQuizPage() {
   }
 
   const drawInfo = DRAW_TYPES[question.drawType];
+  const copy = {
+    outs: locale === "en" ? "outs" : "出路牌",
+    drawName: (name: string, nameZh: string) => (locale === "en" ? name : nameZh),
+    drawDescription: (description: string, descriptionZh: string) =>
+      locale === "en" ? description : descriptionZh,
+  };
 
   return (
     <div className="container max-w-2xl py-8">
@@ -424,7 +431,7 @@ export default function OutsQuizPage() {
           <option value="all">{t("quiz.allCategories")}</option>
           {Object.entries(DRAW_TYPES).map(([key, data]) => (
             <option key={key} value={key}>
-              {data.nameZh}
+              {copy.drawName(data.name, data.nameZh)}
             </option>
           ))}
         </select>
@@ -443,7 +450,7 @@ export default function OutsQuizPage() {
                     : "destructive"
               }
             >
-              {drawInfo.nameZh}
+              {copy.drawName(drawInfo.name, drawInfo.nameZh)}
             </Badge>
           </CardDescription>
           <CardTitle className="text-lg">{t("quiz.outs.question")}</CardTitle>
@@ -497,7 +504,7 @@ export default function OutsQuizPage() {
                   disabled={showResult}
                 >
                   <span className="text-2xl font-bold">{outs}</span>
-                  <span className="text-xs">outs</span>
+                  <span className="text-xs">{copy.outs}</span>
                   {showResult && isCorrect && <CheckCircle2 className="h-4 w-4" />}
                   {showResult && isSelected && !isCorrect && <XCircle className="h-4 w-4" />}
                 </Button>
@@ -512,10 +519,13 @@ export default function OutsQuizPage() {
                 <p className="font-medium text-green-500">{t("drill.result.correct")}</p>
               ) : (
                 <p className="font-medium text-red-500">
-                  {t("drill.result.incorrect")} - {t("quiz.correctAnswer")}: {question.outs} outs
+                  {t("drill.result.incorrect")} - {t("quiz.correctAnswer")}: {question.outs}{" "}
+                  {copy.outs}
                 </p>
               )}
-              <p className="text-muted-foreground mt-2 text-sm">{drawInfo.descriptionZh}</p>
+              <p className="text-muted-foreground mt-2 text-sm">
+                {copy.drawDescription(drawInfo.description, drawInfo.descriptionZh)}
+              </p>
               <Button onClick={generateNewQuestion} className="mt-4">
                 {t("drill.nextHand")}
               </Button>

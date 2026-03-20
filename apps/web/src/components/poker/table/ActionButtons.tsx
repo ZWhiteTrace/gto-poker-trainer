@@ -1,9 +1,35 @@
 "use client";
 
 import { useState } from "react";
+import { useLocale } from "next-intl";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import type { AvailableAction, ActionType } from "@/lib/poker/types";
+
+const actionButtonsCopy = {
+  "zh-TW": {
+    pot: "底池",
+    betSizeSlider: "下注尺寸滑桿",
+    foldHand: "棄掉這手牌",
+    check: "過牌",
+    callBb: (amount: number) => `跟注 ${amount} 個大盲`,
+    betToBb: (amount: number) => `下注到 ${amount} 個大盲`,
+    raiseToBb: (amount: number) => `加注到 ${amount} 個大盲`,
+    allInBb: (amount: number) => `All-in ${amount} 個大盲`,
+    shortcut: (key: string, label: string) => `${key} = ${label}`,
+  },
+  en: {
+    pot: "Pot",
+    betSizeSlider: "Bet size slider",
+    foldHand: "Fold your hand",
+    check: "Check",
+    callBb: (amount: number) => `Call ${amount} big blinds`,
+    betToBb: (amount: number) => `Bet ${amount} big blinds`,
+    raiseToBb: (amount: number) => `Raise to ${amount} big blinds`,
+    allInBb: (amount: number) => `Go all in for ${amount} big blinds`,
+    shortcut: (key: string, label: string) => `${key} = ${label}`,
+  },
+} as const;
 
 interface ActionButtonsProps {
   availableActions: AvailableAction[];
@@ -28,7 +54,11 @@ export function ActionButtons({
   disabled = false,
   className,
 }: ActionButtonsProps) {
+  const locale = useLocale() === "en" ? "en" : "zh-TW";
+  const copy = actionButtonsCopy[locale];
   const [inputValue, setInputValue] = useState("");
+  const getActionLabel = (action: AvailableAction | undefined) =>
+    !action ? "" : locale === "en" ? action.label : action.labelZh;
 
   // 找出各種動作
   const foldAction = availableActions.find((a) => a.type === "fold");
@@ -56,7 +86,7 @@ export function ActionButtons({
     { label: "33%", value: roundToHalf(Math.max(minBet, callAmount + effectivePot * 0.33)) },
     { label: "50%", value: roundToHalf(Math.max(minBet, callAmount + effectivePot * 0.5)) },
     { label: "75%", value: roundToHalf(Math.max(minBet, callAmount + effectivePot * 0.75)) },
-    { label: "Pot", value: roundToHalf(Math.max(minBet, callAmount + effectivePot * 1.0)) },
+    { label: copy.pot, value: roundToHalf(Math.max(minBet, callAmount + effectivePot * 1.0)) },
   ];
 
   // Handle direct input
@@ -126,7 +156,7 @@ export function ActionButtons({
                 setInputValue("");
               }}
               disabled={disabled}
-              aria-label="Bet size slider"
+              aria-label={copy.betSizeSlider}
               aria-valuemin={roundToHalf(minBet)}
               aria-valuemax={roundToHalf(maxBet)}
               aria-valuenow={roundToHalf(selectedBetSize)}
@@ -157,10 +187,10 @@ export function ActionButtons({
             variant="ghost"
             onClick={() => onAction("fold")}
             disabled={disabled}
-            aria-label="Fold your hand"
+            aria-label={copy.foldHand}
             className="h-12 flex-1 border border-red-700/50 bg-red-900/40 text-red-100 hover:bg-red-800/60 active:bg-red-700/70 sm:h-12"
           >
-            <span className="text-base font-bold sm:text-base">Fold</span>
+            <span className="text-base font-bold sm:text-base">{getActionLabel(foldAction)}</span>
           </Button>
         )}
 
@@ -170,10 +200,10 @@ export function ActionButtons({
             variant="ghost"
             onClick={() => onAction("check")}
             disabled={disabled}
-            aria-label="Check"
+            aria-label={copy.check}
             className="h-12 flex-1 border border-gray-600/50 bg-gray-700/50 text-gray-100 hover:bg-gray-600/60 active:bg-gray-500/70 sm:h-12"
           >
-            <span className="text-base font-bold sm:text-base">Check</span>
+            <span className="text-base font-bold sm:text-base">{getActionLabel(checkAction)}</span>
           </Button>
         )}
 
@@ -183,11 +213,11 @@ export function ActionButtons({
             variant="ghost"
             onClick={() => onAction("call")}
             disabled={disabled}
-            aria-label={`Call ${roundToHalf(currentBet)} big blinds`}
+            aria-label={copy.callBb(roundToHalf(currentBet))}
             className="h-12 flex-1 border border-blue-700/50 bg-blue-900/40 text-blue-100 hover:bg-blue-800/60 active:bg-blue-700/70 sm:h-12"
           >
             <div className="flex flex-col items-center leading-tight">
-              <span className="text-base font-bold sm:text-base">Call</span>
+              <span className="text-base font-bold sm:text-base">{getActionLabel(callAction)}</span>
               <span className="text-[11px] opacity-80 sm:text-xs">
                 {roundToHalf(currentBet)} BB
               </span>
@@ -201,13 +231,15 @@ export function ActionButtons({
             variant="ghost"
             onClick={() => onAction(betOrRaiseAction.type, roundToHalf(selectedBetSize))}
             disabled={disabled}
-            aria-label={`${betAction ? "Bet" : "Raise to"} ${roundToHalf(selectedBetSize)} big blinds`}
+            aria-label={
+              betAction
+                ? copy.betToBb(roundToHalf(selectedBetSize))
+                : copy.raiseToBb(roundToHalf(selectedBetSize))
+            }
             className="h-12 flex-1 border border-green-600/50 bg-green-900/50 text-green-100 hover:bg-green-800/60 active:bg-green-700/70 sm:h-12"
           >
             <div className="flex flex-col items-center leading-tight">
-              <span className="text-base font-bold sm:text-base">
-                {betAction ? "Bet" : "Raise"}
-              </span>
+              <span className="text-base font-bold sm:text-base">{getActionLabel(betOrRaiseAction)}</span>
               <span className="text-[11px] opacity-80 sm:text-xs">
                 {roundToHalf(selectedBetSize)} BB
               </span>
@@ -221,11 +253,11 @@ export function ActionButtons({
             variant="ghost"
             onClick={() => onAction("allin")}
             disabled={disabled}
-            aria-label={`Go all in for ${roundToHalf(heroStack)} big blinds`}
+            aria-label={copy.allInBb(roundToHalf(heroStack))}
             className="h-12 flex-1 border border-amber-600/50 bg-amber-900/50 text-amber-100 hover:bg-amber-800/60 active:bg-amber-700/70 sm:h-12"
           >
             <div className="flex flex-col items-center leading-tight">
-              <span className="text-base font-bold sm:text-base">All In</span>
+              <span className="text-base font-bold sm:text-base">{getActionLabel(allinAction)}</span>
               <span className="text-[11px] opacity-80 sm:text-xs">{roundToHalf(heroStack)} BB</span>
             </div>
           </Button>
@@ -234,10 +266,12 @@ export function ActionButtons({
 
       {/* 快捷鍵提示 - 只在桌面顯示 */}
       <div className="hidden justify-center gap-4 text-[10px] text-gray-500 sm:flex">
-        {foldAction && <span>F = Fold</span>}
-        {(checkAction || callAction) && <span>C = {checkAction ? "Check" : "Call"}</span>}
-        {betOrRaiseAction && <span>R = {betAction ? "Bet" : "Raise"}</span>}
-        {allinAction && <span>A = All-in</span>}
+        {foldAction && <span>{copy.shortcut("F", getActionLabel(foldAction))}</span>}
+        {(checkAction || callAction) && (
+          <span>{copy.shortcut("C", getActionLabel(checkAction || callAction))}</span>
+        )}
+        {betOrRaiseAction && <span>{copy.shortcut("R", getActionLabel(betOrRaiseAction))}</span>}
+        {allinAction && <span>{copy.shortcut("A", getActionLabel(allinAction))}</span>}
       </div>
     </div>
   );
@@ -247,7 +281,6 @@ export function ActionButtons({
 interface SimpleActionButtonsProps {
   availableActions: AvailableAction[];
   onAction: (action: ActionType, amount?: number) => void;
-  currentBet: number;
   disabled?: boolean;
   className?: string;
 }
@@ -255,10 +288,10 @@ interface SimpleActionButtonsProps {
 export function SimpleActionButtons({
   availableActions,
   onAction,
-  currentBet,
   disabled = false,
   className,
 }: SimpleActionButtonsProps) {
+  const locale = useLocale() === "en" ? "en" : "zh-TW";
   const roundToHalf = (value: number) => Math.round(value * 2) / 2;
 
   return (
@@ -271,7 +304,7 @@ export function SimpleActionButtons({
           onClick={() => onAction(action.type, action.minAmount)}
           disabled={disabled}
         >
-          {action.label}
+          {locale === "en" ? action.label : action.labelZh}
           {action.minAmount && action.type !== "fold" && action.type !== "check" && (
             <span className="ml-1">{roundToHalf(action.minAmount)}</span>
           )}

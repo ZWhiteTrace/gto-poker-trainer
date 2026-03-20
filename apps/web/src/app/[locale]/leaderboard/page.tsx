@@ -1,7 +1,8 @@
 "use client";
 
+import Image from "next/image";
 import { useEffect, useState } from "react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -57,6 +58,7 @@ function getRankBgColor(rank: number) {
 
 export default function LeaderboardPage() {
   const t = useTranslations();
+  const locale = useLocale() === "en" ? "en" : "zh-TW";
   const { user } = useAuthStore();
   const [activeTab, setActiveTab] = useState<LeaderboardType>("total");
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
@@ -84,20 +86,44 @@ export default function LeaderboardPage() {
     fetchData();
   }, [activeTab, user?.id]);
 
+  const leaderboardCopy =
+    locale === "en"
+      ? {
+          hands: "hands",
+          streak: "streak",
+          total: "total",
+          accuracy: "accuracy",
+          best: "best",
+          you: "You",
+        }
+      : {
+          hands: "手",
+          streak: "連勝",
+          total: "總手數",
+          accuracy: "準確率",
+          best: "最佳",
+          you: "你",
+        };
+
+  const getTabLabel = (tab: (typeof LEADERBOARD_TABS)[number]) =>
+    locale === "en" ? tab.label : tab.labelZh;
+
   const getDisplayValue = (entry: LeaderboardEntry) => {
     switch (activeTab) {
       case "weekly":
-        return `${entry.weekly_hands} hands`;
+        return `${entry.weekly_hands} ${leaderboardCopy.hands}`;
       case "monthly":
-        return `${entry.monthly_hands} hands`;
+        return `${entry.monthly_hands} ${leaderboardCopy.hands}`;
       case "streak":
-        return `${entry.best_streak} streak`;
+        return `${entry.best_streak} ${leaderboardCopy.streak}`;
       case "accuracy":
         return `${entry.accuracy}%`;
       default:
-        return `${entry.total_hands} hands`;
+        return `${entry.total_hands} ${leaderboardCopy.hands}`;
     }
   };
+
+  const activeTabMeta = LEADERBOARD_TABS.find((tab) => tab.value === activeTab);
 
   return (
     <div className="container max-w-4xl py-8">
@@ -123,7 +149,7 @@ export default function LeaderboardPage() {
               <div>
                 <p className="font-medium">{t("leaderboard.yourRank") || "Your Rank"}</p>
                 <p className="text-muted-foreground text-sm">
-                  {LEADERBOARD_TABS.find((tab) => tab.value === activeTab)?.label}
+                  {activeTabMeta ? getTabLabel(activeTabMeta) : null}
                 </p>
               </div>
             </div>
@@ -144,7 +170,7 @@ export default function LeaderboardPage() {
               className="flex items-center gap-1 text-xs sm:text-sm"
             >
               {tab.icon}
-              <span className="hidden sm:inline">{tab.label}</span>
+              <span className="hidden sm:inline">{getTabLabel(tab)}</span>
             </TabsTrigger>
           ))}
         </TabsList>
@@ -155,7 +181,7 @@ export default function LeaderboardPage() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   {tab.icon}
-                  {tab.label} {t("leaderboard.rankings") || "Rankings"}
+                  {getTabLabel(tab)} {t("leaderboard.rankings") || "Rankings"}
                 </CardTitle>
                 <CardDescription>
                   {tab.value === "total" &&
@@ -192,9 +218,13 @@ export default function LeaderboardPage() {
                           <div className="flex w-8 justify-center">{getRankIcon(entry.rank)}</div>
                           <div className="bg-muted flex h-10 w-10 items-center justify-center rounded-full">
                             {entry.avatar_url ? (
-                              <img
+                              <Image
+                                loader={({ src }) => src}
                                 src={entry.avatar_url}
                                 alt={entry.display_name}
+                                unoptimized
+                                width={40}
+                                height={40}
                                 className="h-10 w-10 rounded-full object-cover"
                               />
                             ) : (
@@ -206,14 +236,18 @@ export default function LeaderboardPage() {
                               {entry.display_name}
                               {user?.id === entry.user_id && (
                                 <Badge variant="secondary" className="ml-2 text-xs">
-                                  You
+                                  {leaderboardCopy.you}
                                 </Badge>
                               )}
                             </p>
                             <div className="text-muted-foreground flex items-center gap-2 text-sm">
-                              <span>{entry.total_hands} total</span>
+                              <span>
+                                {entry.total_hands} {leaderboardCopy.total}
+                              </span>
                               <span>•</span>
-                              <span>{entry.accuracy}% accuracy</span>
+                              <span>
+                                {entry.accuracy}% {leaderboardCopy.accuracy}
+                              </span>
                             </div>
                           </div>
                         </div>
@@ -222,7 +256,7 @@ export default function LeaderboardPage() {
                           {activeTab !== "streak" && (
                             <p className="text-muted-foreground text-xs">
                               <Flame className="mr-1 inline h-3 w-3" />
-                              {entry.best_streak} best
+                              {entry.best_streak} {leaderboardCopy.best}
                             </p>
                           )}
                         </div>

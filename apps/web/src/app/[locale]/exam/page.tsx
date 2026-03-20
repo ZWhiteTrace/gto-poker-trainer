@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -33,11 +33,7 @@ import {
   EXAM_QUESTIONS,
   EXAM_CONFIG,
   type ExamQuestion,
-  type QuestionType,
 } from "@/lib/exam/questions";
-
-// Question type for categorization
-type QuestionCategory = "preflop" | "postflop" | "math" | "exploit";
 
 type ExamState = "intro" | "active" | "review";
 
@@ -47,8 +43,56 @@ interface ExamResult {
   isCorrect: boolean;
 }
 
+function CircularProgress({
+  value,
+  label,
+  size = 120,
+}: {
+  value: number;
+  label: string;
+  size?: number;
+}) {
+  const strokeWidth = 8;
+  const radius = (size - strokeWidth) / 2;
+  const circumference = radius * 2 * Math.PI;
+  const offset = circumference - (value / 100) * circumference;
+
+  return (
+    <div className="relative inline-flex items-center justify-center">
+      <svg width={size} height={size} className="-rotate-90">
+        <circle
+          cx={size / 2}
+          cy={size / 2}
+          r={radius}
+          fill="none"
+          stroke="currentColor"
+          strokeWidth={strokeWidth}
+          className="text-muted"
+        />
+        <circle
+          cx={size / 2}
+          cy={size / 2}
+          r={radius}
+          fill="none"
+          stroke="currentColor"
+          strokeWidth={strokeWidth}
+          strokeLinecap="round"
+          strokeDasharray={circumference}
+          strokeDashoffset={offset}
+          className="text-primary transition-all duration-500"
+        />
+      </svg>
+      <div className="absolute inset-0 flex flex-col items-center justify-center">
+        <span className="text-2xl font-bold">{value}%</span>
+        <span className="text-muted-foreground text-xs">{label}</span>
+      </div>
+    </div>
+  );
+}
+
 export default function MockExamPage() {
   const t = useTranslations();
+  const locale = useLocale() === "en" ? "en" : "zh-TW";
   const { user } = useAuthStore();
   const {
     recordQuestionAttempt,
@@ -63,18 +107,78 @@ export default function MockExamPage() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [results, setResults] = useState<Map<string, ExamResult>>(new Map());
   const [timeLeft, setTimeLeft] = useState(EXAM_CONFIG.timeLimit);
-  const [isSaving, setIsSaving] = useState(false);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const examCopy =
+    locale === "en"
+      ? {
+          completed: "Completed",
+          questionBank: "Question Bank Status",
+          unanswered: "Unanswered",
+          needsReview: "Needs Review",
+          mastered: "Mastered",
+          priorityUnanswered: "This exam will prioritize unanswered questions first.",
+          priorityReview:
+            "All questions have been answered. This exam will focus on review items.",
+          allMastered: "All questions are currently mastered.",
+          points: "points",
+          correct: "Correct",
+          incorrect: "Incorrect",
+          timeTaken: "Time Taken",
+          answered: "answered",
+          submit: "Submit",
+          glossaryTitle: "Terms Reference",
+          glossaryLines: [
+            'In these questions, BB means big blind. "10BB" means the effective stack.',
+            'If pot size matters, the prompt will say "Pot = X BB".',
+            "Pot Odds = the price you are getting to call relative to the pot.",
+            "RFI = Raise First In; C-bet = Continuation Bet.",
+            "MDF = Minimum Defense Frequency; ICM = Independent Chip Model.",
+            "IP / OOP = In Position / Out of Position.",
+            "r = rainbow (three different suits).",
+          ],
+          extraTopics: ["Postflop Strategy", "Bet Sizing", "Range Construction"],
+        }
+      : {
+          completed: "完成",
+          questionBank: "題庫狀態",
+          unanswered: "未作答",
+          needsReview: "需複習",
+          mastered: "已掌握",
+          priorityUnanswered: "本次考試將優先出未作答的題目",
+          priorityReview: "所有題目已作答，本次將複習錯題",
+          allMastered: "恭喜！所有題目都已掌握",
+          points: "分",
+          correct: "正確",
+          incorrect: "錯誤",
+          timeTaken: "用時",
+          answered: "已答",
+          submit: "提交",
+          glossaryTitle: "名詞提示",
+          glossaryLines: [
+            "題目中的 BB 指大盲，「10BB」代表有效籌碼（你與對手較小者）。",
+            "若涉及底池大小，題目會標示「底池 = X BB」。",
+            "Pot Odds = 底池賠率。",
+            "RFI = Raise First In（首次加注）；C-bet = Continuation Bet（持續下注）。",
+            "MDF = Minimum Defense Frequency（最小防禦頻率）；ICM = Independent Chip Model（獨立籌碼模型）。",
+            "IP / OOP = In Position / Out of Position（有位置 / 沒位置）。",
+            "r = rainbow（彩虹面，無同花）。",
+          ],
+          extraTopics: ["翻後策略", "下注尺寸", "範圍建構"],
+        };
+
+  const getArticleTitle = (article: ArticleRecommendation) =>
+    locale === "en" ? article.title : article.titleZh;
+  const getArticleDescription = (article: ArticleRecommendation) =>
+    locale === "en" ? article.description : article.descriptionZh;
 
   // Save exam results to Supabase
   const saveExamResults = async (finalScore: number, totalQuestions: number, timeTaken: number) => {
     if (!user) return;
 
-    setIsSaving(true);
     try {
       const supabase = createClient();
       const wrongAnswers = Array.from(results.entries())
-        .filter(([_, r]) => !r.isCorrect)
+        .filter(([, r]) => !r.isCorrect)
         .map(([id, r]) => ({
           questionId: id,
           userAnswer: r.selectedAnswer,
@@ -89,8 +193,6 @@ export default function MockExamPage() {
       });
     } catch (error) {
       console.error("Failed to save exam results:", error);
-    } finally {
-      setIsSaving(false);
     }
   };
 
@@ -240,46 +342,6 @@ export default function MockExamPage() {
     const unansweredCount = getUnansweredQuestionIds(allQuestionIds).length;
     const needsReviewCount = getNeedsReviewQuestionIds().length;
 
-    // Circular progress component
-    const CircularProgress = ({ value, size = 120 }: { value: number; size?: number }) => {
-      const strokeWidth = 8;
-      const radius = (size - strokeWidth) / 2;
-      const circumference = radius * 2 * Math.PI;
-      const offset = circumference - (value / 100) * circumference;
-
-      return (
-        <div className="relative inline-flex items-center justify-center">
-          <svg width={size} height={size} className="-rotate-90">
-            <circle
-              cx={size / 2}
-              cy={size / 2}
-              r={radius}
-              fill="none"
-              stroke="currentColor"
-              strokeWidth={strokeWidth}
-              className="text-muted"
-            />
-            <circle
-              cx={size / 2}
-              cy={size / 2}
-              r={radius}
-              fill="none"
-              stroke="currentColor"
-              strokeWidth={strokeWidth}
-              strokeLinecap="round"
-              strokeDasharray={circumference}
-              strokeDashoffset={offset}
-              className="text-primary transition-all duration-500"
-            />
-          </svg>
-          <div className="absolute inset-0 flex flex-col items-center justify-center">
-            <span className="text-2xl font-bold">{value}%</span>
-            <span className="text-muted-foreground text-xs">{t("exam.completed") || "完成"}</span>
-          </div>
-        </div>
-      );
-    };
-
     return (
       <div className="container max-w-2xl py-8">
         <Card>
@@ -292,7 +354,10 @@ export default function MockExamPage() {
           <CardContent className="space-y-6">
             {/* Circular Progress */}
             <div className="flex justify-center">
-              <CircularProgress value={quizStats.completionRate} />
+              <CircularProgress
+                value={quizStats.completionRate}
+                label={t("exam.completed") || examCopy.completed}
+              />
             </div>
 
             <div className="grid grid-cols-2 gap-4 text-center">
@@ -314,34 +379,34 @@ export default function MockExamPage() {
             <div className="bg-muted/50 space-y-3 rounded-lg p-4">
               <div className="flex items-center gap-2 text-sm font-medium">
                 <TrendingUp className="h-4 w-4" />
-                {t("exam.questionBank") || "題庫狀態"}
+                {t("exam.questionBank") || examCopy.questionBank}
               </div>
               <div className="grid grid-cols-3 gap-2 text-center">
                 <div className="bg-background rounded p-2">
                   <div className="text-lg font-bold text-blue-500">{unansweredCount}</div>
                   <div className="text-muted-foreground text-xs">
-                    {t("exam.unanswered") || "未作答"}
+                    {t("exam.unanswered") || examCopy.unanswered}
                   </div>
                 </div>
                 <div className="bg-background rounded p-2">
                   <div className="text-lg font-bold text-amber-500">{needsReviewCount}</div>
                   <div className="text-muted-foreground text-xs">
-                    {t("exam.needsReview") || "需複習"}
+                    {t("exam.needsReview") || examCopy.needsReview}
                   </div>
                 </div>
                 <div className="bg-background rounded p-2">
                   <div className="text-lg font-bold text-green-500">{quizStats.mastered}</div>
                   <div className="text-muted-foreground text-xs">
-                    {t("exam.mastered") || "已掌握"}
+                    {t("exam.mastered") || examCopy.mastered}
                   </div>
                 </div>
               </div>
               <div className="text-muted-foreground text-center text-xs">
                 {unansweredCount > 0
-                  ? t("exam.priorityUnanswered") || "本次考試將優先出未作答的題目"
+                  ? t("exam.priorityUnanswered") || examCopy.priorityUnanswered
                   : needsReviewCount > 0
-                    ? t("exam.priorityReview") || "所有題目已作答，本次將複習錯題"
-                    : t("exam.allMastered") || "恭喜！所有題目都已掌握"}
+                    ? t("exam.priorityReview") || examCopy.priorityReview
+                    : t("exam.allMastered") || examCopy.allMastered}
               </div>
             </div>
 
@@ -352,9 +417,9 @@ export default function MockExamPage() {
                 <li>{t("exam.topic2") || "Hand Equity"}</li>
                 <li>{t("exam.topic3") || "Position Strategy"}</li>
                 <li>{t("exam.topic4") || "Push/Fold Decisions"}</li>
-                <li>Postflop Strategy（翻後策略）</li>
-                <li>Bet Sizing（下注尺寸）</li>
-                <li>Range Construction（範圍建構）</li>
+                {examCopy.extraTopics.map((topic) => (
+                  <li key={topic}>{topic}</li>
+                ))}
               </ul>
             </div>
 
@@ -393,7 +458,7 @@ export default function MockExamPage() {
             <CardDescription className="mt-2 text-xl">
               {t("exam.yourScore") || "Your Score"}:{" "}
               <span className="text-primary font-bold">
-                {totalPoints} {t("exam.points") || "分"}
+                {totalPoints} {t("exam.points") || examCopy.points}
               </span>
             </CardDescription>
           </CardHeader>
@@ -401,17 +466,23 @@ export default function MockExamPage() {
             <div className="mb-6 grid grid-cols-3 gap-4 text-center">
               <div className="rounded-lg bg-green-500/10 p-4">
                 <div className="text-2xl font-bold text-green-500">{score}</div>
-                <div className="text-muted-foreground text-sm">{t("common.correct") || "正確"}</div>
+                <div className="text-muted-foreground text-sm">
+                  {t("common.correct") || examCopy.correct}
+                </div>
               </div>
               <div className="rounded-lg bg-red-500/10 p-4">
                 <div className="text-2xl font-bold text-red-500">{questions.length - score}</div>
-                <div className="text-muted-foreground text-sm">{t("exam.incorrect") || "錯誤"}</div>
+                <div className="text-muted-foreground text-sm">
+                  {t("exam.incorrect") || examCopy.incorrect}
+                </div>
               </div>
               <div className="bg-muted rounded-lg p-4">
                 <div className="text-2xl font-bold">
                   {formatTime(EXAM_CONFIG.timeLimit - timeLeft)}
                 </div>
-                <div className="text-muted-foreground text-sm">{t("exam.timeTaken") || "用時"}</div>
+                <div className="text-muted-foreground text-sm">
+                  {t("exam.timeTaken") || examCopy.timeTaken}
+                </div>
               </div>
             </div>
 
@@ -425,7 +496,7 @@ export default function MockExamPage() {
         {/* Article Recommendations */}
         {(() => {
           const wrongIds = Array.from(results.entries())
-            .filter(([_, r]) => !r.isCorrect)
+            .filter(([, r]) => !r.isCorrect)
             .map(([id]) => id);
           const questionTypes = Object.fromEntries(questions.map((q) => [q.id, q.type]));
           const recommendations = getArticleRecommendations(wrongIds, questionTypes);
@@ -483,8 +554,10 @@ export default function MockExamPage() {
                           href={article.path}
                           className="hover:bg-muted/50 block rounded-lg border p-3 transition-colors"
                         >
-                          <div className="font-medium">{article.titleZh}</div>
-                          <div className="text-muted-foreground text-sm">{article.description}</div>
+                          <div className="font-medium">{getArticleTitle(article)}</div>
+                          <div className="text-muted-foreground text-sm">
+                            {getArticleDescription(article)}
+                          </div>
                         </Link>
                       ))}
                     </div>
@@ -559,14 +632,14 @@ export default function MockExamPage() {
           </div>
           <div className="flex items-center gap-2">
             <span className="text-muted-foreground text-sm">
-              {answered}/{questions.length} {t("exam.answered") || "已答"}
+              {answered}/{questions.length} {t("exam.answered") || examCopy.answered}
             </span>
             <span className="text-sm font-medium text-green-500">
-              {score} {t("exam.points") || "分"}
+              {score} {t("exam.points") || examCopy.points}
             </span>
             <Button variant="destructive" size="sm" onClick={submitExam}>
               <Flag className="mr-1 h-4 w-4" />
-              {t("exam.submit") || "提交"}
+              {t("exam.submit") || examCopy.submit}
             </Button>
           </div>
         </div>
@@ -595,21 +668,13 @@ export default function MockExamPage() {
 
       <Card className="mb-4">
         <CardHeader className="pb-2">
-          <CardTitle className="text-base">名詞提示</CardTitle>
-          <CardDescription className="text-sm">
-            題目中的 BB 指大盲，「10BB」代表有效籌碼（你與對手較小者）。
-          </CardDescription>
+          <CardTitle className="text-base">{examCopy.glossaryTitle}</CardTitle>
+          <CardDescription className="text-sm">{examCopy.glossaryLines[0]}</CardDescription>
         </CardHeader>
         <CardContent className="text-muted-foreground space-y-1 text-sm">
-          <p>若涉及底池大小，題目會標示「底池 = X BB」。</p>
-          <p>Pot Odds = 底池賠率。</p>
-          <p>RFI = Raise First In（首次加注）；C-bet = Continuation Bet（持續下注）。</p>
-          <p>
-            MDF = Minimum Defense Frequency（最小防禦頻率）；ICM = Independent Chip
-            Model（獨立籌碼模型）。
-          </p>
-          <p>IP / OOP = In Position / Out of Position（有位置 / 沒位置）。</p>
-          <p>r = rainbow（彩虹面，無同花）。</p>
+          {examCopy.glossaryLines.slice(1).map((line) => (
+            <p key={line}>{line}</p>
+          ))}
         </CardContent>
       </Card>
 
