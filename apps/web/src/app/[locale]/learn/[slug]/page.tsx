@@ -4,15 +4,15 @@ import {
   getGuide,
   getAllGuides,
   getAdjacentGuidesInCategory,
+  type GuideLocale,
   type GuideMetadata,
 } from "@/lib/guides";
+import { BASE_URL, createPageMetadata, getLocalizedUrl } from "@/lib/metadata";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, ArrowRight, BookOpen } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-
-const BASE_URL = "https://grindgto.com";
 
 const categoryLabels: Record<string, string> = {
   preflop: "翻前策略",
@@ -30,6 +30,50 @@ const categoryLabelsEn: Record<string, string> = {
   advanced: "Advanced",
 };
 
+const articleCopy = {
+  "zh-TW": {
+    articleNotFound: "文章未找到 - GTO Poker Trainer",
+    backToLearningCenter: "返回學習中心",
+    previousArticle: "上一篇",
+    nextArticle: "下一篇",
+    fallbackTitle: "英文內容尚未提供",
+    fallbackDescription: "這篇教學目前只有繁體中文版本。英文路由會先顯示原文內容，直到翻譯完成。",
+    viewOriginalChinese: "查看繁體中文原文",
+    startPractice: "開始練習",
+    rfiDrill: "RFI 練習",
+    vs3BetDrill: "VS 3-Bet 練習",
+    pushFoldChart: "Push/Fold 圖表",
+    icmCalculator: "ICM 計算器",
+    cBetDrill: "C-Bet 練習",
+    logicQuiz: "邏輯測驗",
+    equityQuiz: "Equity 測驗",
+    rangeViewer: "範圍查看器",
+  },
+  en: {
+    articleNotFound: "Article Not Found - GTO Poker Trainer",
+    backToLearningCenter: "Back to Learning Center",
+    previousArticle: "Previous Article",
+    nextArticle: "Next Article",
+    fallbackTitle: "English translation not available yet",
+    fallbackDescription:
+      "This guide is currently published only in Traditional Chinese. The English route keeps the original article until translations are added.",
+    viewOriginalChinese: "View Traditional Chinese Original",
+    startPractice: "Start Practicing",
+    rfiDrill: "RFI Drill",
+    vs3BetDrill: "VS 3-Bet Drill",
+    pushFoldChart: "Push/Fold Charts",
+    icmCalculator: "ICM Calculator",
+    cBetDrill: "C-Bet Drill",
+    logicQuiz: "Logic Quiz",
+    equityQuiz: "Equity Quiz",
+    rangeViewer: "Range Viewer",
+  },
+} as const;
+
+function toGuideLocale(locale: string): GuideLocale {
+  return locale === "en" ? "en" : "zh-TW";
+}
+
 interface Props {
   params: Promise<{ locale: string; slug: string }>;
 }
@@ -42,47 +86,65 @@ export async function generateStaticParams() {
 }
 
 export async function generateMetadata({ params }: Props) {
-  const { slug } = await params;
-  const guide = getGuide(slug);
+  const { locale, slug } = await params;
+  const appLocale = toGuideLocale(locale);
+  const guide = getGuide(slug, appLocale);
 
   if (!guide) {
     return {
-      title: "文章未找到 - GTO Poker Trainer",
+      title: articleCopy[appLocale].articleNotFound,
     };
   }
 
-  return {
-    title: `${guide.title}`,
+  if (appLocale === "en" && guide.contentLocale !== "en") {
+    const canonicalUrl = getLocalizedUrl("zh-TW", `/learn/${slug}`);
+
+    return {
+      ...createPageMetadata({
+        locale: "zh-TW",
+        path: `/learn/${slug}`,
+        title: guide.title,
+        description: guide.description,
+        type: "article",
+      }),
+      robots: {
+        index: false,
+        follow: true,
+      },
+      alternates: {
+        canonical: canonicalUrl,
+        languages: {
+          "zh-TW": canonicalUrl,
+          "x-default": canonicalUrl,
+        },
+      },
+    };
+  }
+
+  return createPageMetadata({
+    locale: appLocale,
+    path: `/learn/${slug}`,
+    title: guide.title,
     description: guide.description,
-    openGraph: {
-      title: guide.title,
-      description: guide.description,
-      type: "article",
-      url: `${BASE_URL}/learn/${slug}`,
-      siteName: "GTO Poker Trainer",
-    },
-    twitter: {
-      card: "summary_large_image",
-      title: guide.title,
-      description: guide.description,
-    },
-    alternates: {
-      canonical: `${BASE_URL}/learn/${slug}`,
-    },
-  };
+    type: "article",
+  });
 }
 
 function ArticleJsonLd({
   title,
   description,
+  contentLocale,
   slug,
   category,
 }: {
   title: string;
   description: string;
+  contentLocale: GuideLocale;
   slug: string;
   category: string;
 }) {
+  const articleUrl = getLocalizedUrl(contentLocale, `/learn/${slug}`);
+  const categoryLabelMap = contentLocale === "en" ? categoryLabelsEn : categoryLabels;
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "Article",
@@ -100,10 +162,10 @@ function ArticleJsonLd({
     },
     mainEntityOfPage: {
       "@type": "WebPage",
-      "@id": `${BASE_URL}/learn/${slug}`,
+      "@id": articleUrl,
     },
-    articleSection: categoryLabelsEn[category] || category,
-    inLanguage: "zh-TW",
+    articleSection: categoryLabelMap[category] || category,
+    inLanguage: contentLocale,
   };
 
   return (
@@ -116,13 +178,16 @@ function ArticleJsonLd({
 
 // Article navigation component
 function ArticleNavigation({
+  locale,
   prev,
   next,
 }: {
+  locale: GuideLocale;
   prev: GuideMetadata | null;
   next: GuideMetadata | null;
 }) {
   if (!prev && !next) return null;
+  const copy = articleCopy[locale];
 
   return (
     <nav className="mt-12 flex items-stretch justify-between gap-4 border-t pt-8">
@@ -133,7 +198,7 @@ function ArticleNavigation({
         >
           <div className="text-muted-foreground mb-1 flex items-center gap-2 text-sm">
             <ArrowLeft className="h-4 w-4" />
-            <span>上一篇</span>
+            <span>{copy.previousArticle}</span>
           </div>
           <div className="group-hover:text-primary line-clamp-2 font-medium transition-colors">
             {prev.title}
@@ -149,7 +214,7 @@ function ArticleNavigation({
           className="group border-border hover:border-primary hover:bg-primary/5 flex-1 rounded-lg border p-4 text-right transition-colors"
         >
           <div className="text-muted-foreground mb-1 flex items-center justify-end gap-2 text-sm">
-            <span>下一篇</span>
+            <span>{copy.nextArticle}</span>
             <ArrowRight className="h-4 w-4" />
           </div>
           <div className="group-hover:text-primary line-clamp-2 font-medium transition-colors">
@@ -164,9 +229,11 @@ function ArticleNavigation({
 }
 
 export default async function GuidePage({ params }: Props) {
-  const { slug } = await params;
-  const guide = getGuide(slug);
-  const { prev, next } = getAdjacentGuidesInCategory(slug);
+  const { locale, slug } = await params;
+  const appLocale = toGuideLocale(locale);
+  const copy = articleCopy[appLocale];
+  const guide = getGuide(slug, appLocale);
+  const { prev, next } = getAdjacentGuidesInCategory(slug, appLocale);
 
   if (!guide) {
     notFound();
@@ -177,6 +244,7 @@ export default async function GuidePage({ params }: Props) {
       <ArticleJsonLd
         title={guide.title}
         description={guide.description}
+        contentLocale={guide.contentLocale}
         slug={slug}
         category={guide.category}
       />
@@ -185,7 +253,7 @@ export default async function GuidePage({ params }: Props) {
           <Link href="/learn">
             <Button variant="ghost" size="sm" className="gap-2">
               <ArrowLeft className="h-4 w-4" />
-              返回學習中心
+              {copy.backToLearningCenter}
             </Button>
           </Link>
         </div>
@@ -194,10 +262,25 @@ export default async function GuidePage({ params }: Props) {
           <div className="not-prose mb-6">
             <Badge variant="secondary" className="mb-4">
               <BookOpen className="mr-1 h-3 w-3" />
-              {categoryLabels[guide.category] || guide.category}
+              {(appLocale === "en" ? categoryLabelsEn : categoryLabels)[guide.category] ||
+                guide.category}
             </Badge>
             <p className="text-muted-foreground">{guide.description}</p>
           </div>
+
+          {appLocale === "en" && guide.contentLocale !== "en" && (
+            <div className="not-prose mb-6 rounded-lg border border-amber-500/30 bg-amber-500/10 p-4">
+              <div className="text-sm font-semibold text-amber-700">{copy.fallbackTitle}</div>
+              <p className="mt-2 text-sm text-amber-800">{copy.fallbackDescription}</p>
+              <div className="mt-3">
+                <Link href={`/learn/${slug}`} locale="zh-TW">
+                  <Button variant="outline" size="sm">
+                    {copy.viewOriginalChinese}
+                  </Button>
+                </Link>
+              </div>
+            </div>
+          )}
 
           <ReactMarkdown
             remarkPlugins={[remarkGfm]}
@@ -268,48 +351,48 @@ export default async function GuidePage({ params }: Props) {
         </article>
 
         {/* 上一篇 / 下一篇 導航 */}
-        <ArticleNavigation prev={prev} next={next} />
+        <ArticleNavigation locale={appLocale} prev={prev} next={next} />
 
         <div className="mt-8 border-t pt-8">
-          <h3 className="mb-4 text-lg font-semibold">開始練習</h3>
+          <h3 className="mb-4 text-lg font-semibold">{copy.startPractice}</h3>
           <div className="flex flex-wrap gap-3">
             {guide.category === "preflop" && (
               <>
                 <Link href="/drill/rfi">
-                  <Button variant="outline">RFI 練習</Button>
+                  <Button variant="outline">{copy.rfiDrill}</Button>
                 </Link>
                 <Link href="/drill/vs-3bet">
-                  <Button variant="outline">VS 3-Bet 練習</Button>
+                  <Button variant="outline">{copy.vs3BetDrill}</Button>
                 </Link>
               </>
             )}
             {guide.category === "mtt" && (
               <>
                 <Link href="/mtt/push-fold">
-                  <Button variant="outline">Push/Fold 圖表</Button>
+                  <Button variant="outline">{copy.pushFoldChart}</Button>
                 </Link>
                 <Link href="/mtt/icm">
-                  <Button variant="outline">ICM 計算器</Button>
+                  <Button variant="outline">{copy.icmCalculator}</Button>
                 </Link>
               </>
             )}
             {guide.category === "postflop" && (
               <Link href="/drill/postflop">
-                <Button variant="outline">C-Bet 練習</Button>
+                <Button variant="outline">{copy.cBetDrill}</Button>
               </Link>
             )}
             {guide.category === "advanced" && (
               <>
                 <Link href="/quiz/logic">
-                  <Button variant="outline">邏輯測驗</Button>
+                  <Button variant="outline">{copy.logicQuiz}</Button>
                 </Link>
                 <Link href="/quiz/equity">
-                  <Button variant="outline">Equity 測驗</Button>
+                  <Button variant="outline">{copy.equityQuiz}</Button>
                 </Link>
               </>
             )}
             <Link href="/range">
-              <Button variant="outline">範圍查看器</Button>
+              <Button variant="outline">{copy.rangeViewer}</Button>
             </Link>
           </div>
         </div>

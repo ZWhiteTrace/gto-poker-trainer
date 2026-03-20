@@ -1,5 +1,5 @@
 import { ImageResponse } from "next/og";
-import { getGuide } from "@/lib/guides";
+import { getGuide, type GuideLocale } from "@/lib/guides";
 
 export const alt = "GTO 撲克訓練器 - 學習文章";
 export const size = { width: 1200, height: 630 };
@@ -13,6 +13,14 @@ const categoryLabels: Record<string, string> = {
   advanced: "進階概念",
 };
 
+const categoryLabelsEn: Record<string, string> = {
+  preflop: "Preflop Strategy",
+  mtt: "MTT Strategy",
+  postflop: "Postflop Strategy",
+  fundamentals: "Fundamentals",
+  advanced: "Advanced",
+};
+
 const categoryColors: Record<string, string> = {
   preflop: "#3b82f6",
   mtt: "#f59e0b",
@@ -21,13 +29,19 @@ const categoryColors: Record<string, string> = {
   advanced: "#ef4444",
 };
 
-export default async function Image({ params }: { params: Promise<{ slug: string }> }) {
-  const { slug } = await params;
-  const guide = getGuide(slug);
+function toGuideLocale(locale: string): GuideLocale {
+  return locale === "en" ? "en" : "zh-TW";
+}
+
+export default async function Image({ params }: { params: Promise<{ locale: string; slug: string }> }) {
+  const { locale, slug } = await params;
+  const guideLocale = toGuideLocale(locale);
+  const guide = getGuide(slug, guideLocale);
 
   const title = guide?.title ?? "學習文章";
   const category = guide?.category ?? "fundamentals";
-  const categoryLabel = categoryLabels[category] ?? category;
+  const categoryLabel =
+    (guide?.contentLocale === "en" ? categoryLabelsEn : categoryLabels)[category] ?? category;
   const accentColor = categoryColors[category] ?? "#16a34a";
 
   return new ImageResponse(

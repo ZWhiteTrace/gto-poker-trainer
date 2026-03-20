@@ -2,7 +2,16 @@ import fs from "fs";
 import path from "path";
 import matter from "gray-matter";
 
-const guidesDirectory = path.join(process.cwd(), "content/guides");
+const guidesDirectoryCandidates = [
+  path.join(process.cwd(), "content/guides"),
+  path.resolve(process.cwd(), "../../content/guides"),
+];
+
+const guidesDirectory =
+  guidesDirectoryCandidates.find((candidate) => fs.existsSync(candidate)) ??
+  guidesDirectoryCandidates[0];
+
+export type GuideLocale = "zh-TW" | "en";
 
 export type Difficulty = "beginner" | "intermediate" | "advanced";
 
@@ -14,10 +23,69 @@ export interface GuideMetadata {
   order: number;
   difficulty: Difficulty;
   featured?: boolean;
+  contentLocale?: GuideLocale;
+  isFallback?: boolean;
 }
 
 export interface Guide extends GuideMetadata {
   content: string;
+  contentLocale: GuideLocale;
+  isFallback: boolean;
+}
+
+interface GuideFrontmatter {
+  title?: string;
+  description?: string;
+}
+
+function resolveGuidePath(
+  slug: string,
+  locale: GuideLocale
+): { fullPath: string; contentLocale: GuideLocale } | null {
+  if (locale === "en") {
+    const englishPath = path.join(guidesDirectory, "en", `${slug}.md`);
+    if (fs.existsSync(englishPath)) {
+      return { fullPath: englishPath, contentLocale: "en" };
+    }
+  }
+
+  const defaultPath = path.join(guidesDirectory, `${slug}.md`);
+  if (fs.existsSync(defaultPath)) {
+    return { fullPath: defaultPath, contentLocale: "zh-TW" };
+  }
+
+  return null;
+}
+
+function readGuideFile(
+  slug: string,
+  locale: GuideLocale
+): {
+  content: string;
+  title?: string;
+  description?: string;
+  contentLocale: GuideLocale;
+  isFallback: boolean;
+} | null {
+  const guidePath = resolveGuidePath(slug, locale);
+  if (!guidePath) return null;
+
+  try {
+    const fileContents = fs.readFileSync(guidePath.fullPath, "utf8");
+    const { content, data } = matter(fileContents);
+    const frontmatter = data as GuideFrontmatter;
+
+    return {
+      content,
+      title: typeof frontmatter.title === "string" ? frontmatter.title : undefined,
+      description:
+        typeof frontmatter.description === "string" ? frontmatter.description : undefined,
+      contentLocale: guidePath.contentLocale,
+      isFallback: guidePath.contentLocale !== locale,
+    };
+  } catch {
+    return null;
+  }
 }
 
 const guideMetadata: Record<string, Omit<GuideMetadata, "slug">> = {
@@ -458,58 +526,72 @@ const guideMetadata: Record<string, Omit<GuideMetadata, "slug">> = {
   },
 };
 
-export function getAllGuides(): GuideMetadata[] {
+export function getAllGuides(locale: GuideLocale = "zh-TW"): GuideMetadata[] {
   const slugs = Object.keys(guideMetadata);
 
   return slugs
-    .map((slug) => ({
-      slug,
-      ...guideMetadata[slug],
-    }))
+    .map((slug) => {
+      const baseMetadata = guideMetadata[slug];
+      const guideFile =
+        locale === "en"
+          ? readGuideFile(slug, locale)
+          : {
+              contentLocale: "zh-TW" as const,
+              isFallback: false,
+              title: undefined,
+              description: undefined,
+            };
+
+      return {
+        slug,
+        ...baseMetadata,
+        title: guideFile?.title ?? baseMetadata.title,
+        description: guideFile?.description ?? baseMetadata.description,
+        contentLocale: guideFile?.contentLocale ?? "zh-TW",
+        isFallback: guideFile?.isFallback ?? false,
+      };
+    })
     .sort((a, b) => a.order - b.order);
 }
 
-export function getGuidesByCategory(category: string): GuideMetadata[] {
-  return getAllGuides().filter((guide) => guide.category === category);
+export function getGuidesByCategory(category: string, locale: GuideLocale = "zh-TW"): GuideMetadata[] {
+  return getAllGuides(locale).filter((guide) => guide.category === category);
 }
 
-export function getFeaturedGuides(): GuideMetadata[] {
-  return getAllGuides().filter((guide) => guide.featured);
+export function getFeaturedGuides(locale: GuideLocale = "zh-TW"): GuideMetadata[] {
+  return getAllGuides(locale).filter((guide) => guide.featured);
 }
 
-export function getGuide(slug: string): Guide | null {
+export function getGuide(slug: string, locale: GuideLocale = "zh-TW"): Guide | null {
   const meta = guideMetadata[slug];
   if (!meta) return null;
+  const guideFile = readGuideFile(slug, locale);
+  if (!guideFile) return null;
 
-  const fullPath = path.join(guidesDirectory, `${slug}.md`);
-
-  try {
-    const fileContents = fs.readFileSync(fullPath, "utf8");
-    const { content } = matter(fileContents);
-
-    return {
-      slug,
-      ...meta,
-      content,
-    };
-  } catch {
-    return null;
-  }
+  return {
+    slug,
+    ...meta,
+    title: guideFile.title ?? meta.title,
+    description: guideFile.description ?? meta.description,
+    content: guideFile.content,
+    contentLocale: guideFile.contentLocale,
+    isFallback: guideFile.isFallback,
+  };
 }
 
-export function getGuideCategories(): string[] {
-  const guides = getAllGuides();
+export function getGuideCategories(locale: GuideLocale = "zh-TW"): string[] {
+  const guides = getAllGuides(locale);
   const categoryOrder = ["fundamentals", "preflop", "postflop", "mtt", "advanced"];
   const categories = [...new Set(guides.map((g) => g.category))];
   return categories.sort((a, b) => categoryOrder.indexOf(a) - categoryOrder.indexOf(b));
 }
 
 // Get adjacent guides for navigation
-export function getAdjacentGuides(slug: string): {
+export function getAdjacentGuides(slug: string, locale: GuideLocale = "zh-TW"): {
   prev: GuideMetadata | null;
   next: GuideMetadata | null;
 } {
-  const allGuides = getAllGuides();
+  const allGuides = getAllGuides(locale);
   const currentIndex = allGuides.findIndex((g) => g.slug === slug);
 
   if (currentIndex === -1) {
@@ -523,7 +605,7 @@ export function getAdjacentGuides(slug: string): {
 }
 
 // Get adjacent guides within the same category
-export function getAdjacentGuidesInCategory(slug: string): {
+export function getAdjacentGuidesInCategory(slug: string, locale: GuideLocale = "zh-TW"): {
   prev: GuideMetadata | null;
   next: GuideMetadata | null;
 } {
@@ -532,7 +614,7 @@ export function getAdjacentGuidesInCategory(slug: string): {
     return { prev: null, next: null };
   }
 
-  const categoryGuides = getGuidesByCategory(guide.category);
+  const categoryGuides = getGuidesByCategory(guide.category, locale);
   const currentIndex = categoryGuides.findIndex((g) => g.slug === slug);
 
   if (currentIndex === -1) {

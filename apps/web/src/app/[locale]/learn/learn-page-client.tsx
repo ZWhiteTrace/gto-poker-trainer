@@ -3,6 +3,7 @@
 import { useState, useMemo } from "react";
 import { Link } from "@/i18n/navigation";
 import type { GuideMetadata, Difficulty } from "@/lib/guides";
+import { useLocale } from "next-intl";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -72,22 +73,67 @@ const difficultyConfig: Record<Difficulty, { label: string; color: string; stars
   },
 };
 
-function DifficultyBadge({ difficulty }: { difficulty: Difficulty }) {
+const learnCopy = {
+  "zh-TW": {
+    pageTitle: "學習中心",
+    pageDescription: "深入學習 GTO 撲克策略，從基礎到進階",
+    searchPlaceholder: "搜尋文章...",
+    searchResults: "搜尋結果",
+    articlesSuffix: "篇",
+    noResults: "找不到符合的文章，請嘗試其他關鍵字",
+    featuredTitle: "新手必讀",
+    featuredSubtitle: "從這裡開始你的 GTO 之旅",
+    difficultyLegend: "難度說明：",
+    readArticle: "閱讀文章 →",
+    chineseOnlyBadge: "繁中內容",
+    fallbackBannerTitle: "英文文章尚未上線",
+    fallbackBannerDescription:
+      "目前教學文章以繁體中文發布為主。英文介面已可使用，但多數文章仍會顯示原文內容。",
+  },
+  en: {
+    pageTitle: "Learning Center",
+    pageDescription: "Study GTO poker strategy from fundamentals to advanced concepts",
+    searchPlaceholder: "Search guides...",
+    searchResults: "Search Results",
+    articlesSuffix: "articles",
+    noResults: "No matching guides found. Try another keyword.",
+    featuredTitle: "Start Here",
+    featuredSubtitle: "Core guides for getting your GTO study path started",
+    difficultyLegend: "Difficulty:",
+    readArticle: "Read Article →",
+    chineseOnlyBadge: "Traditional Chinese",
+    fallbackBannerTitle: "English guide articles are not fully published yet",
+    fallbackBannerDescription:
+      "The learning center UI is localized, but most guide articles are still written in Traditional Chinese.",
+  },
+} as const;
+
+function DifficultyBadge({
+  difficulty,
+  locale,
+}: {
+  difficulty: Difficulty;
+  locale: "zh-TW" | "en";
+}) {
   const config = difficultyConfig[difficulty];
+  const labelMap = {
+    "zh-TW": config.label,
+    en:
+      difficulty === "beginner"
+        ? "Beginner"
+        : difficulty === "intermediate"
+          ? "Intermediate"
+          : "Advanced",
+  };
   return (
     <Badge variant="outline" className={`text-xs ${config.color}`}>
-      {"⭐".repeat(config.stars)} {config.label}
+      {"⭐".repeat(config.stars)} {labelMap[locale]}
     </Badge>
   );
 }
 
-function GuideCard({ guide }: { guide: GuideMetadata }) {
-  const config = categoryConfig[guide.category] || {
-    label: guide.category,
-    labelEn: guide.category,
-    icon: BookOpen,
-    color: "bg-gray-500/10 text-gray-500",
-  };
+function GuideCard({ guide, locale }: { guide: GuideMetadata; locale: "zh-TW" | "en" }) {
+  const copy = learnCopy[locale];
 
   return (
     <Link href={`/learn/${guide.slug}`}>
@@ -95,12 +141,19 @@ function GuideCard({ guide }: { guide: GuideMetadata }) {
         <CardHeader className="pb-2">
           <div className="flex items-start justify-between gap-2">
             <CardTitle className="text-base leading-tight">{guide.title}</CardTitle>
-            <DifficultyBadge difficulty={guide.difficulty} />
+            <DifficultyBadge difficulty={guide.difficulty} locale={locale} />
           </div>
+          {locale === "en" && guide.contentLocale !== "en" && (
+            <div>
+              <Badge variant="outline" className="text-xs">
+                {copy.chineseOnlyBadge}
+              </Badge>
+            </div>
+          )}
           <CardDescription className="line-clamp-2 text-sm">{guide.description}</CardDescription>
         </CardHeader>
         <CardContent className="pt-0">
-          <span className="text-primary text-sm hover:underline">閱讀文章 →</span>
+          <span className="text-primary text-sm hover:underline">{copy.readArticle}</span>
         </CardContent>
       </Card>
     </Link>
@@ -110,10 +163,12 @@ function GuideCard({ guide }: { guide: GuideMetadata }) {
 function CategorySection({
   category,
   guides,
+  locale,
   defaultOpen = false,
 }: {
   category: string;
   guides: GuideMetadata[];
+  locale: "zh-TW" | "en";
   defaultOpen?: boolean;
 }) {
   const [isOpen, setIsOpen] = useState(defaultOpen);
@@ -124,6 +179,7 @@ function CategorySection({
     color: "bg-gray-500/10 text-gray-500",
   };
   const Icon = config.icon;
+  const copy = learnCopy[locale];
 
   return (
     <div className="overflow-hidden rounded-lg border">
@@ -136,9 +192,10 @@ function CategorySection({
             <Icon className="h-5 w-5" />
           </div>
           <div className="text-left">
-            <h2 className="text-lg font-semibold">{config.label}</h2>
+            <h2 className="text-lg font-semibold">{locale === "en" ? config.labelEn : config.label}</h2>
             <span className="text-muted-foreground text-sm">
-              {config.labelEn} · {guides.length} 篇文章
+              {(locale === "en" ? config.label : config.labelEn) || category} · {guides.length}{" "}
+              {copy.articlesSuffix}
             </span>
           </div>
         </div>
@@ -152,7 +209,7 @@ function CategorySection({
       {isOpen && (
         <div className="grid gap-3 p-4 pt-0 sm:grid-cols-2">
           {guides.map((guide) => (
-            <GuideCard key={guide.slug} guide={guide} />
+            <GuideCard key={guide.slug} guide={guide} locale={locale} />
           ))}
         </div>
       )}
@@ -167,6 +224,8 @@ interface LearnPageClientProps {
 }
 
 export function LearnPageClient({ guides, categories, featuredGuides }: LearnPageClientProps) {
+  const locale = useLocale() === "en" ? "en" : "zh-TW";
+  const copy = learnCopy[locale];
   const [searchQuery, setSearchQuery] = useState("");
 
   const filteredGuides = useMemo(() => {
@@ -184,16 +243,23 @@ export function LearnPageClient({ guides, categories, featuredGuides }: LearnPag
     <div className="container max-w-4xl py-8">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold">學習中心</h1>
-        <p className="text-muted-foreground">深入學習 GTO 撲克策略，從基礎到進階</p>
+        <h1 className="text-3xl font-bold">{copy.pageTitle}</h1>
+        <p className="text-muted-foreground">{copy.pageDescription}</p>
       </div>
+
+      {locale === "en" && (
+        <div className="mb-6 rounded-lg border border-amber-500/30 bg-amber-500/10 p-4">
+          <div className="text-sm font-semibold text-amber-700">{copy.fallbackBannerTitle}</div>
+          <p className="mt-2 text-sm text-amber-800">{copy.fallbackBannerDescription}</p>
+        </div>
+      )}
 
       {/* Search */}
       <div className="relative mb-8">
         <Search className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
         <Input
           type="text"
-          placeholder="搜尋文章..."
+          placeholder={copy.searchPlaceholder}
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           className="pl-10"
@@ -203,17 +269,17 @@ export function LearnPageClient({ guides, categories, featuredGuides }: LearnPag
       {isSearching ? (
         /* Search Results */
         <div>
-          <h2 className="mb-4 text-lg font-semibold">搜尋結果 ({filteredGuides.length} 篇)</h2>
+          <h2 className="mb-4 text-lg font-semibold">
+            {copy.searchResults} ({filteredGuides.length} {copy.articlesSuffix})
+          </h2>
           {filteredGuides.length > 0 ? (
             <div className="grid gap-3 sm:grid-cols-2">
               {filteredGuides.map((guide) => (
-                <GuideCard key={guide.slug} guide={guide} />
+                <GuideCard key={guide.slug} guide={guide} locale={locale} />
               ))}
             </div>
           ) : (
-            <p className="text-muted-foreground py-8 text-center">
-              找不到符合的文章，請嘗試其他關鍵字
-            </p>
+            <p className="text-muted-foreground py-8 text-center">{copy.noResults}</p>
           )}
         </div>
       ) : (
@@ -224,8 +290,8 @@ export function LearnPageClient({ guides, categories, featuredGuides }: LearnPag
               <div className="rounded-lg bg-yellow-500/10 p-2 text-yellow-500">
                 <Sparkles className="h-5 w-5" />
               </div>
-              <h2 className="text-xl font-semibold">新手必讀</h2>
-              <span className="text-muted-foreground text-sm">從這裡開始你的 GTO 之旅</span>
+              <h2 className="text-xl font-semibold">{copy.featuredTitle}</h2>
+              <span className="text-muted-foreground text-sm">{copy.featuredSubtitle}</span>
             </div>
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {featuredGuides.map((guide) => (
@@ -240,6 +306,13 @@ export function LearnPageClient({ guides, categories, featuredGuides }: LearnPag
                         {guide.description}
                       </CardDescription>
                     </CardHeader>
+                    {locale === "en" && guide.contentLocale !== "en" && (
+                      <CardContent className="pt-0">
+                        <Badge variant="outline" className="text-xs">
+                          {copy.chineseOnlyBadge}
+                        </Badge>
+                      </CardContent>
+                    )}
                   </Card>
                 </Link>
               ))}
@@ -248,10 +321,10 @@ export function LearnPageClient({ guides, categories, featuredGuides }: LearnPag
 
           {/* Difficulty Legend */}
           <div className="bg-muted/30 mb-6 flex flex-wrap gap-3 rounded-lg p-3">
-            <span className="text-muted-foreground text-sm">難度說明：</span>
-            <DifficultyBadge difficulty="beginner" />
-            <DifficultyBadge difficulty="intermediate" />
-            <DifficultyBadge difficulty="advanced" />
+            <span className="text-muted-foreground text-sm">{copy.difficultyLegend}</span>
+            <DifficultyBadge difficulty="beginner" locale={locale} />
+            <DifficultyBadge difficulty="intermediate" locale={locale} />
+            <DifficultyBadge difficulty="advanced" locale={locale} />
           </div>
 
           {/* Category Sections */}
@@ -265,6 +338,7 @@ export function LearnPageClient({ guides, categories, featuredGuides }: LearnPag
                   key={category}
                   category={category}
                   guides={categoryGuides}
+                  locale={locale}
                   defaultOpen={index === 0}
                 />
               );

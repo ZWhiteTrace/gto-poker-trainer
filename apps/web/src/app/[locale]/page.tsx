@@ -4,53 +4,107 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Spade, Target, Brain, TrendingUp, Zap, CheckCircle2, ArrowRight } from "lucide-react";
+import { createPageMetadata, type AppLocale, toAppLocale } from "@/lib/metadata";
 
-function FAQPageJsonLd() {
+type Props = {
+  params: Promise<{ locale: string }>;
+};
+
+const HOME_METADATA: Record<AppLocale, { title: string; description: string }> = {
+  "zh-TW": {
+    title: "免費德州撲克 GTO 練習工具 - 在線撲克範圍訓練器",
+    description:
+      "提升德撲技巧的免費 GTO 訓練器。提供翻前範圍表、Push/Fold 練習及 ICM 計算。無需下載註冊，立即開啟在線練習。",
+  },
+  en: {
+    title: "Free GTO Poker Trainer - Online Preflop Range Practice",
+    description:
+      "Train preflop ranges, push-fold spots, and MTT decisions with a free online GTO poker trainer built for fast repetition.",
+  },
+};
+
+const HOME_FAQ: Record<AppLocale, Array<{ question: string; answer: string }>> = {
+  "zh-TW": [
+    {
+      question: "什麼是 GTO 撲克策略？",
+      answer:
+        "GTO（Game Theory Optimal，博弈論最優）是基於數學原理的撲克策略，讓你的打法更不容易被剝削。它包含平衡的範圍和頻率，降低對手針對你的空間。",
+    },
+    {
+      question: "如何使用翻前範圍訓練器？",
+      answer:
+        "選擇你的位置和練習類型（RFI、VS RFI、VS 3-Bet），系統會隨機顯示手牌，你再選擇正確動作。訓練器會追蹤準確率，並找出你的弱點。",
+    },
+    {
+      question: "這個撲克訓練器是免費的嗎？",
+      answer:
+        "是。GTO Poker Trainer 目前所有核心功能都可免費使用，包括翻前練習、Push/Fold 圖表和進度追蹤，不需要註冊才能開始。",
+    },
+    {
+      question: "什麼是 Push/Fold 策略？",
+      answer:
+        "Push/Fold 策略用在錦標賽短籌碼情境，通常低於 15 個大盲注。此時不再小額加注，而是選擇全下或棄牌。我們的訓練器會依位置和籌碼深度提供最優範圍。",
+    },
+    {
+      question: "這個中文版有哪些功能？",
+      answer:
+        "包含翻前範圍訓練（RFI、VS RFI、VS 3-Bet、VS 4-Bet）、Push/Fold 練習、ICM 計算器、機率測驗和手牌分析工具。",
+    },
+  ],
+  en: [
+    {
+      question: "What is GTO poker strategy?",
+      answer:
+        "GTO stands for Game Theory Optimal. It is a mathematically balanced poker strategy designed to make your range harder to exploit over time.",
+    },
+    {
+      question: "How do I use the preflop range trainer?",
+      answer:
+        "Choose a drill such as RFI, VS RFI, or VS 3-Bet. The trainer shows a random hand and position, and you respond with the correct action while the app tracks your accuracy.",
+    },
+    {
+      question: "Is this poker trainer free?",
+      answer:
+        "Yes. The core training tools are free to use, including preflop drills, push-fold practice, and progress tracking.",
+    },
+    {
+      question: "What is push-fold strategy?",
+      answer:
+        "Push-fold strategy applies to short-stack tournament spots, usually below 15 big blinds, where the best decision is often to jam all-in or fold.",
+    },
+    {
+      question: "What tools are included in GTO Poker Trainer?",
+      answer:
+        "The app includes preflop drills, push-fold practice, ICM tools, probability quizzes, and hand analysis features for tournament and cash-game players.",
+    },
+  ],
+};
+
+export async function generateMetadata({ params }: Props) {
+  const { locale } = await params;
+  const appLocale = toAppLocale(locale);
+  const metadata = HOME_METADATA[appLocale];
+
+  return createPageMetadata({
+    locale: appLocale,
+    title: metadata.title,
+    description: metadata.description,
+  });
+}
+
+function FAQPageJsonLd({ locale }: { locale: AppLocale }) {
+  const faq = HOME_FAQ[locale];
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "FAQPage",
-    mainEntity: [
-      {
-        "@type": "Question",
-        name: "什么是 GTO 扑克策略？",
-        acceptedAnswer: {
-          "@type": "Answer",
-          text: "GTO（Game Theory Optimal，博弈论最优）是基于数学原理的扑克策略，让你的打法无法被剥削。它包含平衡的范围和频率，防止对手获得优势。",
-        },
+    mainEntity: faq.map((item) => ({
+      "@type": "Question",
+      name: item.question,
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: item.answer,
       },
-      {
-        "@type": "Question",
-        name: "如何使用翻前范围训练器？",
-        acceptedAnswer: {
-          "@type": "Answer",
-          text: "选择你的位置和练习类型（RFI、VS RFI、VS 3-Bet），训练器会随机显示手牌，你选择正确的动作。系统会追踪你的准确率，并识别你游戏中的弱点。",
-        },
-      },
-      {
-        "@type": "Question",
-        name: "这个扑克训练器是免费的吗？",
-        acceptedAnswer: {
-          "@type": "Answer",
-          text: "是的！GTO Poker Trainer 完全免费使用。所有功能包括翻前练习、Push/Fold 图表和进度追踪都可以免费使用，无需注册账号。",
-        },
-      },
-      {
-        "@type": "Question",
-        name: "什么是 Push/Fold 策略？",
-        acceptedAnswer: {
-          "@type": "Answer",
-          text: "Push/Fold 策略用于锦标赛中筹码较短时（通常低于 15 个大盲注）。不再小额加注，而是选择全下（Push）或弃牌（Fold）。我们的训练器根据位置和筹码深度教授最优的 Push/Fold 范围。",
-        },
-      },
-      {
-        "@type": "Question",
-        name: "GTO Poker Trainer 中文版有哪些功能？",
-        acceptedAnswer: {
-          "@type": "Answer",
-          text: "包括：翻前范围训练（RFI、VS RFI、VS 3-Bet、VS 4-Bet）、Push/Fold 图表、ICM 计算器、EV 计算练习、Outs 计算练习、手牌历史分析等。全中文界面，无需下载注册。",
-        },
-      },
-    ],
+    })),
   };
 
   return (
@@ -61,8 +115,10 @@ function FAQPageJsonLd() {
   );
 }
 
-export default async function Home() {
-  const t = await getTranslations();
+export default async function Home({ params }: Props) {
+  const { locale } = await params;
+  const appLocale = toAppLocale(locale);
+  const t = await getTranslations({ locale: appLocale });
 
   const features = [
     {
@@ -112,7 +168,7 @@ export default async function Home() {
 
   return (
     <>
-      <FAQPageJsonLd />
+      <FAQPageJsonLd locale={appLocale} />
       <div className="flex flex-col">
         {/* Hero Section */}
         <section className="from-background to-muted/30 relative overflow-hidden bg-gradient-to-b py-20 md:py-32">
