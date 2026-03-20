@@ -1,10 +1,13 @@
-import { Metadata } from "next";
+import { createSectionMetadata } from "@/lib/sectionMetadata";
 
-export const metadata: Metadata = {
-  title: "撲克測驗中心 - 檢驗你的德撲知識",
-  description:
-    "通過互動測驗檢驗你的撲克知識。包含勝率計算、Outs 計算、EV 期望值、GTO 邏輯等多種測驗類型。",
+type Props = {
+  params: Promise<{ locale: string }>;
 };
+
+export async function generateMetadata({ params }: Props) {
+  const { locale } = await params;
+  return createSectionMetadata(locale, "quiz");
+}
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   return children;

@@ -1,10 +1,13 @@
-import { Metadata } from "next";
+import { createDrillMetadata } from "@/lib/drillMetadata";
 
-export const metadata: Metadata = {
-  title: "翻後 C-Bet 練習 - 持續下注策略訓練",
-  description:
-    "練習翻後持續下注（C-Bet）策略。學習在不同牌面結構下的最優下注頻率和尺寸，提升翻後打法。",
+type Props = {
+  params: Promise<{ locale: string }>;
 };
+
+export async function generateMetadata({ params }: Props) {
+  const { locale } = await params;
+  return createDrillMetadata(locale, "postflop");
+}
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   return children;

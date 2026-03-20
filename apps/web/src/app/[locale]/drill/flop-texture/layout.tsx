@@ -1,9 +1,13 @@
-import { Metadata } from "next";
+import { createDrillMetadata } from "@/lib/drillMetadata";
 
-export const metadata: Metadata = {
-  title: "牌面結構分析練習 - Flop Texture 識別訓練",
-  description: "學習識別不同的翻牌面結構（乾燥、濕潤、配對等），理解牌面結構如何影響你的策略選擇。",
+type Props = {
+  params: Promise<{ locale: string }>;
 };
+
+export async function generateMetadata({ params }: Props) {
+  const { locale } = await params;
+  return createDrillMetadata(locale, "flop-texture");
+}
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   return children;

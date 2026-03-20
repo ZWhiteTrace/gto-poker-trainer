@@ -1,5 +1,42 @@
 import * as Sentry from "@sentry/nextjs";
 
+export const onRouterTransitionStart = Sentry.captureRouterTransitionStart;
+
+const FIRST_PARTY_FRAME_PATTERNS = [
+  /https?:\/\/(?:www\.)?grindgto\.com/i,
+  /\/_next\/static\//,
+  /^webpack-internal:\/\//,
+  /^app:\/\/\/_next\//,
+];
+
+const THIRD_PARTY_FRAME_PATTERNS = [
+  /^chrome-extension:\/\//i,
+  /^moz-extension:\/\//i,
+  /^safari-web-extension:\/\//i,
+  /^app:\/\/\/(?:solana|phantom|backpack|metamask|rabby|okx|bitget|keplr)\b/i,
+  /AdGuard.*\.user\.js/i,
+  /\.user\.js$/i,
+];
+
+function shouldDropThirdPartyBrowserError(event: Sentry.ErrorEvent): boolean {
+  const frames =
+    event.exception?.values?.flatMap((value) => value.stacktrace?.frames ?? []) ?? [];
+
+  if (frames.length === 0) {
+    return false;
+  }
+
+  const filenames = frames.map((frame) => frame.filename).filter((name): name is string => !!name);
+  const hasThirdPartyFrame = filenames.some((filename) =>
+    THIRD_PARTY_FRAME_PATTERNS.some((pattern) => pattern.test(filename))
+  );
+  const hasFirstPartyFrame = filenames.some((filename) =>
+    FIRST_PARTY_FRAME_PATTERNS.some((pattern) => pattern.test(filename))
+  );
+
+  return hasThirdPartyFrame && !hasFirstPartyFrame;
+}
+
 Sentry.init({
   dsn: process.env.NEXT_PUBLIC_SENTRY_DSN,
 
@@ -35,6 +72,11 @@ Sentry.init({
     if (process.env.NODE_ENV === "development") {
       return null;
     }
+
+    if (shouldDropThirdPartyBrowserError(event)) {
+      return null;
+    }
+
     return event;
   },
 });

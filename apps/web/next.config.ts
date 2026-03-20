@@ -4,6 +4,8 @@ import createNextIntlPlugin from "next-intl/plugin";
 import { withSentryConfig } from "@sentry/nextjs";
 
 const withNextIntl = createNextIntlPlugin("./src/i18n/request.ts");
+const repoRoot = path.resolve(__dirname, "../..");
+const dataRoot = path.join(repoRoot, "data");
 
 const nextConfig: NextConfig = {
   // Performance optimizations
@@ -15,14 +17,15 @@ const nextConfig: NextConfig = {
   // Resolve @data/* alias for Turbopack (mirrors tsconfig paths)
   // Uses both __dirname and process.cwd() for CI compatibility
   turbopack: {
+    root: repoRoot,
     resolveAlias: {
-      "@data": path.resolve(process.cwd(), "../../data"),
+      "@data": dataRoot,
     },
   },
 
   // Webpack fallback for @data/* alias
   webpack: (config) => {
-    config.resolve.alias["@data"] = path.resolve(process.cwd(), "../../data");
+    config.resolve.alias["@data"] = dataRoot;
     return config;
   },
 

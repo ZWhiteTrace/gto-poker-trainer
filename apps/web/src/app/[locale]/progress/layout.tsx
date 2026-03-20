@@ -1,9 +1,13 @@
-import { Metadata } from "next";
+import { createSectionMetadata } from "@/lib/sectionMetadata";
 
-export const metadata: Metadata = {
-  title: "學習進度 - 追蹤你的訓練數據",
-  description: "查看你的 GTO 訓練進度。統計各練習類型的準確率、弱點區域分析、歷史活動記錄。",
+type Props = {
+  params: Promise<{ locale: string }>;
 };
+
+export async function generateMetadata({ params }: Props) {
+  const { locale } = await params;
+  return createSectionMetadata(locale, "progress");
+}
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   return children;

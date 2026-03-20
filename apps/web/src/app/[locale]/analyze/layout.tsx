@@ -1,10 +1,13 @@
-import { Metadata } from "next";
+import { createSectionMetadata } from "@/lib/sectionMetadata";
 
-export const metadata: Metadata = {
-  title: "手牌歷史分析 - 找出你的 GTO 漏洞",
-  description:
-    "上傳 GGPoker 手牌歷史，AI 自動分析你的翻前漏洞。找出 RFI、3-bet、4-bet 決策中的錯誤，提供改進建議。",
+type Props = {
+  params: Promise<{ locale: string }>;
 };
+
+export async function generateMetadata({ params }: Props) {
+  const { locale } = await params;
+  return createSectionMetadata(locale, "analyze");
+}
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   return children;

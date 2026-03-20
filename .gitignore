@@ -55,6 +55,9 @@ Thumbs.db
 .env.production.local
 .env.development.local
 
+# Claude Code plugin artifacts
+.claude/skills/
+
 # Sentry
 .sentryclirc
 

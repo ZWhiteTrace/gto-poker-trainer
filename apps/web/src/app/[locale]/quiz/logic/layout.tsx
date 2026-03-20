@@ -1,9 +1,13 @@
-import { Metadata } from "next";
+import { createSectionMetadata } from "@/lib/sectionMetadata";
 
-export const metadata: Metadata = {
-  title: "GTO 邏輯測驗 - 博弈論原理理解",
-  description: "測試你對 GTO 博弈論原理的理解。學習平衡範圍、剝削策略、混合頻率等核心概念。",
+type Props = {
+  params: Promise<{ locale: string }>;
 };
+
+export async function generateMetadata({ params }: Props) {
+  const { locale } = await params;
+  return createSectionMetadata(locale, "quiz-logic");
+}
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   return children;

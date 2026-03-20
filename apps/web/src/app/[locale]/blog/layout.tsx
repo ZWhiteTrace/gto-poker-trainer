@@ -1,9 +1,13 @@
-import { Metadata } from "next";
+import { createSectionMetadata } from "@/lib/sectionMetadata";
 
-export const metadata: Metadata = {
-  title: "撲克策略文章 - GTO Poker Trainer",
-  description: "閱讀最新的德州撲克策略文章。GTO 理論解析、實戰技巧、手牌分析等高質量中文內容。",
+type Props = {
+  params: Promise<{ locale: string }>;
 };
+
+export async function generateMetadata({ params }: Props) {
+  const { locale } = await params;
+  return createSectionMetadata(locale, "blog");
+}
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   return children;

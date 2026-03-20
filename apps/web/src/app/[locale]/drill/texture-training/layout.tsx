@@ -1,9 +1,13 @@
-import { Metadata } from "next";
+import { createDrillMetadata } from "@/lib/drillMetadata";
 
-export const metadata: Metadata = {
-  title: "牌面質地訓練 - 學會分析 Board Texture",
-  description: "訓練判斷牌面質地的能力。辨識乾燥、濕潤、連接牌面，學會根據牌面調整策略。",
+type Props = {
+  params: Promise<{ locale: string }>;
 };
+
+export async function generateMetadata({ params }: Props) {
+  const { locale } = await params;
+  return createDrillMetadata(locale, "texture-training");
+}
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   return children;

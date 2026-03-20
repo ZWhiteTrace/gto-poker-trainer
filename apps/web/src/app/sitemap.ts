@@ -4,10 +4,10 @@ import { routing } from "@/i18n/routing";
 
 const BASE_URL = "https://grindgto.com";
 
-function alternates(path: string) {
+function alternates(path: string, locales: readonly string[] = routing.locales) {
   return {
     languages: Object.fromEntries(
-      routing.locales.map((locale) => [
+      locales.map((locale) => [
         locale,
         locale === routing.defaultLocale ? `${BASE_URL}${path}` : `${BASE_URL}/${locale}${path}`,
       ])
@@ -17,19 +17,25 @@ function alternates(path: string) {
 
 function entry(
   path: string,
-  opts: { changeFrequency: MetadataRoute.Sitemap[0]["changeFrequency"]; priority: number }
+  opts: { changeFrequency: MetadataRoute.Sitemap[0]["changeFrequency"]; priority: number },
+  locales: readonly string[] = routing.locales
 ): MetadataRoute.Sitemap[0] {
   return {
     url: `${BASE_URL}${path}`,
     lastModified: new Date(),
     changeFrequency: opts.changeFrequency,
     priority: opts.priority,
-    alternates: alternates(path),
+    alternates: alternates(path, locales),
   };
 }
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const guides = getAllGuides();
+  const translatedEnglishGuideSlugs = new Set(
+    getAllGuides("en")
+      .filter((guide) => guide.contentLocale === "en")
+      .map((guide) => guide.slug)
+  );
 
   const contentPages: MetadataRoute.Sitemap = [
     entry("", { changeFrequency: "weekly", priority: 1 }),
@@ -49,7 +55,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
   ];
 
   const guidePages: MetadataRoute.Sitemap = guides.map((guide) =>
-    entry(`/learn/${guide.slug}`, { changeFrequency: "monthly", priority: 0.8 })
+    entry(
+      `/learn/${guide.slug}`,
+      { changeFrequency: "monthly", priority: 0.8 },
+      translatedEnglishGuideSlugs.has(guide.slug) ? routing.locales : [routing.defaultLocale]
+    )
   );
 
   return [...contentPages, ...guidePages];

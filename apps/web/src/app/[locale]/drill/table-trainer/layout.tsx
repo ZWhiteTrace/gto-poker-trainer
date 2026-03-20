@@ -1,9 +1,13 @@
-import { Metadata } from "next";
+import { createDrillMetadata } from "@/lib/drillMetadata";
 
-export const metadata: Metadata = {
-  title: "牌桌模擬訓練 - 全場景 GTO 實戰練習",
-  description: "在模擬牌桌上進行 GTO 實戰訓練。面對不同位置與場景，做出最優決策。",
+type Props = {
+  params: Promise<{ locale: string }>;
 };
+
+export async function generateMetadata({ params }: Props) {
+  const { locale } = await params;
+  return createDrillMetadata(locale, "table-trainer");
+}
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   return children;

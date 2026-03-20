@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import { getLocale } from "next-intl/server";
 import { GoogleAnalytics } from "@next/third-parties/google";
+import { BASE_URL, type AppLocale, getLocalizedUrl, toAppLocale } from "@/lib/metadata";
 import "./globals.css";
 
 const inter = Inter({
@@ -101,40 +102,87 @@ export const metadata: Metadata = {
   },
 };
 
-function StructuredDataJsonLd() {
+function StructuredDataJsonLd({ locale }: { locale: AppLocale }) {
+  const siteCopy =
+    locale === "en"
+      ? {
+          name: "GTO Poker Trainer - Free Online Poker Training Tools",
+          description:
+            "Free GTO poker trainer for preflop ranges, push-fold practice, ICM tools, and hand analysis.",
+          organizationName: "GTO Poker Trainer",
+          appName: "GTO Poker Trainer",
+          appDescription:
+            "Free GTO poker training app for preflop drills, push-fold charts, and AI hand analysis",
+          featureList: [
+            "Preflop range drills",
+            "Push/Fold practice",
+            "ICM calculator",
+            "AI hand analysis",
+            "Progress tracking",
+          ],
+          courseName: "GTO Poker Strategy Training",
+          courseDescription:
+            "Learn game theory optimal poker strategy through interactive drills and range-based practice",
+          teaches: [
+            "Preflop opening ranges by position",
+            "3-bet and 4-bet strategy",
+            "Tournament push-fold spots",
+            "ICM decision making",
+          ],
+          searchTarget: `${getLocalizedUrl(locale, "/learn")}?q={search_term_string}`,
+        }
+      : {
+          name: "GTO 撲克訓練器 - 免費德州撲克練習工具",
+          description: "提升德撲技巧的免費 GTO 訓練器。提供翻前範圍表、推圖練習及 ICM 計算。",
+          organizationName: "GTO 撲克訓練器",
+          appName: "GTO 撲克訓練器",
+          appDescription: "免費 GTO 德州撲克訓練應用，提供翻前範圍練習、推圖表和 AI 手牌分析",
+          featureList: [
+            "翻前範圍訓練",
+            "推圖 (Push/Fold) 練習",
+            "ICM 計算器",
+            "AI 手牌分析",
+            "學習進度追蹤",
+          ],
+          courseName: "GTO 撲克策略訓練",
+          courseDescription: "透過互動練習和範圍表掌握 GTO 最優撲克策略",
+          teaches: ["各位置的翻前範圍", "3-bet 和 4-bet 策略", "錦標賽推圖策略", "ICM 考量"],
+          searchTarget: `${BASE_URL}/learn?q={search_term_string}`,
+        };
+
   const jsonLd = {
     "@context": "https://schema.org",
     "@graph": [
       {
         "@type": "WebSite",
-        "@id": "https://grindgto.com/#website",
-        name: "GTO 撲克訓練器 - 免費德州撲克練習工具",
-        url: "https://grindgto.com",
-        description: "提升德撲技巧的免費 GTO 訓練器。提供翻前範圍表、推圖練習及 ICM 計算。",
+        "@id": `${BASE_URL}/#website`,
+        name: siteCopy.name,
+        url: BASE_URL,
+        description: siteCopy.description,
         inLanguage: ["zh-TW", "en"],
-        publisher: { "@id": "https://grindgto.com/#organization" },
+        publisher: { "@id": `${BASE_URL}/#organization` },
         potentialAction: {
           "@type": "SearchAction",
-          target: "https://grindgto.com/learn?q={search_term_string}",
+          target: siteCopy.searchTarget,
           "query-input": "required name=search_term_string",
         },
       },
       {
         "@type": "Organization",
-        "@id": "https://grindgto.com/#organization",
-        name: "GTO 撲克訓練器",
-        url: "https://grindgto.com",
+        "@id": `${BASE_URL}/#organization`,
+        name: siteCopy.organizationName,
+        url: BASE_URL,
         logo: {
           "@type": "ImageObject",
-          url: "https://grindgto.com/icon-512.png",
+          url: `${BASE_URL}/icon-512.png`,
           width: 512,
           height: 512,
         },
       },
       {
         "@type": "SoftwareApplication",
-        "@id": "https://grindgto.com/#app",
-        name: "GTO 撲克訓練器",
+        "@id": `${BASE_URL}/#app`,
+        name: siteCopy.appName,
         applicationCategory: "GameApplication",
         operatingSystem: "Web Browser",
         offers: {
@@ -142,22 +190,16 @@ function StructuredDataJsonLd() {
           price: "0",
           priceCurrency: "USD",
         },
-        description: "免費 GTO 德州撲克訓練應用，提供翻前範圍練習、推圖表和 AI 手牌分析",
-        featureList: [
-          "翻前範圍訓練",
-          "推圖 (Push/Fold) 練習",
-          "ICM 計算器",
-          "AI 手牌分析",
-          "學習進度追蹤",
-        ],
-        author: { "@id": "https://grindgto.com/#organization" },
+        description: siteCopy.appDescription,
+        featureList: siteCopy.featureList,
+        author: { "@id": `${BASE_URL}/#organization` },
       },
       {
         "@type": "Course",
-        "@id": "https://grindgto.com/#course",
-        name: "GTO 撲克策略訓練",
-        description: "透過互動練習和範圍表掌握 GTO 最優撲克策略",
-        provider: { "@id": "https://grindgto.com/#organization" },
+        "@id": `${BASE_URL}/#course`,
+        name: siteCopy.courseName,
+        description: siteCopy.courseDescription,
+        provider: { "@id": `${BASE_URL}/#organization` },
         offers: {
           "@type": "Offer",
           price: "0",
@@ -171,7 +213,7 @@ function StructuredDataJsonLd() {
             courseWorkload: "PT30M",
           },
         ],
-        teaches: ["各位置的翻前範圍", "3-bet 和 4-bet 策略", "錦標賽推圖策略", "ICM 考量"],
+        teaches: siteCopy.teaches,
       },
     ],
   };
@@ -190,11 +232,12 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const locale = await getLocale();
+  const appLocale = toAppLocale(locale);
 
   return (
     <html lang={locale} className="dark" suppressHydrationWarning>
       <head>
-        <StructuredDataJsonLd />
+        <StructuredDataJsonLd locale={appLocale} />
         <link
           rel="apple-touch-startup-image"
           href="/api/splash?w=1290&h=2796"

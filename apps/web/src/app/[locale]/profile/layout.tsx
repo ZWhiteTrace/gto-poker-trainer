@@ -1,10 +1,13 @@
-import { Metadata } from "next";
+import { createSectionMetadata } from "@/lib/sectionMetadata";
 
-export const metadata: Metadata = {
-  title: "個人檔案 - GTO 撲克訓練器",
-  description: "管理你的 GTO 訓練器個人檔案。查看等級、成就、訓練記錄，自訂偏好設定。",
-  robots: { index: false, follow: true },
+type Props = {
+  params: Promise<{ locale: string }>;
 };
+
+export async function generateMetadata({ params }: Props) {
+  const { locale } = await params;
+  return createSectionMetadata(locale, "profile");
+}
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   return children;

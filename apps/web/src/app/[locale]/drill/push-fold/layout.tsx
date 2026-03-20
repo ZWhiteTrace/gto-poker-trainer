@@ -1,10 +1,13 @@
-import { Metadata } from "next";
+import { createDrillMetadata } from "@/lib/drillMetadata";
 
-export const metadata: Metadata = {
-  title: "Push/Fold 推圖練習 - MTT 短籌碼全下策略",
-  description:
-    "練習錦標賽短籌碼時的 Push/Fold 決策。基於 Nash 均衡的最優全下範圍，掌握 3-15BB 的生存策略。",
+type Props = {
+  params: Promise<{ locale: string }>;
 };
+
+export async function generateMetadata({ params }: Props) {
+  const { locale } = await params;
+  return createDrillMetadata(locale, "push-fold");
+}
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   return children;

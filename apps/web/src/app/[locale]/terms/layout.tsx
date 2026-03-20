@@ -1,9 +1,13 @@
-import { Metadata } from "next";
+import { createSectionMetadata } from "@/lib/sectionMetadata";
 
-export const metadata: Metadata = {
-  title: "服務條款 - GTO Poker Trainer",
-  description: "GTO Poker Trainer 的服務條款。使用本網站前請閱讀並了解相關條款和條件。",
+type Props = {
+  params: Promise<{ locale: string }>;
 };
+
+export async function generateMetadata({ params }: Props) {
+  const { locale } = await params;
+  return createSectionMetadata(locale, "terms");
+}
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   return children;

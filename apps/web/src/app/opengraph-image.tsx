@@ -1,7 +1,5 @@
 import { ImageResponse } from "next/og";
 
-export const runtime = "edge";
-
 export const alt = "GTO 撲克訓練器 - 免費德州撲克 GTO 練習工具";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";

@@ -1,9 +1,13 @@
-import { Metadata } from "next";
+import { createSectionMetadata } from "@/lib/sectionMetadata";
 
-export const metadata: Metadata = {
-  title: "成就系統 - 解鎖德撲訓練徽章",
-  description: "通過練習解鎖成就徽章。里程碑成就、連勝成就、準確率成就等，讓訓練更有成就感。",
+type Props = {
+  params: Promise<{ locale: string }>;
 };
+
+export async function generateMetadata({ params }: Props) {
+  const { locale } = await params;
+  return createSectionMetadata(locale, "achievements");
+}
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   return children;
