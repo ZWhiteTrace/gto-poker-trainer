@@ -20,8 +20,8 @@ test.describe("Table Trainer Stats Panel", () => {
       await statsTab.first().click();
     }
 
-    // Should show "需要 30 手" or similar collection message
-    const collectionMessage = page.getByText(/需要.*手/);
+    // Should show collection message (zh: "需要 30 手", en: "30 hands are required")
+    const collectionMessage = page.getByText(/需要.*手|hands.*required/i);
     const hasCollectionMsg = (await collectionMessage.count()) > 0;
 
     // Or should show actual stats (if data exists)
@@ -63,9 +63,9 @@ test.describe("Table Trainer Stats Panel", () => {
   });
 
   test("session stats section exists", async ({ page }) => {
-    // Look for session stats area
-    const sessionHeader = page.getByText(/本次練習|Session/);
-    const handsText = page.getByText(/手$/);
+    // Look for session stats area (zh: 本次練習, en: Session / Hands)
+    const sessionHeader = page.getByText(/本次練習|Session|Hands/i);
+    const handsText = page.getByText(/手$|hands/i);
 
     // Should have session tracking
     const hasSessionHeader = (await sessionHeader.count()) > 0;

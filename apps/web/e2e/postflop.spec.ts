@@ -3,11 +3,10 @@ import { test, expect, Page } from "@playwright/test";
 /**
  * Postflop drill E2E tests.
  * 3 street tabs: Flop C-Bet, Turn Barrel, River Decision
- * Note: Action buttons always use Chinese labels (labelZh): 過牌, 下注 X%, 超池, 加注
+ * Action buttons are locale-aware: 過牌/Check, 下注/Bet, 超池/Overbet, 加注/Raise
  */
 
 async function waitForScenario(page: Page) {
-  // Wait for loading spinner to disappear
   await page.waitForFunction(
     () => {
       const spinners = document.querySelectorAll(".animate-spin");
@@ -15,10 +14,9 @@ async function waitForScenario(page: Page) {
     },
     { timeout: 15000 }
   );
-  // Wait for Chinese action button "過牌" (Check) to appear
   await page
     .locator("button")
-    .filter({ hasText: /^過牌$/ })
+    .filter({ hasText: /^(過牌|Check)$/ })
     .first()
     .waitFor({ state: "visible", timeout: 10000 });
 }
@@ -52,9 +50,9 @@ test.describe("Postflop Drill", () => {
     const suitCount = await countSuitSymbols(page);
     expect(suitCount).toBeGreaterThanOrEqual(5);
 
-    // Action buttons visible (Chinese labels: 過牌, 下注 X%)
+    // Action buttons visible (locale-aware: 過牌/Check, 下注/Bet, etc.)
     const actions = page.locator("button").filter({
-      hasText: /^(過牌|下注|超池|加注)/,
+      hasText: /^(過牌|Check|下注|Bet|超池|Overbet|加注|Raise)/,
     });
     const actionCount = await actions.count();
     expect(actionCount).toBeGreaterThanOrEqual(2);
@@ -63,11 +61,10 @@ test.describe("Postflop Drill", () => {
   test("selecting action shows evaluation result", async ({ page }) => {
     await waitForScenario(page);
 
-    // Click an action button (Chinese label)
     const actionBtn = page
       .locator("button")
       .filter({
-        hasText: /^(過牌|下注)/,
+        hasText: /^(過牌|Check|下注|Bet)/,
       })
       .first();
     await actionBtn.scrollIntoViewIfNeeded();
@@ -96,7 +93,7 @@ test.describe("Postflop Drill", () => {
     // River tab may fail to load on some API configurations
     const hasScenario = await page
       .locator("button")
-      .filter({ hasText: /^過牌$/ })
+      .filter({ hasText: /^(過牌|Check)$/ })
       .first()
       .isVisible({ timeout: 10000 })
       .catch(() => false);
