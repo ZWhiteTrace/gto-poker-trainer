@@ -39,6 +39,12 @@ export interface HandCategory {
   labelZh: string;
 }
 
+export interface HandStrengthBreakdown {
+  score: number;
+  reasons: string[];
+  reasonsZh: string[];
+}
+
 /** Ranks considered "broadway" (T, J, Q, K, A) */
 const BROADWAY_RANKS = new Set(["A", "K", "Q", "J", "T"]);
 
@@ -241,4 +247,71 @@ export function categorize(input: string | PLO4Hand): HandCategory {
     return categorizeHand(cards as unknown as PLO4Hand);
   }
   return categorizeHand(input);
+}
+
+export function evaluateStartingHandStrength(input: string | PLO4Hand): HandStrengthBreakdown {
+  const category = categorize(input);
+  let score = 0;
+  const reasons: string[] = [];
+  const reasonsZh: string[] = [];
+
+  if (category.isDoubleSuited) {
+    score += 4;
+    reasons.push("double-suited");
+    reasonsZh.push("雙花色");
+  } else if (category.isSingleSuited) {
+    score += 2;
+    reasons.push("single-suited");
+    reasonsZh.push("單花色");
+  }
+
+  if (category.connectivity === "rundown") {
+    score += 5;
+    reasons.push("rundown connectivity");
+    reasonsZh.push("順子牌連接性");
+  } else if (category.connectivity === "semi-connected") {
+    score += 2;
+    reasons.push("semi-connected structure");
+    reasonsZh.push("半連接結構");
+  }
+
+  if (category.isDoublePaired) {
+    score += 4;
+    reasons.push("double-paired structure");
+    reasonsZh.push("雙對子結構");
+  } else if (category.pairCount === 1) {
+    score += 1;
+    reasons.push("made pair potential");
+    reasonsZh.push("帶一對結構");
+  }
+
+  if (category.hasAce) {
+    score += 1;
+    reasons.push("ace blocker");
+    reasonsZh.push("A blocker");
+  }
+
+  if (category.broadwayCount >= 3) {
+    score += 2;
+    reasons.push("high broadway density");
+    reasonsZh.push("高張密度高");
+  } else if (category.broadwayCount === 2) {
+    score += 1;
+    reasons.push("some broadway support");
+    reasonsZh.push("有一定高張支撐");
+  }
+
+  if (category.danglerCount > 0) {
+    score -= category.danglerCount * 2;
+    reasons.push(`${category.danglerCount} dangler${category.danglerCount > 1 ? "s" : ""}`);
+    reasonsZh.push(`${category.danglerCount} 張孤牌`);
+  }
+
+  if (category.totalGapSize > 0) {
+    score -= category.totalGapSize;
+    reasons.push(`${category.totalGapSize} total gap size`);
+    reasonsZh.push(`總 gap ${category.totalGapSize}`);
+  }
+
+  return { score, reasons, reasonsZh };
 }

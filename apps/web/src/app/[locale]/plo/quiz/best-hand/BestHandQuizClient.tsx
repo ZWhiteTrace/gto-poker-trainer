@@ -5,7 +5,11 @@ import { useLocale } from "next-intl";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { generateBestHandQuestion, type PLO4QuizQuestion } from "@/lib/plo4/quizGenerator";
+import {
+  generateBestHandQuestion,
+  type BestHandScenario,
+  type PLO4QuizQuestion,
+} from "@/lib/plo4/quizGenerator";
 import type { Card as PokerCard } from "@/lib/plo4/types";
 import { cn } from "@/lib/utils";
 import { CheckCircle2, HelpCircle, RefreshCw, XCircle } from "lucide-react";
@@ -73,6 +77,11 @@ const COPY: Record<string, Copy> = {
   },
 };
 
+type BestHandQuestion = Omit<PLO4QuizQuestion, "type" | "scenario"> & {
+  type: "best-hand";
+  scenario: BestHandScenario;
+};
+
 function CardDisplay({ card, highlighted }: { card: PokerCard; highlighted?: boolean }) {
   return (
     <span
@@ -115,10 +124,10 @@ function CardRow({
   );
 }
 
-export function BestHandQuizClient({ initialQuestion }: { initialQuestion: PLO4QuizQuestion }) {
+export function BestHandQuizClient({ initialQuestion }: { initialQuestion: BestHandQuestion }) {
   const locale = useLocale();
   const copy = COPY[locale] ?? COPY["zh-TW"];
-  const [question, setQuestion] = useState<PLO4QuizQuestion>(initialQuestion);
+  const [question, setQuestion] = useState<BestHandQuestion>(initialQuestion);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [score, setScore] = useState({ correct: 0, total: 0, streak: 0, bestStreak: 0 });
 
@@ -146,7 +155,7 @@ export function BestHandQuizClient({ initialQuestion }: { initialQuestion: PLO4Q
   );
 
   const handleNext = useCallback(() => {
-    setQuestion(generateBestHandQuestion());
+    setQuestion(generateBestHandQuestion() as BestHandQuestion);
     setSelectedId(null);
   }, []);
 

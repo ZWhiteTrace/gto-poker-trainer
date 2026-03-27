@@ -9,14 +9,15 @@ import {
   type Suit,
 } from "./types";
 import { evaluatePLO4Hand } from "./evaluator";
+import { categorizeHand, evaluateStartingHandStrength } from "./handCategories";
 
 export interface PLO4QuizQuestion {
   id: string;
-  type: "best-hand";
+  type: "best-hand" | "hand-quality";
   difficulty: "easy" | "medium" | "hard";
   prompt: string;
   promptZh: string;
-  scenario: BestHandScenario;
+  scenario: BestHandScenario | HandQualityScenario;
   options: Array<{
     id: string;
     text: string;
@@ -32,6 +33,15 @@ export interface BestHandScenario {
   holeCards: PLO4Hand;
   board: Board;
   correctResult: HandResult;
+}
+
+export interface HandQualityScenario {
+  handA: PLO4Hand;
+  handB: PLO4Hand;
+  handACategory: ReturnType<typeof categorizeHand>;
+  handBCategory: ReturnType<typeof categorizeHand>;
+  handAScore: number;
+  handBScore: number;
 }
 
 const ALL_RANKS: Rank[] = ["A", "K", "Q", "J", "T", "9", "8", "7", "6", "5", "4", "3", "2"];
@@ -137,6 +147,64 @@ export function generateBestHandQuestion(seed?: number): PLO4QuizQuestion {
     explanationZh: `最佳牌型：${handRankNameZh(result.rank)}。使用手牌 ${usedHole} 搭配公牌 ${usedBoard}。`,
     tags: [handRankName(result.rank).toLowerCase().replace(/\s+/g, "-")],
   };
+}
+
+export function generateHandQualityQuestion(seed?: number): PLO4QuizQuestion {
+  const deck = seed !== undefined ? seededShuffle(buildDeck(), seed) : shuffle(buildDeck());
+
+  for (let offset = 0; offset <= deck.length - 8; offset += 8) {
+    const handA = deck.slice(offset, offset + 4) as PLO4Hand;
+    const handB = deck.slice(offset + 4, offset + 8) as PLO4Hand;
+
+    const handACategory = categorizeHand(handA);
+    const handBCategory = categorizeHand(handB);
+    const handAStrength = evaluateStartingHandStrength(handA);
+    const handBStrength = evaluateStartingHandStrength(handB);
+
+    const scoreDiff = handAStrength.score - handBStrength.score;
+    if (Math.abs(scoreDiff) < 3) continue;
+    if (handACategory.categoryKey === handBCategory.categoryKey) continue;
+
+    const handAHigher = scoreDiff > 0;
+    const correctOptionId = handAHigher ? "opt-a" : "opt-b";
+    const strongerLabel = handAHigher ? "Hand A" : "Hand B";
+    const strongerLabelZh = handAHigher ? "手牌 A" : "手牌 B";
+    const strongerCategory = handAHigher ? handACategory : handBCategory;
+    const weakerCategory = handAHigher ? handBCategory : handACategory;
+    const strongerReasons = handAHigher ? handAStrength.reasons : handBStrength.reasons;
+    const strongerReasonsZh = handAHigher ? handAStrength.reasonsZh : handBStrength.reasonsZh;
+
+    const difficulty =
+      Math.abs(scoreDiff) >= 6 ? "easy" : Math.abs(scoreDiff) >= 4 ? "medium" : "hard";
+
+    return {
+      id: `hq-${handA.map(cardStr).join("")}-${handB.map(cardStr).join("")}`,
+      type: "hand-quality",
+      difficulty,
+      prompt:
+        "Which PLO4 starting hand is structurally stronger in a vacuum? Ignore table dynamics and compare hand quality only.",
+      promptZh:
+        "哪一手 PLO4 起手牌在結構上更強？忽略牌桌動態，只比較起手牌本身品質。",
+      scenario: {
+        handA,
+        handB,
+        handACategory,
+        handBCategory,
+        handAScore: handAStrength.score,
+        handBScore: handBStrength.score,
+      },
+      options: [
+        { id: "opt-a", text: "Hand A", textZh: "手牌 A" },
+        { id: "opt-b", text: "Hand B", textZh: "手牌 B" },
+      ],
+      correctOptionId,
+      explanation: `${strongerLabel} is stronger here. ${strongerCategory.label} beats ${weakerCategory.label} in this comparison because of ${strongerReasons.join(", ")}.`,
+      explanationZh: `${strongerLabelZh} 在這題比較強。${strongerCategory.labelZh} 勝過 ${weakerCategory.labelZh}，主要因為：${strongerReasonsZh.join("、")}。`,
+      tags: ["hand-quality", strongerCategory.categoryKey],
+    };
+  }
+
+  throw new Error("Failed to generate a non-ambiguous hand-quality question");
 }
 
 /** Generate 3 plausible wrong answers */

@@ -2,7 +2,7 @@ import { Link } from "@/i18n/navigation";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Brain, Layers3, Trophy } from "lucide-react";
+import { Brain, Layers3, Scale, Trophy } from "lucide-react";
 
 type Props = {
   params: Promise<{ locale: string }>;
@@ -17,11 +17,15 @@ const COPY = {
     bestHandTitle: "Best Hand Quiz",
     bestHandDescription:
       "Given 4 hole cards and a full board, identify your best 5-card hand using exactly 2 hole cards and 3 board cards.",
+    handQualityTitle: "Hand Quality Quiz",
+    handQualityDescription:
+      "Compare two starting hands and identify which structure is stronger before any board is dealt.",
     rulesTitle: "What This Covers",
     rules: [
       "Must-use-2 rule",
       "Best hand identification",
       "Board-only and 1-card mistakes",
+      "Starting-hand structure comparison",
     ],
     limitationsTitle: "What This Does Not Cover Yet",
     limitations: [
@@ -39,8 +43,10 @@ const COPY = {
     bestHandTitle: "最佳牌型測驗",
     bestHandDescription:
       "給你 4 張手牌和完整公牌，判斷最佳 5 張牌型，並強制遵守剛好 2 張手牌 + 3 張公牌規則。",
+    handQualityTitle: "起手牌品質測驗",
+    handQualityDescription: "比較兩手起手牌，判斷哪個結構在翻牌前更有發展性。",
     rulesTitle: "目前涵蓋",
-    rules: ["必須用 2 張手牌規則", "最佳牌型判讀", "board-only 與 1 張手牌錯誤"],
+    rules: ["必須用 2 張手牌規則", "最佳牌型判讀", "board-only 與 1 張手牌錯誤", "起手牌結構比較"],
     limitationsTitle: "目前還沒有",
     limitations: ["沒有 PLO solver 範圍", "沒有 equity calculator", "沒有 table trainer 或 AI 對手"],
     cta: "開始最佳牌型測驗",
@@ -63,25 +69,42 @@ export default async function PLOIndexPage({ params }: Props) {
       </div>
 
       <div className="grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
-        <Card>
-          <CardHeader>
-            <div className="flex items-center gap-3">
-              <Trophy className="text-primary h-6 w-6" />
-              <CardTitle>{copy.bestHandTitle}</CardTitle>
-            </div>
-            <CardDescription>{copy.bestHandDescription}</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex flex-wrap gap-3">
-              <Link href="/plo/quiz/best-hand">
-                <Button>{copy.cta}</Button>
+        <div className="grid gap-6">
+          <Card>
+            <CardHeader>
+              <div className="flex items-center gap-3">
+                <Trophy className="text-primary h-6 w-6" />
+                <CardTitle>{copy.bestHandTitle}</CardTitle>
+              </div>
+              <CardDescription>{copy.bestHandDescription}</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="flex flex-wrap gap-3">
+                <Link href="/plo/quiz/best-hand">
+                  <Button>{copy.cta}</Button>
+                </Link>
+                <Link href="/plo/quiz">
+                  <Button variant="outline">{copy.quizHub}</Button>
+                </Link>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <div className="flex items-center gap-3">
+                <Scale className="text-primary h-6 w-6" />
+                <CardTitle>{copy.handQualityTitle}</CardTitle>
+              </div>
+              <CardDescription>{copy.handQualityDescription}</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Link href="/plo/quiz/hand-quality">
+                <Button variant="outline">{copy.handQualityTitle}</Button>
               </Link>
-              <Link href="/plo/quiz">
-                <Button variant="outline">{copy.quizHub}</Button>
-              </Link>
-            </div>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+        </div>
 
         <div className="grid gap-6">
           <Card>
