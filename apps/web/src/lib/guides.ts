@@ -222,6 +222,13 @@ const guideMetadata: Record<string, Omit<GuideMetadata, "slug">> = {
     difficulty: "beginner",
     featured: true,
   },
+  "plo4-basics": {
+    title: "PLO4 奧馬哈基礎入門",
+    description: "先理解 must-use-2 規則、起手牌結構與 nut potential，再談奧馬哈策略。",
+    category: "plo",
+    order: 18.5,
+    difficulty: "beginner",
+  },
 
   // === PREFLOP (翻前策略) ===
   "6max-preflop-chart": {
@@ -581,7 +588,7 @@ export function getGuide(slug: string, locale: GuideLocale = "zh-TW"): Guide | n
 
 export function getGuideCategories(locale: GuideLocale = "zh-TW"): string[] {
   const guides = getAllGuides(locale);
-  const categoryOrder = ["fundamentals", "preflop", "postflop", "mtt", "advanced"];
+  const categoryOrder = ["fundamentals", "plo", "preflop", "postflop", "mtt", "advanced"];
   const categories = [...new Set(guides.map((g) => g.category))];
   return categories.sort((a, b) => categoryOrder.indexOf(a) - categoryOrder.indexOf(b));
 }

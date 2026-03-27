@@ -1,6 +1,8 @@
 import { expect, test } from "@playwright/test";
 
 test.describe("PLO4 MVP", () => {
+  test.describe.configure({ mode: "serial" });
+
   test("should expose the PLO4 quiz from the English home page", async ({ page }) => {
     await page.goto("/en");
     await page.waitForLoadState("domcontentloaded");
@@ -15,9 +17,23 @@ test.describe("PLO4 MVP", () => {
     await page.waitForLoadState("domcontentloaded");
 
     await expect(page.getByRole("heading", { name: /plo4 fundamentals/i })).toBeVisible();
+    await expect(page.getByRole("link", { name: /read the guide/i })).toBeVisible();
     await expect(page.getByRole("link", { name: /start best hand quiz/i })).toBeVisible();
     await expect(page.getByRole("link", { name: /view quiz hub/i })).toBeVisible();
     await expect(page.getByRole("link", { name: /hand quality quiz/i })).toBeVisible();
+  });
+
+  test("should render the PLO learning path and guide article", async ({ page }) => {
+    await page.goto("/en/plo/learn");
+    await page.waitForLoadState("domcontentloaded");
+
+    await expect(page.getByRole("heading", { name: /plo4 learning path/i })).toBeVisible();
+    await expect(page.getByRole("link", { name: /read guide/i })).toBeVisible();
+
+    await page.getByRole("link", { name: /read guide/i }).first().click();
+
+    await expect(page.getByRole("heading", { name: /plo4 fundamentals guide/i })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /the must-use-2 rule/i })).toBeVisible();
   });
 
   test("should render the PLO quiz hub with both quiz types", async ({ page }) => {
@@ -25,6 +41,7 @@ test.describe("PLO4 MVP", () => {
     await page.waitForLoadState("domcontentloaded");
 
     await expect(page.getByRole("heading", { name: /plo4 quiz hub/i })).toBeVisible();
+    await expect(page.getByRole("link", { name: /read guide/i })).toBeVisible();
     await expect(page.getByRole("link", { name: /start quiz/i })).toHaveCount(2);
     await expect(page.getByText(/best hand quiz/i)).toBeVisible();
     await expect(page.getByText(/hand quality quiz/i)).toBeVisible();

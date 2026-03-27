@@ -2,7 +2,7 @@ import { Link } from "@/i18n/navigation";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Brain, Layers3, Scale, Trophy } from "lucide-react";
+import { BookOpen, Brain, Layers3, Scale, Trophy } from "lucide-react";
 
 type Props = {
   params: Promise<{ locale: string }>;
@@ -17,6 +17,9 @@ const COPY = {
     bestHandTitle: "Best Hand Quiz",
     bestHandDescription:
       "Given 4 hole cards and a full board, identify your best 5-card hand using exactly 2 hole cards and 3 board cards.",
+    learnTitle: "PLO4 Basics Guide",
+    learnDescription:
+      "Read the fundamentals first if Omaha still feels like Hold'em with extra cards. That mental model is wrong.",
     handQualityTitle: "Hand Quality Quiz",
     handQualityDescription:
       "Compare two starting hands and identify which structure is stronger before any board is dealt.",
@@ -35,6 +38,7 @@ const COPY = {
     ],
     cta: "Start Best Hand Quiz",
     quizHub: "View Quiz Hub",
+    learnCta: "Read the Guide",
   },
   "zh-TW": {
     title: "PLO4 基礎訓練",
@@ -43,6 +47,8 @@ const COPY = {
     bestHandTitle: "最佳牌型測驗",
     bestHandDescription:
       "給你 4 張手牌和完整公牌，判斷最佳 5 張牌型，並強制遵守剛好 2 張手牌 + 3 張公牌規則。",
+    learnTitle: "PLO4 基礎指南",
+    learnDescription: "如果你還把奧馬哈當成多兩張牌的德州，先讀這篇。這個理解錯了，後面全都會錯。",
     handQualityTitle: "起手牌品質測驗",
     handQualityDescription: "比較兩手起手牌，判斷哪個結構在翻牌前更有發展性。",
     rulesTitle: "目前涵蓋",
@@ -51,6 +57,7 @@ const COPY = {
     limitations: ["沒有 PLO solver 範圍", "沒有 equity calculator", "沒有 table trainer 或 AI 對手"],
     cta: "開始最佳牌型測驗",
     quizHub: "查看測驗中心",
+    learnCta: "閱讀指南",
   },
 } as const;
 
@@ -70,6 +77,21 @@ export default async function PLOIndexPage({ params }: Props) {
 
       <div className="grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
         <div className="grid gap-6">
+          <Card>
+            <CardHeader>
+              <div className="flex items-center gap-3">
+                <BookOpen className="text-primary h-6 w-6" />
+                <CardTitle>{copy.learnTitle}</CardTitle>
+              </div>
+              <CardDescription>{copy.learnDescription}</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Link href="/plo/learn">
+                <Button variant="outline">{copy.learnCta}</Button>
+              </Link>
+            </CardContent>
+          </Card>
+
           <Card>
             <CardHeader>
               <div className="flex items-center gap-3">
