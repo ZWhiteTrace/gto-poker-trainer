@@ -23,8 +23,8 @@ export const viewport: Viewport = {
 export const metadata: Metadata = {
   metadataBase: new URL("https://grindgto.com"),
   title: {
-    default: "免費德州撲克 GTO 練習工具 - 在線撲克範圍訓練器",
-    template: "%s | GTO 撲克訓練器",
+    default: "GTO Poker Trainer",
+    template: "%s | GTO Poker Trainer",
   },
   manifest: "/manifest.webmanifest",
   appleWebApp: {
@@ -46,8 +46,7 @@ export const metadata: Metadata = {
   other: {
     "mobile-web-app-capable": "yes",
   },
-  description:
-    "提升德撲技巧的免費 GTO 訓練器。提供翻前範圍表 (Preflop Ranges)、推圖 (Push/Fold) 練習及 ICM 計算。無需下載註冊，立即開啟在線練習。",
+  description: "Free GTO poker training tools for preflop drills, quizzes, and range study.",
   keywords: [
     "GTO poker",
     "poker trainer",
@@ -65,38 +64,6 @@ export const metadata: Metadata = {
     "撲克訓練",
     "GTO 策略",
   ],
-  openGraph: {
-    type: "website",
-    locale: "zh_TW",
-    url: "https://grindgto.com",
-    siteName: "GTO 撲克訓練器",
-    title: "免費德州撲克 GTO 練習工具 - 在線撲克範圍訓練器",
-    description:
-      "提升德撲技巧的免費 GTO 訓練器。提供翻前範圍表 (Preflop Ranges)、推圖 (Push/Fold) 練習及 ICM 計算。無需下載註冊，立即開啟在線練習。",
-    images: [
-      {
-        url: "https://grindgto.com/opengraph-image",
-        width: 1200,
-        height: 630,
-        alt: "GTO 撲克訓練器 - 免費德州撲克 GTO 練習工具",
-      },
-    ],
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "免費德州撲克 GTO 練習工具 - 在線撲克範圍訓練器",
-    description:
-      "提升德撲技巧的免費 GTO 訓練器。提供翻前範圍表 (Preflop Ranges)、推圖 (Push/Fold) 練習及 ICM 計算。無需下載註冊，立即開啟在線練習。",
-    images: ["https://grindgto.com/opengraph-image"],
-  },
-  alternates: {
-    canonical: "https://grindgto.com",
-    languages: {
-      "zh-TW": "https://grindgto.com",
-      en: "https://grindgto.com/en",
-      "x-default": "https://grindgto.com",
-    },
-  },
   verification: {
     google: "qpFj8lm0xp4HSdFNKqKKNshhirIaQeKa-Sgd9zzsHis",
   },

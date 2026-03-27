@@ -78,6 +78,8 @@ interface Props {
   params: Promise<{ locale: string; slug: string }>;
 }
 
+export const dynamicParams = false;
+
 export async function generateStaticParams() {
   const guides = getAllGuides();
   return guides.map((guide) => ({
@@ -91,9 +93,7 @@ export async function generateMetadata({ params }: Props) {
   const guide = getGuide(slug, appLocale);
 
   if (!guide) {
-    return {
-      title: articleCopy[appLocale].articleNotFound,
-    };
+    notFound();
   }
 
   if (appLocale === "en" && guide.contentLocale !== "en") {
