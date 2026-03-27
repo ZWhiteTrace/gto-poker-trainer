@@ -236,4 +236,4 @@ Fold: 大部分其他牌
 
 ---
 
-*本文由 GTO Poker Trainer 提供 | 開始練習：[翻前決策訓練](/?page=drill)*
+*本文由 GTO Poker Trainer 提供 | 開始練習：[翻前決策訓練](/drill/vs-3bet)*

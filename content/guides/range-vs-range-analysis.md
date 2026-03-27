@@ -454,4 +454,4 @@ B) 過牌
 
 **準備好用範圍思維來訓練了嗎？**
 
-前往 [Range Viewer](/ranges) 研究各位置的標準範圍！
+前往 [Range Viewer](/range) 研究各位置的標準範圍！

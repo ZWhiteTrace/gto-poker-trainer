@@ -302,4 +302,4 @@ C-Bet 是翻後最重要的技能之一：
 
 ---
 
-*本文由 GTO Poker Trainer 提供 | 開始練習：[翻後 C-bet 訓練](/?page=why_postflop)*
+*本文由 GTO Poker Trainer 提供 | 開始練習：[翻後 C-bet 訓練](/drill/postflop)*

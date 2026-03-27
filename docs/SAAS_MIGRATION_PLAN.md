@@ -1,5 +1,10 @@
 # GTO Poker Trainer - SaaS Migration Plan
 
+> Archived / Historical
+>
+> 這份文件描述的是「從 Streamlit 遷移到 Next.js」的早期規劃，不是目前專案的 source of truth。
+> 現況請以 [`README.md`](/Users/sotadic/Documents/GitHub/gto-poker-trainer/README.md)、[`apps/web/README.md`](/Users/sotadic/Documents/GitHub/gto-poker-trainer/apps/web/README.md)、以及實際目錄結構 `apps/web/src/app/[locale]/...` 為準。
+
 ## Executive Summary
 
 將現有 Streamlit 應用遷移至 Next.js，實現：

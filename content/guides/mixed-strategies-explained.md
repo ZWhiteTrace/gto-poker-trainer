@@ -440,4 +440,4 @@ vs 強玩家：
 
 **準備好開始練習範圍平衡了嗎？**
 
-前往 [Range Viewer](/ranges) 研究各種情況的範圍構成！
+前往 [Range Viewer](/range) 研究各種情況的範圍構成！

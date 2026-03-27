@@ -241,4 +241,4 @@ RFI 是撲克的基礎：
 
 ---
 
-*本文由 GTO Poker Trainer 提供 | 開始練習：[RFI 練習模式](/?page=drill)*
+*本文由 GTO Poker Trainer 提供 | 開始練習：[RFI 練習模式](/drill/rfi)*

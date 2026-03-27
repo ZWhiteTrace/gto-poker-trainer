@@ -9,17 +9,26 @@ Free, open-source preflop & postflop GTO training app.
 ```
 apps/
 ├── web/          # Next.js 16 frontend (Vercel)
-│   ├── src/app/           # App Router pages
+│   ├── src/app/           # App Router pages (locale routes live under [locale]/)
 │   ├── src/components/    # UI components
 │   ├── src/lib/poker/     # Poker domain logic (AI, equity, sizing)
 │   ├── src/stores/        # Zustand state management
+│   ├── src/proxy.ts       # Locale negotiation / routing proxy
 │   └── messages/          # i18n (en, zh-TW)
 └── api/          # FastAPI backend (Railway)
     ├── routers/           # API routes
     └── data/              # Question bank / solver data
 
 data/             # Training data (bundled into frontend for offline use)
+content/guides/   # Learn articles (Chinese source + content/guides/en/ translations)
 ```
+
+## Routing & Localization
+
+- App routes use `next-intl` with URL-based locale routing
+- Default locale is `zh-TW` and stays unprefixed: `/drill/rfi`
+- English routes are prefixed with `/en/...`: `/en/drill/rfi`
+- Locale negotiation is handled by `apps/web/src/proxy.ts`
 
 ## Local Development
 
@@ -61,6 +70,13 @@ cd apps/web && npm run test:e2e
 |-----------|---------|-------------|
 | `data/` | Range charts, reasoning, postflop strategies | Frontend (bundled at build time for 0-latency) |
 | `apps/api/data/` | Question bank, solver data, flop textures | API endpoints |
+| `content/guides/` | Learn article markdown | Frontend learn pages |
+
+## SEO & Content
+
+- Per-page metadata, canonical URLs, and alternates are generated in the frontend app layer
+- Sitemap is generated from app routes and learn content
+- English learn pages fall back conservatively when no translated article exists; untranslated guides should not be treated as full English content
 
 ## Deployment
 

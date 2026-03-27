@@ -59,6 +59,12 @@
 
 6. 點擊 **Deploy**
 
+7. 部署後驗證：
+   - `/` 應為預設 `zh-TW`
+   - `/en` 應正確載入英文頁
+   - `/sitemap.xml` 應可正常開啟
+   - 關鍵 drill 路徑例如 `/drill/rfi`、`/en/drill/rfi` 應可正常渲染
+
 ## 步驟 3: 設置 Supabase（可選，用於 Auth）
 
 1. 前往 [Supabase](https://supabase.com/) 創建新專案
@@ -88,13 +94,21 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJxxx...
 ```bash
 # 終端 1: 後端
 cd apps/api
-source ../../venv/bin/activate
+# 優先使用 apps/api/.venv；若你的環境只建立了 repo root venv，再改用 ../../venv/bin/activate
+source .venv/bin/activate
 uvicorn main:app --reload --port 8000
 
 # 終端 2: 前端
 cd apps/web
+npm ci
 npm run dev
 ```
+
+前端本地路由重點：
+
+- locale routes 位於 `apps/web/src/app/[locale]/...`
+- locale negotiation 由 `apps/web/src/proxy.ts` 處理
+- 預設中文不帶 prefix，英文使用 `/en/...`
 
 ## 常見問題
 
@@ -106,3 +120,9 @@ npm run dev
 
 ### Supabase Auth 不工作
 確保 Supabase 專案的 **Site URL** 設置為你的 Vercel 域名。
+
+### 英文路由正常但 head metadata 不對
+先檢查：
+- `apps/web/src/app/[locale]/...` 對應頁面是否有 locale-aware metadata
+- `apps/web/src/proxy.ts` 是否仍存在
+- sitemap / canonical / alternates 是否與實際 route 對齊

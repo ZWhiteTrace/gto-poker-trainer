@@ -216,4 +216,4 @@ ICM 是錦標賽玩家必須掌握的概念：
 
 ---
 
-*本文由 GTO Poker Trainer 提供 | 開始使用：[ICM 計算器](/?page=icm)*
+*本文由 GTO Poker Trainer 提供 | 開始使用：[ICM 計算器](/mtt/icm)*

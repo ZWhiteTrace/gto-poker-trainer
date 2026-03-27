@@ -324,4 +324,4 @@ BTN: 幾乎所有 Ax, Kx suited 都可以開
 
 ---
 
-*本文由 GTO Poker Trainer 提供 | 開始練習：[綜合訓練模式](/?page=drill)*
+*本文由 GTO Poker Trainer 提供 | 開始練習：[綜合訓練模式](/drill/endless)*

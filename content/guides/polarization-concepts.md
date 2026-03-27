@@ -439,4 +439,4 @@ MDF = 50%
 
 **準備好運用極化和合併範圍了嗎？**
 
-前往 [Range Viewer](/ranges) 研究不同情況的範圍結構！
+前往 [Range Viewer](/range) 研究不同情況的範圍結構！

@@ -195,4 +195,4 @@ Push/Fold 策略是 MTT 玩家的必備技能：
 
 ---
 
-*本文由 GTO Poker Trainer 提供 | 開始練習：[Push/Fold 訓練模式](/?page=pushfold)*
+*本文由 GTO Poker Trainer 提供 | 開始練習：[Push/Fold 訓練模式](/drill/push-fold)*

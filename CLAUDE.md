@@ -4,26 +4,33 @@
 ```
 apps/
 ├── web/          # Next.js 16 前端
-│   ├── src/app/           # 頁面路由
+│   ├── src/app/           # App Router（含 [locale] URL-based i18n 路由）
 │   ├── src/components/    # UI 組件
 │   ├── src/lib/poker/     # 撲克邏輯（AI、equity、sizing）
 │   ├── src/stores/        # Zustand 狀態管理
+│   ├── src/proxy.ts       # next-intl locale routing proxy
 │   └── messages/          # i18n 翻譯檔
 └── api/          # FastAPI 後端
     ├── routers/           # API 路由
     └── data/              # JSON 題庫
+
+content/
+└── guides/       # Learn 文章內容（中文原文 + content/guides/en/ 英文）
 ```
 
 ## 常見任務路徑
 | 任務 | 檔案 |
 |------|------|
-| 考題題庫 | `apps/web/src/app/exam/page.tsx` |
+| 考題題庫 | `apps/web/src/app/[locale]/exam/page.tsx` |
 | AI 決策引擎 | `apps/web/src/lib/poker/aiDecisionEngine.ts` |
 | 牌面質地分析 | `apps/web/src/lib/poker/boardTexture.ts` |
 | 下注尺寸邏輯 | `apps/web/src/lib/poker/sizing.ts` |
-| Table Trainer | `apps/web/src/app/drill/table-trainer/` |
-| Postflop 練習 | `apps/web/src/app/drill/postflop/` |
+| Table Trainer | `apps/web/src/app/[locale]/drill/table-trainer/` |
+| Postflop 練習 | `apps/web/src/app/[locale]/drill/postflop/` |
+| Learn 文章頁 | `apps/web/src/app/[locale]/learn/` |
 | 翻譯 (中文) | `apps/web/messages/zh-TW.json` |
+| 翻譯 (英文) | `apps/web/messages/en.json` |
+| SEO / alternates | `apps/web/src/lib/metadata.ts` |
 | API 題庫 | `apps/api/data/` |
 
 ## 開發指令
@@ -49,9 +56,9 @@ cd apps/api && uvicorn main:app --reload
 
 修改後必須跑：
 - **Web build**: `cd apps/web && npm run build`
-- **Web test**: `cd apps/web && npx vitest run` (249 unit tests)
-- **Web E2E**: `cd apps/web && npx playwright test` (17 specs，需先 build)
-- **API test**: `cd apps/api && pytest -v` (127 tests)
+- **Web test**: `cd apps/web && npm run test:run`
+- **Web E2E**: `cd apps/web && npm run test:e2e`
+- **API test**: `cd apps/api && pytest -v`
 
 ## 常見陷阱
 
@@ -79,6 +86,7 @@ labelKey: "drill.squeeze.mdfLabel"
 - 不確定翻譯 key 放哪 → `apps/web/messages/zh-TW.json`，按 page 分 namespace
 - 不確定 data 檔放哪 → root `data/`（前端 @data alias）+ `apps/api/data/`（後端），兩邊保持同步
 - 不確定 guide 放哪 → 只放 root `content/guides/`（apps/web/content/guides/ 已刪）
+- 不確定 locale 路由怎麼走 → 以 `apps/web/src/app/[locale]/...` 為準，default locale `zh-TW` 走無 prefix，英文走 `/en/...`
 
 ## 禁止事項
 

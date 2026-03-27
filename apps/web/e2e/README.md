@@ -46,13 +46,34 @@ If you already have the dev server running:
 E2E_EXTERNAL_SERVER=1 npx playwright test --config=e2e/playwright.config.ts
 ```
 
+### Run against production / preview
+
+```bash
+E2E_BASE_URL=https://grindgto.com E2E_EXTERNAL_SERVER=1 npx playwright test --config=e2e/playwright.config.ts
+```
+
+`E2E_EXTERNAL_SERVER=1` disables Playwright's local `webServer` boot.
+`E2E_BASE_URL` points tests at an existing deployment.
+
 ## Test Structure
 
 - `smoke.spec.ts` - Quick sanity checks
-- `home.spec.ts` - Home page tests
-- `drill.spec.ts` - Drill functionality tests (RFI, VS-RFI, Postflop)
-- `learn.spec.ts` - Learn section and MTT tools tests
-- `quiz.spec.ts` - Quiz, Exam, Stats, and Analyze tests
+- `home.spec.ts`, `navigation.spec.ts` - Home page and top-level routing
+- `drill.spec.ts`, `drill-rfi.spec.ts`, `postflop.spec.ts`, `multistreet.spec.ts` - Drill flows
+- `table-trainer-stats.spec.ts`, `stats.spec.ts`, `progress.spec.ts`, `achievements.spec.ts` - Progress and stats
+- `learn.spec.ts`, `quiz.spec.ts`, `exam.spec.ts` - Learn and quiz flows
+- `push-fold.spec.ts`, `endless.spec.ts` - Dedicated drill modes
+
+Check `e2e/*.spec.ts` for the current source of truth. This directory changes faster than the README.
+
+## Locale-Aware Selectors
+
+The app uses URL-based locale routing with negotiation. Unprefixed paths can render Chinese or English depending on the environment.
+
+- Prefer locale-explicit routes when the test is language-specific: `/en/...` or default-locale routes
+- Prefer stable selectors or structure over copy when possible
+- If text matching is required on shared routes, use bilingual regex instead of hard-coded Chinese-only selectors
+- Do not assume CI and local browsers negotiate the same locale
 
 ## Writing Tests
 
