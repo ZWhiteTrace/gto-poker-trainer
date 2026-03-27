@@ -164,6 +164,11 @@ export default async function Home({ params }: Props) {
       description: t("home.drills.rangeViewer.description"),
       href: "/range",
     },
+    {
+      name: t("home.drills.ploBestHand.name"),
+      description: t("home.drills.ploBestHand.description"),
+      href: "/plo/quiz/best-hand",
+    },
   ];
 
   return (
@@ -235,7 +240,7 @@ export default async function Home({ params }: Props) {
               <h2 className="mb-4 text-3xl font-bold">{t("home.practiceModesTitle")}</h2>
               <p className="text-muted-foreground">{t("home.practiceModesSubtitle")}</p>
             </div>
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
               {drillTypes.map((drill) => (
                 <Link key={drill.name} href={drill.href}>
                   <Card className="h-full transition-all hover:-translate-y-1 hover:shadow-lg">

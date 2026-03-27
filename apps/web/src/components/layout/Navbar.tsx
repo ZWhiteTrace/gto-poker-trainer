@@ -30,6 +30,7 @@ export function Navbar() {
   ];
 
   const labsItems = [
+    { href: "/plo/quiz/best-hand", label: t("nav.ploBestHand") || "PLO4 Best Hand" },
     { href: "/drill/endless", label: t("nav.endlessDrill") || "Endless Drill" },
     { href: "/drill/table-trainer", label: t("nav.tableTrainer") || "GTO Table" },
     { href: "/drill/multistreet", label: t("nav.multistreetDrill") || "Multi-Street" },
