@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useLocale } from "next-intl";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -124,19 +124,23 @@ function CardRow({
   );
 }
 
-export function BestHandQuizClient({ initialQuestion }: { initialQuestion: BestHandQuestion }) {
+export function BestHandQuizClient() {
   const locale = useLocale();
   const copy = COPY[locale] ?? COPY["zh-TW"];
-  const [question, setQuestion] = useState<BestHandQuestion>(initialQuestion);
+  const [question, setQuestion] = useState<BestHandQuestion | null>(null);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [score, setScore] = useState({ correct: 0, total: 0, streak: 0, bestStreak: 0 });
 
+  useEffect(() => {
+    setQuestion(generateBestHandQuestion() as BestHandQuestion);
+  }, []);
+
   const isAnswered = selectedId !== null;
-  const isCorrect = selectedId === question.correctOptionId;
+  const isCorrect = question ? selectedId === question.correctOptionId : false;
 
   const handleSelect = useCallback(
     (optionId: string) => {
-      if (isAnswered) return;
+      if (isAnswered || !question) return;
 
       setSelectedId(optionId);
       setScore((previous) => {
@@ -151,13 +155,46 @@ export function BestHandQuizClient({ initialQuestion }: { initialQuestion: BestH
         };
       });
     },
-    [isAnswered, question.correctOptionId]
+    [isAnswered, question]
   );
 
   const handleNext = useCallback(() => {
     setQuestion(generateBestHandQuestion() as BestHandQuestion);
     setSelectedId(null);
   }, []);
+
+  if (!question) {
+    return (
+      <div className="container max-w-2xl py-8">
+        <div className="mb-6 text-center">
+          <h1 className="text-2xl font-bold">{copy.title}</h1>
+          <p className="text-muted-foreground mt-1 text-sm">{copy.subtitle}</p>
+        </div>
+        <Card className="border-gray-700 bg-gray-900">
+          <CardHeader className="pb-3">
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-lg">{copy.question}</CardTitle>
+              <Badge variant="outline" className="text-xs">
+                ...
+              </Badge>
+            </div>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="space-y-3 rounded-lg bg-gray-800/50 p-4">
+              <div className="bg-muted h-8 animate-pulse rounded" />
+              <div className="bg-muted h-8 animate-pulse rounded" />
+            </div>
+            <div className="grid grid-cols-2 gap-2">
+              <div className="bg-muted h-12 animate-pulse rounded" />
+              <div className="bg-muted h-12 animate-pulse rounded" />
+              <div className="bg-muted h-12 animate-pulse rounded" />
+              <div className="bg-muted h-12 animate-pulse rounded" />
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   const { correctResult } = question.scenario;
   const highlightHole = isAnswered

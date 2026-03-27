@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useLocale } from "next-intl";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -78,19 +78,23 @@ function CardStrip({ cards }: { cards: PokerCard[] }) {
   );
 }
 
-export function HandQualityQuizClient({ initialQuestion }: { initialQuestion: HandQualityQuestion }) {
+export function HandQualityQuizClient() {
   const locale = useLocale();
   const copy = locale === "en" ? COPY.en : COPY["zh-TW"];
-  const [question, setQuestion] = useState<HandQualityQuestion>(initialQuestion);
+  const [question, setQuestion] = useState<HandQualityQuestion | null>(null);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [score, setScore] = useState({ correct: 0, total: 0, streak: 0, bestStreak: 0 });
 
+  useEffect(() => {
+    setQuestion(generateHandQualityQuestion() as HandQualityQuestion);
+  }, []);
+
   const isAnswered = selectedId !== null;
-  const isCorrect = selectedId === question.correctOptionId;
+  const isCorrect = question ? selectedId === question.correctOptionId : false;
 
   const handleSelect = useCallback(
     (optionId: string) => {
-      if (isAnswered) return;
+      if (isAnswered || !question) return;
 
       setSelectedId(optionId);
       setScore((previous) => {
@@ -105,13 +109,46 @@ export function HandQualityQuizClient({ initialQuestion }: { initialQuestion: Ha
         };
       });
     },
-    [isAnswered, question.correctOptionId]
+    [isAnswered, question]
   );
 
   const handleNext = useCallback(() => {
     setQuestion(generateHandQualityQuestion() as HandQualityQuestion);
     setSelectedId(null);
   }, []);
+
+  if (!question) {
+    return (
+      <div className="container max-w-3xl py-8">
+        <div className="mb-6 text-center">
+          <h1 className="text-2xl font-bold">{copy.title}</h1>
+          <p className="text-muted-foreground mt-1 text-sm">{copy.subtitle}</p>
+        </div>
+        <Card className="border-gray-700 bg-gray-900">
+          <CardHeader className="space-y-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Scale className="text-primary h-5 w-5" />
+                <CardTitle className="text-lg">{copy.prompt}</CardTitle>
+              </div>
+              <Badge variant="outline">...</Badge>
+            </div>
+            <CardDescription>{copy.note}</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid gap-4 md:grid-cols-2">
+              <div className="bg-muted h-28 animate-pulse rounded-lg" />
+              <div className="bg-muted h-28 animate-pulse rounded-lg" />
+            </div>
+            <div className="grid grid-cols-2 gap-2">
+              <div className="bg-muted h-12 animate-pulse rounded" />
+              <div className="bg-muted h-12 animate-pulse rounded" />
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="container max-w-3xl py-8">
