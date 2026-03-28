@@ -37,6 +37,7 @@
     "squeeze": "Squeeze",
     "textureTraining": "Texture Training",
     "tableTrainer": "GTO Table",
+    "ploBestHand": "PLO4 Best Hand",
     "gtoPractice": "GTO Practice",
     "pushFold": "Push/Fold Charts",
     "icm": "ICM Calculator"
@@ -91,6 +92,10 @@
       "rangeViewer": {
         "name": "Range Viewer",
         "description": "Explore full GTO ranges visually"
+      },
+      "ploBestHand": {
+        "name": "PLO4 Best Hand",
+        "description": "Practice the must-use-2 rule and Omaha hand reading"
       }
     },
     "ctaTitle": "Ready to Level Up Your Game?",

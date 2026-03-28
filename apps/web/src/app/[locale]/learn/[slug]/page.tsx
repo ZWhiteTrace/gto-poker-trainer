@@ -19,6 +19,7 @@ const categoryLabels: Record<string, string> = {
   mtt: "MTT 策略",
   postflop: "翻後策略",
   fundamentals: "基礎概念",
+  plo: "PLO4 基礎",
   advanced: "進階概念",
 };
 
@@ -27,6 +28,7 @@ const categoryLabelsEn: Record<string, string> = {
   mtt: "MTT Strategy",
   postflop: "Postflop Strategy",
   fundamentals: "Fundamentals",
+  plo: "PLO4 Fundamentals",
   advanced: "Advanced",
 };
 
@@ -45,6 +47,8 @@ const articleCopy = {
     pushFoldChart: "Push/Fold 圖表",
     icmCalculator: "ICM 計算器",
     cBetDrill: "C-Bet 練習",
+    ploBestHandQuiz: "PLO4 最佳牌型測驗",
+    ploHandQualityQuiz: "PLO4 起手牌品質測驗",
     logicQuiz: "邏輯測驗",
     equityQuiz: "Equity 測驗",
     rangeViewer: "範圍查看器",
@@ -64,6 +68,8 @@ const articleCopy = {
     pushFoldChart: "Push/Fold Charts",
     icmCalculator: "ICM Calculator",
     cBetDrill: "C-Bet Drill",
+    ploBestHandQuiz: "PLO4 Best Hand Quiz",
+    ploHandQualityQuiz: "PLO4 Hand Quality Quiz",
     logicQuiz: "Logic Quiz",
     equityQuiz: "Equity Quiz",
     rangeViewer: "Range Viewer",
@@ -380,6 +386,16 @@ export default async function GuidePage({ params }: Props) {
               <Link href="/drill/postflop">
                 <Button variant="outline">{copy.cBetDrill}</Button>
               </Link>
+            )}
+            {guide.category === "plo" && (
+              <>
+                <Link href="/plo/quiz/best-hand">
+                  <Button variant="outline">{copy.ploBestHandQuiz}</Button>
+                </Link>
+                <Link href="/plo/quiz/hand-quality">
+                  <Button variant="outline">{copy.ploHandQualityQuiz}</Button>
+                </Link>
+              </>
             )}
             {guide.category === "advanced" && (
               <>

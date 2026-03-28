@@ -29,6 +29,12 @@ const categoryConfig: Record<
     icon: BookOpen,
     color: "bg-purple-500/10 text-purple-500",
   },
+  plo: {
+    label: "PLO4 基礎",
+    labelEn: "PLO4 Fundamentals",
+    icon: Sparkles,
+    color: "bg-cyan-500/10 text-cyan-500",
+  },
   preflop: {
     label: "翻前策略",
     labelEn: "Preflop",

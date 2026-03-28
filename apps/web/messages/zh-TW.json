@@ -37,6 +37,7 @@
     "squeeze": "Squeeze",
     "textureTraining": "質地訓練",
     "tableTrainer": "牌桌訓練",
+    "ploBestHand": "PLO4 最佳牌型",
     "pushFold": "Push/Fold 圖表",
     "icm": "ICM 計算器"
   },
@@ -90,6 +91,10 @@
       "rangeViewer": {
         "name": "範圍查看器",
         "description": "以視覺方式探索完整 GTO 範圍"
+      },
+      "ploBestHand": {
+        "name": "PLO4 最佳牌型",
+        "description": "練習必須用 2 張手牌規則與奧馬哈牌型判讀"
       }
     },
     "ctaTitle": "準備好成為更強的德撲玩家了嗎？",
